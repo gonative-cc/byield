@@ -4,6 +4,7 @@
 	"sideEffects": false,
 	"type": "module",
 	"scripts": {
+		"prepare": "cd .git/hooks; ln -s -f ../../contrib/git-hooks/pre-commit ./",
 		"build": "remix vite:build",
 		"deploy": "pnpm run build && wrangler deploy",
 		"dev": "remix vite:dev",
@@ -51,5 +52,14 @@
 	},
 	"engines": {
 		"node": ">=20.0.0"
+	},
+	"lint-staged": {
+		"*.{js,cjs,mjs,jsx,ts,tsx}": [
+			"prettier --write --ignore-unknown",
+			"eslint --cache --cache-location ./node_modules/.cache/eslint --fix"
+		],
+		"*.{json,html}": [
+			"prettier --write --ignore-unknown"
+		]
 	}
 }
