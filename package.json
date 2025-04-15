@@ -8,6 +8,7 @@
 		"deploy": "pnpm run build && wrangler deploy",
 		"dev": "remix vite:dev",
 		"lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
+		"format": "prettier --write .",
 		"start": "wrangler dev",
 		"typecheck": "tsc",
 		"typegen": "wrangler types",
