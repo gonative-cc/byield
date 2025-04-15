@@ -4,3 +4,24 @@ node_modules
 /build
 .env
 .dev.vars
+
+*.log
+*.pid
+/.cache
+
+/db/sqlite.db
+
+
+#
+# remix and cloudflare files
+#
+/public/build
+/functions/\[\[path\]\].js
+/functions/\[\[path\]\].js.map
+/functions/metafile.*
+/functions/version.txt
+
+#
+# PRIVATE FILES
+#
+private-*
