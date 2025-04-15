@@ -13,8 +13,8 @@ export default function Index() {
 						Welcome to <span className="sr-only">Remix</span>
 					</h1>
 					<div className="h-[144px] w-[434px]">
-						<img src="/logo-light.png" alt="Remix" className="block w-full dark:hidden" />
-						<img src="/logo-dark.png" alt="Remix" className="hidden w-full dark:block" />
+						<img src="/logo-light.svg" alt="Remix" className="block w-full dark:hidden" />
+						<img src="/logo-dark.svg" alt="Remix" className="hidden w-full dark:block" />
 					</div>
 				</header>
 				<nav className="flex flex-col items-center justify-center gap-4 rounded-3xl border border-gray-200 p-6 dark:border-gray-700">
