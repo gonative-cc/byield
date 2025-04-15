@@ -33,6 +33,7 @@ module.exports = {
         "plugin:react/jsx-runtime",
         "plugin:react-hooks/recommended",
         "plugin:jsx-a11y/recommended",
+        // "prettier",
       ],
       settings: {
         react: {
@@ -69,8 +70,27 @@ module.exports = {
         "plugin:@typescript-eslint/recommended",
         "plugin:import/recommended",
         "plugin:import/typescript",
+        // "prettier",
       ],
+      rules: {
+        // "react/prop-types": "warn",
+        // "@typescript-eslint/no-explicit-any": "error",
+        "@typescript-eslint/no-unused-vars": [
+          "warn",
+          { argsIgnorePattern: "^_" },
+        ],
+      },
     },
+
+    // Cypress
+    // {
+    //   files: ["cypress/**/*.ts"],
+    //   extends: [
+    //     "plugin:cypress/recommended",
+    //     // "prettier"
+    //   ],
+    //   plugins: ["cypress"],
+    // },
 
     // Node
     {
