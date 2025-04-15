@@ -8,6 +8,7 @@ Dashboard for the Bitcoin Yield Hub and Native `nBTC`.
 
 - node >= v22
 - pnpm >= 10.8
+- proper editorconfig mode setup in your editor!
 
 ### Quick Start
 
