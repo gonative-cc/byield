@@ -17,12 +17,18 @@
 		"cf-typegen": "wrangler types"
 	},
 	"dependencies": {
+		"@radix-ui/react-slot": "^1.2.0",
 		"@remix-run/cloudflare": "^2.16.5",
 		"@remix-run/react": "^2.16.5",
 		"@remix-run/server-runtime": "^2.16.5",
+		"class-variance-authority": "^0.7.1",
+		"clsx": "^2.1.1",
 		"isbot": "^4.4.0",
+		"lucide-react": "^0.488.0",
 		"react": "^19.1.0",
-		"react-dom": "^19.1.0"
+		"react-dom": "^19.1.0",
+		"tailwind-merge": "^3.2.0",
+		"tailwindcss-animate": "^1.0.7"
 	},
 	"devDependencies": {
 		"@cloudflare/workers-types": "^4.20250415.0",
