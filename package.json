@@ -17,6 +17,7 @@
 		"cf-typegen": "wrangler types"
 	},
 	"dependencies": {
+		"@radix-ui/react-select": "^2.1.7",
 		"@radix-ui/react-slot": "^1.2.0",
 		"@remix-run/cloudflare": "^2.16.5",
 		"@remix-run/react": "^2.16.5",
