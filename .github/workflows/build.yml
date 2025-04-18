@@ -1,0 +1,42 @@
+name: Build
+on:
+  merge_group:
+    types: [checks_requested]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: |
+            - recursive: true
+              args: [--frozen-lockfile, --strict-peer-dependencies]
+            - args: [--global, prettier]
+
+  lint:
+    needs: install
+
+    steps:
+      - name: prettier
+        run: "pnpm prettier -c ."
+      - name: eslint
+        run: "pnpm run lint"
+
+  build:
+    needs: install
+
+    steps:
+      - name: typecheck
+        run: "pnpm run typecheck"
+
+      - name: build
+        run: "pnpm run build"
