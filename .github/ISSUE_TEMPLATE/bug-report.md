@@ -3,14 +3,7 @@ name: Bug Report
 about: Create a report to help us squash bugs!
 ---
 
-<!--------------------------------------------------------------------------- ☺
-|       Thanks for opening an issue!
-|
-|       Before smashing the submit button please review the template.
-|       Also, please also ensure that this is not a duplicate issue :)
-☺ ---------------------------------------------------------------------------->
-
-<!-- markdownlint-disable MD041 -->
+<!-- markdownlint-disable -->
 
 ## Summary of Bug
 
