@@ -12,6 +12,6 @@ updates:
       interval: daily
     open-pull-requests-limit: 10
     reviewers:
-      - gonative-cc/tools
+      - gonative-cc/web
     labels:
       - "T:dependencies"
