@@ -5,6 +5,8 @@ import "./tailwind.css";
 // import { Navbar } from "./components/NavBar";
 
 export const links: LinksFunction = () => [
+
+
 	{ rel: "preconnect", href: "https://fonts.googleapis.com" },
 	{
 		rel: "preconnect",
