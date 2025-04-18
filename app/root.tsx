@@ -2,7 +2,7 @@ import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "@remix-run/reac
 import type { LinksFunction } from "@remix-run/cloudflare";
 
 import "./tailwind.css";
-import { Navbar } from "./components/NavBar";
+// import { Navbar } from "./components/NavBar";
 
 export const links: LinksFunction = () => [
 	{ rel: "preconnect", href: "https://fonts.googleapis.com" },
