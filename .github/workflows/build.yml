@@ -23,6 +23,7 @@ jobs:
             - args: [--global, prettier]
 
   lint:
+    runs-on: ubuntu-latest
     needs: install
 
     steps:
@@ -32,6 +33,7 @@ jobs:
         run: "pnpm run lint"
 
   build:
+    runs-on: ubuntu-latest
     needs: install
 
     steps:
