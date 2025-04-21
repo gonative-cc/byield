@@ -1,20 +1,20 @@
 import { Link } from "@remix-run/react";
 import { Button } from "~/components/ui/button";
 import { Moon, Sun } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 enum APP_THEME_MODE {
 	LIGHT = "light",
 	DARK = "dark",
 }
 
-export const Navbar = () => {
+export const NavBar = () => {
 	const [theme, setTheme] = useState<APP_THEME_MODE>(APP_THEME_MODE.LIGHT);
 
-	const toggleTheme = () => {
+	const toggleTheme = useCallback(() => {
 		setTheme(theme === APP_THEME_MODE.LIGHT ? APP_THEME_MODE.DARK : APP_THEME_MODE.LIGHT);
 		document.documentElement.classList.toggle(APP_THEME_MODE.DARK);
-	};
+	}, [theme]);
 
 	return (
 		<header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
