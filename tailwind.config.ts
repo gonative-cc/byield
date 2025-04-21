@@ -3,7 +3,7 @@ import tailwindcssAnimate from "tailwindcss-animate";
 
 /** @type {import('tailwindcss').Config} */
 export default {
-	darkMode: "class",
+	darkMode: ["class"],
 	content: ["./app/**/{**,.client,.server}/**/*.{js,jsx,ts,tsx}"],
 	theme: {
 		extend: {
@@ -25,6 +25,12 @@ export default {
 				sm: "calc(var(--radius) - 4px)",
 			},
 			colors: {
+				azure: {
+					"10": "#131720",
+				},
+				"white-3": "rgba(255, 255, 255, 0.03)",
+				"dark-blue": "#060B1A",
+				"white-10": "rgba(255, 255, 255, 0.1)",
 				background: "hsl(var(--background))",
 				foreground: "hsl(var(--foreground))",
 				card: {
