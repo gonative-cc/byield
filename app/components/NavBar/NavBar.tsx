@@ -2,6 +2,7 @@ import { Link } from "@remix-run/react";
 import { Button } from "~/components/ui/button";
 import { Moon, Sun } from "lucide-react";
 import { useCallback, useState } from "react";
+import { Wallet } from "../Wallet/Wallet";
 
 enum APP_THEME_MODE {
 	LIGHT = "light",
@@ -26,7 +27,7 @@ export const NavBar = () => {
 					</div>
 				</Link>
 				<div className="flex flex-1 items-center justify-end gap-4">
-					<Button>Connect Wallet</Button>
+					<Wallet />
 					<Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
 						{theme === "light" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
 					</Button>
