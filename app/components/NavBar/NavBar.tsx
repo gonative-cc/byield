@@ -1,7 +1,7 @@
 import { Link } from "@remix-run/react";
 import { Button } from "~/components/ui/button";
 import { Moon, Sun } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Wallet } from "../Wallet/Wallet";
 
 enum APP_THEME_MODE {
@@ -10,11 +10,15 @@ enum APP_THEME_MODE {
 }
 
 export const NavBar = () => {
-	const [theme, setTheme] = useState<APP_THEME_MODE>(APP_THEME_MODE.LIGHT);
+	const [theme, setTheme] = useState<APP_THEME_MODE>(APP_THEME_MODE.DARK);
+	useEffect(() => document.documentElement.classList.add(APP_THEME_MODE.DARK), []);
 
 	const toggleTheme = useCallback(() => {
-		setTheme(theme === APP_THEME_MODE.LIGHT ? APP_THEME_MODE.DARK : APP_THEME_MODE.LIGHT);
-		document.documentElement.classList.toggle(APP_THEME_MODE.DARK);
+		const newTheme = theme === APP_THEME_MODE.LIGHT ? APP_THEME_MODE.DARK : APP_THEME_MODE.LIGHT;
+		// remove current theme
+		document.documentElement.classList.remove(theme);
+		document.documentElement.classList.add(newTheme);
+		setTheme(newTheme);
 	}, [theme]);
 
 	return (

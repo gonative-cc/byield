@@ -6,7 +6,9 @@ import Wallet, {
 	changeNetworkMethodName,
 	connectMethodName,
 	disconnectMethodName,
+	getAddressesMethodName,
 	getBalanceMethodName,
+	getNetworkMethodName,
 } from "sats-connect";
 
 export const useWallet = () => {
@@ -27,21 +29,29 @@ export const useWallet = () => {
 	}, []);
 
 	const getAddresses = useCallback(async () => {
-		const response = await Wallet.request("getAddresses", {
+		const response = await Wallet.request(getAddressesMethodName, {
 			purposes: [AddressPurpose.Payment, AddressPurpose.Ordinals, AddressPurpose.Stacks],
 		});
 		if (response.status === "success") {
 			setAddressInfo(response.result.addresses);
-			await getBalance();
+		}
+	}, []);
+
+	const getNetworkStatus = useCallback(async () => {
+		const response = await Wallet.request(getNetworkMethodName, null);
+		if (response.status === "success") {
+			setNetwork(response.result.bitcoin.name);
 		}
 	}, []);
 
 	useEffect(() => {
 		async function getWalletStatus() {
 			await getAddresses();
+			await getBalance();
+			await getNetworkStatus();
 		}
 		getWalletStatus();
-	}, [getBalance]);
+	}, [network]);
 
 	const connectWallet = useCallback(async () => {
 		try {
@@ -77,10 +87,10 @@ export const useWallet = () => {
 	}, []);
 
 	const switchNetwork = useCallback(async (newNetwork: BitcoinNetworkType) => {
-		await Wallet.request(changeNetworkMethodName, {
+		const response = await Wallet.request(changeNetworkMethodName, {
 			name: newNetwork,
 		});
-		setNetwork(newNetwork);
+		if (response.status === "success") setNetwork(newNetwork);
 	}, []);
 
 	return { isConnected, balance, network, connectWallet, disconnectWallet, switchNetwork };
