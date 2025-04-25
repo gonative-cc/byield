@@ -2,7 +2,7 @@ import { Link } from "@remix-run/react";
 import { Button } from "~/components/ui/button";
 import { Moon, Sun } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { Wallet } from "../Wallet/Wallet";
+import { Wallet } from "./Wallet/Wallet";
 
 enum APP_THEME_MODE {
 	LIGHT = "light",

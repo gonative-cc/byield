@@ -1,10 +1,9 @@
 import { useCallback } from "react";
-import { Input } from "../ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { Card, CardContent } from "../ui/card";
-import { BitcoinBalance } from "../BitcoinBalance/BitcoinBalance";
+import { Input } from "./ui/input";
+import { Card, CardContent } from "./ui/card";
+import { BitcoinBalance } from "./BitcoinBalance";
 import { Link } from "@remix-run/react";
-import { Button } from "../ui/button";
+import { Button } from "./ui/button";
 
 const PERCENTAGE = [
 	{
@@ -33,17 +32,6 @@ const Percentage = () => (
 			</Button>
 		))}
 	</div>
-);
-
-const FundingOptions = () => (
-	<Select>
-		<SelectTrigger className="w-full mb-4 bg-gray-800">
-			<SelectValue placeholder="Funding Options" />
-		</SelectTrigger>
-		<SelectContent>
-			<SelectItem value="option1">Funding Options</SelectItem>
-		</SelectContent>
-	</Select>
 );
 
 interface ExchangeRateProps {
@@ -94,7 +82,6 @@ export const MintBTC = ({ availableBalance, suiAddress }: MintBTCProps) => {
 				/>
 				<Percentage />
 				<Input type="text" placeholder="Enter Your Sui Address..." value={suiAddress} />
-				<FundingOptions />
 				<Fee fee={10} youReceive={input - fee} />
 				<Button onClick={handleDeposit}>Deposit BTC and mint nBTC</Button>
 				<div className="flex justify-between">
