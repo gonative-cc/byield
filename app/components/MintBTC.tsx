@@ -1,10 +1,9 @@
 import { useCallback } from "react";
-import { Input } from "../ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { Card, CardContent } from "../ui/card";
-import { BitcoinBalance } from "../BitcoinBalance/BitcoinBalance";
+import { Input } from "./ui/input";
+import { Card, CardContent } from "./ui/card";
+import { BitcoinBalance } from "./BitcoinBalance";
 import { Link } from "@remix-run/react";
-import { Button } from "../ui/button";
+import { Button } from "./ui/button";
 
 const PERCENTAGE = [
 	{
@@ -35,19 +34,8 @@ const Percentage = () => (
 	</div>
 );
 
-const FundingOptions = () => (
-	<Select>
-		<SelectTrigger className="w-full mb-4 bg-gray-800">
-			<SelectValue placeholder="Funding Options" />
-		</SelectTrigger>
-		<SelectContent>
-			<SelectItem value="option1">Funding Options</SelectItem>
-		</SelectContent>
-	</Select>
-);
-
 interface ExchangeRateProps {
-	fee: string;
+	fee: number;
 	youReceive: number;
 }
 
@@ -55,8 +43,8 @@ const Fee = ({ fee, youReceive }: ExchangeRateProps) => (
 	<Card className="p-4 bg-azure-10 rounded-2xl h-24">
 		<CardContent className="flex flex-col justify-between h-full p-0">
 			<div className="flex justify-between">
-				<p className="text-gray-400">Exchange Rate</p>
-				<p>{fee}</p>
+				<p className="text-gray-400">Fixed Fee</p>
+				<p>{fee} Satoshi</p>
 			</div>
 			<div className="flex justify-between">
 				<p className="text-gray-400">You Receive</p>
@@ -94,8 +82,7 @@ export const MintBTC = ({ availableBalance, suiAddress }: MintBTCProps) => {
 				/>
 				<Percentage />
 				<Input type="text" placeholder="Enter Your Sui Address..." value={suiAddress} />
-				<FundingOptions />
-				<Fee fee={"1 BTC → 0.99 nBTC"} youReceive={input - fee} />
+				<Fee fee={10} youReceive={input - fee} />
 				<Button onClick={handleDeposit}>Deposit BTC and mint nBTC</Button>
 				<div className="flex justify-between">
 					<span>TX ID: b99d9a361ac9db3...</span>
