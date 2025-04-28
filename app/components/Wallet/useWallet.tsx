@@ -14,7 +14,7 @@ import Wallet, {
 import axios from "axios";
 
 interface UtxoI {
-	scriptPubKey: string;
+	scriptpubkey: string;
 	txid: string;
 	value: number;
 	vout: number;
@@ -121,7 +121,7 @@ export const useWallet = () => {
 	const fetchUTXOs = useCallback(async (address: string): Promise<UtxoI[]> => {
 		try {
 			const response = await axios.get(`${MEMPOOL_API}/address/${address}/utxo`);
-			return response.data.map((utxo: any) => ({
+			return response.data.map((utxo: UtxoI) => ({
 				txid: utxo.txid,
 				vout: utxo.vout,
 				value: utxo.value,
