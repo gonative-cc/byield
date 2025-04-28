@@ -12,6 +12,7 @@ import Wallet, {
 	getNetworkMethodName,
 } from "sats-connect";
 import axios from "axios";
+import { P2WPKH_ADDRESS } from "~/constants";
 
 interface UTXO {
 	scriptpubkey: string;
@@ -118,10 +119,10 @@ export const useWallet = () => {
 		if (response.status === "success") setNetwork(newNetwork);
 	}, []);
 
-	const fetchUTXOs = useCallback(async (address: string): Promise<UtxoI[]> => {
+	const fetchUTXOs = useCallback(async (address: string): Promise<UTXO[]> => {
 		try {
 			const response = await axios.get(`${MEMPOOL_API}/address/${address}/utxo`);
-			return response.data.map((utxo: UtxoI) => ({
+			return response.data.map((utxo: UTXO) => ({
 				txid: utxo.txid,
 				vout: utxo.vout,
 				value: utxo.value,
@@ -141,68 +142,64 @@ export const useWallet = () => {
 		}
 	}, []);
 
-	const sendTxn = useCallback(async () => {
-		// bitcoin wallet address
-		const bitcoinAddress = addressInfo.find((adr) => adr.purpose === AddressPurpose.Payment);
-		if (!bitcoinAddress) return;
-		// fetch utxos
-		const utxos: UtxoI[] = await fetchUTXOs(bitcoinAddress.address);
-		if (!utxos?.length) return;
-		// validate address
-		const validateAddress: ValidateAddressI = await fetchValidateAddress(bitcoinAddress.address);
-		if (!validateAddress) return;
+	const sendTxn = useCallback(
+		async (sendAmount: number, fee: number, opReturnInput: string) => {
+			// bitcoin wallet address
+			const bitcoinAddress = addressInfo.find((adr) => adr.purpose === AddressPurpose.Payment);
+			if (!bitcoinAddress) return;
+			// fetch utxos
+			const utxos: UTXO[] = await fetchUTXOs(bitcoinAddress.address);
+			if (!utxos?.length) return;
+			// validate address
+			const validateAddress: ValidateAddressI = await fetchValidateAddress(bitcoinAddress.address);
+			if (!validateAddress) return;
 
-		const network = bitcoin.networks.testnet;
-		const psbt = new bitcoin.Psbt({ network });
+			const network = bitcoin.networks.testnet;
+			const psbt = new bitcoin.Psbt({ network });
 
-		psbt.addInput({
-			hash: utxos?.[0]?.txid,
-			index: utxos?.[0]?.vout,
-			witnessUtxo: {
-				script: Buffer.from(validateAddress.scriptPubKey, "hex"),
-				value: utxos?.[0]?.value,
-			},
-		});
+			psbt.addInput({
+				hash: utxos?.[0]?.txid,
+				index: utxos?.[0]?.vout,
+				witnessUtxo: {
+					script: Buffer.from(validateAddress.scriptPubKey, "hex"),
+					value: utxos?.[0]?.value,
+				},
+			});
 
-		const sendAmount = 1000;
-		psbt.addOutput({
-			// TODO: replace hardcoded P2WPKH address for nBTC deposits
-			address: "tb1qe60n447jylrxa96y6pfgy8pq6x9zafu09ky7cq",
-			value: sendAmount,
-		});
+			psbt.addOutput({
+				// TODO: replace hardcoded P2WPKH address for nBTC deposits
+				address: P2WPKH_ADDRESS,
+				value: sendAmount,
+			});
 
-		// Add OP_RETURN output
-		// TODO: hardcoded sui address
-		const opReturnData = Buffer.from(
-			"0x0dfeef16c6730d27c1b53ba3b96c75831c2fbc66882b3ff136513bbdce9c60ea",
-			"utf8",
-		);
-		const opReturnScript = bitcoin.script.compile([bitcoin.opcodes.OP_RETURN, opReturnData]);
-		psbt.addOutput({
-			script: opReturnScript,
-			value: 0,
-		});
+			// Add OP_RETURN output
+			const opReturnData = Buffer.from(opReturnInput, "utf8");
+			const opReturnScript = bitcoin.script.compile([bitcoin.opcodes.OP_RETURN, opReturnData]);
+			psbt.addOutput({
+				script: opReturnScript,
+				value: 0,
+			});
 
-		// Add change output
-		const fee = 300;
-		const changeAmount = utxos?.[0]?.value - sendAmount - fee;
-		if (changeAmount <= 0) {
-			throw new Error("Insufficient funds for transaction and fee.");
-		}
-		psbt.addOutput({
-			address: bitcoinAddress.address,
-			value: changeAmount,
-		});
+			const changeAmount = utxos?.[0]?.value - sendAmount - fee;
+			if (changeAmount <= 0) {
+				throw new Error("Insufficient funds for transaction and fee.");
+			}
+			psbt.addOutput({
+				address: bitcoinAddress.address,
+				value: changeAmount,
+			});
 
-		const txHex = psbt.toBase64();
-		await Wallet.request("signPsbt", {
-			psbt: txHex,
-			signInputs: {
-				[bitcoinAddress.address]: [0],
-			},
-			broadcast: true,
-		});
-	}, [addressInfo]);
+			const txHex = psbt.toBase64();
+			await Wallet.request("signPsbt", {
+				psbt: txHex,
+				signInputs: {
+					[bitcoinAddress.address]: [0],
+				},
+				broadcast: true,
+			});
+		},
+		[addressInfo, fetchUTXOs, fetchValidateAddress],
+	);
 
 	return {
 		isConnected,
