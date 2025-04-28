@@ -13,7 +13,7 @@ import Wallet, {
 } from "sats-connect";
 import axios from "axios";
 
-interface UtxoI {
+interface UTXO {
 	scriptpubkey: string;
 	txid: string;
 	value: number;
