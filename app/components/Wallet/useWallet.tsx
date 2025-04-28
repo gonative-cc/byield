@@ -185,7 +185,7 @@ export const useWallet = () => {
 
 		// Add change output
 		const fee = 300;
-		const changeAmount = utxos?.[0]?.value - sendAmount - fee
+		const changeAmount = utxos?.[0]?.value - sendAmount - fee;
 		if (changeAmount <= 0) {
 			throw new Error("Insufficient funds for transaction and fee.");
 		}
