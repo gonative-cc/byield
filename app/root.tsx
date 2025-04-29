@@ -9,6 +9,7 @@ import "@mysten/dapp-kit/dist/index.css";
 import { Toaster } from "./components/ui/toaster";
 
 const queryClient = new QueryClient();
+import { Tooltip, TooltipProvider } from "./components/ui/tooltip";
 
 export const links: LinksFunction = () => [
 	{ rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -46,9 +47,13 @@ function NativeApp({ children }: { children: React.ReactNode }) {
 				<QueryClientProvider client={queryClient}>
 					<SuiClientProvider networks={networkConfig} defaultNetwork="testnet">
 						<WalletProvider autoConnect>
-							<NavBar />
-							<main className="flex-1 container mx-auto px-4 py-8">{children}</main>
-							<Toaster />
+							<TooltipProvider>
+								<Tooltip>
+									<NavBar />
+									<main className="flex-1 container mx-auto px-4 py-8">{children}</main>
+									<Toaster />
+								</Tooltip>
+							</TooltipProvider>
 						</WalletProvider>
 					</SuiClientProvider>
 				</QueryClientProvider>
