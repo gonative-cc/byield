@@ -1,4 +1,3 @@
-import * as bitcoin from "bitcoinjs-lib";
 import { useCallback, useEffect, useState } from "react";
 import Wallet, {
 	Address,
@@ -11,27 +10,6 @@ import Wallet, {
 	getBalanceMethodName,
 	getNetworkMethodName,
 } from "sats-connect";
-import axios from "axios";
-import { P2WPKH_ADDRESS } from "~/constants";
-
-interface UTXO {
-	scriptpubkey: string;
-	txid: string;
-	value: number;
-	vout: number;
-}
-
-interface ValidateAddressI {
-	isValid: boolean;
-	address: string;
-	scriptPubKey: string;
-	isscript: boolean;
-	iswitness: boolean;
-	witness_version: number;
-	witness_program: string;
-}
-
-const MEMPOOL_API = "https://mempool.space/testnet4/api";
 
 export const useWallet = () => {
 	const [addressInfo, setAddressInfo] = useState<Address[]>([]);
@@ -101,7 +79,7 @@ export const useWallet = () => {
 		} catch (err) {
 			console.log(err);
 		}
-	}, []);
+	}, [getAddresses]);
 
 	const disconnectWallet = useCallback(async () => {
 		try {
@@ -119,94 +97,11 @@ export const useWallet = () => {
 		if (response.status === "success") setNetwork(newNetwork);
 	}, []);
 
-	const fetchUTXOs = useCallback(async (address: string): Promise<UTXO[]> => {
-		try {
-			const response = await axios.get(`${MEMPOOL_API}/address/${address}/utxo`);
-			return response.data.map((utxo: UTXO) => ({
-				txid: utxo.txid,
-				vout: utxo.vout,
-				value: utxo.value,
-				scriptPubKey: utxo.scriptpubkey,
-			}));
-		} catch (error) {
-			throw new Error(`Failed to fetch UTXOs: ${error}`);
-		}
-	}, []);
-
-	const fetchValidateAddress = useCallback(async (address: string): Promise<ValidateAddressI> => {
-		try {
-			const response = await axios.get(`${MEMPOOL_API}/v1/validate-address/${address}`);
-			return response.data;
-		} catch (error) {
-			throw new Error(`Failed to fetch UTXOs: ${error}`);
-		}
-	}, []);
-
-	const sendTxn = useCallback(
-		async (sendAmount: number, fee: number, opReturnInput: string) => {
-			// bitcoin wallet address
-			const bitcoinAddress = addressInfo.find((adr) => adr.purpose === AddressPurpose.Payment);
-			if (!bitcoinAddress) return;
-			// fetch utxos
-			const utxos: UTXO[] = await fetchUTXOs(bitcoinAddress.address);
-			if (!utxos?.length) return;
-			// validate address
-			const validateAddress: ValidateAddressI = await fetchValidateAddress(bitcoinAddress.address);
-			if (!validateAddress) return;
-
-			const network = bitcoin.networks.testnet;
-			const psbt = new bitcoin.Psbt({ network });
-
-			psbt.addInput({
-				hash: utxos?.[0]?.txid,
-				index: utxos?.[0]?.vout,
-				witnessUtxo: {
-					script: Buffer.from(validateAddress.scriptPubKey, "hex"),
-					value: utxos?.[0]?.value,
-				},
-			});
-
-			psbt.addOutput({
-				// TODO: replace hardcoded P2WPKH address for nBTC deposits
-				address: P2WPKH_ADDRESS,
-				value: sendAmount,
-			});
-
-			// Add OP_RETURN output
-			const opReturnData = Buffer.from(opReturnInput, "utf8");
-			const opReturnScript = bitcoin.script.compile([bitcoin.opcodes.OP_RETURN, opReturnData]);
-			psbt.addOutput({
-				script: opReturnScript,
-				value: 0,
-			});
-
-			const changeAmount = utxos?.[0]?.value - sendAmount - fee;
-			if (changeAmount <= 0) {
-				throw new Error("Insufficient funds for transaction and fee.");
-			}
-			psbt.addOutput({
-				address: bitcoinAddress.address,
-				value: changeAmount,
-			});
-
-			const txHex = psbt.toBase64();
-			await Wallet.request("signPsbt", {
-				psbt: txHex,
-				signInputs: {
-					[bitcoinAddress.address]: [0],
-				},
-				broadcast: true,
-			});
-		},
-		[addressInfo, fetchUTXOs, fetchValidateAddress],
-	);
-
 	return {
 		isConnected,
 		balance,
 		network,
 		addressInfo,
-		sendTxn,
 		connectWallet,
 		disconnectWallet,
 		switchNetwork,
