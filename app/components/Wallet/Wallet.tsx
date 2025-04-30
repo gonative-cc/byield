@@ -29,7 +29,7 @@ export const Wallet = () => {
 	const { isConnected, balance, connectWallet, disconnectWallet } = useWallet();
 
 	if (!isConnected) {
-		return <Button onClick={connectWallet}>Connect Wallet</Button>;
+		return <Button onClick={connectWallet}>Connect Bitcoin Wallet</Button>;
 	}
 
 	return (

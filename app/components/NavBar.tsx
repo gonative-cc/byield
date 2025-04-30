@@ -3,6 +3,7 @@ import { Button } from "~/components/ui/button";
 import { Moon, Sun } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Wallet } from "./Wallet/Wallet";
+import { SuiWallet } from "./Wallet/SuiWallet";
 
 enum APP_THEME_MODE {
 	LIGHT = "light",
@@ -32,6 +33,7 @@ export const NavBar = () => {
 				</Link>
 				<div className="flex flex-1 items-center justify-end gap-4">
 					<Wallet />
+					<SuiWallet />
 					<Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
 						{theme === "light" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
 					</Button>
