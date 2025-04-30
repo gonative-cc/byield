@@ -3,9 +3,9 @@ import type { LinksFunction } from "@remix-run/cloudflare";
 import "./tailwind.css";
 import { NavBar } from "./components/NavBar";
 import { networkConfig } from "./networkConfig";
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SuiClientProvider, WalletProvider } from "@mysten/dapp-kit";
-import '@mysten/dapp-kit/dist/index.css';
+import "@mysten/dapp-kit/dist/index.css";
 
 const queryClient = new QueryClient();
 
