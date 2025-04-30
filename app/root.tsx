@@ -2,9 +2,10 @@ import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "@remix-run/reac
 import type { LinksFunction } from "@remix-run/cloudflare";
 import "./tailwind.css";
 import { NavBar } from "./components/NavBar";
-import { SuiClientProvider, WalletProvider } from "@mysten/dapp-kit";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { networkConfig } from "./networkConfig";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { SuiClientProvider, WalletProvider } from "@mysten/dapp-kit";
+import '@mysten/dapp-kit/dist/index.css';
 
 const queryClient = new QueryClient();
 
@@ -30,31 +31,32 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<Meta />
 				<Links />
 			</head>
-
-			<QueryClientProvider client={queryClient}>
-				<SuiClientProvider networks={networkConfig} defaultNetwork="testnet">
-					<WalletProvider autoConnect>
-						<NativeApp>{children}</NativeApp>
-					</WalletProvider>
-				</SuiClientProvider>
-			</QueryClientProvider>
+			<body className="min-h-screen bg-background antialiased">
+				<NativeApp>{children}</NativeApp>
+			</body>
 		</html>
 	);
 }
 
 function NativeApp({ children }: { children: React.ReactNode }) {
 	return (
-		<body className="min-h-screen bg-background antialiased">
+		<>
 			<div className="flex flex-col min-h-screen">
-				<NavBar />
-				<main className="flex-1 container mx-auto px-4 py-8">{children}</main>
+				<QueryClientProvider client={queryClient}>
+					<SuiClientProvider networks={networkConfig} defaultNetwork="testnet">
+						<WalletProvider autoConnect>
+							<NavBar />
+							<main className="flex-1 container mx-auto px-4 py-8">{children}</main>
+						</WalletProvider>
+					</SuiClientProvider>
+				</QueryClientProvider>
 				<footer className="border-t py-4 text-center text-sm text-muted-foreground">
 					© {new Date().getFullYear()} Native App
 				</footer>
 			</div>
 			<ScrollRestoration />
 			<Scripts />
-		</body>
+		</>
 	);
 }
 
