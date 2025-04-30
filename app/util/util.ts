@@ -9,6 +9,7 @@ const sendTxn = async (bitcoinAddress: Address, sendAmount: number, opReturnInpu
 		// fetch utxos
 		const utxos: UTXO[] = await fetchUTXOs(bitcoinAddress.address);
 		if (!utxos?.length) {
+			// TODO: Also add better notification handling. Task -> https://github.com/gonative-cc/byield/issues/21
 			throw new Error("utxos not found.");
 		}
 		// validate address
