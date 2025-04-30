@@ -10,12 +10,12 @@ const sendTxn = async (bitcoinAddress: Address, sendAmount: number, opReturnInpu
 		const utxos: UTXO[] = await fetchUTXOs(bitcoinAddress.address);
 		if (!utxos?.length) {
 			// TODO: Also add better notification handling. Task -> https://github.com/gonative-cc/byield/issues/21
-			throw new Error("utxos not found.");
+			console.error("utxos not found.");
 		}
 		// validate address
 		const validateAddress: ValidateAddressI = await fetchValidateAddress(bitcoinAddress.address);
 		if (!validateAddress) {
-			throw new Error("Not able to find validate the address.");
+			console.error("Not able to find validate the address.");
 		}
 		const network = bitcoin.networks.testnet;
 		const psbt = new bitcoin.Psbt({ network });
@@ -45,7 +45,7 @@ const sendTxn = async (bitcoinAddress: Address, sendAmount: number, opReturnInpu
 		const fee = 500;
 		const changeAmount = utxos?.[0]?.value - sendAmount - fee;
 		if (changeAmount <= 0) {
-			throw new Error("Insufficient funds for transaction and fee.");
+			console.error("Insufficient funds for transaction and fee.");
 		}
 		psbt.addOutput({
 			address: bitcoinAddress.address,
