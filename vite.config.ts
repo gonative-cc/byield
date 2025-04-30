@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import { vitePlugin as remix, cloudflareDevProxyVitePlugin } from "@remix-run/dev";
 import tsconfigPaths from "vite-tsconfig-paths";
 import { getLoadContext } from "./load-context";
+import { nodePolyfills } from "vite-plugin-node-polyfills";
 
 declare module "@remix-run/cloudflare" {
 	interface Future {
@@ -24,6 +25,7 @@ export default defineConfig({
 			},
 		}),
 		tsconfigPaths(),
+		nodePolyfills(),
 	],
 	ssr: {
 		resolve: {

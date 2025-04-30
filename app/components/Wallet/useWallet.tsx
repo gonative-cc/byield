@@ -60,12 +60,16 @@ export const useWallet = () => {
 					{
 						type: "wallet",
 						resourceId: "",
-						actions: {},
+						actions: {
+							readNetwork: true,
+						},
 					},
 					{
 						type: "account",
 						resourceId: "",
-						actions: {},
+						actions: {
+							read: true,
+						},
 					},
 				],
 			});
@@ -75,7 +79,7 @@ export const useWallet = () => {
 		} catch (err) {
 			console.log(err);
 		}
-	}, []);
+	}, [getAddresses]);
 
 	const disconnectWallet = useCallback(async () => {
 		try {
@@ -93,5 +97,13 @@ export const useWallet = () => {
 		if (response.status === "success") setNetwork(newNetwork);
 	}, []);
 
-	return { isConnected, balance, network, connectWallet, disconnectWallet, switchNetwork };
+	return {
+		isConnected,
+		balance,
+		network,
+		addressInfo,
+		connectWallet,
+		disconnectWallet,
+		switchNetwork,
+	};
 };
