@@ -6,6 +6,7 @@ import { networkConfig } from "./networkConfig";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SuiClientProvider, WalletProvider } from "@mysten/dapp-kit";
 import "@mysten/dapp-kit/dist/index.css";
+import { Toaster } from "./components/ui/toaster";
 
 const queryClient = new QueryClient();
 
@@ -47,6 +48,7 @@ function NativeApp({ children }: { children: React.ReactNode }) {
 						<WalletProvider autoConnect>
 							<NavBar />
 							<main className="flex-1 container mx-auto px-4 py-8">{children}</main>
+							<Toaster />
 						</WalletProvider>
 					</SuiClientProvider>
 				</QueryClientProvider>

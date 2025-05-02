@@ -2,20 +2,35 @@ import * as bitcoin from "bitcoinjs-lib";
 import Wallet, { Address } from "sats-connect";
 import { fetchUTXOs, fetchValidateAddress } from "~/api/api";
 import { nBTC_ADDR } from "~/constants";
+import { ToastFunction } from "~/hooks/use-toast";
 import { UTXO, ValidateAddressI } from "~/types";
 
-const sendTxn = async (bitcoinAddress: Address, sendAmount: number, opReturnInput: string) => {
+const sendTxn = async (
+	bitcoinAddress: Address,
+	sendAmount: number,
+	opReturnInput: string,
+	toast?: ToastFunction,
+) => {
 	try {
 		// fetch utxos
 		const utxos: UTXO[] = await fetchUTXOs(bitcoinAddress.address);
 		if (!utxos?.length) {
-			// TODO: Also add better notification handling. Task -> https://github.com/gonative-cc/byield/issues/21
 			console.error("utxos not found.");
+			toast?.({
+				title: "UTXO",
+				description: "utxos not found.",
+				variant: "destructive",
+			});
 		}
 		// validate address
 		const validateAddress: ValidateAddressI = await fetchValidateAddress(bitcoinAddress.address);
 		if (!validateAddress) {
 			console.error("Not able to find validate the address.");
+			toast?.({
+				title: "Address",
+				description: "Not able to find validate the address.",
+				variant: "destructive",
+			});
 		}
 		const network = bitcoin.networks.testnet;
 		const psbt = new bitcoin.Psbt({ network });
@@ -46,6 +61,11 @@ const sendTxn = async (bitcoinAddress: Address, sendAmount: number, opReturnInpu
 		const changeAmount = utxos?.[0]?.value - sendAmount - fee;
 		if (changeAmount <= 0) {
 			console.error("Insufficient funds for transaction and fee.");
+			toast?.({
+				title: "Balance",
+				description: "Insufficient funds for transaction and fee.",
+				variant: "destructive",
+			});
 		}
 		psbt.addOutput({
 			address: bitcoinAddress.address,
