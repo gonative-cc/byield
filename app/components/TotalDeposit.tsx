@@ -4,7 +4,7 @@ import { TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { Table } from "./ui/table";
 import { vaults } from "~/constant";
 import { Column, CellProps } from "react-table";
-import { Vault } from "~/types";
+import { DApp } from "~/types";
 import { Badge } from "./ui/badge";
 import { Link } from "@remix-run/react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
@@ -38,11 +38,11 @@ const MOCK_DEPOSIT_DATA: DepositData[] = [
 	},
 ];
 
-export const columns: Column<Vault>[] = [
+export const columns: Column<DApp>[] = [
 	{
 		Header: "Vault Name",
 		accessor: "name",
-		Cell: ({ value, row }: CellProps<Vault>) => (
+		Cell: ({ value, row }: CellProps<DApp>) => (
 			<div className="flex items-center gap-2">
 				<img src={row.original.logo} alt={value} />
 				{value}
@@ -52,7 +52,7 @@ export const columns: Column<Vault>[] = [
 	{
 		Header: "Type",
 		accessor: "type",
-		Cell: ({ row }: CellProps<Vault>) => (
+		Cell: ({ row }: CellProps<DApp>) => (
 			<div className="flex space-x-2">
 				<Badge variant="secondary">{row.original.type}</Badge>
 			</div>
@@ -61,7 +61,7 @@ export const columns: Column<Vault>[] = [
 	{
 		Header: "Label",
 		accessor: "labels",
-		Cell: ({ row }: CellProps<Vault>) => (
+		Cell: ({ row }: CellProps<DApp>) => (
 			<div className="flex space-x-2">
 				{row.original.labels.map((label) => (
 					<div key={label}>
@@ -74,7 +74,15 @@ export const columns: Column<Vault>[] = [
 			</div>
 		),
 	},
-	{ Header: "7 Day APY", accessor: "apy" },
+	{
+		Header: "7 Day APY",
+		accessor: "apy",
+		Cell: ({ row }: CellProps<DApp>) => (
+			<div className="flex space-x-2">
+				<span>{row.original.apy}%</span>
+			</div>
+		),
+	},
 	{ Header: "Chain", accessor: "chain" },
 	{
 		Header: "Action",
