@@ -9,6 +9,7 @@ const sendTxn = async (
 	bitcoinAddress: Address,
 	sendAmount: number,
 	opReturnInput: string,
+	network: bitcoin.Network,
 	toast?: ToastFunction,
 ) => {
 	try {
@@ -32,7 +33,6 @@ const sendTxn = async (
 				variant: "destructive",
 			});
 		}
-		const network = bitcoin.networks.testnet;
 		const psbt = new bitcoin.Psbt({ network });
 
 		psbt.addInput({
