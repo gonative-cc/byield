@@ -27,6 +27,7 @@ export default {
 			colors: {
 				azure: {
 					"10": "#131720",
+					"15": "#1F242F",
 				},
 				"white-3": "rgba(255, 255, 255, 0.03)",
 				"dark-blue": "#060B1A",

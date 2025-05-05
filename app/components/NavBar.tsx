@@ -27,8 +27,16 @@ export const NavBar = () => {
 			<nav className="container mx-auto flex h-14 items-center">
 				<Link to="/" className="font-bold text-lg">
 					<div className="w-32">
-						<img src="/logo-light.svg" alt="Remix" className="block w-full dark:hidden" />
-						<img src="/logo-dark.svg" alt="Remix" className="hidden w-full dark:block" />
+						<img
+							src="/assets/app-logos/logo-light.svg"
+							alt="Remix"
+							className="block w-full dark:hidden"
+						/>
+						<img
+							src="/assets/app-logos/logo-dark.svg"
+							alt="Remix"
+							className="hidden w-full dark:block"
+						/>
 					</div>
 				</Link>
 				<div className="flex flex-1 items-center justify-end gap-4">

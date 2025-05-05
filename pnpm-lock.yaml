@@ -22,6 +22,9 @@ importers:
       "@radix-ui/react-toast":
         specifier: ^1.2.11
         version: 1.2.11(@types/react-dom@19.1.2(@types/react@19.1.2))(@types/react@19.1.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      "@radix-ui/react-tooltip":
+        specifier: ^1.2.4
+        version: 1.2.4(@types/react-dom@19.1.2(@types/react@19.1.2))(@types/react@19.1.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       "@remix-run/cloudflare":
         specifier: ^2.16.5
         version: 2.16.5(@cloudflare/workers-types@4.20250415.0)(typescript@5.8.3)
@@ -34,6 +37,9 @@ importers:
       "@tanstack/react-query":
         specifier: ^5.74.11
         version: 5.74.11(react@19.1.0)
+      "@types/react-table":
+        specifier: ^7.7.20
+        version: 7.7.20
       Buffer:
         specifier: ^0.0.0
         version: 0.0.0
@@ -67,6 +73,9 @@ importers:
       react-dom:
         specifier: ^19.1.0
         version: 19.1.0(react@19.1.0)
+      react-table:
+        specifier: ^7.8.0
+        version: 7.8.0(react@19.1.0)
       sats-connect:
         specifier: ^3.5.0
         version: 3.5.0(typescript@5.8.3)
@@ -2102,6 +2111,22 @@ packages:
       "@types/react-dom":
         optional: true
 
+  "@radix-ui/react-tooltip@1.2.4":
+    resolution:
+      {
+        integrity: sha512-DyW8VVeeMSSLFvAmnVnCwvI3H+1tpJFHT50r+tdOoMse9XqYDBCcyux8u3G2y+LOpt7fPQ6KKH0mhs+ce1+Z5w==,
+      }
+    peerDependencies:
+      "@types/react": "*"
+      "@types/react-dom": "*"
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      "@types/react":
+        optional: true
+      "@types/react-dom":
+        optional: true
+
   "@radix-ui/react-use-callback-ref@1.1.1":
     resolution:
       {
@@ -2694,6 +2719,12 @@ packages:
       }
     peerDependencies:
       "@types/react": ^19.0.0
+
+  "@types/react-table@7.7.20":
+    resolution:
+      {
+        integrity: sha512-ahMp4pmjVlnExxNwxyaDrFgmKxSbPwU23sGQw2gJK4EhCvnvmib2s/O/+y1dfV57dXOwpr2plfyBol+vEHbi2w==,
+      }
 
   "@types/react@19.1.2":
     resolution:
@@ -7238,6 +7269,14 @@ packages:
       "@types/react":
         optional: true
 
+  react-table@7.8.0:
+    resolution:
+      {
+        integrity: sha512-hNaz4ygkZO4bESeFfnfOft73iBUj8K5oKi1EcSHPAibEydfsX2MyU6Z8KCr3mv3C9Kqqh71U+DhZkFvibbnPbA==,
+      }
+    peerDependencies:
+      react: ^16.8.3 || ^17.0.0-0 || ^18.0.0
+
   react@19.1.0:
     resolution:
       {
@@ -9967,6 +10006,26 @@ snapshots:
       "@types/react": 19.1.2
       "@types/react-dom": 19.1.2(@types/react@19.1.2)
 
+  "@radix-ui/react-tooltip@1.2.4(@types/react-dom@19.1.2(@types/react@19.1.2))(@types/react@19.1.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)":
+    dependencies:
+      "@radix-ui/primitive": 1.1.2
+      "@radix-ui/react-compose-refs": 1.1.2(@types/react@19.1.2)(react@19.1.0)
+      "@radix-ui/react-context": 1.1.2(@types/react@19.1.2)(react@19.1.0)
+      "@radix-ui/react-dismissable-layer": 1.1.7(@types/react-dom@19.1.2(@types/react@19.1.2))(@types/react@19.1.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      "@radix-ui/react-id": 1.1.1(@types/react@19.1.2)(react@19.1.0)
+      "@radix-ui/react-popper": 1.2.4(@types/react-dom@19.1.2(@types/react@19.1.2))(@types/react@19.1.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      "@radix-ui/react-portal": 1.1.6(@types/react-dom@19.1.2(@types/react@19.1.2))(@types/react@19.1.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      "@radix-ui/react-presence": 1.1.4(@types/react-dom@19.1.2(@types/react@19.1.2))(@types/react@19.1.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      "@radix-ui/react-primitive": 2.1.0(@types/react-dom@19.1.2(@types/react@19.1.2))(@types/react@19.1.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      "@radix-ui/react-slot": 1.2.0(@types/react@19.1.2)(react@19.1.0)
+      "@radix-ui/react-use-controllable-state": 1.2.2(@types/react@19.1.2)(react@19.1.0)
+      "@radix-ui/react-visually-hidden": 1.2.0(@types/react-dom@19.1.2(@types/react@19.1.2))(@types/react@19.1.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+    optionalDependencies:
+      "@types/react": 19.1.2
+      "@types/react-dom": 19.1.2(@types/react@19.1.2)
+
   "@radix-ui/react-use-callback-ref@1.1.1(@types/react@19.1.2)(react@19.1.0)":
     dependencies:
       react: 19.1.0
@@ -10366,6 +10425,10 @@ snapshots:
       undici-types: 6.21.0
 
   "@types/react-dom@19.1.2(@types/react@19.1.2)":
+    dependencies:
+      "@types/react": 19.1.2
+
+  "@types/react-table@7.7.20":
     dependencies:
       "@types/react": 19.1.2
 
@@ -13483,6 +13546,10 @@ snapshots:
       tslib: 2.8.1
     optionalDependencies:
       "@types/react": 19.1.2
+
+  react-table@7.8.0(react@19.1.0):
+    dependencies:
+      react: 19.1.0
 
   react@19.1.0: {}
 

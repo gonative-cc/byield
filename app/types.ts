@@ -32,4 +32,13 @@ type ValidateAddressI = {
 	witness_program: string;
 };
 
-export type { UTXO, ValidateAddressI };
+interface DApp {
+	name: string;
+	type: string;
+	labels: string[];
+	apy: number;
+	chain: string;
+	logo: string;
+}
+
+export type { UTXO, ValidateAddressI, DApp };

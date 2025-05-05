@@ -79,9 +79,10 @@ export const MintBTC = ({ availableBalance, suiAddress }: MintBTCProps) => {
 					placeholder="number"
 					value={input}
 					rightAdornments={<span className="text-sm font-medium w-20">~$0 USD</span>}
+					className="h-16"
 				/>
 				<Percentage />
-				<Input type="text" placeholder="Enter Your Sui Address..." value={suiAddress} />
+				<Input type="text" placeholder="Enter Your Sui Address..." value={suiAddress} className="h-16" />
 				<Fee fee={10} youReceive={input - fee} />
 				<Button onClick={handleDeposit}>Deposit BTC and mint nBTC</Button>
 				<div className="flex justify-between">
