@@ -3,5 +3,3 @@ CREATE TABLE minting_transactions (
     txid TEXT PRIMARY KEY,
     status TEXT NOT NULL CHECK(status IN ('pending', 'confirmed', 'failed'))
 );
-
-CREATE INDEX idx_txid ON minting_transactions(txid);
