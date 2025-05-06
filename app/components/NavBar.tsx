@@ -10,7 +10,7 @@ enum APP_THEME_MODE {
 	DARK = "dark",
 }
 
-export const NavBar = () => {
+export function NavBar() {
 	const [theme, setTheme] = useState<APP_THEME_MODE>(APP_THEME_MODE.DARK);
 	useEffect(() => document.documentElement.classList.add(APP_THEME_MODE.DARK), []);
 
@@ -49,4 +49,4 @@ export const NavBar = () => {
 			</nav>
 		</header>
 	);
-};
+}

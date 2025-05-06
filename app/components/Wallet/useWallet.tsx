@@ -12,7 +12,7 @@ import Wallet, {
 } from "sats-connect";
 import { useToast } from "~/hooks/use-toast";
 
-export const useWallet = () => {
+export function useWallet() {
 	const { toast } = useToast();
 	const [addressInfo, setAddressInfo] = useState<Address[]>([]);
 	const [balance, setBalance] = useState<string>();
@@ -148,4 +148,4 @@ export const useWallet = () => {
 		disconnectWallet,
 		switchNetwork,
 	};
-};
+}

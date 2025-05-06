@@ -100,7 +100,7 @@ export const columns: Column<DApp>[] = [
 	},
 ];
 
-const DepositCard = ({ title, value, tooltip }: DepositData) => {
+function DepositCard({ title, value, tooltip }: DepositData) {
 	return (
 		<Card className="flex flex-1">
 			<CardContent className="p-6 rounded-lg text-white flex flex-col gap-2 bg-azure-10 w-full">
@@ -117,9 +117,9 @@ const DepositCard = ({ title, value, tooltip }: DepositData) => {
 			</CardContent>
 		</Card>
 	);
-};
+}
 
-export const TotalDeposit = () => {
+export function TotalDeposit() {
 	return (
 		<div className="flex flex-col gap-10 w-full">
 			<div className="flex justify-between w-full gap-4">
@@ -146,4 +146,4 @@ export const TotalDeposit = () => {
 			</div>
 		</div>
 	);
-};
+}

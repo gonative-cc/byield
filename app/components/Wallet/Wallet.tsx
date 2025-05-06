@@ -3,7 +3,7 @@ import { Button } from "../ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { BitcoinNetworkType } from "sats-connect";
 
-const NetWorkOptions = () => {
+function NetWorkOptions() {
 	const { network, switchNetwork } = useWallet();
 	const handleChange = (value: BitcoinNetworkType) => {
 		switchNetwork(value);
@@ -23,9 +23,9 @@ const NetWorkOptions = () => {
 			</SelectContent>
 		</Select>
 	);
-};
+}
 
-export const Wallet = () => {
+export function Wallet() {
 	const { isConnected, balance, connectWallet, disconnectWallet } = useWallet();
 
 	if (!isConnected) {
@@ -39,4 +39,4 @@ export const Wallet = () => {
 			{isConnected && <Button onClick={disconnectWallet}>Disconnect Wallet</Button>}
 		</>
 	);
-};
+}
