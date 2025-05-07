@@ -1,5 +1,5 @@
 import { ConnectButton } from "@mysten/dapp-kit";
 
-export const SuiWallet = () => {
+export function SuiWallet() {
 	return <ConnectButton connectText="Connect Sui Wallet" />;
-};
+}

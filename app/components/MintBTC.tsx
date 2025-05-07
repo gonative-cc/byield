@@ -24,42 +24,46 @@ const PERCENTAGE = [
 	},
 ];
 
-const Percentage = () => (
-	<div className="flex justify-between mb-4 space-x-2">
-		{PERCENTAGE.map(({ id, value }) => (
-			<Button key={id} variant="outline" className="bg-azure-10 w-full flex-1 flex">
-				{value}%
-			</Button>
-		))}
-	</div>
-);
+function Percentage() {
+	return (
+		<div className="flex justify-between mb-4 space-x-2">
+			{PERCENTAGE.map(({ id, value }) => (
+				<Button key={id} variant="outline" className="bg-azure-10 w-full flex-1 flex">
+					{value}%
+				</Button>
+			))}
+		</div>
+	);
+}
 
 interface ExchangeRateProps {
 	fee: number;
 	youReceive: number;
 }
 
-const Fee = ({ fee, youReceive }: ExchangeRateProps) => (
-	<Card className="p-4 bg-azure-10 rounded-2xl h-24">
-		<CardContent className="flex flex-col justify-between h-full p-0">
-			<div className="flex justify-between">
-				<p className="text-gray-400">Fixed Fee</p>
-				<p>{fee} Satoshi</p>
-			</div>
-			<div className="flex justify-between">
-				<p className="text-gray-400">You Receive</p>
-				<p>{youReceive} nBTC</p>
-			</div>
-		</CardContent>
-	</Card>
-);
+function Fee({ fee, youReceive }: ExchangeRateProps) {
+	return (
+		<Card className="p-4 bg-azure-10 rounded-2xl h-24">
+			<CardContent className="flex flex-col justify-between h-full p-0">
+				<div className="flex justify-between">
+					<p className="text-gray-400">Fixed Fee</p>
+					<p>{fee} Satoshi</p>
+				</div>
+				<div className="flex justify-between">
+					<p className="text-gray-400">You Receive</p>
+					<p>{youReceive} nBTC</p>
+				</div>
+			</CardContent>
+		</Card>
+	);
+}
 
 interface MintBTCProps {
 	availableBalance: number;
 	suiAddress: string;
 }
 
-export const MintBTC = ({ availableBalance, suiAddress }: MintBTCProps) => {
+export function MintBTC({ availableBalance, suiAddress }: MintBTCProps) {
 	const handleDeposit = useCallback(() => {
 		// Handle deposit logic here
 		console.log("Depositing with Sui Address:", suiAddress);
@@ -94,4 +98,4 @@ export const MintBTC = ({ availableBalance, suiAddress }: MintBTCProps) => {
 			</CardContent>
 		</Card>
 	);
-};
+}
