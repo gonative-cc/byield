@@ -41,4 +41,11 @@ interface DApp {
 	logo: string;
 }
 
-export type { UTXO, ValidateAddressI, DApp };
+enum TRANSACTION_STATUS {
+	NONE = 0,
+	FAILED = 1,
+	PENDING = 2,
+	FINALIZED = 3,
+}
+
+export type { UTXO, ValidateAddressI, DApp, TRANSACTION_STATUS };
