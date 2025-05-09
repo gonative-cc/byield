@@ -85,4 +85,8 @@ const sendTxn = async (
 	}
 };
 
-export { sendTxn };
+const trimAddress = (address: string): string => {
+	return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+};
+
+export { sendTxn, trimAddress };
