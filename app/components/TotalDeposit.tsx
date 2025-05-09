@@ -7,7 +7,7 @@ import { Column, CellProps } from "react-table";
 import { DApp } from "~/types";
 import { Badge } from "./ui/badge";
 import { Link } from "@remix-run/react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { SelectInput } from "./ui/select";
 import { Input } from "./ui/input";
 
 interface DepositData {
@@ -131,14 +131,10 @@ export function TotalDeposit() {
 				<div className="flex justify-between items-center w-full">
 					<h1 className="text-2xl font-bold text-orange-500 mr-4">Markets</h1>
 					<div className="flex gap-4 justify-end w-full">
-						<Select>
-							<SelectTrigger className="bg-azure-10 w-1/4">
-								<SelectValue placeholder="Filter by Top APY" />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value={"filterbytop"}>Filter by Top APY</SelectItem>
-							</SelectContent>
-						</Select>
+						<SelectInput
+							options={[{ label: "Filter by Top APY", value: "filterbytop" }]}
+							placeholder="Filter by Top APY"
+						/>
 						<Input type="text" placeholder="Search vaults..." />
 					</div>
 				</div>
