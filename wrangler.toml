@@ -42,3 +42,10 @@ enabled = true
 # [[services]]
 # binding = "MY_SERVICE"
 # service = "my-service"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "byield"
+database_id = "db_id"
+migrations_table = "migrations"
+migrations_dir = "./db/migrations/"
