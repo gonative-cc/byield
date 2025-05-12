@@ -2,11 +2,10 @@ import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import { FormInput } from "./form/FormInput";
 import { FormProvider, useForm } from "react-hook-form";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { ByieldWallet } from "~/types";
 import { SuiModal } from "./Wallet/SuiWallet/SuiModal";
-import { useCurrentAccount } from "@mysten/dapp-kit";
 
 interface ExchangeRateProps {
 	fee: number;
@@ -28,24 +27,18 @@ function Fee({ youReceive }: ExchangeRateProps) {
 
 interface OtcBuyForm {
 	numberOfSuiCoins: number;
-	suiAddress?: string;
 }
 
-export function OtcBuy() {
+export function BuynBTC() {
 	const { connectedWallet } = useContext(WalletContext);
 	const isSuiWalletConnected = connectedWallet === ByieldWallet.SuiWallet;
-	const account = useCurrentAccount();
 
 	// TODO: get the current nBTC price
 	const nBTCPrice = 1.2;
 	const otcBuyForm = useForm<OtcBuyForm>();
-	const { watch, setValue } = otcBuyForm;
+	const { watch } = otcBuyForm;
 	const numberOfSuiCoins = watch("numberOfSuiCoins");
 	const amountOfnBTC = numberOfSuiCoins / nBTCPrice;
-
-	useEffect(() => {
-		if (isSuiWalletConnected) setValue("suiAddress", account?.address);
-	}, [account?.address, isSuiWalletConnected, setValue]);
 
 	return (
 		<FormProvider {...otcBuyForm}>
@@ -64,13 +57,12 @@ export function OtcBuy() {
 							className="h-16"
 							name="numberOfSuiCoins"
 						/>
-						<FormInput
-							required
-							name="suiAddress"
-							placeholder="Enter Your Sui Address..."
-							className="h-16"
-						/>
-						<Fee fee={10} youReceive={amountOfnBTC} />
+						{numberOfSuiCoins && <Fee fee={10} youReceive={amountOfnBTC} />}
+						{numberOfSuiCoins && (
+							<span className="tracking-tighter text-gray-500 text-sm dark:text-gray-400">
+								This is a fixed price buy. The price is 25,000 SUI / BTC.
+							</span>
+						)}
 						{isSuiWalletConnected ? <Button type="submit">Buy</Button> : <SuiModal />}
 					</CardContent>
 				</Card>
