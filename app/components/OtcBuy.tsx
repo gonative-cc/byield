@@ -63,14 +63,12 @@ export function OtcBuy() {
 							placeholder="Enter number of sui coins"
 							className="h-16"
 							name="numberOfSuiCoins"
-							label=""
 						/>
 						<FormInput
 							required
 							name="suiAddress"
 							placeholder="Enter Your Sui Address..."
 							className="h-16"
-							label=""
 						/>
 						<Fee fee={10} youReceive={amountOfnBTC} />
 						{isSuiWalletConnected ? <Button type="submit">Buy</Button> : <SuiModal />}
