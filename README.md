@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD013/line-length -->
+
 # Native BYield
 
 Dashboard for the Bitcoin Yield Hub and Native `nBTC`.
