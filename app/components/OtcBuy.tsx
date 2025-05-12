@@ -44,7 +44,7 @@ export function OtcBuy() {
 	const amountOfnBTC = numberOfSuiCoins / nBTCPrice;
 
 	useEffect(() => {
-		if (isSuiWalletConnected) {
+		if (isSuiWalletConnected) setValue("suiAddress", account?.address);
 	}, [account?.address, isSuiWalletConnected, setValue]);
 
 	return (
