@@ -1,9 +1,9 @@
-import { useCallback } from "react";
-import { Input } from "./ui/input";
 import { Card, CardContent } from "./ui/card";
 import { BitcoinBalance } from "./BitcoinBalance";
 import { Link } from "@remix-run/react";
 import { Button } from "./ui/button";
+import { FormProvider, useForm } from "react-hook-form";
+import { FormInput } from "./form/FormInput";
 
 const PERCENTAGE = [
 	{
@@ -58,44 +58,73 @@ function Fee({ fee, youReceive }: ExchangeRateProps) {
 	);
 }
 
+interface MinBTCForm {
+	numberOfBTC: number;
+	suiAddress: string;
+}
+
 interface MintBTCProps {
 	availableBalance: number;
 	suiAddress: string;
 }
 
 export function MintBTC({ availableBalance, suiAddress }: MintBTCProps) {
-	const handleDeposit = useCallback(() => {
-		// Handle deposit logic here
-		console.log("Depositing with Sui Address:", suiAddress);
-	}, [suiAddress]);
+	const mintBTCForm = useForm<MinBTCForm>({
+		defaultValues: {
+			// TODO: make it dynamic
+			numberOfBTC: 1,
+			suiAddress,
+		},
+	});
+	const { handleSubmit, watch } = mintBTCForm;
+	const numberOfBTC = watch("numberOfBTC");
 
-	// TODO: make it dynamic
-	const input = 1;
 	// santoshi. 1BTC = 10^8 satoshi
 	const fee = 0.00000001;
 
 	return (
-		<Card>
-			<CardContent className="p-6 rounded-lg text-white flex flex-col gap-4 bg-azure-10">
-				<BitcoinBalance availableBalance={availableBalance} />
-				<Input
-					type="number"
-					placeholder="number"
-					value={input}
-					rightAdornments={<span className="text-sm font-medium w-20">~$0 USD</span>}
-					className="h-16"
-				/>
-				<Percentage />
-				<Input type="text" placeholder="Enter Your Sui Address..." value={suiAddress} className="h-16" />
-				<Fee fee={10} youReceive={input - fee} />
-				<Button onClick={handleDeposit}>Deposit BTC and mint nBTC</Button>
-				<div className="flex justify-between">
-					<span>TX ID: b99d9a361ac9db3...</span>
-					<Link target="_blank" to={"https://v3.tailwindcss.com/docs/font-weight"} rel="noreferrer">
-						Track confirmation in explorer
-					</Link>
-				</div>
-			</CardContent>
-		</Card>
+		<FormProvider {...mintBTCForm}>
+			<form
+				onSubmit={handleSubmit((formData) => {
+					// TODO: handle the nbtc form data
+					console.log("Depositing with Sui Address:", formData);
+				})}
+			>
+				<Card>
+					<CardContent className="p-6 rounded-lg text-white flex flex-col gap-4 bg-azure-10">
+						<BitcoinBalance availableBalance={availableBalance} />
+						<FormInput
+							required
+							name="numberOfBTC"
+							type="number"
+							placeholder="number"
+							rightAdornments={<span className="text-sm font-medium w-20">~$0 USD</span>}
+							className="h-16"
+						/>
+						<Percentage />
+						<FormInput
+							required
+							name="suiAddress"
+							type="text"
+							placeholder="Enter Your Sui Address..."
+							value={suiAddress}
+							className="h-16"
+						/>
+						<Fee fee={10} youReceive={numberOfBTC - fee} />
+						<Button type="submit">Deposit BTC and mint nBTC</Button>
+						<div className="flex justify-between">
+							<span>TX ID: b99d9a361ac9db3...</span>
+							<Link
+								target="_blank"
+								to={"https://v3.tailwindcss.com/docs/font-weight"}
+								rel="noreferrer"
+							>
+								Track confirmation in explorer
+							</Link>
+						</div>
+					</CardContent>
+				</Card>
+			</form>
+		</FormProvider>
 	);
 }

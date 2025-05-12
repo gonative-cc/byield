@@ -7,7 +7,7 @@ export const meta: MetaFunction = () => {
 
 export default function Index() {
 	return (
-		<div className="flex justify-center">
+		<div className="flex justify-center w-full">
 			<MintBTC availableBalance={0} suiAddress={""} />
 		</div>
 	);
