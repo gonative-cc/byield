@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD013 -->
+
 # Native BYield
 
 Dashboard for the Bitcoin Yield Hub and Native `nBTC`.
@@ -18,6 +20,8 @@ Dashboard for the Bitcoin Yield Hub and Native `nBTC`.
 Run the dev server (using wrangler cloudflare framework as a backend):
 
 ```sh
+# firstly install the latest dependencies
+pnpm install
 pnpm run dev
 ```
 
