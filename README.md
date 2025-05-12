@@ -1,4 +1,4 @@
-<!-- markdownlint-disable MD013/line-length -->
+<!-- markdownlint-disable MD013 -->
 
 # Native BYield
 
