@@ -49,3 +49,9 @@ enum TRANSACTION_STATUS {
 }
 
 export type { UTXO, ValidateAddressI, DApp, TRANSACTION_STATUS };
+
+// Supported wallets in BYield DApp
+export enum ByieldWallet {
+	Xverse = "Xverse",
+	SuiWallet = "SuiWallet",
+}

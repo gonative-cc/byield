@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import Wallet, {
 	Address,
 	AddressPurpose,
@@ -11,13 +11,58 @@ import Wallet, {
 	getNetworkMethodName,
 } from "sats-connect";
 import { useToast } from "~/hooks/use-toast";
+import { WalletContext } from "~/providers/ByieldWalletProvider";
+import { ByieldWallet } from "~/types";
 
-export const useWallet = () => {
+export const useXverseConnect = () => {
 	const { toast } = useToast();
+	const { handleWalletConnect } = useContext(WalletContext);
+
+	const connectWallet = useCallback(async () => {
+		try {
+			const response = await Wallet.request(connectMethodName, {
+				permissions: [
+					{
+						type: "wallet",
+						resourceId: "",
+						actions: {
+							readNetwork: true,
+						},
+					},
+					{
+						type: "account",
+						resourceId: "",
+						actions: {
+							read: true,
+						},
+					},
+				],
+			});
+			if (response.status === "success") {
+				handleWalletConnect(ByieldWallet.Xverse);
+			} else {
+				toast({
+					title: "Wallet",
+					description: "Failed to connect wallet",
+					variant: "destructive",
+				});
+			}
+		} catch (err) {
+			console.log(err);
+		}
+	}, [handleWalletConnect, toast]);
+
+	return { connectWallet };
+};
+
+export const useXverseWallet = () => {
+	const { toast } = useToast();
+	const { handleWalletConnect } = useContext(WalletContext);
 	const [addressInfo, setAddressInfo] = useState<Address[]>([]);
+	const [currentAddress, setCurrentAddress] = useState<Address | null>(null);
 	const [balance, setBalance] = useState<string>();
-	const [network, setNetwork] = useState<BitcoinNetworkType>(BitcoinNetworkType.Mainnet);
-	const isConnected = addressInfo.length > 0;
+	// TODO: Default bitcoin network on connection is Testnet4
+	const [network, setNetwork] = useState<BitcoinNetworkType>(BitcoinNetworkType.Testnet4);
 
 	const getBalance = useCallback(async () => {
 		try {
@@ -38,10 +83,11 @@ export const useWallet = () => {
 
 	const getAddresses = useCallback(async () => {
 		const response = await Wallet.request(getAddressesMethodName, {
-			purposes: [AddressPurpose.Payment, AddressPurpose.Ordinals, AddressPurpose.Stacks],
+			purposes: [AddressPurpose.Payment],
 		});
 		if (response.status === "success") {
 			setAddressInfo(response.result.addresses);
+			setCurrentAddress(response.result.addresses?.[0]);
 		} else {
 			toast({
 				title: "Address",
@@ -71,47 +117,16 @@ export const useWallet = () => {
 			await getNetworkStatus();
 		}
 		getWalletStatus();
-	}, [network]);
-
-	const connectWallet = useCallback(async () => {
-		try {
-			const response = await Wallet.request(connectMethodName, {
-				permissions: [
-					{
-						type: "wallet",
-						resourceId: "",
-						actions: {
-							readNetwork: true,
-						},
-					},
-					{
-						type: "account",
-						resourceId: "",
-						actions: {
-							read: true,
-						},
-					},
-				],
-			});
-			if (response.status === "success") {
-				await getAddresses();
-			} else {
-				toast({
-					title: "Wallet",
-					description: "Failed to connect wallet",
-					variant: "destructive",
-				});
-			}
-		} catch (err) {
-			console.log(err);
-		}
-	}, [getAddresses, toast]);
+	}, [getAddresses, getBalance, getNetworkStatus, network]);
 
 	const disconnectWallet = useCallback(async () => {
 		try {
 			const response = await Wallet.request(disconnectMethodName, null);
-			if (response.status === "success") setAddressInfo([]);
-			else
+			if (response.status === "success") {
+				setAddressInfo([]);
+				handleWalletConnect(null);
+				setCurrentAddress(null);
+			} else
 				toast({
 					title: "Wallet",
 					description: "Failed to disconnect wallet",
@@ -120,7 +135,7 @@ export const useWallet = () => {
 		} catch (err) {
 			console.log(err);
 		}
-	}, [toast]);
+	}, [handleWalletConnect, toast]);
 
 	const switchNetwork = useCallback(
 		async (newNetwork: BitcoinNetworkType) => {
@@ -140,11 +155,11 @@ export const useWallet = () => {
 	);
 
 	return {
-		isConnected,
 		balance,
 		network,
+		currentAddress,
 		addressInfo,
-		connectWallet,
+		setCurrentAddress,
 		disconnectWallet,
 		switchNetwork,
 	};

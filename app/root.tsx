@@ -4,12 +4,12 @@ import "./tailwind.css";
 import { NavBar } from "./components/NavBar";
 import { networkConfig } from "./networkConfig";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { SuiClientProvider, WalletProvider } from "@mysten/dapp-kit";
-import "@mysten/dapp-kit/dist/index.css";
+import { SuiClientProvider, WalletProvider as SuiWalletProvider } from "@mysten/dapp-kit";
 import { Toaster } from "./components/ui/toaster";
+import { Tooltip, TooltipProvider } from "./components/ui/tooltip";
+import { ByieldWalletProvider } from "./providers/ByieldWalletProvider";
 
 const queryClient = new QueryClient();
-import { Tooltip, TooltipProvider } from "./components/ui/tooltip";
 
 export const links: LinksFunction = () => [
 	{ rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -46,15 +46,17 @@ function NativeApp({ children }: { children: React.ReactNode }) {
 			<div className="flex flex-col min-h-screen">
 				<QueryClientProvider client={queryClient}>
 					<SuiClientProvider networks={networkConfig} defaultNetwork="testnet">
-						<WalletProvider autoConnect>
-							<TooltipProvider>
-								<Tooltip>
-									<NavBar />
-									<main className="flex-1 container mx-auto px-4 py-8">{children}</main>
-									<Toaster />
-								</Tooltip>
-							</TooltipProvider>
-						</WalletProvider>
+						<SuiWalletProvider autoConnect>
+							<ByieldWalletProvider>
+								<TooltipProvider>
+									<Tooltip>
+										<NavBar />
+										<main className="flex-1 container mx-auto px-4 py-8">{children}</main>
+										<Toaster />
+									</Tooltip>
+								</TooltipProvider>
+							</ByieldWalletProvider>
+						</SuiWalletProvider>
 					</SuiClientProvider>
 				</QueryClientProvider>
 				<footer className="border-t py-4 text-center text-sm text-muted-foreground">

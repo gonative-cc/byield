@@ -132,6 +132,33 @@ const SelectSeparator = React.forwardRef<
 ));
 SelectSeparator.displayName = SelectPrimitive.Separator.displayName;
 
+interface Option {
+	label: string;
+	value: string;
+}
+
+interface SelectInputProps extends SelectPrimitive.SelectProps {
+	options: Option[];
+	placeholder: string;
+}
+
+function SelectInput({ options, placeholder, ...rest }: SelectInputProps) {
+	return (
+		<Select {...rest}>
+			<SelectTrigger className="bg-gray-800 w-1/4">
+				<SelectValue placeholder={placeholder} />
+			</SelectTrigger>
+			<SelectContent>
+				{options?.map(({ value, label }) => (
+					<SelectItem key={value} value={value}>
+						{label}
+					</SelectItem>
+				))}
+			</SelectContent>
+		</Select>
+	);
+}
+
 export {
 	Select,
 	SelectGroup,
@@ -143,4 +170,7 @@ export {
 	SelectSeparator,
 	SelectScrollUpButton,
 	SelectScrollDownButton,
+	SelectInput,
 };
+
+export type { Option };

@@ -1,13 +1,42 @@
 import { Link } from "@remix-run/react";
 import { Button } from "~/components/ui/button";
 import { Moon, Sun } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
-import { Wallet } from "./Wallet/Wallet";
-import { SuiWallet } from "./Wallet/SuiWallet";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { XverseWallet } from "./Wallet/XverseWallet/XverseWallet";
+import { SuiWallet } from "./Wallet/SuiWallet/SuiWallet";
+import { WalletContext } from "~/providers/ByieldWalletProvider";
+import { ByieldWallet } from "~/types";
+import { useXverseConnect } from "./Wallet/XverseWallet/useWallet";
+import { SuiModal } from "./Wallet/SuiWallet/SuiModal";
 
 enum APP_THEME_MODE {
 	LIGHT = "light",
 	DARK = "dark",
+}
+
+function SelectWallet() {
+	const { connectWallet } = useXverseConnect();
+	const { connectedWallet } = useContext(WalletContext);
+
+	// none of the wallet is connected, than show connect button for all available wallets
+	if (!connectedWallet) {
+		return (
+			<>
+				{/* Xverse wallet connect button */}
+				<Button onClick={connectWallet}>Connect Bitcoin Wallet</Button>
+				{/* Sui Wallet Connect Modal */}
+				<SuiModal />
+			</>
+		);
+	}
+
+	// one of the wallet is connected
+	return (
+		<>
+			{connectedWallet === ByieldWallet.Xverse && <XverseWallet />}
+			{connectedWallet === ByieldWallet.SuiWallet && <SuiWallet />}
+		</>
+	);
 }
 
 export function NavBar() {
@@ -40,8 +69,7 @@ export function NavBar() {
 					</div>
 				</Link>
 				<div className="flex flex-1 items-center justify-end gap-4">
-					<Wallet />
-					<SuiWallet />
+					<SelectWallet />
 					<Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
 						{theme === "light" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
 					</Button>
