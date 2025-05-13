@@ -7,7 +7,7 @@ import { ToastFunction } from "~/hooks/use-toast";
 import { UTXO, ValidateAddressI } from "~/types";
 
 const suiToMist = (amountInSUI: number): bigint => {
-	return BigInt(Math.floor(amountInSui * Number(MIST_PER_SUI)));
+	return BigInt(Math.floor(amountInSUI * Number(MIST_PER_SUI)));
 };
 
 const sendTxn = async (

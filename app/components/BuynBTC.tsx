@@ -2,7 +2,7 @@ import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import { FormInput } from "./form/FormInput";
 import { FormProvider, useForm } from "react-hook-form";
-import { useContext } from "react";
+import { useContext, useCallback } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { ByieldWallet } from "~/types";
 import { SuiModal } from "./Wallet/SuiWallet/SuiModal";
@@ -30,7 +30,7 @@ function Fee({ youReceive }: ExchangeRateProps) {
 }
 
 interface OtcBuyForm {
-	numberOfSuiCoins: number;
+	suiAmount: number;
 }
 
 export function BuyNBTC() {
@@ -46,7 +46,6 @@ export function BuyNBTC() {
 				signature,
 				options: {
 					showRawEffects: true,
-					// Select additional data to return
 					showObjectChanges: true,
 				},
 			}),
@@ -54,63 +53,64 @@ export function BuyNBTC() {
 
 	const otcBuyForm = useForm<OtcBuyForm>();
 	const { watch } = otcBuyForm;
-	const numberOfSuiCoins = watch("numberOfSuiCoins");
-	const amountOfnBTC = numberOfSuiCoins / pricePerNBTCInSUI;
+	const suiAmount = watch("suiAmount");
+	const amountOfnBTC = suiAmount / pricePerNBTCInSUI;
 
-	const handleTransaction = (data: OtcBuyForm) => {
-		const suiAmountMist = suiToMist(data.numberOfSuiCoins);
-		const tx = new Transaction();
-		const [coins] = tx.splitCoins(tx.gas, [tx.pure.u64(suiAmountMist)]);
-		// Call the swap_sui_for_nbtc function
-		tx.moveCall({
-			target: `${packageId}::${module}::${swapFunction}`,
-			arguments: [
-				tx.object(vaultId), // Vault object
-				coins, // Coin<SUI> argument
-			],
-		});
+	const handleTransaction = useCallback(
+		({ suiAmount }: OtcBuyForm) => {
+			const suiAmountMist = suiToMist(suiAmount);
+			const transaction = new Transaction();
+			const [coins] = transaction.splitCoins(transaction.gas, [transaction.pure.u64(suiAmountMist)]);
+			// Call the swap_sui_for_nbtc function
+			transaction.moveCall({
+				target: `${packageId}::${module}::${swapFunction}`,
+				arguments: [
+					transaction.object(vaultId), // Vault object
+					coins, // Coin<SUI> argument
+				],
+			});
 
-		signAndExecuteTransaction(
-			{
-				transaction: tx,
-			},
-			{
-				onSuccess: () => {
-					toast({
-						title: "Buy nBTC",
-						description: `Transaction succeeded`,
-					});
+			signAndExecuteTransaction(
+				{
+					transaction,
 				},
-				onError: (error) => {
-					toast({
-						title: "Buy nBTC",
-						description: `Transaction failed: ${error.message}`,
-						variant: "destructive",
-					});
+				{
+					onSuccess: () => {
+						toast({
+							title: "Buy nBTC",
+							description: `Transaction succeeded`,
+						});
+					},
+					onError: (error) => {
+						toast({
+							title: "Buy nBTC",
+							description: `Transaction failed: ${error.message}`,
+							variant: "destructive",
+						});
+					},
 				},
-			},
-		);
-	};
+			);
+		},
+		[module, packageId, signAndExecuteTransaction, swapFunction, toast, vaultId],
+	);
 
 	return (
 		<FormProvider {...otcBuyForm}>
 			<form
-				onSubmit={otcBuyForm.handleSubmit(async (data: OtcBuyForm) => {
-					handleTransaction(data);
-				})}
+				onSubmit={otcBuyForm.handleSubmit(handleTransaction)}
 				className="w-1/2"
 			>
 				<Card>
 					<CardContent className="p-6 rounded-lg text-white flex flex-col gap-4 bg-azure-10">
 						<FormInput
 							required
+							name="suiAmount"
 							type="number"
 							placeholder="Enter SUI amount"
 							className="h-16"
-							name="numberOfSuiCoins"
 						/>
-						{numberOfSuiCoins && <Fee youReceive={amountOfnBTC} />}
-						{numberOfSuiCoins && (
+						{suiAmount && <Fee youReceive={amountOfnBTC} />}
+						{suiAmount && (
 							<span className="tracking-tighter text-gray-500 text-sm dark:text-gray-400">
 								This is a fixed price buy. The price is 25,000 SUI / BTC.
 							</span>
