@@ -7,12 +7,12 @@ import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { ByieldWallet } from "~/types";
 import { SuiModal } from "./Wallet/SuiWallet/SuiModal";
 
-interface ExchangeRateProps {
+interface FeeProps {
 	fee: number;
 	youReceive: number;
 }
 
-function Fee({ youReceive }: ExchangeRateProps) {
+function Fee({ youReceive }: FeeProps) {
 	return (
 		<Card className="p-4 bg-azure-10 rounded-2xl h-14">
 			<CardContent className="flex flex-col justify-between p-0">
@@ -25,8 +25,8 @@ function Fee({ youReceive }: ExchangeRateProps) {
 	);
 }
 
-interface OtcBuyForm {
-	numberOfSuiCoins: number;
+interface BuyNBTCForm {
+	numberOfSuiCoins: string;
 }
 
 export function BuyNBTC() {
@@ -34,17 +34,17 @@ export function BuyNBTC() {
 	const isSuiWalletConnected = connectedWallet === ByieldWallet.SuiWallet;
 
 	// TODO: get the current nBTC price
-	const nBTCPrice = 1.2;
-	const otcBuyForm = useForm<OtcBuyForm>();
-	const { watch } = otcBuyForm;
+	const NBTCPrice = 1.2;
+	const buyNBTCForm = useForm<BuyNBTCForm>();
+	const { watch } = buyNBTCForm;
 	const numberOfSuiCoins = watch("numberOfSuiCoins");
-	const amountOfnBTC = numberOfSuiCoins / nBTCPrice;
+	const amountOfnBTC = Number(numberOfSuiCoins) / NBTCPrice;
 
 	return (
-		<FormProvider {...otcBuyForm}>
+		<FormProvider {...buyNBTCForm}>
 			<form
-				onSubmit={otcBuyForm.handleSubmit((data) => {
-					console.log("handle otc form data", data);
+				onSubmit={buyNBTCForm.handleSubmit((data) => {
+					console.log("handle NBTC form data", data);
 				})}
 				className="w-1/2"
 			>
@@ -52,7 +52,6 @@ export function BuyNBTC() {
 					<CardContent className="p-6 rounded-lg text-white flex flex-col gap-4 bg-azure-10">
 						<FormInput
 							required
-							type="number"
 							placeholder="Enter number of sui coins"
 							className="h-16"
 							name="numberOfSuiCoins"

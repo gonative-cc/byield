@@ -1,4 +1,5 @@
 import type { MetaFunction } from "@remix-run/cloudflare";
+import { BuyNBTC } from "~/components/BuyNBTC";
 import { MintNBTC } from "~/components/MintNBTC";
 
 export const meta: MetaFunction = () => {
@@ -9,6 +10,7 @@ export default function Index() {
 	return (
 		<div className="flex justify-center w-full">
 			<MintNBTC availableBalance={0} suiAddress={""} />
+			<BuyNBTC />
 		</div>
 	);
 }
