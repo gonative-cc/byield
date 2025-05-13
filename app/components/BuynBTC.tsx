@@ -58,7 +58,6 @@ export function BuyNBTC() {
 	const amountOfnBTC = numberOfSuiCoins / pricePerNBTCInSUI;
 
 	const handleTransaction = (data: OtcBuyForm) => {
-		// Convert SUI to MIST
 		const suiAmountMist = suiToMist(data.numberOfSuiCoins);
 		const tx = new Transaction();
 		const [coins] = tx.splitCoins(tx.gas, [tx.pure.u64(suiAmountMist)]);
