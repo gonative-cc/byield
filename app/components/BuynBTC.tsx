@@ -37,7 +37,8 @@ export function BuyNBTC() {
 	const { toast } = useToast();
 	const { connectedWallet } = useContext(WalletContext);
 	const client = useSuiClient();
-	const { packageId, module, swapFunction, vaultId, pricePerNBTCInSUI } = useNetworkVariables();
+	const { nbtcOTC } = useNetworkVariables();
+	const { packageId, module, swapFunction, vaultId, pricePerNBTCInSUI } = nbtcOTC;
 	const isSuiWalletConnected = connectedWallet === ByieldWallet.SuiWallet;
 	const { mutate: signAndExecuteTransaction } = useSignAndExecuteTransaction({
 		execute: async ({ bytes, signature }) =>
@@ -96,10 +97,7 @@ export function BuyNBTC() {
 
 	return (
 		<FormProvider {...otcBuyForm}>
-			<form
-				onSubmit={otcBuyForm.handleSubmit(handleTransaction)}
-				className="w-1/2"
-			>
+			<form onSubmit={otcBuyForm.handleSubmit(handleTransaction)} className="w-1/2">
 				<Card>
 					<CardContent className="p-6 rounded-lg text-white flex flex-col gap-4 bg-azure-10">
 						<FormInput
