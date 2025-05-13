@@ -62,7 +62,6 @@ export function BuyNBTC() {
 			const suiAmountMist = suiToMist(suiAmount);
 			const transaction = new Transaction();
 			const [coins] = transaction.splitCoins(transaction.gas, [transaction.pure.u64(suiAmountMist)]);
-			// Call the swap_sui_for_nbtc function
 			transaction.moveCall({
 				target: `${packageId}::${module}::${swapFunction}`,
 				arguments: [
