@@ -13,7 +13,6 @@ const { networkConfig, useNetworkVariable, useNetworkVariables } = createNetwork
 	mainnet: {
 		url: getFullnodeUrl("mainnet"),
 		variables: {
-			hello: "hello",
 			...swapMainNetConfig,
 		},
 	},
