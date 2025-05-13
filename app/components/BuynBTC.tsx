@@ -105,7 +105,7 @@ export function BuyNBTC() {
 						<FormInput
 							required
 							type="number"
-							placeholder="Enter number of sui coins"
+							placeholder="Enter SUI amount"
 							className="h-16"
 							name="numberOfSuiCoins"
 						/>
