@@ -58,42 +58,47 @@ export function BuynBTC() {
 	const numberOfSuiCoins = watch("numberOfSuiCoins");
 	const amountOfnBTC = numberOfSuiCoins / pricePerNBTCInSUI;
 
+	const handleTransaction = (data: OtcBuyForm) => {
+		// Convert SUI to MIST
+		const suiAmountMist = suiToMist(data.numberOfSuiCoins);
+		const tx = new Transaction();
+		const [coins] = tx.splitCoins(tx.gas, [tx.pure.u64(suiAmountMist)]);
+		// Call the swap_sui_for_nbtc function
+		tx.moveCall({
+			target: `${packageId}::${module}::${swapFunction}`,
+			arguments: [
+				tx.object(vaultId), // Vault object
+				coins, // Coin<SUI> argument
+			],
+		});
+
+		signAndExecuteTransaction(
+			{
+				transaction: tx,
+			},
+			{
+				onSuccess: () => {
+					toast({
+						title: "Buy nBTC",
+						description: `Transaction succeeded`,
+					});
+				},
+				onError: (error) => {
+					toast({
+						title: "Buy nBTC",
+						description: `Transaction failed: ${error.message}`,
+						variant: "destructive",
+					});
+				},
+			},
+		);
+	};
+
 	return (
 		<FormProvider {...otcBuyForm}>
 			<form
-				onSubmit={otcBuyForm.handleSubmit(async (data) => {
-					// Convert SUI to MIST
-					const suiAmountMist = suiToMist(data.numberOfSuiCoins);
-					const tx = new Transaction();
-					const [coins] = tx.splitCoins(tx.gas, [tx.pure.u64(suiAmountMist)]);
-					// Call the swap_sui_for_nbtc function
-					tx.moveCall({
-						target: `${packageId}::${module}::${swapFunction}`,
-						arguments: [
-							tx.object(vaultId), // Vault object
-							coins, // Coin<SUI> argument
-						],
-					});
-					signAndExecuteTransaction(
-						{
-							transaction: tx,
-						},
-						{
-							onSuccess: () => {
-								toast({
-									title: "Buy nBTC",
-									description: `Transaction succeeded`,
-								});
-							},
-							onError: (error) => {
-								toast({
-									title: "Buy nBTC",
-									description: `Transaction failed: ${error.message}`,
-									variant: "destructive",
-								});
-							},
-						},
-					);
+				onSubmit={otcBuyForm.handleSubmit(async (data: OtcBuyForm) => {
+					handleTransaction(data);
 				})}
 				className="w-1/2"
 			>
