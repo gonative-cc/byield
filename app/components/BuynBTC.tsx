@@ -55,7 +55,7 @@ export function BuyNBTC() {
 	const otcBuyForm = useForm<OtcBuyForm>();
 	const { watch } = otcBuyForm;
 	const suiAmount = watch("suiAmount");
-	const amountOfnBTC = suiAmount / pricePerNBTCInSUI;
+	const amountOfNBTC = suiAmount / pricePerNBTCInSUI;
 
 	const handleTransaction = useCallback(
 		({ suiAmount }: OtcBuyForm) => {
