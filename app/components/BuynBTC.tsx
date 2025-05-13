@@ -33,7 +33,7 @@ interface OtcBuyForm {
 	numberOfSuiCoins: number;
 }
 
-export function BuynBTC() {
+export function BuyNBTC() {
 	const { toast } = useToast();
 	const { connectedWallet } = useContext(WalletContext);
 	const client = useSuiClient();
