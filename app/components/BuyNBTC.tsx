@@ -29,7 +29,7 @@ interface OtcBuyForm {
 	numberOfSuiCoins: number;
 }
 
-export function BuynBTC() {
+export function BuyNBTC() {
 	const { connectedWallet } = useContext(WalletContext);
 	const isSuiWalletConnected = connectedWallet === ByieldWallet.SuiWallet;
 

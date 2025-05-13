@@ -68,7 +68,7 @@ interface MintBTCProps {
 	suiAddress: string;
 }
 
-export function MintBTC({ availableBalance, suiAddress }: MintBTCProps) {
+export function MintNBTC({ availableBalance, suiAddress }: MintBTCProps) {
 	const mintBTCForm = useForm<MinBTCForm>({
 		defaultValues: {
 			// TODO: make it dynamic
