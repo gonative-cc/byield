@@ -6,7 +6,7 @@ import { nBTC_ADDR } from "~/constants";
 import { ToastFunction } from "~/hooks/use-toast";
 import { UTXO, ValidateAddressI } from "~/types";
 
-const suiToMist = (amountInSui: number): bigint => {
+const suiToMist = (amountInSUI: number): bigint => {
 	return BigInt(Math.floor(amountInSui * Number(MIST_PER_SUI)));
 };
 
