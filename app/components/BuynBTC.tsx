@@ -6,9 +6,13 @@ import { useContext } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { ByieldWallet } from "~/types";
 import { SuiModal } from "./Wallet/SuiWallet/SuiModal";
+import { useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
+import { Transaction } from "@mysten/sui/transactions";
+import { useNetworkVariables } from "~/networkConfig";
+import { suiToMist } from "~/util/util";
+import { useToast } from "~/hooks/use-toast";
 
 interface ExchangeRateProps {
-	fee: number;
 	youReceive: number;
 }
 
@@ -30,21 +34,66 @@ interface OtcBuyForm {
 }
 
 export function BuynBTC() {
+	const { toast } = useToast();
 	const { connectedWallet } = useContext(WalletContext);
+	const client = useSuiClient();
+	const { packageId, module, swapFunction, vaultId, pricePerNBTCInSUI } = useNetworkVariables();
 	const isSuiWalletConnected = connectedWallet === ByieldWallet.SuiWallet;
+	const { mutate: signAndExecuteTransaction } = useSignAndExecuteTransaction({
+		execute: async ({ bytes, signature }) =>
+			await client.executeTransactionBlock({
+				transactionBlock: bytes,
+				signature,
+				options: {
+					// Raw effects are required so the effects can be reported back to the wallet
+					showRawEffects: true,
+					// Select additional data to return
+					showObjectChanges: true,
+				},
+			}),
+	});
 
-	// TODO: get the current nBTC price
-	const nBTCPrice = 1.2;
 	const otcBuyForm = useForm<OtcBuyForm>();
 	const { watch } = otcBuyForm;
 	const numberOfSuiCoins = watch("numberOfSuiCoins");
-	const amountOfnBTC = numberOfSuiCoins / nBTCPrice;
+	const amountOfnBTC = numberOfSuiCoins / pricePerNBTCInSUI;
 
 	return (
 		<FormProvider {...otcBuyForm}>
 			<form
-				onSubmit={otcBuyForm.handleSubmit((data) => {
-					console.log("handle otc form data", data);
+				onSubmit={otcBuyForm.handleSubmit(async (data) => {
+					// Convert SUI to MIST
+					const suiAmountMist = suiToMist(data.numberOfSuiCoins);
+					const tx = new Transaction();
+					const [coins] = tx.splitCoins(tx.gas, [tx.pure.u64(suiAmountMist)]);
+					// Call the swap_sui_for_nbtc function
+					tx.moveCall({
+						target: `${packageId}::${module}::${swapFunction}`,
+						arguments: [
+							tx.object(vaultId), // Vault object
+							coins, // Coin<SUI> argument
+						],
+					});
+					signAndExecuteTransaction(
+						{
+							transaction: tx,
+						},
+						{
+							onSuccess: () => {
+								toast({
+									title: "Buy nBTC",
+									description: `Transaction succeeded`,
+								});
+							},
+							onError: (error) => {
+								toast({
+									title: "Buy nBTC",
+									description: `Transaction failed: ${error.message}`,
+									variant: "destructive",
+								});
+							},
+						},
+					);
 				})}
 				className="w-1/2"
 			>
@@ -57,7 +106,7 @@ export function BuynBTC() {
 							className="h-16"
 							name="numberOfSuiCoins"
 						/>
-						{numberOfSuiCoins && <Fee fee={10} youReceive={amountOfnBTC} />}
+						{numberOfSuiCoins && <Fee youReceive={amountOfnBTC} />}
 						{numberOfSuiCoins && (
 							<span className="tracking-tighter text-gray-500 text-sm dark:text-gray-400">
 								This is a fixed price buy. The price is 25,000 SUI / BTC.
