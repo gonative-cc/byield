@@ -66,3 +66,5 @@ export const vaults: DApp[] = [
 		logo: "/public/assets/ui-icons/market/omniBtc.svg",
 	},
 ];
+
+export const pricePerNBTCInSUI = 25000;

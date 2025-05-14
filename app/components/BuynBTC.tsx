@@ -11,6 +11,7 @@ import { Transaction } from "@mysten/sui/transactions";
 import { useNetworkVariables } from "~/networkConfig";
 import { suiToMist } from "~/util/util";
 import { useToast } from "~/hooks/use-toast";
+import { pricePerNBTCInSUI } from "~/constant";
 
 interface FeeProps {
 	youReceive: number;
@@ -39,7 +40,7 @@ export function BuyNBTC() {
 	const isSuiWalletConnected = connectedWallet === ByieldWallet.SuiWallet;
 	const client = useSuiClient();
 	const { nbtcOTC } = useNetworkVariables();
-	const { packageId, module, swapFunction, vaultId, pricePerNBTCInSUI } = nbtcOTC;
+	const { packageId, module, swapFunction, vaultId } = nbtcOTC;
 	const { mutate: signAndExecuteTransaction } = useSignAndExecuteTransaction({
 		execute: async ({ bytes, signature }) =>
 			await client.executeTransactionBlock({
