@@ -29,7 +29,10 @@ function Instructions() {
 								Click "profile" → scroll down to the "About" section → click "Request Sui Token".
 							</li>
 							<li>
-								You can also check <Button variant="link" className="p-0">alternative faucets.</Button>
+								You can also check{" "}
+								<Button variant="link" className="p-0">
+									alternative faucets.
+								</Button>
 							</li>
 						</ul>
 					</li>
