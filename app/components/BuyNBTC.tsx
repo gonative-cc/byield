@@ -13,25 +13,26 @@ import { suiToMist } from "~/util/util";
 import { useToast } from "~/hooks/use-toast";
 import { pricePerNBTCInSUI } from "~/constant";
 
-const BUY_NBTC_INSTRUCTIONS = [
-	"Click on Connect Sui Wallet button, if not already connected.",
-	"Use the Slush wallet.",
-	`Click "profile" → network → make sure you select testnet.`,
-	`Click "profile" → scroll down to the "About" section → click "Request Sui Token".`,
-];
-
 function Instructions() {
 	return (
 		<Card className="p-4 bg-azure-10 rounded-2xl">
 			<CardContent className="flex flex-col justify-between p-0">
 				<h2 className="mb-2 font-semibold text-gray-900 dark:text-white">Instructions:</h2>
-				<ul className="max-w-md space-y-1 text-gray-500 list-disc">
-					{BUY_NBTC_INSTRUCTIONS.map((instruction) => (
-						<li key={instruction} className="flex items-start">
-							<span className="mr-2">•</span>
-							<span>{instruction}</span>
-						</li>
-					))}
+				<ul className="space-y-2 text-gray-500 list-disc list-inside dark:text-gray-400">
+					<li>Click on Connect Sui Wallet button, if not already connected.</li>
+					<li>Use the Slush wallet.</li>
+					<li>
+						Make sure you have testnet Sui tokens:
+						<ul className="ps-8 mt-2 space-y-1 list-disc list-outside">
+							<li>Click "profile" → network → make sure you select testnet.</li>
+							<li>
+								Click "profile" → scroll down to the "About" section → click "Request Sui Token".
+							</li>
+							<li>
+								You can also check <Button variant="link" className="p-0">alternative faucets.</Button>
+							</li>
+						</ul>
+					</li>
 				</ul>
 			</CardContent>
 		</Card>
