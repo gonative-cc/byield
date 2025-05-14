@@ -13,6 +13,31 @@ import { suiToMist } from "~/util/util";
 import { useToast } from "~/hooks/use-toast";
 import { pricePerNBTCInSUI } from "~/constant";
 
+const instructions = [
+	"Click on Connect Sui Wallet button, if not already connected.",
+	"Use the Slush wallet.",
+	`Click "profile" → network → make sure you select testnet.`,
+	`Click "profile" → scroll down to the "About" section → click "Request Sui Token".`,
+];
+
+function Instructions() {
+	return (
+		<Card className="p-4 bg-azure-10 rounded-2xl">
+			<CardContent className="flex flex-col justify-between p-0">
+				<h2 className="mb-2 font-semibold text-gray-900 dark:text-white">Instructions:</h2>
+				<ul className="max-w-md space-y-1 text-gray-500 list-disc">
+					{instructions.map((instruction) => (
+						<li key={instruction} className="flex items-start">
+							<span className="mr-2">•</span>
+							<span>{instruction}</span>
+						</li>
+					))}
+				</ul>
+			</CardContent>
+		</Card>
+	);
+}
+
 interface FeeProps {
 	youReceive: number;
 }
@@ -123,6 +148,7 @@ export function BuyNBTC() {
 								This is a fixed price buy. The price is 25,000 SUI / BTC.
 							</span>
 						)}
+						<Instructions />
 						{isSuiWalletConnected ? <Button type="submit">Buy</Button> : <SuiModal />}
 					</CardContent>
 				</Card>
