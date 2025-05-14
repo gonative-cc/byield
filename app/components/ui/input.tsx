@@ -1,7 +1,7 @@
 import * as React from "react";
 import { cn } from "~/lib/utils";
 
-interface InputProps extends React.ComponentProps<"input"> {
+export interface InputProps extends React.ComponentProps<"input"> {
 	leftAdornments?: React.ReactNode;
 	rightAdornments?: React.ReactNode;
 }

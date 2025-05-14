@@ -1,5 +1,5 @@
 import type { MetaFunction } from "@remix-run/cloudflare";
-import { MintBTC } from "~/components/MintBTC";
+import { MintNBTC } from "~/components/MintNBTC";
 
 export const meta: MetaFunction = () => {
 	return [{ title: "BYIELD App" }, { name: "description", content: "Welcome to BYIELD App!" }];
@@ -7,8 +7,8 @@ export const meta: MetaFunction = () => {
 
 export default function Index() {
 	return (
-		<div className="flex justify-center">
-			<MintBTC availableBalance={0} suiAddress={""} />
+		<div className="flex justify-center w-full">
+			<MintNBTC availableBalance={0} suiAddress={""} />
 		</div>
 	);
 }
