@@ -12,11 +12,11 @@ import { useNetworkVariables } from "~/networkConfig";
 import { suiToMist } from "~/util/util";
 import { useToast } from "~/hooks/use-toast";
 
-interface ExchangeRateProps {
+interface FeeProps {
 	youReceive: number;
 }
 
-function Fee({ youReceive }: ExchangeRateProps) {
+function Fee({ youReceive }: FeeProps) {
 	return (
 		<Card className="p-4 bg-azure-10 rounded-2xl h-14">
 			<CardContent className="flex flex-col justify-between p-0">
@@ -29,17 +29,17 @@ function Fee({ youReceive }: ExchangeRateProps) {
 	);
 }
 
-interface OtcBuyForm {
+interface BuyNBTCForm {
 	suiAmount: number;
 }
 
 export function BuyNBTC() {
 	const { toast } = useToast();
 	const { connectedWallet } = useContext(WalletContext);
+	const isSuiWalletConnected = connectedWallet === ByieldWallet.SuiWallet;
 	const client = useSuiClient();
 	const { nbtcOTC } = useNetworkVariables();
 	const { packageId, module, swapFunction, vaultId, pricePerNBTCInSUI } = nbtcOTC;
-	const isSuiWalletConnected = connectedWallet === ByieldWallet.SuiWallet;
 	const { mutate: signAndExecuteTransaction } = useSignAndExecuteTransaction({
 		execute: async ({ bytes, signature }) =>
 			await client.executeTransactionBlock({
@@ -52,17 +52,17 @@ export function BuyNBTC() {
 			}),
 	});
 
-	const otcBuyForm = useForm<OtcBuyForm>({
+	const buyNBTCForm = useForm<BuyNBTCForm>({
 		mode: "all",
 		reValidateMode: "onChange",
 	});
-	const { watch } = otcBuyForm;
+	const { watch } = buyNBTCForm;
 	const suiAmount = watch("suiAmount");
 	const amountOfNBTC = suiAmount / pricePerNBTCInSUI;
 	const isAmountOfNBTCValid = amountOfNBTC > 0;
 
 	const handleTransaction = useCallback(
-		({ suiAmount }: OtcBuyForm) => {
+		({ suiAmount }: BuyNBTCForm) => {
 			const suiAmountMist = suiToMist(suiAmount);
 			const transaction = new Transaction();
 			const [coins] = transaction.splitCoins(transaction.gas, [transaction.pure.u64(suiAmountMist)]);
@@ -99,8 +99,8 @@ export function BuyNBTC() {
 	);
 
 	return (
-		<FormProvider {...otcBuyForm}>
-			<form onSubmit={otcBuyForm.handleSubmit(handleTransaction)} className="w-1/2">
+		<FormProvider {...buyNBTCForm}>
+			<form onSubmit={buyNBTCForm.handleSubmit(handleTransaction)} className="w-1/2">
 				<Card>
 					<CardContent className="p-6 rounded-lg text-white flex flex-col gap-4 bg-azure-10">
 						<FormInput
