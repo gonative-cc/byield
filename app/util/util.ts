@@ -1,9 +1,14 @@
+import { MIST_PER_SUI } from "@mysten/sui/utils";
 import * as bitcoin from "bitcoinjs-lib";
 import Wallet, { Address } from "sats-connect";
 import { fetchUTXOs, fetchValidateAddress } from "~/api/api";
 import { nBTC_ADDR } from "~/constants";
 import { ToastFunction } from "~/hooks/use-toast";
 import { UTXO, ValidateAddressI } from "~/types";
+
+const suiToMist = (amountInSUI: number): bigint => {
+	return BigInt(Math.floor(amountInSUI * Number(MIST_PER_SUI)));
+};
 
 const sendTxn = async (
 	bitcoinAddress: Address,
@@ -89,4 +94,4 @@ const trimAddress = (address: string): string => {
 	return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
 };
 
-export { sendTxn, trimAddress };
+export { sendTxn, trimAddress, suiToMist };

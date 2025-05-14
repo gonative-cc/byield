@@ -2,13 +2,18 @@ import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import { FormInput } from "./form/FormInput";
 import { FormProvider, useForm } from "react-hook-form";
-import { useContext } from "react";
+import { useContext, useCallback } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { ByieldWallet } from "~/types";
 import { SuiModal } from "./Wallet/SuiWallet/SuiModal";
+import { useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
+import { Transaction } from "@mysten/sui/transactions";
+import { useNetworkVariables } from "~/networkConfig";
+import { suiToMist } from "~/util/util";
+import { useToast } from "~/hooks/use-toast";
+import { pricePerNBTCInSUI } from "~/constant";
 
 interface FeeProps {
-	fee: number;
 	youReceive: number;
 }
 
@@ -26,38 +31,94 @@ function Fee({ youReceive }: FeeProps) {
 }
 
 interface BuyNBTCForm {
-	numberOfSuiCoins: string;
+	suiAmount: number;
 }
 
 export function BuyNBTC() {
+	const { toast } = useToast();
 	const { connectedWallet } = useContext(WalletContext);
 	const isSuiWalletConnected = connectedWallet === ByieldWallet.SuiWallet;
+	const client = useSuiClient();
+	const { nbtcOTC } = useNetworkVariables();
+	const { packageId, module, swapFunction, vaultId } = nbtcOTC;
+	const { mutate: signAndExecuteTransaction } = useSignAndExecuteTransaction({
+		execute: async ({ bytes, signature }) =>
+			await client.executeTransactionBlock({
+				transactionBlock: bytes,
+				signature,
+				options: {
+					showRawEffects: true,
+					showObjectChanges: true,
+				},
+			}),
+	});
 
-	// TODO: get the current nBTC price
-	const NBTCPrice = 1.2;
-	const buyNBTCForm = useForm<BuyNBTCForm>();
+	const buyNBTCForm = useForm<BuyNBTCForm>({
+		mode: "all",
+		reValidateMode: "onChange",
+	});
 	const { watch } = buyNBTCForm;
-	const numberOfSuiCoins = watch("numberOfSuiCoins");
-	const amountOfnBTC = Number(numberOfSuiCoins) / NBTCPrice;
+	const suiAmount = watch("suiAmount");
+	const amountOfNBTC = suiAmount / pricePerNBTCInSUI;
+	const isAmountOfNBTCValid = amountOfNBTC > 0;
+
+	const handleTransaction = useCallback(
+		({ suiAmount }: BuyNBTCForm) => {
+			const suiAmountMist = suiToMist(suiAmount);
+			const transaction = new Transaction();
+			const [coins] = transaction.splitCoins(transaction.gas, [transaction.pure.u64(suiAmountMist)]);
+			transaction.moveCall({
+				target: `${packageId}::${module}::${swapFunction}`,
+				arguments: [
+					transaction.object(vaultId), // Vault object
+					coins, // Coin<SUI> argument
+				],
+			});
+
+			signAndExecuteTransaction(
+				{
+					transaction,
+				},
+				{
+					onSuccess: () => {
+						toast({
+							title: "Buy nBTC",
+							description: `Transaction succeeded`,
+						});
+					},
+					onError: (error) => {
+						toast({
+							title: "Buy nBTC",
+							description: `Transaction failed: ${error.message}`,
+							variant: "destructive",
+						});
+					},
+				},
+			);
+		},
+		[module, packageId, signAndExecuteTransaction, swapFunction, toast, vaultId],
+	);
 
 	return (
 		<FormProvider {...buyNBTCForm}>
-			<form
-				onSubmit={buyNBTCForm.handleSubmit((data) => {
-					console.log("handle NBTC form data", data);
-				})}
-				className="w-1/2"
-			>
+			<form onSubmit={buyNBTCForm.handleSubmit(handleTransaction)} className="w-1/2">
 				<Card>
 					<CardContent className="p-6 rounded-lg text-white flex flex-col gap-4 bg-azure-10">
 						<FormInput
 							required
-							placeholder="Enter number of sui coins"
+							name="suiAmount"
+							type="number"
+							placeholder="Enter SUI amount"
 							className="h-16"
-							name="numberOfSuiCoins"
+							rules={{
+								validate: {
+									positive: (value: string) =>
+										Number(value) > 0 || "SUI amount must be greater than 0",
+								},
+							}}
 						/>
-						{numberOfSuiCoins && <Fee fee={10} youReceive={amountOfnBTC} />}
-						{numberOfSuiCoins && (
+						{isAmountOfNBTCValid && <Fee youReceive={amountOfNBTC} />}
+						{isAmountOfNBTCValid && (
 							<span className="tracking-tighter text-gray-500 text-sm dark:text-gray-400">
 								This is a fixed price buy. The price is 25,000 SUI / BTC.
 							</span>

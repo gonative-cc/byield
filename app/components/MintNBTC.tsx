@@ -5,7 +5,7 @@ import { Button } from "./ui/button";
 import { FormProvider, useForm } from "react-hook-form";
 import { FormInput } from "./form/FormInput";
 
-const PERCENTAGE = [
+const PERCENTAGES = [
 	{
 		id: "percentage-1",
 		value: 25,
@@ -27,7 +27,7 @@ const PERCENTAGE = [
 function Percentage() {
 	return (
 		<div className="flex justify-between mb-4 space-x-2">
-			{PERCENTAGE.map(({ id, value }) => (
+			{PERCENTAGES.map(({ id, value }) => (
 				<Button key={id} variant="outline" className="bg-azure-10 w-full flex-1 flex">
 					{value}%
 				</Button>
@@ -36,12 +36,12 @@ function Percentage() {
 	);
 }
 
-interface ExchangeRateProps {
+interface FeeProps {
 	fee: number;
 	youReceive: number;
 }
 
-function Fee({ fee, youReceive }: ExchangeRateProps) {
+function Fee({ fee, youReceive }: FeeProps) {
 	return (
 		<Card className="p-4 bg-azure-10 rounded-2xl h-24">
 			<CardContent className="flex flex-col justify-between h-full p-0">
@@ -58,32 +58,30 @@ function Fee({ fee, youReceive }: ExchangeRateProps) {
 	);
 }
 
-interface MinBTCForm {
-	numberOfBTC: number;
+interface MintNBTCForm {
+	numberOfNBTC: string;
 	suiAddress: string;
 }
 
-interface MintBTCProps {
+interface MintNBTCProps {
 	availableBalance: number;
 	suiAddress: string;
 }
 
-export function MintNBTC({ availableBalance, suiAddress }: MintBTCProps) {
-	const mintBTCForm = useForm<MinBTCForm>({
+export function MintBTC({ availableBalance, suiAddress }: MintNBTCProps) {
+	const mintNBTCForm = useForm<MintNBTCForm>({
 		defaultValues: {
-			// TODO: make it dynamic
-			numberOfBTC: 1,
 			suiAddress,
 		},
 	});
-	const { handleSubmit, watch } = mintBTCForm;
-	const numberOfBTC = watch("numberOfBTC");
+	const { handleSubmit, watch } = mintNBTCForm;
+	const numberOfBTC = watch("numberOfNBTC");
 
-	// santoshi. 1BTC = 10^8 satoshi
+	// satoshi. 1BTC = 10^8 satoshi
 	const fee = 0.00000001;
 
 	return (
-		<FormProvider {...mintBTCForm}>
+		<FormProvider {...mintNBTCForm}>
 			<form
 				onSubmit={handleSubmit((formData) => {
 					// TODO: handle the nbtc form data
@@ -95,8 +93,7 @@ export function MintNBTC({ availableBalance, suiAddress }: MintBTCProps) {
 						<BitcoinBalance availableBalance={availableBalance} />
 						<FormInput
 							required
-							name="numberOfBTC"
-							type="number"
+							name="numberOfNBTC"
 							placeholder="number"
 							rightAdornments={<span className="text-sm font-medium w-20">~$0 USD</span>}
 							className="h-16"
@@ -105,12 +102,11 @@ export function MintNBTC({ availableBalance, suiAddress }: MintBTCProps) {
 						<FormInput
 							required
 							name="suiAddress"
-							type="text"
-							placeholder="Enter Your Sui Address..."
+							placeholder="Enter destination Sui Address..."
 							value={suiAddress}
 							className="h-16"
 						/>
-						<Fee fee={10} youReceive={numberOfBTC - fee} />
+						<Fee fee={10} youReceive={Number(numberOfBTC) - fee} />
 						<Button type="submit">Deposit BTC and mint nBTC</Button>
 						<div className="flex justify-between">
 							<span>TX ID: b99d9a361ac9db3...</span>
