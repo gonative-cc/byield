@@ -24,9 +24,10 @@ function Instructions() {
 					<li>
 						Make sure you have testnet Sui tokens:
 						<ul className="ps-8 mt-2 space-y-1 list-disc list-outside">
-							<li>Click "profile" → network → make sure you select testnet.</li>
+							<li>Click {`"profile"`} → network → make sure you select testnet.</li>
 							<li>
-								Click "profile" → scroll down to the "About" section → click "Request Sui Token".
+								Click {`"profile"`} → scroll down to the {`"About"`} section → click{" "}
+								{`"Request Sui Token"`}.
 							</li>
 							<li>
 								You can also check{" "}
