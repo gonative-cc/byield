@@ -2,7 +2,7 @@ import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import { FormInput } from "./form/FormInput";
 import { FormProvider, useForm } from "react-hook-form";
-import { useContext, useCallback } from "react";
+import { useContext, useCallback, useState } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { ByieldWallet } from "~/types";
 import { SuiModal } from "./Wallet/SuiWallet/SuiModal";
@@ -54,15 +54,28 @@ function Instructions() {
 
 interface TransactionStatusProps {
 	isSuccess?: boolean;
+	txnId: string | null;
 	handleRetry: () => void;
 }
 
-function TransactionStatus({ isSuccess, handleRetry }: TransactionStatusProps) {
+function TransactionStatus({ isSuccess, txnId, handleRetry }: TransactionStatusProps) {
 	return (
 		<Card>
 			<CardContent className="p-6 rounded-lg text-white flex flex-col gap-4 bg-azure-10">
 				Transaction: {isSuccess ? "Success" : "Failed"}
-				<Button onClick={handleRetry}>Retry</Button>
+				{isSuccess && txnId && (
+					<Link
+						target="_blank"
+						to={`https://suiscan.xyz/testnet/tx/${txnId}`}
+						rel="noreferrer"
+						className="m-0 p-0"
+					>
+						<Button type="button" variant="link" className="p-0 m-0">
+							Check Transaction Details
+						</Button>
+					</Link>
+				)}
+				<Button onClick={handleRetry}>{isSuccess ? "Ok" : "Retry"}</Button>
 			</CardContent>
 		</Card>
 	);
@@ -75,6 +88,7 @@ interface BuyNBTCForm {
 
 export function BuyNBTC() {
 	const { toast } = useToast();
+	const [txnId, setTxnId] = useState<string | null>(null);
 	const { connectedWallet } = useContext(WalletContext);
 	const isSuiWalletConnected = connectedWallet === ByieldWallet.SuiWallet;
 	const client = useSuiClient();
@@ -125,7 +139,8 @@ export function BuyNBTC() {
 					transaction,
 				},
 				{
-					onSuccess: () => {
+					onSuccess: (data) => {
+						setTxnId(() => data.digest);
 						toast({
 							title: "Buy nBTC",
 							description: `Transaction succeeded`,
@@ -153,6 +168,7 @@ export function BuyNBTC() {
 					buyNBTCForm.reset();
 					signAndExecuteTransactionReset();
 				}}
+				txnId={txnId}
 			/>
 		);
 	}

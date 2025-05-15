@@ -11,11 +11,12 @@ export const useSuiBalance = () => {
 
 	useEffect(() => {
 		async function fetchBalance() {
-			if (!account) return;
-			const currentBalance = await suiClient.getBalance({
-				owner: account.address,
-			});
-			setBalance(currentBalance);
+			if (account) {
+				const currentBalance = await suiClient.getBalance({
+					owner: account.address,
+				});
+				setBalance(currentBalance);
+			}
 		}
 		fetchBalance();
 	}, [account, suiClient]);
