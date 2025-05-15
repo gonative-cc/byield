@@ -1,6 +1,5 @@
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
-import { FormInput } from "./form/FormInput";
 import { FormProvider, useForm } from "react-hook-form";
 import { useContext, useCallback, useState } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
@@ -13,8 +12,8 @@ import { mistToSui, suiToMist } from "~/util/util";
 import { pricePerNBTCInSUI } from "~/constant";
 import { Link } from "@remix-run/react";
 import { ArrowDown } from "lucide-react";
-import { useToast } from "~/hooks/use-toast";
 import { useSuiBalance } from "./Wallet/SuiWallet/useSuiBalance";
+import { FormNumericInput } from "./form/FormNumericInput";
 
 function Instructions() {
 	return (
@@ -87,13 +86,12 @@ interface BuyNBTCForm {
 }
 
 export function BuyNBTC() {
-	const { toast } = useToast();
 	const [txnId, setTxnId] = useState<string | null>(null);
 	const { connectedWallet } = useContext(WalletContext);
 	const isSuiWalletConnected = connectedWallet === ByieldWallet.SuiWallet;
 	const client = useSuiClient();
 	const { nbtcOTC } = useNetworkVariables();
-	const balance = useSuiBalance();
+	const { balance, refetchBalance } = useSuiBalance();
 	const { packageId, module, swapFunction, vaultId } = nbtcOTC;
 	const {
 		mutate: signAndExecuteTransaction,
@@ -116,10 +114,11 @@ export function BuyNBTC() {
 	const buyNBTCForm = useForm<BuyNBTCForm>({
 		mode: "all",
 		reValidateMode: "onChange",
+		disabled: isPending || isSuccess || isError,
 	});
 	const { watch } = buyNBTCForm;
 	const suiAmount = watch("suiAmount");
-	const amountOfNBTC = (Number(suiAmount) / pricePerNBTCInSUI || 0).toFixed(10);
+	const amountOfNBTC = Number(suiAmount) / pricePerNBTCInSUI || 0;
 
 	const handleTransaction = useCallback(
 		({ suiAmount }: BuyNBTCForm) => {
@@ -141,49 +140,50 @@ export function BuyNBTC() {
 				{
 					onSuccess: (data) => {
 						setTxnId(() => data.digest);
-						toast({
-							title: "Buy nBTC",
-							description: `Transaction succeeded`,
-						});
+						refetchBalance();
 					},
-					onError: (error) => {
-						toast({
-							title: "Buy nBTC",
-							description: `Transaction failed: ${error.message}`,
-							variant: "destructive",
-						});
-					},
-					onSettled: () => buyNBTCForm.reset(),
 				},
 			);
 		},
-		[buyNBTCForm, module, packageId, signAndExecuteTransaction, swapFunction, toast, vaultId],
+		[module, packageId, refetchBalance, signAndExecuteTransaction, swapFunction, vaultId],
 	);
 
-	if (isSuccess || isError) {
-		return (
-			<TransactionStatus
-				isSuccess={isSuccess}
-				handleRetry={() => {
-					buyNBTCForm.reset();
-					signAndExecuteTransactionReset();
-				}}
-				txnId={txnId}
-			/>
+	const renderTransactionStatus = () => (
+		<TransactionStatus
+			isSuccess={isSuccess}
+			handleRetry={() => {
+				buyNBTCForm.reset({
+					suiAmount: "0",
+					amountOfNBTC: "0",
+				});
+				signAndExecuteTransactionReset();
+			}}
+			txnId={txnId}
+		/>
+	);
+
+	const renderFormFooter = () =>
+		isSuiWalletConnected ? (
+			<Button type="submit" disabled={isPending} isLoading={isPending}>
+				Buy
+			</Button>
+		) : (
+			<SuiModal />
 		);
-	}
 
 	return (
 		<FormProvider {...buyNBTCForm}>
 			<form onSubmit={buyNBTCForm.handleSubmit(handleTransaction)}>
 				<Card>
 					<CardContent className="p-6 rounded-lg text-white flex flex-col gap-4 bg-azure-10">
-						<FormInput
+						<FormNumericInput
 							required
 							name="suiAmount"
 							placeholder="Enter SUI amount"
 							className="h-16"
 							inputMode="decimal"
+							allowNegative={false}
+							decimalScale={6}
 							rightAdornments={
 								<div className="flex gap-2 items-center mr-2">
 									SUI
@@ -206,15 +206,15 @@ export function BuyNBTC() {
 							}}
 						/>
 						<ArrowDown className="text-primary justify-center w-full flex" />
-						<FormInput
-							disabled
+						<FormNumericInput
 							name="amountOfNBTC"
 							className="h-16"
 							value={amountOfNBTC}
+							readOnly
 							rightAdornments={
 								<div className="flex gap-2 items-center mr-2">
 									nBTC
-									<img src="/nbtc.svg" alt="Bitcoin" className="w-7 h-7" />
+									<img src="/nbtc.svg" alt="Bitcoin" className="w-7 h-7 mr-2" />
 								</div>
 							}
 						/>
@@ -222,13 +222,7 @@ export function BuyNBTC() {
 							This is a fixed price buy. The price is 25,000 SUI / BTC.
 						</span>
 						<Instructions />
-						{isSuiWalletConnected ? (
-							<Button type="submit" disabled={isPending} isLoading={isPending}>
-								Buy
-							</Button>
-						) : (
-							<SuiModal />
-						)}
+						{isSuccess || isError ? renderTransactionStatus() : renderFormFooter()}
 					</CardContent>
 				</Card>
 			</form>

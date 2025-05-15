@@ -74,7 +74,7 @@ function Accounts() {
 export function SuiWallet() {
 	const { mutate: disconnect } = useDisconnectWallet();
 	const { handleWalletConnect } = useContext(WalletContext);
-	const balance = useSuiBalance();
+	const { balance } = useSuiBalance();
 
 	return (
 		<>

@@ -1,25 +1,46 @@
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSuiClient, useCurrentAccount } from "@mysten/dapp-kit";
-import { CoinBalance } from "@mysten/sui/client";
-import { useEffect, useState } from "react";
+import type { CoinBalance } from "@mysten/sui/client";
 
 // unfortunately, SUI doesn't have their own hook to get the balance at the moment
 // useSuiBalance fetches the SUI balance in mist
 export const useSuiBalance = () => {
-	const [balance, setBalance] = useState<CoinBalance | null>(null);
 	const suiClient = useSuiClient();
 	const account = useCurrentAccount();
+	const queryClient = useQueryClient();
 
-	useEffect(() => {
-		async function fetchBalance() {
-			if (account) {
-				const currentBalance = await suiClient.getBalance({
-					owner: account.address,
-				});
-				setBalance(currentBalance);
-			}
+	const fetchBalance = async (): Promise<CoinBalance | null> => {
+		if (!account) {
+			return null;
 		}
-		fetchBalance();
-	}, [account, suiClient]);
+		return await suiClient.getBalance({
+			owner: account.address,
+		});
+	};
 
-	return balance;
+	const queryKey = ["suiBalance", account?.address];
+
+	const {
+		data: balance,
+		isLoading,
+		error,
+		refetch,
+	} = useQuery({
+		queryKey,
+		queryFn: fetchBalance,
+		enabled: !!account,
+		staleTime: 30_000,
+	});
+
+	const refetchBalance = () => {
+		queryClient.invalidateQueries({ queryKey });
+		refetch();
+	};
+
+	return {
+		balance,
+		isLoading,
+		error: error ? (error instanceof Error ? error : new Error("Unknown error")) : null,
+		refetchBalance,
+	};
 };
