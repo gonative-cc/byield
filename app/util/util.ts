@@ -7,7 +7,7 @@ import { ToastFunction } from "~/hooks/use-toast";
 import { UTXO, ValidateAddressI } from "~/types";
 
 const mistToSui = (amountInMist: number): number => {
-	const SUI = Number(amountInMist / 1_000_000_000);
+	const SUI = amountInMist / Number(MIST_PER_SUI);
 	return SUI;
 };
 
