@@ -6,6 +6,11 @@ import { nBTC_ADDR } from "~/constants";
 import { ToastFunction } from "~/hooks/use-toast";
 import { UTXO, ValidateAddressI } from "~/types";
 
+const mistToSui = (amountInMist: number): number => {
+	const SUI = Number(amountInMist / 1_000_000_000);
+	return SUI;
+};
+
 const suiToMist = (amountInSUI: number): bigint => {
 	return BigInt(Math.floor(amountInSUI * Number(MIST_PER_SUI)));
 };
@@ -94,4 +99,4 @@ const trimAddress = (address: string): string => {
 	return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
 };
 
-export { sendTxn, trimAddress, suiToMist };
+export { sendTxn, trimAddress, suiToMist, mistToSui };
