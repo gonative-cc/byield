@@ -74,27 +74,29 @@ export function NavBar() {
 						/>
 					</div>
 				</Link>
-				<BYieldNavigation
-					items={[
-						{
-							id: "navigation-1",
-							title: "Buy nBTC",
-							link: "/",
-						},
-						{
-							id: "navigation-2",
-							title: "Market",
-							link: "/market",
-							hide: isAppModeProduction,
-						},
-						{
-							id: "navigation-3",
-							title: "Mint nBTC",
-							link: "/mint",
-							hide: isAppModeProduction,
-						},
-					]}
-				/>
+				<div className="flex flex-1 justify-center">
+					<BYieldNavigation
+						items={[
+							{
+								id: "navigation-1",
+								title: "Buy nBTC",
+								link: "/",
+							},
+							{
+								id: "navigation-2",
+								title: "Market",
+								link: "/market",
+								hide: isAppModeProduction,
+							},
+							{
+								id: "navigation-3",
+								title: "Mint nBTC",
+								link: "/mint",
+								hide: isAppModeProduction,
+							},
+						]}
+					/>
+				</div>
 				<div className="flex flex-1 items-center justify-end gap-4">
 					<SelectWallet />
 					<Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
