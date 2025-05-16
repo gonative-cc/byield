@@ -11,7 +11,7 @@ import { useNetworkVariables } from "~/networkConfig";
 import { mistToSui, suiToMist } from "~/util/util";
 import { pricePerNBTCInSUI } from "~/constant";
 import { Link } from "@remix-run/react";
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, Check, CircleX } from "lucide-react";
 import { useSuiBalance } from "./Wallet/SuiWallet/useSuiBalance";
 import { FormNumericInput } from "./form/FormNumericInput";
 
@@ -60,14 +60,23 @@ interface TransactionStatusProps {
 function TransactionStatus({ isSuccess, txnId, handleRetry }: TransactionStatusProps) {
 	return (
 		<Card>
-			<CardContent className="p-6 rounded-lg text-white flex flex-col gap-4 bg-azure-10">
-				Transaction: {isSuccess ? "Success" : "Failed"}
+			<CardContent className="p-6 rounded-lg text-white flex flex-col gap-2 bg-azure-10">
+				{isSuccess && (
+					<div className="flex flex-col items-center gap-2">
+						<Check className="text-green-500" size={40} /> Success
+					</div>
+				)}
+				{!isSuccess && (
+					<div className="flex flex-col items-center gap-2">
+						<CircleX className="text-red-500" size={40} /> Failed
+					</div>
+				)}
 				{isSuccess && txnId && (
 					<Link
 						target="_blank"
 						to={`https://suiscan.xyz/testnet/tx/${txnId}`}
 						rel="noreferrer"
-						className="m-0 p-0"
+						className="m-0 p-0 justify-center flex w-full"
 					>
 						<Button type="button" variant="link" className="p-0 m-0">
 							Check Transaction Details
