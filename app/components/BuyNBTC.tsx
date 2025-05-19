@@ -185,6 +185,7 @@ export function BuyNBTC() {
 			<form onSubmit={buyNBTCForm.handleSubmit(handleTransaction)}>
 				<Card>
 					<CardContent className="p-6 rounded-lg text-white flex flex-col gap-4 bg-azure-10">
+						<Instructions />
 						<FormNumericInput
 							required
 							name="suiAmount"
@@ -215,22 +216,23 @@ export function BuyNBTC() {
 							}}
 						/>
 						<ArrowDown className="text-primary justify-center w-full flex" />
-						<FormNumericInput
-							name="amountOfNBTC"
-							className="h-16"
-							value={amountOfNBTC}
-							readOnly
-							rightAdornments={
-								<div className="flex gap-2 items-center mr-2">
-									nBTC
-									<img src="/nbtc.svg" alt="Bitcoin" className="w-7 h-7 mr-2" />
-								</div>
-							}
-						/>
-						<span className="tracking-tighter text-gray-500 text-sm dark:text-gray-400">
-							This is a fixed price buy. The price is 25,000 SUI / BTC.
-						</span>
-						<Instructions />
+						<div className="flex flex-col gap-2">
+							<FormNumericInput
+								name="amountOfNBTC"
+								className="h-16"
+								value={amountOfNBTC}
+								readOnly
+								rightAdornments={
+									<div className="flex gap-2 items-center mr-2">
+										nBTC
+										<img src="/nbtc.svg" alt="Bitcoin" className="w-7 h-7 mr-2" />
+									</div>
+								}
+							/>
+							<span className="tracking-tighter text-gray-500 text-sm dark:text-gray-400">
+								This is a fixed price buy. The price is 25,000 SUI / BTC.
+							</span>
+						</div>
 						{isSuccess || isError ? renderTransactionStatus() : renderFormFooter()}
 					</CardContent>
 				</Card>
