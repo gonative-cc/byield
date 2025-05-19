@@ -16,7 +16,11 @@ enum APP_THEME_MODE {
 	DARK = "dark",
 }
 
-function SelectWallet() {
+interface SelectWalletProps {
+	isAppModeProduction: boolean;
+}
+
+function SelectWallet({ isAppModeProduction }: SelectWalletProps) {
 	const { connectWallet } = useXverseConnect();
 	const { connectedWallet } = useContext(WalletContext);
 
@@ -25,7 +29,7 @@ function SelectWallet() {
 		return (
 			<>
 				{/* Xverse wallet connect button */}
-				<Button onClick={connectWallet}>Connect Bitcoin Wallet</Button>
+				{isAppModeProduction && <Button onClick={connectWallet}>Connect Bitcoin Wallet</Button>}
 				{/* Sui Wallet Connect Modal */}
 				<SuiModal />
 			</>
@@ -91,7 +95,7 @@ export function NavBar() {
 					/>
 				</div>
 				<div className="flex flex-1 items-center justify-end gap-4">
-					<SelectWallet />
+					<SelectWallet isAppModeProduction={isAppModeProduction} />
 					<Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
 						{theme === "light" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
 					</Button>
