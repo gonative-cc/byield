@@ -1,4 +1,4 @@
-import { json, Link, useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 import { Button } from "~/components/ui/button";
 import { Moon, Sun } from "lucide-react";
 import { useCallback, useContext, useEffect, useState } from "react";
@@ -9,6 +9,7 @@ import { ByieldWallet } from "~/types";
 import { useXverseConnect } from "./Wallet/XverseWallet/useWallet";
 import { SuiModal } from "./Wallet/SuiWallet/SuiModal";
 import { BYieldNavigation } from "./ui/navigation-menu";
+import { loader } from "~/root";
 
 enum APP_THEME_MODE {
 	LIGHT = "light",
@@ -38,14 +39,6 @@ function SelectWallet() {
 			{connectedWallet === ByieldWallet.SuiWallet && <SuiWallet />}
 		</>
 	);
-}
-
-export async function loader() {
-	return json({
-		ENV: {
-			VITE_APP_MODE: process.env.VITE_APP_MODE,
-		},
-	});
 }
 
 export function NavBar() {

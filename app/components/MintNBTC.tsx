@@ -63,12 +63,9 @@ interface MintNBTCForm {
 	suiAddress: string;
 }
 
-interface MintNBTCProps {
-	availableBalance: number;
-	suiAddress: string;
-}
-
-export function MintBTC({ availableBalance, suiAddress }: MintNBTCProps) {
+export function MintBTC() {
+	const availableBalance = 0;
+	const suiAddress = "";
 	const mintNBTCForm = useForm<MintNBTCForm>({
 		defaultValues: {
 			suiAddress,
