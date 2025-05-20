@@ -78,6 +78,7 @@ export function NavBar() {
 								id: "navigation-1",
 								title: "Buy nBTC",
 								link: "/",
+								hide: isAppModeProduction,
 							},
 							{
 								id: "navigation-2",
