@@ -79,7 +79,8 @@ function TransactionStatus({ isSuccess, txnId, handleRetry }: TransactionStatusP
 						<div className="flex gap-2 items-center">
 							<span className="text-sm">
 								{" "}
-								If you want to increase your chances to be whitelisted, please fill this
+								If you want to increase your chances to be whitelisted for BTCFi Beelievers NFT,
+								please fill this
 							</span>
 							<Link
 								target="_blank"
