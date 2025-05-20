@@ -194,6 +194,7 @@ export function BuyNBTC() {
 							inputMode="decimal"
 							allowNegative={false}
 							decimalScale={6}
+							createEmptySpace
 							rightAdornments={
 								<div className="flex gap-2 items-center mr-2">
 									SUI
@@ -215,7 +216,7 @@ export function BuyNBTC() {
 								},
 							}}
 						/>
-						<ArrowDown className="text-primary justify-center w-full flex" />
+						<ArrowDown className="text-primary justify-center w-full flex mb-4" />
 						<div className="flex flex-col gap-2">
 							<FormNumericInput
 								name="amountOfNBTC"
