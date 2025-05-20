@@ -98,22 +98,4 @@ const trimAddress = (address: string): string => {
 	return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
 };
 
-const classNames = (...args: (string | { [key: string]: boolean } | undefined | null)[]): string => {
-	const classes: string[] = [];
-
-	args.forEach((arg) => {
-		if (!arg) return;
-
-		if (typeof arg === "string") {
-			classes.push(arg);
-		} else if (typeof arg === "object") {
-			Object.entries(arg).forEach(([className, condition]) => {
-				if (condition) classes.push(className);
-			});
-		}
-	});
-
-	return classes.filter(Boolean).join(" ");
-};
-
-export { sendTxn, trimAddress, suiToMist, mistToSui, classNames };
+export { sendTxn, trimAddress, suiToMist, mistToSui };

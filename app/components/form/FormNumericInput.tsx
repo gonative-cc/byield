@@ -1,6 +1,6 @@
 import { Controller, FieldValues, RegisterOptions, useFormContext } from "react-hook-form";
 import { NumericInput, NumericInputProps } from "../ui/NumericInput";
-import { classNames } from "~/util/util";
+import { classNames } from "~/lib/utils";
 
 interface FormInputProps extends NumericInputProps {
 	name: string;
