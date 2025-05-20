@@ -14,6 +14,7 @@ import { Link } from "@remix-run/react";
 import { ArrowDown, Check, CircleX } from "lucide-react";
 import { useSuiBalance } from "./Wallet/SuiWallet/useSuiBalance";
 import { FormNumericInput } from "./form/FormNumericInput";
+import { classNames } from "~/lib/utils";
 
 function Instructions() {
 	return (
@@ -52,36 +53,52 @@ function Instructions() {
 }
 
 interface TransactionStatusProps {
-	isSuccess?: boolean;
+	isSuccess: boolean;
 	txnId: string | null;
 	handleRetry: () => void;
 }
 
 function TransactionStatus({ isSuccess, txnId, handleRetry }: TransactionStatusProps) {
+	const Icon = isSuccess ? Check : CircleX;
+
 	return (
 		<Card>
-			<CardContent className="p-6 rounded-lg text-white flex flex-col gap-2 bg-azure-10">
-				{isSuccess && (
-					<div className="flex flex-col items-center gap-2">
-						<Check className="text-green-500" size={40} /> Success
-					</div>
-				)}
-				{!isSuccess && (
-					<div className="flex flex-col items-center gap-2">
-						<CircleX className="text-red-500" size={40} /> Failed
-					</div>
-				)}
+			<CardContent className="p-4 rounded-lg text-white flex flex-col gap-2 bg-azure-10">
+				<div className="flex flex-col items-center gap-2">
+					<Icon
+						className={classNames({
+							"text-green-500": isSuccess,
+							"text-red-500": !isSuccess,
+						})}
+						size={30}
+					/>{" "}
+					{isSuccess ? "Success" : "Failed"}
+				</div>
 				{isSuccess && txnId && (
-					<Link
-						target="_blank"
-						to={`https://suiscan.xyz/testnet/tx/${txnId}`}
-						rel="noreferrer"
-						className="m-0 p-0 justify-center flex w-full"
-					>
-						<Button type="button" variant="link" className="p-0 m-0">
+					<div className="flex flex-col gap-2 items-center">
+						<div className="flex gap-2 items-center">
+							<span className="text-sm">
+								{" "}
+								If you want to increase your chances to be whitelisted, please fill this
+							</span>
+							<Link
+								target="_blank"
+								to={`https://forms.gle/Hu4WUSfgQkp1xsyNA`}
+								rel="noreferrer"
+								className="m-0 p-0 justify-center flex w-full text-primary max-w-fit"
+							>
+								form.
+							</Link>
+						</div>
+						<Link
+							target="_blank"
+							to={`https://suiscan.xyz/testnet/tx/${txnId}`}
+							rel="noreferrer"
+							className="m-0 p-0 justify-center flex w-full text-primary max-w-fit text-sm"
+						>
 							Check Transaction Details
-						</Button>
-					</Link>
+						</Link>
+					</div>
 				)}
 				<Button onClick={handleRetry}>{isSuccess ? "Ok" : "Retry"}</Button>
 			</CardContent>
@@ -216,7 +233,7 @@ export function BuyNBTC() {
 								},
 							}}
 						/>
-						<ArrowDown className="text-primary justify-center w-full flex mb-4" />
+						<ArrowDown className="text-primary justify-center w-full flex mb-2 p-0 m-0" />
 						<div className="flex flex-col gap-2">
 							<FormNumericInput
 								name="amountOfNBTC"
