@@ -23,7 +23,7 @@ function SelectWallet({ isAppModeProduction }: SelectWalletProps) {
 		return (
 			<>
 				{/* Xverse wallet connect button */}
-				{isAppModeProduction && <Button onClick={connectWallet}>Connect Bitcoin Wallet</Button>}
+				{!isAppModeProduction && <Button onClick={connectWallet}>Connect Bitcoin Wallet</Button>}
 				{/* Sui Wallet Connect Modal */}
 				<SuiModal />
 			</>
