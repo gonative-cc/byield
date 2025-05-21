@@ -81,7 +81,9 @@ export function SuiWallet() {
 			<NetWorkOptions />
 			<Accounts />
 			{balance?.totalBalance && (
-				<span className="text-lg font-semibold">{mistToSui(Number(balance.totalBalance)) + " SUI"}</span>
+				<span className="font-semibold shrink-0 flex">
+					{mistToSui(Number(balance.totalBalance)) + " SUI"}
+				</span>
 			)}
 			<Button
 				onClick={() => {

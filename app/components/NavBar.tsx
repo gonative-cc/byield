@@ -41,7 +41,7 @@ function SelectWallet({ isAppModeProduction }: SelectWalletProps) {
 
 export function NavBar() {
 	const data = useLoaderData<typeof loader>();
-	const isAppModeProduction = data.ENV.VITE_APP_MODE === "production";
+	const isAppModeProduction = data?.ENV?.VITE_APP_MODE === "production";
 
 	return (
 		<header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">

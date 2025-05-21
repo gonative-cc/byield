@@ -68,3 +68,4 @@ export const vaults: DApp[] = [
 ];
 
 export const pricePerNBTCInSUI = 25000;
+export const BUFFER_BALANCE = 10000000;

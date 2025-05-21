@@ -1,22 +1,63 @@
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import { FormProvider, useForm } from "react-hook-form";
-import { useContext, useCallback, useState } from "react";
+import { useContext, useCallback, useState, useEffect } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { ByieldWallet } from "~/types";
 import { SuiModal } from "./Wallet/SuiWallet/SuiModal";
-import { useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
+import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
 import { useNetworkVariables } from "~/networkConfig";
 import { mistToSui, suiToMist } from "~/util/util";
-import { pricePerNBTCInSUI } from "~/constant";
+import { BUFFER_BALANCE, pricePerNBTCInSUI } from "~/constant";
 import { Link } from "@remix-run/react";
 import { ArrowDown, Check, CircleX } from "lucide-react";
 import { useSuiBalance } from "./Wallet/SuiWallet/useSuiBalance";
 import { FormNumericInput } from "./form/FormNumericInput";
 import { classNames } from "~/lib/utils";
+import { Modal } from "./ui/dialog";
+import { NumericFormat } from "react-number-format";
+
+interface FeeProps {
+	fee: number;
+	youReceive: number;
+}
+
+function Fee({ fee, youReceive }: FeeProps) {
+	return (
+		<Card className="p-4 bg-azure-10 rounded-2xl h-20">
+			<CardContent className="flex flex-col justify-between h-full p-0">
+				<div className="flex justify-between">
+					<p className="text-gray-400 text-sm">Estimate Fee</p>
+					<NumericFormat
+						displayType="text"
+						value={fee}
+						suffix=" SUI"
+						allowNegative={false}
+						className="text-sm"
+					/>
+				</div>
+				<div className="flex justify-between">
+					<p className="text-gray-400 text-sm">You Receive</p>
+					{youReceive > 0 ? (
+						<NumericFormat
+							displayType="text"
+							value={youReceive}
+							suffix=" nBTC"
+							className="text-sm"
+							allowNegative={false}
+						/>
+					) : (
+						<span className="italic text-sm text-red-500">Check SUI amount</span>
+					)}
+				</div>
+			</CardContent>
+		</Card>
+	);
+}
 
 function Instructions() {
+	const account = useCurrentAccount();
 	return (
 		<Card className="p-4 bg-azure-10 rounded-2xl">
 			<CardContent className="flex flex-col justify-between p-0">
@@ -30,7 +71,15 @@ function Instructions() {
 							<li>Click {`"profile"`} → network → make sure you select testnet.</li>
 							<li>
 								Click {`"profile"`} → scroll down to the {`"About"`} section → click{" "}
-								{`"Request Sui Token"`}.
+								<Link
+									target="_blank"
+									to={`https://faucet.sui.io/?network=testnet&address=${account?.address}`}
+									rel="noreferrer"
+								>
+									<Button type="button" variant="link" className="p-0">
+										Request Sui Token.
+									</Button>
+								</Link>
 							</li>
 							<li>
 								You can also check{" "}
@@ -54,7 +103,7 @@ function Instructions() {
 
 interface TransactionStatusProps {
 	isSuccess: boolean;
-	txnId: string | null;
+	txnId?: string;
 	handleRetry: () => void;
 }
 
@@ -62,61 +111,62 @@ function TransactionStatus({ isSuccess, txnId, handleRetry }: TransactionStatusP
 	const Icon = isSuccess ? Check : CircleX;
 
 	return (
-		<Card>
-			<CardContent className="p-4 rounded-lg text-white flex flex-col gap-2 bg-azure-10">
-				<div className="flex flex-col items-center gap-2">
-					<Icon
-						className={classNames({
-							"text-green-500": isSuccess,
-							"text-red-500": !isSuccess,
-						})}
-						size={30}
-					/>{" "}
-					{isSuccess ? "Success" : "Failed"}
-				</div>
-				{isSuccess && txnId && (
-					<div className="flex flex-col gap-2 items-center">
-						<div className="flex gap-2 items-center">
-							<span className="text-sm">
-								{" "}
-								If you want to increase your chances to be whitelisted for BTCFi Beelievers NFT,
-								please fill this
-							</span>
+		<div className="p-4 rounded-lg text-white flex flex-col gap-4">
+			<div className="flex flex-col items-center gap-2">
+				<Icon
+					className={classNames({
+						"text-green-500": isSuccess,
+						"text-red-500": !isSuccess,
+					})}
+					size={30}
+				/>{" "}
+				{isSuccess ? "Success" : "Failed"}
+			</div>
+			<div className="flex flex-col gap-2 items-center">
+				{isSuccess && (
+					<div className="max-w-md mx-auto p-4 text-center">
+						<p className="text-sm leading-relaxed">
+							If you want to increase your chances to be whitelisted for BTCFi Beelievers NFT, please
+							fill this{" "}
 							<Link
 								target="_blank"
-								to={`https://forms.gle/Hu4WUSfgQkp1xsyNA`}
+								to="https://forms.gle/Hu4WUSfgQkp1xsyNA"
 								rel="noreferrer"
-								className="m-0 p-0 justify-center flex w-full text-primary max-w-fit"
+								className="text-primary underline"
 							>
 								form.
 							</Link>
-						</div>
-						<Link
-							target="_blank"
-							to={`https://suiscan.xyz/testnet/tx/${txnId}`}
-							rel="noreferrer"
-							className="m-0 p-0 justify-center flex w-full text-primary max-w-fit text-sm"
-						>
-							Check Transaction Details
-						</Link>
+						</p>
 					</div>
 				)}
-				<Button onClick={handleRetry}>{isSuccess ? "Ok" : "Retry"}</Button>
-			</CardContent>
-		</Card>
+				{txnId && (
+					<Link
+						target="_blank"
+						to={`https://suiscan.xyz/testnet/tx/${txnId}`}
+						rel="noreferrer"
+						className="m-0 p-0 justify-center flex w-full text-primary max-w-fit text-sm"
+					>
+						Check Transaction Details
+					</Link>
+				)}
+			</div>
+			<Button onClick={handleRetry}>{isSuccess ? "Ok" : "Retry"}</Button>
+		</div>
 	);
 }
 
 interface BuyNBTCForm {
-	suiAmount: string;
+	suiAmount: string | null;
 	amountOfNBTC: string;
 }
 
 export function BuyNBTC() {
-	const [txnId, setTxnId] = useState<string | null>(null);
 	const { connectedWallet } = useContext(WalletContext);
 	const isSuiWalletConnected = connectedWallet === ByieldWallet.SuiWallet;
 	const client = useSuiClient();
+	const account = useCurrentAccount();
+	const [transaction, setTransaction] = useState<Transaction | undefined>(undefined);
+	const [fee, setFee] = useState<number | undefined>(undefined);
 	const { nbtcOTC } = useNetworkVariables();
 	const { balance, refetchBalance } = useSuiBalance();
 	const { packageId, module, swapFunction, vaultId } = nbtcOTC;
@@ -126,14 +176,16 @@ export function BuyNBTC() {
 		isPending,
 		isSuccess,
 		isError,
+		data,
 	} = useSignAndExecuteTransaction({
 		execute: async ({ bytes, signature }) =>
 			await client.executeTransactionBlock({
 				transactionBlock: bytes,
 				signature,
 				options: {
-					showRawEffects: true,
 					showObjectChanges: true,
+					showEffects: true,
+					showRawEffects: true,
 				},
 			}),
 	});
@@ -142,52 +194,76 @@ export function BuyNBTC() {
 		mode: "all",
 		reValidateMode: "onChange",
 		disabled: isPending || isSuccess || isError,
+		defaultValues: {
+			suiAmount: null
+		}
 	});
-	const { watch } = buyNBTCForm;
+	const { watch, trigger } = buyNBTCForm;
 	const suiAmount = watch("suiAmount");
 	const amountOfNBTC = Number(suiAmount) / pricePerNBTCInSUI || 0;
 
-	const handleTransaction = useCallback(
-		({ suiAmount }: BuyNBTCForm) => {
-			const suiAmountMist = suiToMist(Number(suiAmount));
-			const transaction = new Transaction();
-			const [coins] = transaction.splitCoins(transaction.gas, [transaction.pure.u64(suiAmountMist)]);
-			transaction.moveCall({
-				target: `${packageId}::${module}::${swapFunction}`,
-				arguments: [
-					transaction.object(vaultId), // Vault object
-					coins, // Coin<SUI> argument
-				],
+	useEffect(() => {
+		if (!account || !suiAmount) return;
+		const suiAmountMist = suiToMist(Number(suiAmount));
+		const txn = new Transaction();
+		txn.setSender(account?.address);
+		const [coins] = txn.splitCoins(txn.gas, [txn.pure.u64(suiAmountMist)]);
+		txn.moveCall({
+			target: `${packageId}::${module}::${swapFunction}`,
+			arguments: [txn.object(vaultId), coins],
+		});
+		setTransaction(() => txn);
+	}, [account, module, packageId, suiAmount, swapFunction, vaultId]);
+
+	useEffect(() => {
+		async function getFee() {
+			if (!transaction) return;
+			const transactionBytes = await transaction.build({ client: client });
+			const dryRunResult = await client.dryRunTransactionBlock({
+				transactionBlock: transactionBytes,
 			});
+			if (dryRunResult?.effects?.gasUsed) {
+				const { computationCost, storageCost, storageRebate } = dryRunResult.effects.gasUsed;
+				const totalGasFee = Number(computationCost) + Number(storageCost) - Number(storageRebate);
+				const suiAmountMist = suiToMist(Number(suiAmount));
+				let totalFee = totalGasFee;
+				// keep buffer balance in case user try to use all max balance
+				const isThereBufferBalanceAvailable =
+					Number(balance?.totalBalance) - Number(suiAmountMist) >= BUFFER_BALANCE;
+				if (!isThereBufferBalanceAvailable) {
+					totalFee = totalFee + BUFFER_BALANCE;
+				}
+				setFee(() => totalFee);
+				trigger("suiAmount");
+			}
+		}
+		getFee();
+	}, [balance?.totalBalance, client, suiAmount, transaction, trigger]);
 
-			signAndExecuteTransaction(
-				{
-					transaction,
-				},
-				{
-					onSuccess: (data) => {
-						setTxnId(() => data.digest);
-						refetchBalance();
-					},
-				},
-			);
-		},
-		[module, packageId, refetchBalance, signAndExecuteTransaction, swapFunction, vaultId],
-	);
+	const handleTransaction = useCallback(async () => {
+		const suiAmountMist = suiToMist(Number(suiAmount));
+		const suiAmountMistAfterFee = Number(suiAmountMist) - Number(fee);
 
-	const renderTransactionStatus = () => (
-		<TransactionStatus
-			isSuccess={isSuccess}
-			handleRetry={() => {
-				buyNBTCForm.reset({
-					suiAmount: "0",
-					amountOfNBTC: "0",
-				});
-				signAndExecuteTransactionReset();
-			}}
-			txnId={txnId}
-		/>
-	);
+		const txn = new Transaction();
+		const [coins] = txn.splitCoins(txn.gas, [txn.pure.u64(suiAmountMistAfterFee)]);
+
+		txn.moveCall({
+			target: `${packageId}::${module}::${swapFunction}`,
+			arguments: [
+				txn.object(vaultId), // Vault object
+				coins, // Coin<SUI> argument
+			],
+		});
+
+		signAndExecuteTransaction(
+			{
+				transaction: txn,
+			},
+			{
+				onSettled: () => refetchBalance(),
+			},
+		);
+	}, [fee, module, packageId, refetchBalance, signAndExecuteTransaction, suiAmount, swapFunction, vaultId]);
 
 	const renderFormFooter = () =>
 		isSuiWalletConnected ? (
@@ -198,9 +274,28 @@ export function BuyNBTC() {
 			<SuiModal />
 		);
 
+	const resetForm = useCallback(() => {
+		buyNBTCForm.reset({
+			suiAmount: "0",
+			amountOfNBTC: "0",
+		},
+		{
+			keepErrors: false, // Clear validation errors
+			keepDirty: false, // Reset dirty state
+			keepTouched: false, // Reset touched state
+		  });
+		signAndExecuteTransactionReset();
+	}, [buyNBTCForm, signAndExecuteTransactionReset]);
+
+	const youReceive = (Number(suiAmount) - Number(mistToSui(Number(fee)))) / pricePerNBTCInSUI;
+	
 	return (
 		<FormProvider {...buyNBTCForm}>
-			<form onSubmit={buyNBTCForm.handleSubmit(handleTransaction)}>
+			<form
+				onSubmit={buyNBTCForm.handleSubmit(handleTransaction)}
+				className="flex flex-col gap-4 items-center"
+			>
+				<span className="text-3xl font-semibold text-primary">Buy nBTC</span>
 				<Card>
 					<CardContent className="p-6 rounded-lg text-white flex flex-col gap-4 bg-azure-10">
 						<Instructions />
@@ -226,11 +321,13 @@ export function BuyNBTC() {
 							}
 							rules={{
 								validate: {
-									positive: (value: string) =>
-										Number(value) > 0 || "SUI amount must be greater than 0",
 									balance: (value: string) =>
 										Number(value) <= mistToSui(Number(balance?.totalBalance)) ||
 										"Not enough balance available",
+									smallAmount: () => {
+										if (!isSuiWalletConnected || youReceive > 0) return true;
+										return "Small SUI amount";
+									},
 								},
 							}}
 						/>
@@ -252,10 +349,20 @@ export function BuyNBTC() {
 								This is a fixed price buy. The price is 25,000 SUI / BTC.
 							</span>
 						</div>
-						{isSuccess || isError ? renderTransactionStatus() : renderFormFooter()}
+						{isSuiWalletConnected && <Fee fee={mistToSui(Number(fee))} youReceive={youReceive} />}
+						{renderFormFooter()}
 					</CardContent>
 				</Card>
 			</form>
+			{(isSuccess || isError) && (
+				<Modal title={"Buy nBTC Transaction Status"} open handleClose={resetForm}>
+					<TransactionStatus
+						isSuccess={data?.effects?.status?.status === "success"}
+						handleRetry={resetForm}
+						txnId={data?.digest}
+					/>
+				</Modal>
+			)}
 		</FormProvider>
 	);
 }
