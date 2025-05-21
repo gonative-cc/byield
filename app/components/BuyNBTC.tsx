@@ -195,8 +195,8 @@ export function BuyNBTC() {
 		reValidateMode: "onChange",
 		disabled: isPending || isSuccess || isError,
 		defaultValues: {
-			suiAmount: null
-		}
+			suiAmount: null,
+		},
 	});
 	const { watch, trigger } = buyNBTCForm;
 	const suiAmount = watch("suiAmount");
@@ -275,20 +275,22 @@ export function BuyNBTC() {
 		);
 
 	const resetForm = useCallback(() => {
-		buyNBTCForm.reset({
-			suiAmount: "0",
-			amountOfNBTC: "0",
-		},
-		{
-			keepErrors: false, // Clear validation errors
-			keepDirty: false, // Reset dirty state
-			keepTouched: false, // Reset touched state
-		  });
+		buyNBTCForm.reset(
+			{
+				suiAmount: "0",
+				amountOfNBTC: "0",
+			},
+			{
+				keepErrors: false, // Clear validation errors
+				keepDirty: false, // Reset dirty state
+				keepTouched: false, // Reset touched state
+			},
+		);
 		signAndExecuteTransactionReset();
 	}, [buyNBTCForm, signAndExecuteTransactionReset]);
 
 	const youReceive = (Number(suiAmount) - Number(mistToSui(Number(fee)))) / pricePerNBTCInSUI;
-	
+
 	return (
 		<FormProvider {...buyNBTCForm}>
 			<form
