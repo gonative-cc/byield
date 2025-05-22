@@ -26,6 +26,8 @@ interface FeeProps {
 interface BuyNBTCForm {
 	suiAmount: string;
 	amountOfNBTC: string;
+	transaction: Transaction;
+	fee?: number;
 }
 
 function Fee({ fee, youReceive }: FeeProps) {
@@ -167,14 +169,11 @@ export function BuyNBTC() {
 	const isSuiWalletConnected = connectedWallet === ByieldWallet.SuiWallet;
 	const client = useSuiClient();
 	const account = useCurrentAccount();
-	const [transaction, setTransaction] = useState<Transaction | undefined>(undefined);
-	const [fee, setFee] = useState<number | undefined>(undefined);
 	const { nbtcOTC } = useNetworkVariables();
 	const { balance, refetchBalance } = useSuiBalance();
 	const { packageId, module, swapFunction, vaultId } = nbtcOTC;
 	const {
 		mutate: signAndExecuteTransaction,
-		reset: signAndExecuteTransactionReset,
 		isPending,
 		isSuccess,
 		isError,
@@ -197,17 +196,19 @@ export function BuyNBTC() {
 		reValidateMode: "onChange",
 		disabled: isPending || isSuccess || isError,
 	});
-	const { watch, trigger } = buyNBTCForm;
+	const { watch, trigger, setValue, handleSubmit } = buyNBTCForm;
 	const suiAmount = watch("suiAmount");
 	const amountOfNBTC = Number(suiAmount) / PRICE_PER_NBTC_IN_SUI || 0;
+	const transaction = watch("transaction");
+	const fee = watch("fee");
 
 	useEffect(() => {
 		if (account && suiAmount) {
 			const suiAmountMist = suiToMist(Number(suiAmount));
 			const txn = createBuyNBTCTxn(account?.address, Number(suiAmountMist), nbtcOTC);
-			setTransaction(() => txn);
+			setValue("transaction", txn);
 		}
-	}, [account, module, nbtcOTC, packageId, suiAmount, swapFunction, vaultId]);
+	}, [account, module, nbtcOTC, packageId, setValue, suiAmount, swapFunction, vaultId]);
 
 	useEffect(() => {
 		async function getFee() {
@@ -227,13 +228,13 @@ export function BuyNBTC() {
 					if (!isThereBufferBalanceAvailable) {
 						totalFee += BUFFER_BALANCE;
 					}
-					setFee(() => totalFee);
+					setValue("fee", totalFee);
 					trigger("suiAmount");
 				}
 			}
 		}
 		getFee();
-	}, [balance?.totalBalance, client, suiAmount, transaction, trigger]);
+	}, [balance?.totalBalance, client, setValue, suiAmount, transaction, trigger]);
 
 	const handleTransaction = useCallback(async () => {
 		const suiAmountMist = suiToMist(Number(suiAmount));
@@ -259,22 +260,14 @@ export function BuyNBTC() {
 		);
 
 	const resetForm = useCallback(() => {
-		setTransaction(() => undefined);
-		setFee(() => undefined);
-		buyNBTCForm.reset({
-			suiAmount: "",
-		});
-		signAndExecuteTransactionReset();
-	}, [buyNBTCForm, signAndExecuteTransactionReset]);
+		window.location.reload();
+	}, []);
 
 	const youReceive = (Number(suiAmount) - Number(mistToSui(Number(fee)))) / PRICE_PER_NBTC_IN_SUI;
 
 	return (
 		<FormProvider {...buyNBTCForm}>
-			<form
-				onSubmit={buyNBTCForm.handleSubmit(handleTransaction)}
-				className="flex flex-col gap-4 items-center"
-			>
+			<form onSubmit={handleSubmit(handleTransaction)} className="flex flex-col gap-4 items-center">
 				<span className="text-3xl font-semibold text-primary">Buy nBTC</span>
 				<Card>
 					<CardContent className="p-6 rounded-lg text-white flex flex-col gap-4 bg-azure-10">
