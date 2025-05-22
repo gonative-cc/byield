@@ -8,7 +8,7 @@ import { SuiModal } from "./Wallet/SuiWallet/SuiModal";
 import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
 import { useNetworkVariables } from "~/networkConfig";
-import { mistToSui, suiToMist } from "~/util/util";
+import { createBuyNBTCTxn, mistToSui, suiToMist } from "~/util/util";
 import { BUFFER_BALANCE, pricePerNBTCInSUI } from "~/constant";
 import { Link } from "@remix-run/react";
 import { ArrowDown, Check, CircleX } from "lucide-react";
@@ -156,7 +156,7 @@ function TransactionStatus({ isSuccess, txnId, handleRetry }: TransactionStatusP
 }
 
 interface BuyNBTCForm {
-	suiAmount: string | null;
+	suiAmount: string;
 	amountOfNBTC: string;
 }
 
@@ -194,47 +194,40 @@ export function BuyNBTC() {
 		mode: "all",
 		reValidateMode: "onChange",
 		disabled: isPending || isSuccess || isError,
-		defaultValues: {
-			suiAmount: null,
-		},
 	});
 	const { watch, trigger } = buyNBTCForm;
 	const suiAmount = watch("suiAmount");
 	const amountOfNBTC = Number(suiAmount) / pricePerNBTCInSUI || 0;
 
 	useEffect(() => {
-		if (!account || !suiAmount) return;
-		const suiAmountMist = suiToMist(Number(suiAmount));
-		const txn = new Transaction();
-		txn.setSender(account?.address);
-		const [coins] = txn.splitCoins(txn.gas, [txn.pure.u64(suiAmountMist)]);
-		txn.moveCall({
-			target: `${packageId}::${module}::${swapFunction}`,
-			arguments: [txn.object(vaultId), coins],
-		});
-		setTransaction(() => txn);
-	}, [account, module, packageId, suiAmount, swapFunction, vaultId]);
+		if (account && suiAmount) {
+			const suiAmountMist = suiToMist(Number(suiAmount));
+			const txn = createBuyNBTCTxn(account?.address, Number(suiAmountMist), nbtcOTC);
+			setTransaction(() => txn);
+		}
+	}, [account, module, nbtcOTC, packageId, suiAmount, swapFunction, vaultId]);
 
 	useEffect(() => {
 		async function getFee() {
-			if (!transaction) return;
-			const transactionBytes = await transaction.build({ client: client });
-			const dryRunResult = await client.dryRunTransactionBlock({
-				transactionBlock: transactionBytes,
-			});
-			if (dryRunResult?.effects?.gasUsed) {
-				const { computationCost, storageCost, storageRebate } = dryRunResult.effects.gasUsed;
-				const totalGasFee = Number(computationCost) + Number(storageCost) - Number(storageRebate);
-				const suiAmountMist = suiToMist(Number(suiAmount));
-				let totalFee = totalGasFee;
-				// keep buffer balance in case user try to use all max balance
-				const isThereBufferBalanceAvailable =
-					Number(balance?.totalBalance) - Number(suiAmountMist) >= BUFFER_BALANCE;
-				if (!isThereBufferBalanceAvailable) {
-					totalFee = totalFee + BUFFER_BALANCE;
+			if (transaction && suiAmount) {
+				const transactionBytes = await transaction.build({ client: client });
+				const dryRunResult = await client.dryRunTransactionBlock({
+					transactionBlock: transactionBytes,
+				});
+				if (dryRunResult?.effects?.gasUsed) {
+					const { computationCost, storageCost, storageRebate } = dryRunResult.effects.gasUsed;
+					const totalGasFee = Number(computationCost) + Number(storageCost) - Number(storageRebate);
+					const suiAmountMist = suiToMist(Number(suiAmount));
+					let totalFee = totalGasFee;
+					// keep buffer balance in case user try to use all max balance
+					const isThereBufferBalanceAvailable =
+						Number(balance?.totalBalance) - Number(suiAmountMist) >= BUFFER_BALANCE;
+					if (!isThereBufferBalanceAvailable) {
+						totalFee += BUFFER_BALANCE;
+					}
+					setFee(() => totalFee);
+					trigger("suiAmount");
 				}
-				setFee(() => totalFee);
-				trigger("suiAmount");
 			}
 		}
 		getFee();
@@ -243,18 +236,7 @@ export function BuyNBTC() {
 	const handleTransaction = useCallback(async () => {
 		const suiAmountMist = suiToMist(Number(suiAmount));
 		const suiAmountMistAfterFee = Number(suiAmountMist) - Number(fee);
-
-		const txn = new Transaction();
-		const [coins] = txn.splitCoins(txn.gas, [txn.pure.u64(suiAmountMistAfterFee)]);
-
-		txn.moveCall({
-			target: `${packageId}::${module}::${swapFunction}`,
-			arguments: [
-				txn.object(vaultId), // Vault object
-				coins, // Coin<SUI> argument
-			],
-		});
-
+		const txn = createBuyNBTCTxn(account!.address, Number(suiAmountMistAfterFee), nbtcOTC);
 		signAndExecuteTransaction(
 			{
 				transaction: txn,
@@ -263,7 +245,7 @@ export function BuyNBTC() {
 				onSettled: () => refetchBalance(),
 			},
 		);
-	}, [fee, module, packageId, refetchBalance, signAndExecuteTransaction, suiAmount, swapFunction, vaultId]);
+	}, [account, fee, nbtcOTC, refetchBalance, signAndExecuteTransaction, suiAmount]);
 
 	const renderFormFooter = () =>
 		isSuiWalletConnected ? (
@@ -275,17 +257,11 @@ export function BuyNBTC() {
 		);
 
 	const resetForm = useCallback(() => {
-		buyNBTCForm.reset(
-			{
-				suiAmount: "0",
-				amountOfNBTC: "0",
-			},
-			{
-				keepErrors: false, // Clear validation errors
-				keepDirty: false, // Reset dirty state
-				keepTouched: false, // Reset touched state
-			},
-		);
+		setTransaction(() => undefined);
+		setFee(() => undefined);
+		buyNBTCForm.reset({
+			suiAmount: "",
+		});
 		signAndExecuteTransactionReset();
 	}, [buyNBTCForm, signAndExecuteTransactionReset]);
 
