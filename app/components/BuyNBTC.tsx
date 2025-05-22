@@ -285,6 +285,7 @@ export function BuyNBTC() {
 							}
 							rules={{
 								validate: {
+									isWalletConnected: () => isSuiWalletConnected || "Please connect SUI wallet",
 									balance: (value: string) =>
 										Number(value) <= mistToSui(Number(balance?.totalBalance)) ||
 										"Not enough balance available",
@@ -302,7 +303,7 @@ export function BuyNBTC() {
 								className="h-16"
 								value={youReceive > 0 ? youReceive : ""}
 								allowNegative={false}
-								placeholder={youReceive <= 0 ? "Check SUI amount" : ""}
+								placeholder={youReceive <= 0 && isSuiWalletConnected ? "Check SUI amount" : ""}
 								readOnly
 								rightAdornments={
 									<div className="flex gap-2 items-center mr-2">
