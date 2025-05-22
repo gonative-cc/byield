@@ -20,7 +20,6 @@ import { NumericFormat } from "react-number-format";
 
 interface FeeProps {
 	fee: number;
-	youReceive: number;
 }
 
 interface BuyNBTCForm {
@@ -30,12 +29,9 @@ interface BuyNBTCForm {
 	fee?: number;
 }
 
-function Fee({ fee, youReceive }: FeeProps) {
-	const { formState } = useFormContext<BuyNBTCForm>();
-	const isSUIAmountValid = formState.errors["suiAmount"];
-
+function Fee({ fee }: FeeProps) {
 	return (
-		<Card className="p-4 bg-azure-10 rounded-2xl h-20">
+		<Card className="p-4 bg-azure-10 rounded-2xl h-14">
 			<CardContent className="flex flex-col justify-between h-full p-0">
 				<div className="flex justify-between">
 					<p className="text-gray-400 text-sm">Estimated Gas Fee</p>
@@ -46,19 +42,6 @@ function Fee({ fee, youReceive }: FeeProps) {
 						allowNegative={false}
 						className="text-sm"
 					/>
-				</div>
-				<div className="flex justify-between">
-					<p className="text-gray-400 text-sm">You Receive</p>
-					{youReceive > 0 && !isSUIAmountValid && (
-						<NumericFormat
-							displayType="text"
-							value={youReceive}
-							suffix=" nBTC"
-							className="text-sm"
-							allowNegative={false}
-						/>
-					)}
-					{isSUIAmountValid && <span className="italic text-sm text-red-500">Check SUI amount</span>}
 				</div>
 			</CardContent>
 		</Card>
@@ -196,7 +179,6 @@ export function BuyNBTC() {
 	});
 	const { watch, trigger, setValue, handleSubmit } = buyNBTCForm;
 	const suiAmount = watch("suiAmount");
-	const amountOfNBTC = Number(suiAmount) / PRICE_PER_NBTC_IN_SUI || 0;
 	const transaction = watch("transaction");
 	const fee = watch("fee");
 
@@ -307,7 +289,9 @@ export function BuyNBTC() {
 							<FormNumericInput
 								name="amountOfNBTC"
 								className="h-16"
-								value={amountOfNBTC}
+								value={youReceive > 0 ? youReceive : ""}
+								allowNegative={false}
+								placeholder={youReceive <= 0 ? "Check SUI amount" : ""}
 								readOnly
 								rightAdornments={
 									<div className="flex gap-2 items-center mr-2">
@@ -320,7 +304,7 @@ export function BuyNBTC() {
 								This is a fixed price buy. The price is 25,000 SUI / BTC.
 							</span>
 						</div>
-						{isSuiWalletConnected && <Fee fee={mistToSui(Number(fee))} youReceive={youReceive} />}
+						{isSuiWalletConnected && <Fee fee={mistToSui(Number(fee))} />}
 						{renderFormFooter()}
 					</CardContent>
 				</Card>
