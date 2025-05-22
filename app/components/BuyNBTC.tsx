@@ -25,7 +25,7 @@ interface FeeProps {
 interface BuyNBTCForm {
 	suiAmount: string;
 	amountOfNBTC: string;
-	transaction: Transaction;
+	transaction: Transaction | null;
 	fee?: number;
 }
 
@@ -155,6 +155,7 @@ export function BuyNBTC() {
 	const { packageId, module, swapFunction, vaultId } = nbtcOTC;
 	const {
 		mutate: signAndExecuteTransaction,
+		reset: resetMutation,
 		isPending,
 		isSuccess,
 		isError,
@@ -177,7 +178,7 @@ export function BuyNBTC() {
 		reValidateMode: "onChange",
 		disabled: isPending || isSuccess || isError,
 	});
-	const { watch, trigger, setValue, handleSubmit } = buyNBTCForm;
+	const { watch, trigger, setValue, handleSubmit, reset } = buyNBTCForm;
 	const suiAmount = watch("suiAmount");
 	const transaction = watch("transaction");
 	const fee = watch("fee");
@@ -219,7 +220,11 @@ export function BuyNBTC() {
 	const handleTransaction = useCallback(async () => {
 		const suiAmountMist = suiToMist(Number(suiAmount));
 		const suiAmountMistAfterFee = Number(suiAmountMist) - Number(fee);
-		const txn = createBuyNBTCTxn(account!.address, Number(suiAmountMistAfterFee), nbtcOTC);
+		if (!account) {
+			console.error("Account is not available. Cannot proceed with the transaction.");
+			return;
+		}
+		const txn = createBuyNBTCTxn(account.address, Number(suiAmountMistAfterFee), nbtcOTC);
 		signAndExecuteTransaction(
 			{
 				transaction: txn,
@@ -240,10 +245,16 @@ export function BuyNBTC() {
 		);
 
 	const resetForm = useCallback(() => {
-		window.location.reload();
-	}, []);
+		resetMutation();
+		reset({
+			suiAmount: "",
+			amountOfNBTC: "",
+			fee: undefined,
+			transaction: null,
+		});
+	}, [reset, resetMutation]);
 
-	const youReceive = (Number(suiAmount) - Number(mistToSui(Number(fee)))) / PRICE_PER_NBTC_IN_SUI;
+	const youReceive = (Number(suiAmount) - Number(mistToSui(Number(fee ?? 0)))) / PRICE_PER_NBTC_IN_SUI;
 
 	return (
 		<FormProvider {...buyNBTCForm}>
@@ -301,7 +312,7 @@ export function BuyNBTC() {
 								}
 							/>
 							<span className="tracking-tighter text-gray-500 text-sm dark:text-gray-400">
-								This is a fixed price buy. The price is 25,000 SUI / BTC.
+								This is a fixed price buy. The price is 25,000 SUI / nBTC.
 							</span>
 						</div>
 						{isSuiWalletConnected && <Fee fee={mistToSui(Number(fee))} />}
