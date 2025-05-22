@@ -1,6 +1,6 @@
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { useContext, useCallback, useState, useEffect } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { ByieldWallet } from "~/types";
@@ -9,7 +9,7 @@ import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@
 import { Transaction } from "@mysten/sui/transactions";
 import { useNetworkVariables } from "~/networkConfig";
 import { createBuyNBTCTxn, mistToSui, suiToMist } from "~/util/util";
-import { BUFFER_BALANCE, pricePerNBTCInSUI } from "~/constant";
+import { BUFFER_BALANCE, PRICE_PER_NBTC_IN_SUI } from "~/constant";
 import { Link } from "@remix-run/react";
 import { ArrowDown, Check, CircleX } from "lucide-react";
 import { useSuiBalance } from "./Wallet/SuiWallet/useSuiBalance";
@@ -23,7 +23,15 @@ interface FeeProps {
 	youReceive: number;
 }
 
+interface BuyNBTCForm {
+	suiAmount: string;
+	amountOfNBTC: string;
+}
+
 function Fee({ fee, youReceive }: FeeProps) {
+	const { formState } = useFormContext<BuyNBTCForm>();
+	const isSUIAmountValid = formState.errors["suiAmount"];
+
 	return (
 		<Card className="p-4 bg-azure-10 rounded-2xl h-20">
 			<CardContent className="flex flex-col justify-between h-full p-0">
@@ -39,7 +47,7 @@ function Fee({ fee, youReceive }: FeeProps) {
 				</div>
 				<div className="flex justify-between">
 					<p className="text-gray-400 text-sm">You Receive</p>
-					{youReceive > 0 ? (
+					{youReceive > 0 && !isSUIAmountValid && (
 						<NumericFormat
 							displayType="text"
 							value={youReceive}
@@ -47,9 +55,8 @@ function Fee({ fee, youReceive }: FeeProps) {
 							className="text-sm"
 							allowNegative={false}
 						/>
-					) : (
-						<span className="italic text-sm text-red-500">Check SUI amount</span>
 					)}
+					{isSUIAmountValid && <span className="italic text-sm text-red-500">Check SUI amount</span>}
 				</div>
 			</CardContent>
 		</Card>
@@ -155,11 +162,6 @@ function TransactionStatus({ isSuccess, txnId, handleRetry }: TransactionStatusP
 	);
 }
 
-interface BuyNBTCForm {
-	suiAmount: string;
-	amountOfNBTC: string;
-}
-
 export function BuyNBTC() {
 	const { connectedWallet } = useContext(WalletContext);
 	const isSuiWalletConnected = connectedWallet === ByieldWallet.SuiWallet;
@@ -197,7 +199,7 @@ export function BuyNBTC() {
 	});
 	const { watch, trigger } = buyNBTCForm;
 	const suiAmount = watch("suiAmount");
-	const amountOfNBTC = Number(suiAmount) / pricePerNBTCInSUI || 0;
+	const amountOfNBTC = Number(suiAmount) / PRICE_PER_NBTC_IN_SUI || 0;
 
 	useEffect(() => {
 		if (account && suiAmount) {
@@ -265,7 +267,7 @@ export function BuyNBTC() {
 		signAndExecuteTransactionReset();
 	}, [buyNBTCForm, signAndExecuteTransactionReset]);
 
-	const youReceive = (Number(suiAmount) - Number(mistToSui(Number(fee)))) / pricePerNBTCInSUI;
+	const youReceive = (Number(suiAmount) - Number(mistToSui(Number(fee)))) / PRICE_PER_NBTC_IN_SUI;
 
 	return (
 		<FormProvider {...buyNBTCForm}>
