@@ -38,7 +38,7 @@ function Fee({ fee, youReceive }: FeeProps) {
 		<Card className="p-4 bg-azure-10 rounded-2xl h-20">
 			<CardContent className="flex flex-col justify-between h-full p-0">
 				<div className="flex justify-between">
-					<p className="text-gray-400 text-sm">Estimate Fee</p>
+					<p className="text-gray-400 text-sm">Estimated Gas Fee</p>
 					<NumericFormat
 						displayType="text"
 						value={fee}
@@ -77,16 +77,14 @@ function Instructions() {
 					<li>
 						Make sure you have testnet Sui tokens:
 						<ul className="ps-8 mt-2 space-y-1 list-disc list-outside">
-							<li>Click {`"profile"`} → network → make sure you select testnet.</li>
 							<li>
-								Click {`"profile"`} → scroll down to the {`"About"`} section → click{" "}
 								<Link
 									target="_blank"
 									to={`https://faucet.sui.io/?network=testnet&address=${account?.address}`}
 									rel="noreferrer"
 								>
 									<Button type="button" variant="link" className="p-0">
-										Request Sui Token.
+										Request Sui Tokens from faucet.
 									</Button>
 								</Link>
 							</li>
