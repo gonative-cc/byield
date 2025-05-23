@@ -45,14 +45,10 @@ export function NavBar() {
 
 	return (
 		<header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-			<nav className="container mx-auto flex h-14 items-center">
+			<nav className="container md:mx-auto flex h-14 items-center px-4">
 				<Link to="/" className="font-bold text-lg">
 					<div className="w-32">
-						<img
-							src="/assets/app-logos/logo-dark.svg"
-							alt="Remix"
-							className="hidden w-full dark:block"
-						/>
+						<img src="/assets/app-logos/logo-dark.svg" alt="Remix" className="w-full" />
 					</div>
 				</Link>
 				<div className="flex flex-1 justify-center">
