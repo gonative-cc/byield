@@ -48,7 +48,7 @@ export const useXverseConnect = () => {
 				});
 			}
 		} catch (err) {
-			console.log(err);
+			console.error(err);
 		}
 	}, [handleWalletConnect, toast]);
 
@@ -57,7 +57,8 @@ export const useXverseConnect = () => {
 
 export const useXverseWallet = () => {
 	const { toast } = useToast();
-	const { handleWalletConnect } = useContext(WalletContext);
+	const { handleWalletConnect, connectedWallet } = useContext(WalletContext);
+	const isBitCoinWalletConnected = connectedWallet === ByieldWallet.Xverse;
 	const [addressInfo, setAddressInfo] = useState<Address[]>([]);
 	const [currentAddress, setCurrentAddress] = useState<Address | null>(null);
 	const [balance, setBalance] = useState<string>();
@@ -112,12 +113,14 @@ export const useXverseWallet = () => {
 
 	useEffect(() => {
 		async function getWalletStatus() {
-			await getAddresses();
-			await getBalance();
-			await getNetworkStatus();
+			if (isBitCoinWalletConnected) {
+				await getAddresses();
+				await getBalance();
+				await getNetworkStatus();
+			}
 		}
 		getWalletStatus();
-	}, [getAddresses, getBalance, getNetworkStatus, network]);
+	}, [getAddresses, getBalance, getNetworkStatus, isBitCoinWalletConnected, network]);
 
 	const disconnectWallet = useCallback(async () => {
 		try {

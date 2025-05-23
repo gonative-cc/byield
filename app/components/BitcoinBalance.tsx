@@ -1,5 +1,7 @@
+import { NumericFormat } from "react-number-format";
+
 interface BitcoinBalanceProps {
-	availableBalance: number;
+	availableBalance: string;
 }
 
 export const BitcoinBalance = ({ availableBalance }: BitcoinBalanceProps) => {
@@ -8,7 +10,13 @@ export const BitcoinBalance = ({ availableBalance }: BitcoinBalanceProps) => {
 			<img src="/bitcoin.svg" alt="Bitcoin" className="w-7 h-7" />
 			<div className="flex flex-col gap-1">
 				<span>Available Balance</span>
-				<span className="text-gray-400">{availableBalance} BTC</span>
+				<NumericFormat
+					displayType="text"
+					value={availableBalance}
+					className="text-gray-400"
+					readOnly
+					suffix=" BTC"
+				/>
 			</div>
 		</div>
 	);
