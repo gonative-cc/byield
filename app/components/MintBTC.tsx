@@ -93,6 +93,7 @@ export function MintBTC() {
 
 	// satoshi. 1BTC = 10^8 satoshi
 	const feeInSatoshis = 0.00000001;
+	// TODO: https://github.com/gonative-cc/byield/issues/56
 	const youReceive = Number(numberOfBTC) - feeInSatoshis;
 
 	return (
