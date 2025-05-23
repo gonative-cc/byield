@@ -12,6 +12,8 @@ import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { mistToSui, trimAddress } from "~/util/util";
 import { useSuiBalance } from "./useSuiBalance";
 import { NumericFormat } from "react-number-format";
+import { EllipsisVertical } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 
 enum SuiNetwork {
 	TestNet = "testnet",
@@ -39,6 +41,7 @@ function NetWorkOptions() {
 			placeholder="Select network"
 			onValueChange={handleChange}
 			value={network}
+			className="w-full md:w-1/4"
 		/>
 	);
 }
@@ -68,7 +71,46 @@ function Accounts() {
 				);
 			}}
 			value={currentSelectedAccount?.address}
+			className="w-full md:w-1/4"
 		/>
+	);
+}
+
+function SuiWalletMobileView() {
+	const { mutate: disconnect } = useDisconnectWallet();
+	const { handleWalletConnect } = useContext(WalletContext);
+	const { balance } = useSuiBalance();
+
+	return (
+		<div className="flex w-full gap-1 items-center md:hidden">
+			{balance?.totalBalance && (
+				<NumericFormat
+					displayType="text"
+					value={mistToSui(Number(balance.totalBalance))}
+					suffix=" SUI"
+					className="shrink-0"
+				/>
+			)}
+			<Popover>
+				<PopoverTrigger asChild>
+					<EllipsisVertical size={50} />
+				</PopoverTrigger>
+				<PopoverContent className="w-60">
+					<div className="grid gap-4">
+						<NetWorkOptions />
+						<Accounts />
+						<Button
+							onClick={() => {
+								disconnect();
+								handleWalletConnect(null);
+							}}
+						>
+							Disconnect
+						</Button>
+					</div>
+				</PopoverContent>
+			</Popover>
+		</div>
 	);
 }
 
@@ -79,23 +121,28 @@ export function SuiWallet() {
 
 	return (
 		<>
-			<NetWorkOptions />
-			<Accounts />
-			{balance?.totalBalance && (
-				<NumericFormat
-					displayType="text"
-					value={mistToSui(Number(balance.totalBalance))}
-					suffix=" SUI"
-				/>
-			)}
-			<Button
-				onClick={() => {
-					disconnect();
-					handleWalletConnect(null);
-				}}
-			>
-				Disconnect
-			</Button>
+			{/* handles md screen sizes */}
+			<div className="hidden w-full gap-2 items-center md:flex">
+				<NetWorkOptions />
+				<Accounts />
+				{balance?.totalBalance && (
+					<NumericFormat
+						displayType="text"
+						value={mistToSui(Number(balance.totalBalance))}
+						suffix=" SUI"
+					/>
+				)}
+				<Button
+					onClick={() => {
+						disconnect();
+						handleWalletConnect(null);
+					}}
+				>
+					Disconnect
+				</Button>
+			</div>
+			{/* handles below md screen sizes */}
+			<SuiWalletMobileView />
 		</>
 	);
 }

@@ -1,8 +1,8 @@
 import * as React from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
 import { Check, ChevronDown, ChevronUp } from "lucide-react";
-
 import { cn } from "~/lib/utils";
+import { twMerge } from "tailwind-merge";
 
 const Select = SelectPrimitive.Root;
 
@@ -140,12 +140,13 @@ interface Option {
 interface SelectInputProps extends SelectPrimitive.SelectProps {
 	options: Option[];
 	placeholder: string;
+	className?: string;
 }
 
-function SelectInput({ options, placeholder, ...rest }: SelectInputProps) {
+function SelectInput({ options, placeholder, className, ...rest }: SelectInputProps) {
 	return (
 		<Select {...rest}>
-			<SelectTrigger className="bg-gray-800 w-1/4">
+			<SelectTrigger className={twMerge("bg-gray-800 w-1/4", className)}>
 				<SelectValue placeholder={placeholder} />
 			</SelectTrigger>
 			<SelectContent>
