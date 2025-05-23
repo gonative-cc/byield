@@ -100,10 +100,8 @@ function Modal({ open, title, description, handleClose, children }: ModalProps) 
 	return (
 		<Dialog open={open} onOpenChange={handleClose}>
 			<DialogContent>
-				<DialogHeader>
-					{title && <DialogTitle>{title}</DialogTitle>}
-					{description && <DialogDescription>{description}</DialogDescription>}
-				</DialogHeader>
+				<DialogHeader>{title && <DialogTitle>{title}</DialogTitle>}</DialogHeader>
+				{description && <DialogDescription>{description}</DialogDescription>}
 				{children}
 			</DialogContent>
 		</Dialog>
