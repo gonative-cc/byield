@@ -117,6 +117,10 @@ export const useXverseWallet = () => {
 				await getAddresses();
 				await getBalance();
 				await getNetworkStatus();
+			} else {
+				setAddressInfo([]);
+				setCurrentAddress(null);
+				setBalance(undefined);
 			}
 		}
 		getWalletStatus();

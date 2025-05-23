@@ -1,4 +1,4 @@
-import { MintBTC } from "~/components/MintNBTC";
+import { MintBTC } from "~/components/MintBTC";
 
 export default function Mint() {
 	return (

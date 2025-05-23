@@ -49,17 +49,17 @@ function Percentage({ onChange }: { onChange: (value: number) => void }) {
 }
 
 interface FeeProps {
-	fee: number;
+	feeInSatoshis: number;
 	youReceive: number;
 }
 
-function Fee({ fee, youReceive }: FeeProps) {
+function Fee({ feeInSatoshis, youReceive }: FeeProps) {
 	return (
 		<Card className="p-4 bg-azure-10 rounded-2xl h-24">
 			<CardContent className="flex flex-col justify-between h-full p-0">
 				<div className="flex justify-between">
 					<p className="text-gray-400">Fixed Fee</p>
-					<p>{fee} Satoshi</p>
+					<p>{feeInSatoshis} Satoshi</p>
 				</div>
 				<div className="flex justify-between">
 					<p className="text-gray-400">You Receive</p>
@@ -76,9 +76,10 @@ interface MintNBTCForm {
 }
 
 export function MintBTC() {
-	const { balance } = useXverseWallet();
+	const { balance: walletBalance } = useXverseWallet();
 	const { connectedWallet } = useContext(WalletContext);
 	const isBitCoinWalletConnected = connectedWallet === ByieldWallet.Xverse;
+	const balance = Number(walletBalance);
 	const mintNBTCForm = useForm<MintNBTCForm>({
 		mode: "all",
 		reValidateMode: "onChange",
@@ -91,8 +92,8 @@ export function MintBTC() {
 	const numberOfBTC = watch("numberOfBTC");
 
 	// satoshi. 1BTC = 10^8 satoshi
-	const fee = 0.00000001;
-	const youReceive = Number(numberOfBTC) - fee;
+	const feeInSatoshis = 0.00000001;
+	const youReceive = Number(numberOfBTC) - feeInSatoshis;
 
 	return (
 		<FormProvider {...mintNBTCForm}>
@@ -104,7 +105,9 @@ export function MintBTC() {
 			>
 				<Card>
 					<CardContent className="p-6 rounded-lg text-white flex flex-col gap-4 bg-azure-10">
-						{balance && isBitCoinWalletConnected && <BitcoinBalance availableBalance={balance} />}
+						{walletBalance && isBitCoinWalletConnected && (
+							<BitcoinBalance availableBalance={walletBalance} />
+						)}
 						<FormNumericInput
 							required
 							name="numberOfBTC"
@@ -116,13 +119,13 @@ export function MintBTC() {
 									isWalletConnected: () =>
 										isBitCoinWalletConnected || "Please connect Bitcoin wallet",
 									balance: (value: string) =>
-										Number(value) <= Number(balance) || "Not enough balance available",
+										Number(value) <= balance || "Not enough balance available",
 								},
 							}}
 						/>
 						<Percentage
 							onChange={(value: number) => {
-								const val = Number(balance) * Number(value / 100);
+								const val = balance * Number(value / 100);
 								setValue("numberOfBTC", val.toString());
 							}}
 						/>
@@ -132,7 +135,7 @@ export function MintBTC() {
 							placeholder="Enter destination Sui Address..."
 							className="h-16"
 						/>
-						<Fee fee={10} youReceive={youReceive} />
+						<Fee feeInSatoshis={feeInSatoshis} youReceive={youReceive} />
 						<Button type="submit">Deposit BTC and mint nBTC</Button>
 						<div className="flex justify-between">
 							<span>TX ID: b99d9a361ac9db3...</span>
