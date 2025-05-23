@@ -4,6 +4,7 @@ import { type Option, SelectInput } from "../../ui/select";
 import { BitcoinNetworkType } from "sats-connect";
 import { useCallback, useMemo } from "react";
 import { trimAddress } from "~/util/util";
+import { NumericFormat } from "react-number-format";
 
 function NetWorkOptions() {
 	const { network, switchNetwork } = useXverseWallet();
@@ -58,7 +59,14 @@ export function XverseWallet() {
 		<>
 			<NetWorkOptions />
 			<Accounts />
-			<span className="text-lg font-semibold">{balance}</span>
+			{balance && (
+				<NumericFormat
+					displayType="text"
+					value={balance}
+					suffix=" BTC"
+					className="text-lg font-semibold"
+				/>
+			)}
 			<Button onClick={disconnectWallet}>Disconnect</Button>
 		</>
 	);
