@@ -11,6 +11,7 @@ import { useCallback, useContext, useMemo } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { mistToSui, trimAddress } from "~/util/util";
 import { useSuiBalance } from "./useSuiBalance";
+import { NumericFormat } from "react-number-format";
 
 enum SuiNetwork {
 	TestNet = "testnet",
@@ -81,9 +82,11 @@ export function SuiWallet() {
 			<NetWorkOptions />
 			<Accounts />
 			{balance?.totalBalance && (
-				<span className="font-semibold shrink-0 flex">
-					{mistToSui(Number(balance.totalBalance)) + " SUI"}
-				</span>
+				<NumericFormat
+					displayType="text"
+					value={mistToSui(Number(balance.totalBalance))}
+					suffix=" SUI"
+				/>
 			)}
 			<Button
 				onClick={() => {
