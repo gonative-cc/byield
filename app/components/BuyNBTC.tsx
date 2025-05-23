@@ -301,9 +301,9 @@ export function BuyNBTC() {
 							<FormNumericInput
 								name="amountOfNBTC"
 								className="h-16"
-								value={youReceive > 0 ? youReceive : ""}
+								value={youReceive > 0 ? youReceive : "0.0"}
 								allowNegative={false}
-								placeholder={youReceive <= 0 && isSuiWalletConnected ? "Check SUI amount" : ""}
+								placeholder={youReceive <= 0 && isSuiWalletConnected ? "0.0" : ""}
 								readOnly
 								rightAdornments={
 									<div className="flex gap-2 items-center mr-2">
