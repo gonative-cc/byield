@@ -88,6 +88,28 @@ const DialogDescription = React.forwardRef<
 ));
 DialogDescription.displayName = DialogPrimitive.Description.displayName;
 
+interface ModalProps {
+	title?: string;
+	description?: string;
+	open: boolean;
+	children: React.ReactNode;
+	handleClose: () => void;
+}
+
+function Modal({ open, title, description, handleClose, children }: ModalProps) {
+	return (
+		<Dialog open={open} onOpenChange={handleClose}>
+			<DialogContent>
+				<DialogHeader>
+					{title && <DialogTitle>{title}</DialogTitle>}
+					{description && <DialogDescription>{description}</DialogDescription>}
+				</DialogHeader>
+				{children}
+			</DialogContent>
+		</Dialog>
+	);
+}
+
 export {
 	Dialog,
 	DialogPortal,
@@ -99,4 +121,5 @@ export {
 	DialogFooter,
 	DialogTitle,
 	DialogDescription,
+	Modal,
 };

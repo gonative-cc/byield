@@ -5,6 +5,7 @@ import { fetchUTXOs, fetchValidateAddress } from "~/api/api";
 import { nBTC_ADDR } from "~/constants";
 import { ToastFunction } from "~/hooks/use-toast";
 import { UTXO, ValidateAddressI } from "~/types";
+import { Transaction } from "@mysten/sui/transactions";
 
 const mistToSui = (amountInMist: number): number => {
 	return amountInMist / Number(MIST_PER_SUI);
@@ -98,4 +99,21 @@ const trimAddress = (address: string): string => {
 	return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
 };
 
-export { sendTxn, trimAddress, suiToMist, mistToSui };
+type Targets = { packageId: string; module: string; swapFunction: string; vaultId: string };
+
+const createBuyNBTCTxn = (
+	senderAddress: string,
+	suiAmountMist: number,
+	{ packageId, module, swapFunction, vaultId }: Targets,
+): Transaction => {
+	const txn = new Transaction();
+	txn.setSender(senderAddress);
+	const [coins] = txn.splitCoins(txn.gas, [txn.pure.u64(suiAmountMist)]);
+	txn.moveCall({
+		target: `${packageId}::${module}::${swapFunction}`,
+		arguments: [txn.object(vaultId), coins],
+	});
+	return txn;
+};
+
+export { sendTxn, trimAddress, suiToMist, mistToSui, createBuyNBTCTxn };
