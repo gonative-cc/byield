@@ -263,7 +263,9 @@ export function BuyNBTC() {
 	);
 
 	useEffect(() => {
-		if (suiAmount) trigger("suiAmount");
+		if (suiAmount) {
+			trigger("suiAmount");
+		}
 	}, [isSuiWalletConnected, suiAmount, trigger]);
 
 	return (

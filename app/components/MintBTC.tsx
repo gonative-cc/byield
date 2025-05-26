@@ -11,7 +11,7 @@ import { ByieldWallet } from "~/types";
 import { FormNumericInput } from "./form/FormNumericInput";
 import { NumericFormat } from "react-number-format";
 import BigNumber from "bignumber.js";
-import { BTC_PER_SATOSHI } from "~/lib/denoms";
+import { SATOSHIS_PER_BTC } from "~/lib/denoms";
 import { btcToSatoshi } from "~/util/util";
 
 const PERCENTAGES = [
@@ -94,7 +94,7 @@ export function MintBTC() {
 	const { handleSubmit, watch, setValue } = mintNBTCForm;
 	const numberOfBTC = watch("numberOfBTC");
 
-	const feeInSatoshis = BTC_PER_SATOSHI;
+	const feeInSatoshis = SATOSHIS_PER_BTC;
 	const youReceive = btcToSatoshi(BigNumber(numberOfBTC))?.minus(feeInSatoshis);
 
 	return (
