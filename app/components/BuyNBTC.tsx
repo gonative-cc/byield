@@ -1,7 +1,7 @@
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import { FormProvider, useForm } from "react-hook-form";
-import { useContext, useCallback, useEffect } from "react";
+import { useContext, useCallback, useEffect, useMemo } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { ByieldWallet } from "~/types";
 import { SuiModal } from "./Wallet/SuiWallet/SuiModal";
@@ -183,29 +183,30 @@ export function BuyNBTC() {
 	const transaction = watch("transaction");
 	const fee = watch("fee");
 
+	const suiAmountMist = useMemo(() => suiToMist(BigNumber(suiAmount)), [suiAmount]);
+
 	useEffect(() => {
 		if (account && suiAmount) {
-			const suiAmountMist = suiToMist(Number(suiAmount));
-			const txn = createBuyNBTCTxn(account?.address, Number(suiAmountMist), nbtcOTC);
+			const txn = createBuyNBTCTxn(account?.address, suiAmountMist, nbtcOTC);
 			setValue("transaction", txn);
 		}
-	}, [account, module, nbtcOTC, packageId, setValue, suiAmount, swapFunction, vaultId]);
+	}, [account, module, nbtcOTC, packageId, setValue, suiAmount, suiAmountMist, swapFunction, vaultId]);
 
 	useEffect(() => {
 		async function getFee() {
-			if (transaction && suiAmount) {
+			if (transaction && suiAmount && balance?.totalBalance) {
 				const transactionBytes = await transaction.build({ client: client });
 				const dryRunResult = await client.dryRunTransactionBlock({
 					transactionBlock: transactionBytes,
 				});
 				if (dryRunResult?.effects?.gasUsed) {
 					const { computationCost, storageCost, storageRebate } = dryRunResult.effects.gasUsed;
-					const totalGasFee = Number(computationCost) + Number(storageCost) - Number(storageRebate);
-					const suiAmountMist = suiToMist(Number(suiAmount));
-					let totalFee = totalGasFee;
+					const totalGasFee = BigNumber(computationCost).plus(storageCost).minus(storageRebate);
+					let totalFee = totalGasFee.toNumber();
 					// keep buffer balance in case user try to use all max balance
-					const isThereBufferBalanceAvailable =
-						Number(balance?.totalBalance) - Number(suiAmountMist) >= BUFFER_BALANCE;
+					const isThereBufferBalanceAvailable = BigNumber(balance?.totalBalance)
+						.minus(suiAmountMist)
+						.isGreaterThanOrEqualTo(BUFFER_BALANCE);
 					if (!isThereBufferBalanceAvailable) {
 						totalFee += BUFFER_BALANCE;
 					}
@@ -215,16 +216,15 @@ export function BuyNBTC() {
 			}
 		}
 		getFee();
-	}, [balance?.totalBalance, client, setValue, suiAmount, transaction, trigger]);
+	}, [balance, client, setValue, suiAmount, suiAmountMist, transaction, trigger]);
 
 	const handleTransaction = useCallback(async () => {
-		const suiAmountMist = suiToMist(Number(suiAmount));
-		const suiAmountMistAfterFee = Number(suiAmountMist) - Number(fee);
+		const suiAmountMistAfterFee = BigNumber(suiAmountMist).minus(BigNumber(fee ?? 0));
 		if (!account) {
 			console.error("Account is not available. Cannot proceed with the transaction.");
 			return;
 		}
-		const txn = createBuyNBTCTxn(account.address, Number(suiAmountMistAfterFee), nbtcOTC);
+		const txn = createBuyNBTCTxn(account.address, suiAmountMistAfterFee, nbtcOTC);
 		signAndExecuteTransaction(
 			{
 				transaction: txn,
@@ -233,7 +233,7 @@ export function BuyNBTC() {
 				onSettled: () => refetchBalance(),
 			},
 		);
-	}, [account, fee, nbtcOTC, refetchBalance, signAndExecuteTransaction, suiAmount]);
+	}, [account, fee, nbtcOTC, refetchBalance, signAndExecuteTransaction, suiAmountMist]);
 
 	const renderFormFooter = () =>
 		isSuiWalletConnected ? (
@@ -254,7 +254,17 @@ export function BuyNBTC() {
 		});
 	}, [reset, resetMutation]);
 
-	const youReceive = (Number(suiAmount) - Number(mistToSui(Number(fee ?? 0)))) / PRICE_PER_NBTC_IN_SUI;
+	const youReceive = useMemo(
+		() =>
+			BigNumber(suiAmount)
+				.minus(mistToSui(BigNumber(fee ?? 0)))
+				.dividedBy(PRICE_PER_NBTC_IN_SUI),
+		[fee, suiAmount],
+	);
+
+	useEffect(() => {
+		if (suiAmount) trigger("suiAmount");
+	}, [isSuiWalletConnected, suiAmount, trigger]);
 
 	return (
 		<FormProvider {...buyNBTCForm}>
@@ -287,10 +297,13 @@ export function BuyNBTC() {
 								validate: {
 									isWalletConnected: () => isSuiWalletConnected || "Please connect SUI wallet",
 									balance: (value: string) =>
-										Number(value) <= mistToSui(Number(balance?.totalBalance)) ||
+										(balance?.totalBalance &&
+											BigNumber(value).isLessThanOrEqualTo(
+												mistToSui(BigNumber(balance?.totalBalance)),
+											)) ||
 										"Not enough balance available",
 									smallAmount: () => {
-										if (!isSuiWalletConnected || youReceive > 0) return true;
+										if (!isSuiWalletConnected || youReceive.isGreaterThan(0)) return true;
 										return "Small SUI amount";
 									},
 								},
@@ -301,9 +314,9 @@ export function BuyNBTC() {
 							<FormNumericInput
 								name="amountOfNBTC"
 								className="h-16"
-								value={youReceive > 0 ? youReceive : "0.0"}
+								value={youReceive.isGreaterThan(0) ? youReceive.toNumber() : "0.0"}
 								allowNegative={false}
-								placeholder={youReceive <= 0 && isSuiWalletConnected ? "0.0" : ""}
+								placeholder={youReceive.isLessThanOrEqualTo(0) && isSuiWalletConnected ? "0.0" : ""}
 								readOnly
 								rightAdornments={
 									<div className="flex gap-2 items-center mr-2">
@@ -316,7 +329,7 @@ export function BuyNBTC() {
 								This is a fixed price buy. The price is 25,000 SUI / nBTC.
 							</span>
 						</div>
-						{isSuiWalletConnected && <Fee fee={mistToSui(Number(fee))} />}
+						{isSuiWalletConnected && <Fee fee={mistToSui(BigNumber(fee ?? 0)).toNumber()} />}
 						{renderFormFooter()}
 					</CardContent>
 				</Card>

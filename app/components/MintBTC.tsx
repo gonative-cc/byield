@@ -10,6 +10,9 @@ import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { ByieldWallet } from "~/types";
 import { FormNumericInput } from "./form/FormNumericInput";
 import { NumericFormat } from "react-number-format";
+import BigNumber from "bignumber.js";
+import { BTC_PER_SATOSHI } from "~/lib/denoms";
+import { btcToSatoshi } from "~/util/util";
 
 const PERCENTAGES = [
 	{
@@ -59,7 +62,7 @@ function Fee({ feeInSatoshis, youReceive }: FeeProps) {
 			<CardContent className="flex flex-col justify-between h-full p-0">
 				<div className="flex justify-between">
 					<p className="text-gray-400">Fixed Fee</p>
-					<p>{feeInSatoshis} Satoshi</p>
+					<NumericFormat displayType="text" value={feeInSatoshis} suffix=" Satoshi" />
 				</div>
 				<div className="flex justify-between">
 					<p className="text-gray-400">You Receive</p>
@@ -79,7 +82,7 @@ export function MintBTC() {
 	const { balance: walletBalance } = useXverseWallet();
 	const { connectedWallet } = useContext(WalletContext);
 	const isBitCoinWalletConnected = connectedWallet === ByieldWallet.Xverse;
-	const balance = Number(walletBalance);
+	const balance = BigNumber(walletBalance ?? 0);
 	const mintNBTCForm = useForm<MintNBTCForm>({
 		mode: "all",
 		reValidateMode: "onChange",
@@ -91,10 +94,8 @@ export function MintBTC() {
 	const { handleSubmit, watch, setValue } = mintNBTCForm;
 	const numberOfBTC = watch("numberOfBTC");
 
-	// satoshi. 1BTC = 10^8 satoshi
-	const feeInSatoshis = 0.00000001;
-	// TODO: https://github.com/gonative-cc/byield/issues/56
-	const youReceive = Number(numberOfBTC) - feeInSatoshis;
+	const feeInSatoshis = BTC_PER_SATOSHI;
+	const youReceive = btcToSatoshi(BigNumber(numberOfBTC))?.minus(feeInSatoshis);
 
 	return (
 		<FormProvider {...mintNBTCForm}>
@@ -120,13 +121,13 @@ export function MintBTC() {
 									isWalletConnected: () =>
 										isBitCoinWalletConnected || "Please connect Bitcoin wallet",
 									balance: (value: string) =>
-										Number(value) <= balance || "Not enough balance available",
+										BigNumber(value).isLessThanOrEqualTo(balance) || "Not enough balance available",
 								},
 							}}
 						/>
 						<Percentage
 							onChange={(value: number) => {
-								const val = balance * Number(value / 100);
+								const val = balance.multipliedBy(value).dividedBy(100);
 								setValue("numberOfBTC", val.toString());
 							}}
 						/>
@@ -136,7 +137,9 @@ export function MintBTC() {
 							placeholder="Enter destination Sui Address..."
 							className="h-16"
 						/>
-						<Fee feeInSatoshis={feeInSatoshis} youReceive={youReceive} />
+						{youReceive && (
+							<Fee feeInSatoshis={feeInSatoshis.toNumber()} youReceive={youReceive.toNumber()} />
+						)}
 						<Button type="submit">Deposit BTC and mint nBTC</Button>
 						<div className="flex justify-between">
 							<span>TX ID: b99d9a361ac9db3...</span>

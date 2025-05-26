@@ -1,4 +1,3 @@
-import { MIST_PER_SUI } from "@mysten/sui/utils";
 import * as bitcoin from "bitcoinjs-lib";
 import Wallet, { Address } from "sats-connect";
 import { fetchUTXOs, fetchValidateAddress } from "~/api/api";
@@ -6,13 +5,19 @@ import { nBTC_ADDR } from "~/constants";
 import { ToastFunction } from "~/hooks/use-toast";
 import { UTXO, ValidateAddressI } from "~/types";
 import { Transaction } from "@mysten/sui/transactions";
+import BigNumber from "bignumber.js";
+import { BTC_PER_SATOSHI, MIST_PER_SUI } from "~/lib/denoms";
 
-const mistToSui = (amountInMist: number): number => {
-	return amountInMist / Number(MIST_PER_SUI);
+const mistToSui = (amountInMist: BigNumber): BigNumber => {
+	return amountInMist.dividedBy(MIST_PER_SUI);
 };
 
-const suiToMist = (amountInSUI: number): bigint => {
-	return BigInt(Math.floor(amountInSUI * Number(MIST_PER_SUI)));
+const suiToMist = (amountInSUI: BigNumber): BigNumber => {
+	return amountInSUI.multipliedBy(MIST_PER_SUI);
+};
+
+const btcToSatoshi = (amountInSathosi: BigNumber): BigNumber => {
+	return amountInSathosi.multipliedBy(BTC_PER_SATOSHI);
 };
 
 const sendTxn = async (
@@ -103,12 +108,12 @@ type Targets = { packageId: string; module: string; swapFunction: string; vaultI
 
 const createBuyNBTCTxn = (
 	senderAddress: string,
-	suiAmountMist: number,
+	suiAmountMist: BigNumber,
 	{ packageId, module, swapFunction, vaultId }: Targets,
 ): Transaction => {
 	const txn = new Transaction();
 	txn.setSender(senderAddress);
-	const [coins] = txn.splitCoins(txn.gas, [txn.pure.u64(suiAmountMist)]);
+	const [coins] = txn.splitCoins(txn.gas, [txn.pure.u64(suiAmountMist.toNumber())]);
 	txn.moveCall({
 		target: `${packageId}::${module}::${swapFunction}`,
 		arguments: [txn.object(vaultId), coins],
@@ -116,4 +121,4 @@ const createBuyNBTCTxn = (
 	return txn;
 };
 
-export { sendTxn, trimAddress, suiToMist, mistToSui, createBuyNBTCTxn };
+export { sendTxn, trimAddress, suiToMist, mistToSui, createBuyNBTCTxn, btcToSatoshi };
