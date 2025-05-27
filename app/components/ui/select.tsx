@@ -24,7 +24,7 @@ const SelectTrigger = React.forwardRef<
 	>
 		{children}
 		<SelectPrimitive.Icon asChild>
-			<ChevronDown className="h-4 w-4 opacity-50" />
+			<ChevronDown className="h-4 w-4 opacity-50 text-white" />
 		</SelectPrimitive.Icon>
 	</SelectPrimitive.Trigger>
 ));
@@ -39,7 +39,7 @@ const SelectScrollUpButton = React.forwardRef<
 		className={cn("flex cursor-default items-center justify-center py-1", className)}
 		{...props}
 	>
-		<ChevronUp className="h-4 w-4" />
+		<ChevronUp className="h-4 w-4" color="red" />
 	</SelectPrimitive.ScrollUpButton>
 ));
 SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName;
@@ -146,12 +146,12 @@ interface SelectInputProps extends SelectPrimitive.SelectProps {
 function SelectInput({ options, placeholder, className, ...rest }: SelectInputProps) {
 	return (
 		<Select {...rest}>
-			<SelectTrigger className={twMerge("bg-gray-800 w-1/4", className)}>
+			<SelectTrigger className={twMerge("bg-[#222529] w-1/4 h-10 rounded-[100px]", className)}>
 				<SelectValue placeholder={placeholder} />
 			</SelectTrigger>
 			<SelectContent>
 				{options?.map(({ value, label }) => (
-					<SelectItem key={value} value={value}>
+					<SelectItem key={value} value={value} className="text-white md:text-base text-sm">
 						{label}
 					</SelectItem>
 				))}

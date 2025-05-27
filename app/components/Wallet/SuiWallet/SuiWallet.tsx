@@ -83,22 +83,25 @@ function SuiWalletMobileView() {
 
 	return (
 		<div className="flex w-full gap-1 items-center md:hidden">
-			{balance?.totalBalance && (
-				<NumericFormat
-					displayType="text"
-					value={mistToSui(Number(balance.totalBalance))}
-					suffix=" SUI"
-					className="shrink-0"
-				/>
-			)}
+			<NetWorkOptions />
+			<Accounts />
 			<Popover>
 				<PopoverTrigger asChild>
 					<EllipsisVertical size={50} />
 				</PopoverTrigger>
 				<PopoverContent className="w-60">
 					<div className="grid gap-4">
-						<NetWorkOptions />
-						<Accounts />
+						<p>
+							Balance:{" "}
+							{balance?.totalBalance && (
+								<NumericFormat
+									displayType="text"
+									value={mistToSui(Number(balance.totalBalance))}
+									suffix=" SUI"
+									className="shrink-0 text-primary"
+								/>
+							)}
+						</p>
 						<Button
 							onClick={() => {
 								disconnect();
