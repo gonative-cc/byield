@@ -1,7 +1,7 @@
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
-import { FormProvider, useForm, useFormContext } from "react-hook-form";
-import { useContext, useCallback, useState, useEffect } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { useContext, useCallback, useEffect } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { ByieldWallet } from "~/types";
 import { SuiModal } from "./Wallet/SuiWallet/SuiModal";
