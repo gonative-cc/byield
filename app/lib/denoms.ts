@@ -1,6 +1,25 @@
 // This file defines denoms and  the convertion factors.
 //
 
-export const BTC_SATS = BigInt(10 ** 8);
-export const SUI_MIST = BigInt(10 ** 9);
-export const USDC = BigInt(10 ** 6);
+import { parseUnits, formatUnits } from "@ethersproject/units";
+
+export const BTC = 8; // BTC -> sats decimals
+export const SUI = 9; // SUI -> mist decimals
+export const USDC = 6;
+
+export function parse(amount: string, decimals: number): bigint {
+	const a = parseUnits(amount, decimals);
+	return a.toBigInt();
+}
+
+export function parseBTC(amount: string): bigint {
+	return parse(amount, BTC);
+}
+
+export function format(amount: bigint, decimals: number): string {
+	return formatUnits(amount, decimals);
+}
+
+export function formatBTC(amount: bigint): string {
+	return formatUnits(amount, BTC);
+}

@@ -14,9 +14,11 @@
 		"typecheck": "tsc",
 		"typegen": "wrangler types",
 		"preview": "pnpm run build && wrangler dev",
-		"db:migrate": "wrangler d1 migrations apply byield"
+		"db:migrate": "wrangler d1 migrations apply byield",
+		"test": "vitest"
 	},
 	"dependencies": {
+		"@ethersproject/units": "^5.8.0",
 		"@mysten/dapp-kit": "^0.16.1",
 		"@mysten/sui": "^1.29.0",
 		"@radix-ui/react-dialog": "^1.1.13",
@@ -74,6 +76,7 @@
 		"typescript": "^5.8.3",
 		"vite": "^6.2.6",
 		"vite-tsconfig-paths": "^4.3.2",
+		"vitest": "^3.1.4",
 		"wrangler": "^4.14.1"
 	},
 	"engines": {
