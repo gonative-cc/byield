@@ -183,7 +183,7 @@ export function BuyNBTC() {
 	const transaction = watch("transaction");
 	const fee = watch("fee");
 
-	const suiAmountMist = useMemo(() => suiToMist(BigNumber(suiAmount)), [suiAmount]);
+	const suiAmountMist = useMemo(() => suiToMist(BigNumber(suiAmount ?? 0)), [suiAmount]);
 
 	useEffect(() => {
 		if (account && suiAmount) {
