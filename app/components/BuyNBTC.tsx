@@ -218,7 +218,7 @@ export function BuyNBTC() {
 			}
 		}
 		getFee();
-	}, [balance, client, setValue, suiAmount, suiAmountMist, transaction, trigger]);
+	}, [balance?.totalBalance, client, setValue, suiAmount, suiAmountMist, transaction, trigger]);
 
 	const handleTransaction = useCallback(async () => {
 		if (!fee) {
