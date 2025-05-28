@@ -126,7 +126,7 @@ export function MintBTC() {
 						/>
 						<Percentage
 							onChange={(value: number) => {
-								const val = BigInt((Number(balance) * value) / 100);
+								const val = (balance * BigInt(value)) / BigInt(100);
 								setValue("numberOfBTC", formatBTC(val));
 							}}
 						/>
