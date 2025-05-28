@@ -3,8 +3,8 @@ import { parseUnits, formatUnits } from "@ethersproject/units";
 export const BTC = 8; // BTC -> sats decimals
 export const SUI = 9; // SUI -> mist decimals
 export const USDC = 6;
+export const SUI_MIST = parseUnits("10", SUI).toBigInt();
 export const SATOSHIS_PER_BTC = parseUnits("10", BTC).toBigInt();
-export const MIST_PER_SUI = parseUnits("10", SUI).toBigInt();
 
 export const parse = (amount: string, decimals: number): bigint => {
 	const a = parseUnits(amount, decimals);

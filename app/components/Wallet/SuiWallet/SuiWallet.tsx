@@ -97,7 +97,7 @@ function SuiWalletMobileView() {
 							{balance?.totalBalance && (
 								<NumericFormat
 									displayType="text"
-									value={formatSUI(balance?.totalBalance)} 
+									value={formatSUI(balance?.totalBalance)}
 									suffix=" SUI"
 									className="shrink-0 text-primary"
 								/>
