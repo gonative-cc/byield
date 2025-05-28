@@ -10,7 +10,7 @@ import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { ByieldWallet } from "~/types";
 import { FormNumericInput } from "./form/FormNumericInput";
 import { NumericFormat } from "react-number-format";
-import { formatBTC, parseBTC, SATOSHIS_PER_BTC } from "~/lib/denoms";
+import { formatBTC, parseBTC } from "~/lib/denoms";
 
 const PERCENTAGES = [
 	{
@@ -93,7 +93,7 @@ export function MintBTC() {
 	const { handleSubmit, watch, setValue } = mintNBTCForm;
 	const numberOfBTC = watch("numberOfBTC");
 
-	const feeInSatoshis = SATOSHIS_PER_BTC;
+	const feeInSatoshis = BigInt(10);
 	const youReceive = parseBTC(numberOfBTC || "0") - feeInSatoshis;
 
 	return (

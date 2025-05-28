@@ -17,7 +17,7 @@ import { FormNumericInput } from "./form/FormNumericInput";
 import { classNames } from "~/lib/utils";
 import { Modal } from "./ui/dialog";
 import { NumericFormat } from "react-number-format";
-import { suiToMist, mistToSUI, parseMIST, parseSUI } from "~/lib/denoms";
+import { formatSUI, parseMIST, parseSUI } from "~/lib/denoms";
 
 interface FeeProps {
 	fee: string;
@@ -184,7 +184,7 @@ export function BuyNBTC() {
 	const transaction = watch("transaction");
 	const fee = watch("fee");
 
-	const suiAmountMist: bigint = useMemo(() => suiToMist(suiAmount || "0"), [suiAmount]);
+	const suiAmountMist: bigint = useMemo(() => parseSUI(suiAmount || "0"), [suiAmount]);
 
 	useEffect(() => {
 		if (account && suiAmount) {
@@ -263,7 +263,7 @@ export function BuyNBTC() {
 	const youReceive = useMemo(() => {
 		if (fee) {
 			const mistAmountAfterFee = suiAmountMist - fee;
-			return Number(mistToSUI(mistAmountAfterFee)) / PRICE_PER_NBTC_IN_SUI;
+			return Number(formatSUI(mistAmountAfterFee)) / PRICE_PER_NBTC_IN_SUI;
 		}
 	}, [fee, suiAmountMist]);
 
@@ -338,7 +338,7 @@ export function BuyNBTC() {
 							</span>
 						</div>
 						{isSuiWalletConnected && fee && youReceive && youReceive > 0 && (
-							<Fee fee={mistToSUI(fee)} />
+							<Fee fee={formatSUI(fee)} />
 						)}
 						{renderFormFooter()}
 					</CardContent>
