@@ -17,17 +17,17 @@ import { FormNumericInput } from "./form/FormNumericInput";
 import { classNames } from "~/lib/utils";
 import { Modal } from "./ui/dialog";
 import { NumericFormat } from "react-number-format";
-import { formatSUI, parseMIST, parseSUI } from "~/lib/denoms";
-
-interface FeeProps {
-	fee: string;
-}
+import { formatSUI, parseSUI } from "~/lib/denoms";
 
 interface BuyNBTCForm {
 	suiAmount: string;
 	amountOfNBTC: string;
 	transaction: Transaction | null;
 	fee?: bigint;
+}
+
+interface FeeProps {
+	fee: bigint;
 }
 
 function Fee({ fee }: FeeProps) {
@@ -38,7 +38,7 @@ function Fee({ fee }: FeeProps) {
 					<p className="text-gray-400 text-sm">Estimated Gas Fee</p>
 					<NumericFormat
 						displayType="text"
-						value={fee}
+						value={formatSUI(fee)}
 						suffix=" SUI"
 						allowNegative={false}
 						className="text-sm"
@@ -187,11 +187,11 @@ export function BuyNBTC() {
 	const suiAmountMist: bigint = useMemo(() => parseSUI(suiAmount || "0"), [suiAmount]);
 
 	useEffect(() => {
-		if (account && suiAmount) {
+		if (account && suiAmountMist) {
 			const txn = createBuyNBTCTxn(account?.address, suiAmountMist, nbtcOTC);
 			setValue("transaction", txn);
 		}
-	}, [account, module, nbtcOTC, packageId, setValue, suiAmount, suiAmountMist, swapFunction, vaultId]);
+	}, [account, nbtcOTC, setValue, suiAmountMist]);
 
 	useEffect(() => {
 		async function getFee() {
@@ -202,17 +202,15 @@ export function BuyNBTC() {
 				});
 				if (dryRunResult?.effects?.gasUsed) {
 					const { computationCost, storageCost, storageRebate } = dryRunResult.effects.gasUsed;
-					const totalGasFee =
-						parseMIST(computationCost) + parseMIST(storageCost) - parseMIST(storageRebate);
-					let totalFee = totalGasFee;
+					let totalGasFee = BigInt(computationCost) + BigInt(storageCost) - BigInt(storageRebate);
 					// keep buffer balance in case user try to use all max balance
-					const bufferBalanceInMist = parseMIST(BUFFER_BALANCE.toString());
+					const bufferBalanceInMist = BigInt(BUFFER_BALANCE);
 					const isThereBufferBalanceAvailable =
-						parseMIST(balance?.totalBalance) - suiAmountMist >= bufferBalanceInMist;
+						BigInt(balance?.totalBalance) - suiAmountMist >= bufferBalanceInMist;
 					if (!isThereBufferBalanceAvailable) {
-						totalFee += bufferBalanceInMist;
+						totalGasFee += bufferBalanceInMist;
 					}
-					setValue("fee", totalFee);
+					setValue("fee", totalGasFee);
 					trigger("suiAmount");
 				}
 			}
@@ -221,7 +219,7 @@ export function BuyNBTC() {
 	}, [balance?.totalBalance, client, setValue, suiAmount, suiAmountMist, transaction, trigger]);
 
 	const handleTransaction = useCallback(async () => {
-		if (!fee) {
+		if (fee === undefined) {
 			console.error("Fee is not available. Cannot proceed with the transaction.");
 			return;
 		}
@@ -304,7 +302,7 @@ export function BuyNBTC() {
 								validate: {
 									isWalletConnected: () => isSuiWalletConnected || "Please connect SUI wallet",
 									balance: (value: string) =>
-										(balance?.totalBalance && parseSUI(value) <= parseMIST(balance.totalBalance)) ||
+										(balance?.totalBalance && parseSUI(value) <= BigInt(balance.totalBalance)) ||
 										"Not enough balance available",
 									smallAmount: () => {
 										if (!isSuiWalletConnected || (youReceive && youReceive > 0)) return true;
@@ -320,11 +318,7 @@ export function BuyNBTC() {
 								className="h-16"
 								value={isSuiWalletConnected && youReceive && youReceive > 0 ? youReceive : "0.0"}
 								allowNegative={false}
-								placeholder={
-									isSuiWalletConnected && youReceive && youReceive <= 0 && isSuiWalletConnected
-										? "0.0"
-										: ""
-								}
+								placeholder={isSuiWalletConnected && youReceive && youReceive <= 0 ? "0.0" : ""}
 								readOnly
 								rightAdornments={
 									<div className="flex gap-2 items-center mr-2">
@@ -337,9 +331,7 @@ export function BuyNBTC() {
 								This is a fixed price buy. The price is 25,000 SUI / nBTC.
 							</span>
 						</div>
-						{isSuiWalletConnected && fee && youReceive && youReceive > 0 && (
-							<Fee fee={formatSUI(fee)} />
-						)}
+						{isSuiWalletConnected && fee && youReceive && youReceive > 0 && <Fee fee={fee} />}
 						{renderFormFooter()}
 					</CardContent>
 				</Card>

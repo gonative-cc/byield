@@ -11,6 +11,7 @@ import { ByieldWallet } from "~/types";
 import { FormNumericInput } from "./form/FormNumericInput";
 import { NumericFormat } from "react-number-format";
 import { formatBTC, parseBTC } from "~/lib/denoms";
+import { nBTCMintFeeInSatoshi } from "~/constant";
 
 const PERCENTAGES = [
 	{
@@ -50,7 +51,7 @@ function Percentage({ onChange }: { onChange: (value: number) => void }) {
 }
 
 interface FeeProps {
-	feeInSatoshis: string;
+	feeInSatoshis: bigint;
 	youReceive: string;
 }
 
@@ -60,7 +61,7 @@ function Fee({ feeInSatoshis, youReceive }: FeeProps) {
 			<CardContent className="flex flex-col justify-between h-full p-0">
 				<div className="flex justify-between">
 					<p className="text-gray-400">Fixed Fee</p>
-					<NumericFormat displayType="text" value={feeInSatoshis} suffix=" Satoshi" />
+					<NumericFormat displayType="text" value={formatBTC(feeInSatoshis)} suffix=" Satoshi" />
 				</div>
 				<div className="flex justify-between">
 					<p className="text-gray-400">You Receive</p>
@@ -93,8 +94,7 @@ export function MintBTC() {
 	const { handleSubmit, watch, setValue } = mintNBTCForm;
 	const numberOfBTC = watch("numberOfBTC");
 
-	const feeInSatoshis = BigInt(10);
-	const youReceive = parseBTC(numberOfBTC || "0") - feeInSatoshis;
+	const youReceive = parseBTC(numberOfBTC || "0") - nBTCMintFeeInSatoshi;
 
 	return (
 		<FormProvider {...mintNBTCForm}>
@@ -137,7 +137,7 @@ export function MintBTC() {
 							className="h-16"
 						/>
 						{youReceive && (
-							<Fee feeInSatoshis={formatBTC(feeInSatoshis)} youReceive={formatBTC(youReceive)} />
+							<Fee feeInSatoshis={nBTCMintFeeInSatoshi} youReceive={formatBTC(youReceive)} />
 						)}
 						<Button type="submit">Deposit BTC and mint nBTC</Button>
 						<div className="flex justify-between">

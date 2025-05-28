@@ -69,3 +69,4 @@ export const vaults: DApp[] = [
 
 export const PRICE_PER_NBTC_IN_SUI = 25000;
 export const BUFFER_BALANCE = 10000000;
+export const nBTCMintFeeInSatoshi = BigInt(10);

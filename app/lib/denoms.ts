@@ -1,3 +1,5 @@
+// This file defines denoms and  the convertion factors.
+//
 import { parseUnits, formatUnits } from "@ethersproject/units";
 
 export const BTC = 8; // BTC -> sats decimals
@@ -11,10 +13,6 @@ export function parse(amount: string, decimals: number): bigint {
 
 export function parseBTC(amount: string): bigint {
 	return parse(amount, BTC);
-}
-
-export function parseMIST(amount: string): bigint {
-	return parse(amount, 0);
 }
 
 export function format(amount: bigint, decimals: number): string {
