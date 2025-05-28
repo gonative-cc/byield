@@ -9,11 +9,12 @@ import { SelectInput, type Option } from "../../ui/select";
 import { Button } from "../../ui/button";
 import { useCallback, useContext, useMemo } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
-import { mistToSui, trimAddress } from "~/util/util";
+import { trimAddress } from "~/util/util";
 import { useSuiBalance } from "./useSuiBalance";
 import { NumericFormat } from "react-number-format";
 import { EllipsisVertical } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
+import { formatSUI } from "~/lib/denoms";
 
 enum SuiNetwork {
 	TestNet = "testnet",
@@ -96,7 +97,7 @@ function SuiWalletMobileView() {
 							{balance?.totalBalance && (
 								<NumericFormat
 									displayType="text"
-									value={mistToSui(Number(balance.totalBalance))}
+									value={formatSUI(balance?.totalBalance)} 
 									suffix=" SUI"
 									className="shrink-0 text-primary"
 								/>
@@ -129,11 +130,7 @@ export function SuiWallet() {
 				<NetWorkOptions />
 				<Accounts />
 				{balance?.totalBalance && (
-					<NumericFormat
-						displayType="text"
-						value={mistToSui(Number(balance.totalBalance))}
-						suffix=" SUI"
-					/>
+					<NumericFormat displayType="text" value={formatSUI(balance?.totalBalance)} suffix=" SUI" />
 				)}
 				<Button
 					onClick={() => {

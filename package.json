@@ -35,7 +35,6 @@
 		"@types/react-table": "^7.7.20",
 		"Buffer": "^0.0.0",
 		"axios": "^1.9.0",
-		"bignumber.js": "^9.3.0",
 		"bip32": "5.0.0-rc.0",
 		"bitcoinjs-lib": "^6.1.7",
 		"class-variance-authority": "^0.7.1",
