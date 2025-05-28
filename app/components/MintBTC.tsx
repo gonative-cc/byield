@@ -51,17 +51,17 @@ function Percentage({ onChange }: { onChange: (value: number) => void }) {
 }
 
 interface FeeProps {
-	feeInSatoshis: bigint;
+	feeInSatoshi: bigint;
 	youReceive: string;
 }
 
-function Fee({ feeInSatoshis, youReceive }: FeeProps) {
+function Fee({ feeInSatoshi, youReceive }: FeeProps) {
 	return (
 		<Card className="p-4 bg-azure-10 rounded-2xl h-24">
 			<CardContent className="flex flex-col justify-between h-full p-0">
 				<div className="flex justify-between">
 					<p className="text-gray-400">Fixed Fee</p>
-					<NumericFormat displayType="text" value={formatBTC(feeInSatoshis)} suffix=" Satoshi" />
+					<NumericFormat displayType="text" value={formatBTC(feeInSatoshi)} suffix=" Satoshi" />
 				</div>
 				<div className="flex justify-between">
 					<p className="text-gray-400">You Receive</p>
@@ -137,7 +137,7 @@ export function MintBTC() {
 							className="h-16"
 						/>
 						{youReceive && (
-							<Fee feeInSatoshis={nBTCMintFeeInSatoshi} youReceive={formatBTC(youReceive)} />
+							<Fee feeInSatoshi={nBTCMintFeeInSatoshi} youReceive={formatBTC(youReceive)} />
 						)}
 						<Button type="submit">Deposit BTC and mint nBTC</Button>
 						<div className="flex justify-between">
