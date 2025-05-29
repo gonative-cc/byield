@@ -10,6 +10,8 @@ import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { ByieldWallet } from "~/types";
 import { FormNumericInput } from "./form/FormNumericInput";
 import { NumericFormat } from "react-number-format";
+import { formatBTC, parseBTC } from "~/lib/denoms";
+import { nBTCMintFeeInSatoshi } from "~/constant";
 
 const PERCENTAGES = [
 	{
@@ -49,17 +51,17 @@ function Percentage({ onChange }: { onChange: (value: number) => void }) {
 }
 
 interface FeeProps {
-	feeInSatoshis: number;
-	youReceive: number;
+	feeInSatoshi: bigint;
+	youReceive: string;
 }
 
-function Fee({ feeInSatoshis, youReceive }: FeeProps) {
+function Fee({ feeInSatoshi, youReceive }: FeeProps) {
 	return (
 		<Card className="p-4 bg-azure-10 rounded-2xl h-24">
 			<CardContent className="flex flex-col justify-between h-full p-0">
 				<div className="flex justify-between">
 					<p className="text-gray-400">Fixed Fee</p>
-					<p>{feeInSatoshis} Satoshi</p>
+					<NumericFormat displayType="text" value={formatBTC(feeInSatoshi)} suffix=" Satoshi" />
 				</div>
 				<div className="flex justify-between">
 					<p className="text-gray-400">You Receive</p>
@@ -79,7 +81,7 @@ export function MintBTC() {
 	const { balance: walletBalance } = useXverseWallet();
 	const { connectedWallet } = useContext(WalletContext);
 	const isBitCoinWalletConnected = connectedWallet === ByieldWallet.Xverse;
-	const balance = Number(walletBalance);
+	const balance = parseBTC(walletBalance ?? "0");
 	const mintNBTCForm = useForm<MintNBTCForm>({
 		mode: "all",
 		reValidateMode: "onChange",
@@ -88,13 +90,11 @@ export function MintBTC() {
 			suiAddress: "",
 		},
 	});
+
 	const { handleSubmit, watch, setValue } = mintNBTCForm;
 	const numberOfBTC = watch("numberOfBTC");
 
-	// satoshi. 1BTC = 10^8 satoshi
-	const feeInSatoshis = 0.00000001;
-	// TODO: https://github.com/gonative-cc/byield/issues/56
-	const youReceive = Number(numberOfBTC) - feeInSatoshis;
+	const youReceive = parseBTC(numberOfBTC || "0") - nBTCMintFeeInSatoshi;
 
 	return (
 		<FormProvider {...mintNBTCForm}>
@@ -106,7 +106,7 @@ export function MintBTC() {
 			>
 				<Card>
 					<CardContent className="p-6 rounded-lg text-white flex flex-col gap-4 bg-azure-10">
-						{walletBalance && isBitCoinWalletConnected && (
+						{isBitCoinWalletConnected && walletBalance && (
 							<BitcoinBalance availableBalance={walletBalance} />
 						)}
 						<FormNumericInput
@@ -120,14 +120,14 @@ export function MintBTC() {
 									isWalletConnected: () =>
 										isBitCoinWalletConnected || "Please connect Bitcoin wallet",
 									balance: (value: string) =>
-										Number(value) <= balance || "Not enough balance available",
+										parseBTC(value) <= balance || "Not enough balance available",
 								},
 							}}
 						/>
 						<Percentage
 							onChange={(value: number) => {
-								const val = balance * Number(value / 100);
-								setValue("numberOfBTC", val.toString());
+								const val = (balance * BigInt(value)) / BigInt(100);
+								setValue("numberOfBTC", formatBTC(val));
 							}}
 						/>
 						<FormInput
@@ -136,7 +136,9 @@ export function MintBTC() {
 							placeholder="Enter destination Sui Address..."
 							className="h-16"
 						/>
-						<Fee feeInSatoshis={feeInSatoshis} youReceive={youReceive} />
+						{youReceive && (
+							<Fee feeInSatoshi={nBTCMintFeeInSatoshi} youReceive={formatBTC(youReceive)} />
+						)}
 						<Button type="submit">Deposit BTC and mint nBTC</Button>
 						<div className="flex justify-between">
 							<span>TX ID: b99d9a361ac9db3...</span>

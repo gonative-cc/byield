@@ -1,4 +1,3 @@
-import { MIST_PER_SUI } from "@mysten/sui/utils";
 import * as bitcoin from "bitcoinjs-lib";
 import Wallet, { Address } from "sats-connect";
 import { fetchUTXOs, fetchValidateAddress } from "~/api/api";
@@ -6,14 +5,6 @@ import { nBTC_ADDR } from "~/constants";
 import { ToastFunction } from "~/hooks/use-toast";
 import { UTXO, ValidateAddressI } from "~/types";
 import { Transaction } from "@mysten/sui/transactions";
-
-const mistToSui = (amountInMist: number): number => {
-	return amountInMist / Number(MIST_PER_SUI);
-};
-
-const suiToMist = (amountInSUI: number): bigint => {
-	return BigInt(Math.floor(amountInSUI * Number(MIST_PER_SUI)));
-};
 
 const sendTxn = async (
 	bitcoinAddress: Address,
@@ -103,7 +94,7 @@ type Targets = { packageId: string; module: string; swapFunction: string; vaultI
 
 const createBuyNBTCTxn = (
 	senderAddress: string,
-	suiAmountMist: number,
+	suiAmountMist: bigint,
 	{ packageId, module, swapFunction, vaultId }: Targets,
 ): Transaction => {
 	const txn = new Transaction();
@@ -116,4 +107,4 @@ const createBuyNBTCTxn = (
 	return txn;
 };
 
-export { sendTxn, trimAddress, suiToMist, mistToSui, createBuyNBTCTxn };
+export { sendTxn, trimAddress, createBuyNBTCTxn };
