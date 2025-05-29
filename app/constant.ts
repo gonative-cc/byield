@@ -7,7 +7,7 @@ export const vaults: DApp[] = [
 		labels: ["Boosted", "Farming"],
 		apy: 11.71,
 		chain: "30.555$",
-		logo: "/public/assets/ui-icons/market/desigVault.svg",
+		logo: "/assets/ui-icons/market/desigVault.svg",
 	},
 	{
 		name: "Bucket Protocol",
@@ -15,7 +15,7 @@ export const vaults: DApp[] = [
 		labels: ["Boosted", "Farming"],
 		apy: 5.71,
 		chain: "23.555$",
-		logo: "/public/assets/ui-icons/market/bucketProtocol.svg",
+		logo: "/assets/ui-icons/market/bucketProtocol.svg",
 	},
 	{
 		name: "Navi Protocol Vault",
@@ -23,7 +23,7 @@ export const vaults: DApp[] = [
 		labels: ["Boosted", "Farming"],
 		apy: 10.71,
 		chain: "12.215$",
-		logo: "/public/assets/ui-icons/market/naviProtocolValut.svg",
+		logo: "/assets/ui-icons/market/naviProtocolValut.svg",
 	},
 	{
 		name: "Splash",
@@ -31,7 +31,7 @@ export const vaults: DApp[] = [
 		labels: ["Boosted", "Farming"],
 		apy: 1.44,
 		chain: "20.085$",
-		logo: "/public/assets/ui-icons/market/splash.svg",
+		logo: "/assets/ui-icons/market/splash.svg",
 	},
 	{
 		name: "Pyth Network",
@@ -39,7 +39,7 @@ export const vaults: DApp[] = [
 		labels: ["Boosted", "Farming"],
 		apy: 9.71,
 		chain: "27.715$",
-		logo: "/public/assets/ui-icons/market/pythNetwork.svg",
+		logo: "/assets/ui-icons/market/pythNetwork.svg",
 	},
 	{
 		name: "Scallop",
@@ -47,7 +47,7 @@ export const vaults: DApp[] = [
 		labels: ["Boosted", "Farming"],
 		apy: 2.71,
 		chain: "29.885$",
-		logo: "/public/assets/ui-icons/market/scallop.svg",
+		logo: "/assets/ui-icons/market/scallop.svg",
 	},
 	{
 		name: "BlueMove",
@@ -55,7 +55,7 @@ export const vaults: DApp[] = [
 		labels: ["Boosted", "Farming"],
 		apy: 2.71,
 		chain: "11.235$",
-		logo: "/public/assets/ui-icons/market/blueMove.svg",
+		logo: "/assets/ui-icons/market/blueMove.svg",
 	},
 	{
 		name: "OmniBTC",
@@ -63,7 +63,7 @@ export const vaults: DApp[] = [
 		labels: ["Boosted", "Farming"],
 		apy: 0.56,
 		chain: "00.805$",
-		logo: "/public/assets/ui-icons/market/omniBtc.svg",
+		logo: "/assets/ui-icons/market/omniBtc.svg",
 	},
 ];
 
