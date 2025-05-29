@@ -221,6 +221,7 @@ export function BuyNBTC() {
 
 	const handleTransaction = useCallback(async () => {
 		if (gasFee === undefined) {
+			console.error("Gas fee is not available. Cannot proceed with the transaction.");
 			toast({
 				title: "Buy nBTC",
 				description: "Gas fee is not available. Cannot proceed with the transaction.",
@@ -229,6 +230,7 @@ export function BuyNBTC() {
 			return;
 		}
 		if (!account) {
+			console.error("Account is not available. Cannot proceed with the transaction.");
 			toast({
 				title: "Buy nBTC",
 				description: "Account is not available. Cannot proceed with the transaction.",
