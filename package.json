@@ -3,7 +3,7 @@
 	"private": true,
 	"sideEffects": false,
 	"type": "module",
-	"packageManager": "pnpm",
+	"packageManager": "pnpm@10.11.0",
 	"scripts": {
 		"prepare": "cd .git/hooks; ln -s -f ../../contrib/git-hooks/pre-commit ./",
 		"build": "remix vite:build",
