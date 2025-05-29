@@ -1,8 +1,9 @@
 #:schema node_modules/wrangler/config-schema.json
 # For more details on how to configure Wrangler, refer to:
 # https://developers.cloudflare.com/workers/wrangler/configuration/
-name = "byiled"
-compatibility_date = "2025-04-13"
+name = "byield-dev"
+compatibility_date = "2025-05-29"
+compatibility_flags = [ "nodejs_compat" ]
 main = "./server.ts"
 
 [assets]
@@ -45,7 +46,7 @@ enabled = true
 
 [[d1_databases]]
 binding = "DB"
-database_name = "byield"
-database_id = "db_id"
+database_name = "byield-dev"
+database_id = "e0772a14-1734-4eab-b193-84675dd08a20"
 migrations_table = "migrations"
 migrations_dir = "./db/migrations/"
