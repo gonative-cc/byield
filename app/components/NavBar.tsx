@@ -1,6 +1,6 @@
 import { Link } from "@remix-run/react";
 import { Button } from "~/components/ui/button";
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import { XverseWallet } from "./Wallet/XverseWallet/XverseWallet";
 import { SuiWallet } from "./Wallet/SuiWallet/SuiWallet";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
@@ -39,12 +39,10 @@ function SelectWallet({ isAppModeProduction }: SelectWalletProps) {
 	);
 }
 
-export function NavBar() {
-	const isProd = isProduction();
-
-	let navbar: NavMenuItem[] = [];
+const createNavMenu = (isProd: boolean) => {
+	let items: NavMenuItem[] = [];
 	if (!isProd) {
-		navbar = [
+		items = [
 			{
 				id: "navigation-1",
 				title: "Buy nBTC",
@@ -62,6 +60,13 @@ export function NavBar() {
 			},
 		];
 	}
+	return <NavMenu items={items} />;
+};
+
+export function NavBar() {
+	const isProd = isProduction();
+
+	const navmenu = useMemo(() => createNavMenu(isProd), [isProd]);
 
 	return (
 		<header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -72,9 +77,7 @@ export function NavBar() {
 						<img src="/assets/app-logos/logo-mobile.svg" alt="Remix" className="block md:hidden" />
 					</div>
 				</Link>
-				<div className="flex flex-1 justify-center">
-					<NavMenu items={navbar} />
-				</div>
+				<div className="flex flex-1 justify-center" children={navmenu} />
 				<div className="flex flex-1 items-center justify-end gap-4">
 					<SelectWallet isAppModeProduction={isProd} />
 				</div>
