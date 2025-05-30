@@ -7,8 +7,6 @@ const endsWithNBTC = (input: string): boolean => {
 	return regex.test(input);
 };
 
-// unfortunately, SUI doesn't have their own hook to get the balance at the moment
-// useSuiBalance fetches the SUI balance in mist
 export const useNBTCBalance = () => {
 	const suiClient = useSuiClient();
 	const account = useCurrentAccount();
