@@ -1,26 +1,21 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSuiClient, useCurrentAccount } from "@mysten/dapp-kit";
 import type { CoinBalance } from "@mysten/sui/client";
-
-const endsWithNBTC = (input: string): boolean => {
-	const regex = /NBTC$/;
-	return regex.test(input);
-};
+import { NBTC_COINT_TYPE } from "~/constant";
 
 export const useNBTCBalance = () => {
 	const suiClient = useSuiClient();
 	const account = useCurrentAccount();
 	const queryClient = useQueryClient();
 
-	const fetchBalance = async (): Promise<CoinBalance | undefined> => {
+	const fetchBalance = async (): Promise<CoinBalance | null> => {
 		if (!account) {
-			return undefined;
+			return null;
 		}
-		const coins = await suiClient.getAllBalances({
+		return await suiClient.getBalance({
 			owner: account.address,
+			coinType: NBTC_COINT_TYPE,
 		});
-
-		return coins.find((coin) => endsWithNBTC(coin.coinType));
 	};
 
 	const queryKey = ["nBTCBalance", account?.address];
