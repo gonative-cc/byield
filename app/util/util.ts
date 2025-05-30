@@ -5,8 +5,6 @@ import { nBTC_ADDR } from "~/constants";
 import { ToastFunction } from "~/hooks/use-toast";
 import { UTXO, ValidateAddressI } from "~/types";
 import { Transaction } from "@mysten/sui/transactions";
-import { SuiClient } from "@mysten/sui/client";
-import { BUFFER_BALANCE } from "~/constant";
 
 const sendTxn = async (
 	bitcoinAddress: Address,
