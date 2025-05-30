@@ -10,7 +10,7 @@ export function NBTCBalance({ balance }: NBTCBalanceProps) {
 		<div className="flex items-center gap-4 bg-white-3 p-3.5 rounded-2xl">
 			<img src="/nbtc.svg" alt="Bitcoin" className="w-7 h-7" />
 			<div className="flex flex-col gap-1">
-				<span>Available balance</span>
+				<span>Your nBTC Balance</span>
 				<NumericFormat
 					displayType="text"
 					value={formatSUI(balance)}
