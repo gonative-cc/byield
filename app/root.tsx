@@ -8,7 +8,8 @@ import { SuiClientProvider, WalletProvider as SuiWalletProvider } from "@mysten/
 import { Toaster } from "./components/ui/toaster";
 import { Tooltip, TooltipProvider } from "./components/ui/tooltip";
 import { ByieldWalletProvider } from "./providers/ByieldWalletProvider";
-import { printAppEnv } from "./lib/appenv";
+import { isProduction, printAppEnv } from "./lib/appenv";
+import { useEffect } from "react";
 
 const queryClient = new QueryClient();
 
@@ -42,7 +43,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 function NativeApp({ children }: { children: React.ReactNode }) {
-	printAppEnv();
+	useEffect(() => {
+		if (!isProduction()) {
+			printAppEnv();
+		}
+	}, []);
 
 	return (
 		<>
