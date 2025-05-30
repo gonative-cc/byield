@@ -1,24 +1,26 @@
-import { Card, CardContent } from "./ui/card";
-import { Button } from "./ui/button";
+import { Card, CardContent } from "../ui/card";
+import { Button } from "../ui/button";
 import { FormProvider, useForm } from "react-hook-form";
 import { useContext, useCallback, useEffect, useMemo } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { ByieldWallet } from "~/types";
-import { SuiModal } from "./Wallet/SuiWallet/SuiModal";
+import { SuiModal } from "../Wallet/SuiWallet/SuiModal";
 import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
 import { useNetworkVariables } from "~/networkConfig";
 import { createBuyNBTCTxn } from "~/util/util";
 import { BUFFER_BALANCE, PRICE_PER_NBTC_IN_SUI } from "~/constant";
-import { Link } from "@remix-run/react";
-import { ArrowDown, Check, CircleX } from "lucide-react";
-import { useSuiBalance } from "./Wallet/SuiWallet/useSuiBalance";
-import { FormNumericInput } from "./form/FormNumericInput";
-import { classNames } from "~/lib/utils";
-import { Modal } from "./ui/dialog";
-import { NumericFormat } from "react-number-format";
+import { ArrowDown } from "lucide-react";
+import { useSuiBalance } from "../Wallet/SuiWallet/useSuiBalance";
+import { FormNumericInput } from "../form/FormNumericInput";
+import { Modal } from "../ui/dialog";
 import { formatSUI, parseSUI } from "~/lib/denoms";
 import { useToast } from "~/hooks/use-toast";
+import { useNBTCBalance } from "../Wallet/SuiWallet/useNBTCBalance";
+import { NBTCBalance } from "./NBTCBalance";
+import { Instructions } from "./Instructions";
+import { SUIGasFee } from "./SUIGasFee";
+import { TransactionStatus } from "./TransactionStatus";
 
 interface BuyNBTCForm {
 	suiAmount: string;
@@ -27,134 +29,15 @@ interface BuyNBTCForm {
 	gasFee?: bigint;
 }
 
-interface FeeProps {
-	gasFee: bigint;
-}
-
-function Fee({ gasFee }: FeeProps) {
-	return (
-		<Card className="p-4 bg-azure-10 rounded-2xl h-14">
-			<CardContent className="flex flex-col justify-between h-full p-0">
-				<div className="flex justify-between">
-					<p className="text-gray-400 text-sm">Estimated Gas Fee</p>
-					<NumericFormat
-						displayType="text"
-						value={formatSUI(gasFee)}
-						suffix=" SUI"
-						allowNegative={false}
-						className="text-sm"
-					/>
-				</div>
-			</CardContent>
-		</Card>
-	);
-}
-
-function Instructions() {
-	const account = useCurrentAccount();
-	return (
-		<Card className="p-4 bg-azure-10 rounded-2xl">
-			<CardContent className="flex flex-col justify-between p-0">
-				<h2 className="mb-2 font-semibold text-gray-900 dark:text-white">Instructions:</h2>
-				<ul className="space-y-2 text-gray-500 list-disc list-inside dark:text-gray-400">
-					<li>Click on Connect Sui Wallet button, if not already connected.</li>
-					<li>Use the Slush wallet.</li>
-					<li>
-						Make sure you have testnet Sui tokens:
-						<ul className="ps-8 mt-2 space-y-1 list-disc list-outside">
-							<li>
-								<Link
-									target="_blank"
-									to={`https://faucet.sui.io/?network=testnet&address=${account?.address}`}
-									rel="noreferrer"
-								>
-									<Button type="button" variant="link" className="p-0">
-										Request Sui Tokens from faucet.
-									</Button>
-								</Link>
-							</li>
-							<li>
-								You can also check{" "}
-								<Link
-									target="_blank"
-									to="https://docs.sui.io/guides/developer/getting-started/get-coins"
-									rel="noreferrer"
-								>
-									<Button type="button" variant="link" className="p-0">
-										alternative faucets.
-									</Button>
-								</Link>
-							</li>
-						</ul>
-					</li>
-				</ul>
-			</CardContent>
-		</Card>
-	);
-}
-
-interface TransactionStatusProps {
-	isSuccess: boolean;
-	txnId?: string;
-	handleRetry: () => void;
-}
-
-function TransactionStatus({ isSuccess, txnId, handleRetry }: TransactionStatusProps) {
-	const Icon = isSuccess ? Check : CircleX;
-
-	return (
-		<div className="p-4 rounded-lg text-white flex flex-col gap-4">
-			<div className="flex flex-col items-center gap-2">
-				<Icon
-					className={classNames({
-						"text-green-500": isSuccess,
-						"text-red-500": !isSuccess,
-					})}
-					size={30}
-				/>{" "}
-				{isSuccess ? "Success" : "Failed"}
-			</div>
-			<div className="flex flex-col gap-2 items-center">
-				{isSuccess && (
-					<div className="max-w-md mx-auto p-4 text-center">
-						<p className="text-sm leading-relaxed">
-							If you want to increase your chances to be whitelisted for BTCFi Beelievers NFT, please
-							fill this{" "}
-							<Link
-								target="_blank"
-								to="https://forms.gle/Hu4WUSfgQkp1xsyNA"
-								rel="noreferrer"
-								className="text-primary underline"
-							>
-								form.
-							</Link>
-						</p>
-					</div>
-				)}
-				{txnId && (
-					<Link
-						target="_blank"
-						to={`https://suiscan.xyz/testnet/tx/${txnId}`}
-						rel="noreferrer"
-						className="m-0 p-0 justify-center flex w-full text-primary max-w-fit text-sm"
-					>
-						Check Transaction Details
-					</Link>
-				)}
-			</div>
-			<Button onClick={handleRetry}>{isSuccess ? "Ok" : "Retry"}</Button>
-		</div>
-	);
-}
-
 export function BuyNBTC() {
 	const { toast } = useToast();
+	const { balance: nBTCBalance, refetchBalance: refetchNBTCBalance } = useNBTCBalance();
 	const { connectedWallet } = useContext(WalletContext);
 	const isSuiWalletConnected = connectedWallet === ByieldWallet.SuiWallet;
 	const client = useSuiClient();
 	const account = useCurrentAccount();
 	const { nbtcOTC } = useNetworkVariables();
-	const { balance, refetchBalance } = useSuiBalance();
+	const { balance, refetchSUIBalance } = useSuiBalance();
 	const {
 		mutate: signAndExecuteTransaction,
 		reset: resetMutation,
@@ -245,10 +128,22 @@ export function BuyNBTC() {
 				transaction: txn,
 			},
 			{
-				onSettled: () => refetchBalance(),
+				onSettled: () => {
+					refetchSUIBalance();
+					refetchNBTCBalance();
+				},
 			},
 		);
-	}, [gasFee, account, mistAmount, nbtcOTC, signAndExecuteTransaction, toast, refetchBalance]);
+	}, [
+		gasFee,
+		account,
+		mistAmount,
+		nbtcOTC,
+		signAndExecuteTransaction,
+		toast,
+		refetchSUIBalance,
+		refetchNBTCBalance,
+	]);
 
 	const renderFormFooter = () =>
 		isSuiWalletConnected ? (
@@ -288,6 +183,9 @@ export function BuyNBTC() {
 				<span className="text-3xl font-semibold text-primary">Buy nBTC</span>
 				<Card>
 					<CardContent className="p-6 rounded-lg text-white flex flex-col gap-4 bg-azure-10">
+						{isSuiWalletConnected && nBTCBalance && (
+							<NBTCBalance balance={BigInt(nBTCBalance.totalBalance)} />
+						)}
 						<Instructions />
 						<FormNumericInput
 							required
@@ -342,7 +240,9 @@ export function BuyNBTC() {
 								This is a fixed price buy. The price is 25,000 SUI / nBTC.
 							</span>
 						</div>
-						{isSuiWalletConnected && gasFee && youReceive && youReceive > 0 && <Fee gasFee={gasFee} />}
+						{isSuiWalletConnected && gasFee && youReceive && youReceive > 0 && (
+							<SUIGasFee gasFee={gasFee} />
+						)}
 						{renderFormFooter()}
 					</CardContent>
 				</Card>

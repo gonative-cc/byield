@@ -2,23 +2,31 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSuiClient, useCurrentAccount } from "@mysten/dapp-kit";
 import type { CoinBalance } from "@mysten/sui/client";
 
+const endsWithNBTC = (input: string): boolean => {
+	const regex = /NBTC$/;
+	return regex.test(input);
+};
+
 // unfortunately, SUI doesn't have their own hook to get the balance at the moment
 // useSuiBalance fetches the SUI balance in mist
-export const useSuiBalance = () => {
+export const useNBTCBalance = () => {
 	const suiClient = useSuiClient();
 	const account = useCurrentAccount();
 	const queryClient = useQueryClient();
 
-	const fetchBalance = async (): Promise<CoinBalance | null> => {
+	const fetchBalance = async (): Promise<CoinBalance | undefined> => {
 		if (!account) {
-			return null;
+			return undefined;
 		}
-		return await suiClient.getBalance({
+		const coins = await suiClient.getAllBalances({
 			owner: account.address,
 		});
+
+		const nbtcCoin = coins.find((r) => endsWithNBTC(r.coinType));
+		return nbtcCoin;
 	};
 
-	const queryKey = ["suiBalance", account?.address];
+	const queryKey = ["nBTCBalance", account?.address];
 
 	const {
 		data: balance,
@@ -32,7 +40,7 @@ export const useSuiBalance = () => {
 		staleTime: 30_000,
 	});
 
-	const refetchSUIBalance = () => {
+	const refetchBalance = () => {
 		queryClient.invalidateQueries({ queryKey });
 		refetch();
 	};
@@ -41,6 +49,6 @@ export const useSuiBalance = () => {
 		balance,
 		isLoading,
 		error: error ? (error instanceof Error ? error : new Error("Unknown error")) : null,
-		refetchSUIBalance,
+		refetchBalance,
 	};
 };
