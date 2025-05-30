@@ -46,7 +46,7 @@ test("parse x format", () => {
 
 	testCases.forEach((tc, i) => {
 		expect(denoms.parse(tc.input, tc.dec), i.toString()).toBe(tc.expected);
-		expect(denoms.format(tc.expected, tc.dec), i.toString()).toBe(tc.input);
+		expect(denoms.formatAmount(tc.expected, tc.dec), i.toString()).toBe(tc.input);
 	});
 
 	expect(() => denoms.parse("0.1", 0)).toThrowError();

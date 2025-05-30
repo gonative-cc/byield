@@ -1,5 +1,5 @@
 import type { MetaFunction } from "@remix-run/cloudflare";
-import { BuyNBTC } from "~/components/BuyNBTC";
+import { BuyNBTC } from "~/components/BuyNBTC/BuyNBTC";
 
 export const meta: MetaFunction = () => {
 	return [{ title: "BYIELD App" }, { name: "description", content: "Welcome to BYIELD App!" }];
