@@ -1,0 +1,22 @@
+# For more details on how to configure Wrangler, refer to:
+# https://developers.cloudflare.com/workers/wrangler/configuration/
+name = "byield"
+compatibility_date = "2025-05-29"
+compatibility_flags = [ "nodejs_compat" ]
+main = "./server.ts"
+
+[vars]
+VITE_APP_MODE = "production"
+
+[assets]
+directory = "./build/client"
+
+[observability]
+enabled = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "byield-dev"
+database_id = "e0772a14-1734-4eab-b193-84675dd08a20"
+migrations_table = "migrations"
+migrations_dir = "./db/migrations/"
