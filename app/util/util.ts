@@ -5,6 +5,8 @@ import { nBTC_ADDR } from "~/constants";
 import { ToastFunction } from "~/hooks/use-toast";
 import { UTXO, ValidateAddressI } from "~/types";
 import { Transaction } from "@mysten/sui/transactions";
+import { SuiClient } from "@mysten/sui/client";
+import { BUFFER_BALANCE } from "~/constant";
 
 const sendTxn = async (
 	bitcoinAddress: Address,
@@ -107,4 +109,27 @@ const createBuyNBTCTxn = (
 	return txn;
 };
 
-export { sendTxn, trimAddress, createBuyNBTCTxn };
+const calculateTotalGasFee = async (
+	transaction: Transaction,
+	client: SuiClient,
+	mistAmount: bigint,
+	totalBalance: string,
+) => {
+	const transactionBytes = await transaction.build({ client: client });
+	const dryRunResult = await client.dryRunTransactionBlock({
+		transactionBlock: transactionBytes,
+	});
+	if (dryRunResult?.effects?.gasUsed) {
+		const { computationCost, storageCost, storageRebate } = dryRunResult.effects.gasUsed;
+		let totalGasFee = BigInt(computationCost) + BigInt(storageCost) - BigInt(storageRebate);
+		// keep buffer balance in case user try to use all max balance
+		const bufferBalanceInMist = BigInt(BUFFER_BALANCE);
+		const isThereBufferBalanceAvailable = BigInt(totalBalance) - mistAmount >= bufferBalanceInMist;
+		if (!isThereBufferBalanceAvailable) {
+			totalGasFee += bufferBalanceInMist;
+		}
+		return totalGasFee;
+	}
+};
+
+export { sendTxn, trimAddress, createBuyNBTCTxn, calculateTotalGasFee };
