@@ -31,7 +31,3 @@ export function formatBTC(amount: bigint): string {
 export function formatSUI(amount: bigint | string): string {
 	return formatUnits(amount, SUI);
 }
-
-export function formatNBTC(amount: bigint | string): string {
-	return formatUnits(amount, NBTC);
-}

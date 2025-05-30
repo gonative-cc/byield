@@ -1,5 +1,5 @@
 import { NumericFormat } from "react-number-format";
-import { formatNBTC } from "~/lib/denoms";
+import { formatAmount, NBTC } from "~/lib/denoms";
 
 interface NBTCBalanceProps {
 	balance: bigint;
@@ -13,7 +13,7 @@ export function NBTCBalance({ balance }: NBTCBalanceProps) {
 				<span>Your nBTC Balance</span>
 				<NumericFormat
 					displayType="text"
-					value={formatNBTC(balance)}
+					value={formatAmount(balance, NBTC)}
 					className="text-gray-400"
 					readOnly
 					suffix=" nBTC"
