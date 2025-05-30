@@ -7,6 +7,7 @@ export const useNBTCBalance = () => {
 	const suiClient = useSuiClient();
 	const account = useCurrentAccount();
 	const queryClient = useQueryClient();
+	const queryKey = ["nBTCBalance", account?.address];
 
 	const fetchBalance = async (): Promise<CoinBalance | null> => {
 		if (!account) {
@@ -17,8 +18,6 @@ export const useNBTCBalance = () => {
 			coinType: NBTC_COINT_TYPE,
 		});
 	};
-
-	const queryKey = ["nBTCBalance", account?.address];
 
 	const {
 		data: balance,
