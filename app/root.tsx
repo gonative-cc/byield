@@ -8,6 +8,7 @@ import { SuiClientProvider, WalletProvider as SuiWalletProvider } from "@mysten/
 import { Toaster } from "./components/ui/toaster";
 import { Tooltip, TooltipProvider } from "./components/ui/tooltip";
 import { ByieldWalletProvider } from "./providers/ByieldWalletProvider";
+import { printAppEnv } from "./lib/appenv";
 
 const queryClient = new QueryClient();
 
@@ -23,14 +24,6 @@ export const links: LinksFunction = () => [
 		href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
 	},
 ];
-
-export async function loader() {
-	return json({
-		ENV: {
-			VITE_APP_MODE: process.env.VITE_APP_MODE,
-		},
-	});
-}
 
 export function Layout({ children }: { children: React.ReactNode }) {
 	return (
@@ -49,6 +42,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 function NativeApp({ children }: { children: React.ReactNode }) {
+	printAppEnv();
+
 	return (
 		<>
 			<div className="flex flex-col min-h-screen">
