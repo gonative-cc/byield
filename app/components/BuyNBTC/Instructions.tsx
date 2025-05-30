@@ -21,7 +21,7 @@ export function Instructions() {
 									to={`https://faucet.sui.io/?network=testnet&address=${account?.address}`}
 									rel="noreferrer"
 								>
-									<Button type="button" variant="link" className="p-0">
+									<Button type="button" variant="link" className="p-0 text-base">
 										Request Sui Tokens from faucet.
 									</Button>
 								</Link>
@@ -33,7 +33,7 @@ export function Instructions() {
 									to="https://docs.sui.io/guides/developer/getting-started/get-coins"
 									rel="noreferrer"
 								>
-									<Button type="button" variant="link" className="p-0">
+									<Button type="button" variant="link" className="p-0 text-base">
 										alternative faucets.
 									</Button>
 								</Link>
