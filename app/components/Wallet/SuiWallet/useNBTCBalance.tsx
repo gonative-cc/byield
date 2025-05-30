@@ -20,8 +20,7 @@ export const useNBTCBalance = () => {
 			owner: account.address,
 		});
 
-		const nbtcCoin = coins.find((coin) => endsWithNBTC(coin.coinType));
-		return nbtcCoin;
+		return coins.find((coin) => endsWithNBTC(coin.coinType));
 	};
 
 	const queryKey = ["nBTCBalance", account?.address];
