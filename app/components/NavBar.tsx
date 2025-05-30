@@ -39,34 +39,40 @@ function SelectWallet({ isAppModeProduction }: SelectWalletProps) {
 	);
 }
 
-const createNavMenu = (isProd: boolean) => {
-	let items: NavMenuItem[] = [];
-	if (!isProd) {
-		items = [
-			{
-				id: "navigation-1",
-				title: "Buy nBTC",
-				link: "/",
-			},
-			{
-				id: "navigation-2",
-				title: "Market",
-				link: "/market",
-			},
-			{
-				id: "navigation-3",
-				title: "Mint nBTC",
-				link: "/mint",
-			},
-		];
-	}
+interface BYieldNavigationMenuProps {
+	isAppModeProduction: boolean;
+}
+
+const BYieldNavigationMenu = ({ isAppModeProduction }: BYieldNavigationMenuProps) => {
+	const items: NavMenuItem[] = useMemo(
+		() =>
+			!isAppModeProduction
+				? [
+						{
+							id: "navigation-1",
+							title: "Buy nBTC",
+							link: "/",
+						},
+						{
+							id: "navigation-2",
+							title: "Market",
+							link: "/market",
+						},
+						{
+							id: "navigation-3",
+							title: "Mint nBTC",
+							link: "/mint",
+						},
+					]
+				: [],
+		[isAppModeProduction],
+	);
+
 	return <NavMenu items={items} />;
 };
 
 export function NavBar() {
 	const isProd = isProduction();
-
-	const navmenu = useMemo(() => createNavMenu(isProd), [isProd]);
 
 	return (
 		<header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -77,7 +83,9 @@ export function NavBar() {
 						<img src="/assets/app-logos/logo-mobile.svg" alt="Remix" className="block md:hidden" />
 					</div>
 				</Link>
-				<div className="flex flex-1 justify-center" children={navmenu} />
+				<div className="flex flex-1 justify-center">
+					<BYieldNavigationMenu isAppModeProduction={isProd} />
+				</div>
 				<div className="flex flex-1 items-center justify-end gap-4">
 					<SelectWallet isAppModeProduction={isProd} />
 				</div>
