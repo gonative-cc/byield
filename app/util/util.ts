@@ -109,27 +109,4 @@ const createBuyNBTCTxn = (
 	return txn;
 };
 
-const calculateTotalGasFee = async (
-	transaction: Transaction,
-	client: SuiClient,
-	mistAmount: bigint,
-	totalBalance: string,
-) => {
-	const transactionBytes = await transaction.build({ client: client });
-	const dryRunResult = await client.dryRunTransactionBlock({
-		transactionBlock: transactionBytes,
-	});
-	if (dryRunResult?.effects?.gasUsed) {
-		const { computationCost, storageCost, storageRebate } = dryRunResult.effects.gasUsed;
-		let totalGasFee = BigInt(computationCost) + BigInt(storageCost) - BigInt(storageRebate);
-		// keep buffer balance in case user try to use all max balance
-		const bufferBalanceInMist = BigInt(BUFFER_BALANCE);
-		const isThereBufferBalanceAvailable = BigInt(totalBalance) - mistAmount >= bufferBalanceInMist;
-		if (!isThereBufferBalanceAvailable) {
-			totalGasFee += bufferBalanceInMist;
-		}
-		return totalGasFee;
-	}
-};
-
-export { sendTxn, trimAddress, createBuyNBTCTxn, calculateTotalGasFee };
+export { sendTxn, trimAddress, createBuyNBTCTxn };
