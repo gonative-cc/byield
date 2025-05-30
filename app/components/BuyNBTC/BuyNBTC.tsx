@@ -8,7 +8,7 @@ import { SuiModal } from "../Wallet/SuiWallet/SuiModal";
 import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
 import { useNetworkVariables } from "~/networkConfig";
 import { createBuyNBTCTxn } from "~/util/util";
-import { BUY_NBTC_GAS_FEE, PRICE_PER_NBTC_IN_SUI } from "~/constant";
+import { BUY_NBTC_GAS_FEE_IN_SUI, PRICE_PER_NBTC_IN_SUI } from "~/constant";
 import { ArrowDown } from "lucide-react";
 import { formatSUI, parseSUI } from "~/lib/denoms";
 import { useToast } from "~/hooks/use-toast";
@@ -85,7 +85,7 @@ export function BuyNBTC() {
 	const { watch, trigger, setValue, handleSubmit, reset } = buyNBTCForm;
 	const suiAmount = watch("suiAmount");
 	const youReceive = watch("youReceive");
-	const gasFee = parseSUI(BUY_NBTC_GAS_FEE);
+	const gasFee = parseSUI(BUY_NBTC_GAS_FEE_IN_SUI);
 
 	const revalidateForm = useCallback(() => {
 		trigger();
