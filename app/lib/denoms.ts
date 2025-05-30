@@ -15,7 +15,7 @@ export function parseBTC(amount: string): bigint {
 	return parse(amount, BTC);
 }
 
-export function format(amount: bigint, decimals: number): string {
+export function formatAmount(amount: bigint, decimals: number): string {
 	return formatUnits(amount, decimals);
 }
 
