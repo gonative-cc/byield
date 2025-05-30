@@ -131,33 +131,28 @@ const ListItem = React.forwardRef<React.ElementRef<"a">, React.ComponentPropsWit
 
 ListItem.displayName = "ListItem";
 
-interface NavigationMenuListItem {
+export interface NavMenuItem {
 	id: string;
 	title: string;
 	link: string;
-	hide?: boolean;
 }
 
-interface NavigationMenuList {
-	items: NavigationMenuListItem[];
+export interface NavMenuProps {
+	items: NavMenuItem[];
 }
 
-function BYieldNavigation({ items }: NavigationMenuList) {
+export function NavMenu({ items }: NavMenuProps) {
 	return (
 		<NavigationMenu>
 			<NavigationMenuList>
-				{items.map(({ id, title, link, hide = false }) =>
-					hide ? null : (
-						<NavigationMenuItem key={id}>
-							<Link to={link} className={navigationMenuTriggerStyle()}>
-								{title}
-							</Link>
-						</NavigationMenuItem>
-					),
-				)}
+				{items.map(({ id, title, link }) => (
+					<NavigationMenuItem key={id}>
+						<Link to={link} className={navigationMenuTriggerStyle()}>
+							{title}
+						</Link>
+					</NavigationMenuItem>
+				))}
 			</NavigationMenuList>
 		</NavigationMenu>
 	);
 }
-
-export { BYieldNavigation };
