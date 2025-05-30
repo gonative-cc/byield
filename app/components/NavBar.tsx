@@ -39,37 +39,28 @@ function SelectWallet({ isAppModeProduction }: SelectWalletProps) {
 	);
 }
 
-interface BYieldNavigationMenuProps {
-	isAppModeProduction: boolean;
+function navMenuItems(isProduction: boolean): NavMenuItem[] {
+	if (isProduction) {
+		return [];
+	}
+	return [
+		{
+			id: "navigation-1",
+			title: "Buy nBTC",
+			link: "/",
+		},
+		{
+			id: "navigation-2",
+			title: "Market",
+			link: "/market",
+		},
+		{
+			id: "navigation-3",
+			title: "Mint nBTC",
+			link: "/mint",
+		},
+	];
 }
-
-const BYieldNavigationMenu = ({ isAppModeProduction }: BYieldNavigationMenuProps) => {
-	const items: NavMenuItem[] = useMemo(
-		() =>
-			!isAppModeProduction
-				? [
-						{
-							id: "navigation-1",
-							title: "Buy nBTC",
-							link: "/",
-						},
-						{
-							id: "navigation-2",
-							title: "Market",
-							link: "/market",
-						},
-						{
-							id: "navigation-3",
-							title: "Mint nBTC",
-							link: "/mint",
-						},
-					]
-				: [],
-		[isAppModeProduction],
-	);
-
-	return <NavMenu items={items} />;
-};
 
 export function NavBar() {
 	const isProd = isProduction();
@@ -84,7 +75,7 @@ export function NavBar() {
 					</div>
 				</Link>
 				<div className="flex flex-1 justify-center">
-					<BYieldNavigationMenu isAppModeProduction={isProd} />
+					<NavMenu items={navMenuItems(isProd)} />
 				</div>
 				<div className="flex flex-1 items-center justify-end gap-4">
 					<SelectWallet isAppModeProduction={isProd} />
