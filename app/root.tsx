@@ -1,5 +1,5 @@
 import { json, Links, Meta, Outlet, Scripts, ScrollRestoration } from "@remix-run/react";
-import type { LinksFunction } from "@remix-run/cloudflare";
+import type { LinksFunction, LoaderFunction, LoaderFunctionArgs } from "@remix-run/cloudflare";
 import "./tailwind.css";
 import { NavBar } from "./components/NavBar";
 import { networkConfig } from "./networkConfig";
@@ -24,10 +24,10 @@ export const links: LinksFunction = () => [
 	},
 ];
 
-export async function loader() {
+export async function loader({ context }: LoaderFunctionArgs) {
 	return json({
 		ENV: {
-			VITE_APP_MODE: process.env.VITE_APP_MODE,
+			VITE_APP_MODE: context.cloudflare.env.VITE_APP_MODE,
 		},
 	});
 }
