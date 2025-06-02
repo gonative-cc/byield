@@ -1,4 +1,4 @@
-import { json, Links, Meta, Outlet, Scripts, ScrollRestoration } from "@remix-run/react";
+import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/cloudflare";
 import "./tailwind.css";
 import { NavBar } from "./components/NavBar";
