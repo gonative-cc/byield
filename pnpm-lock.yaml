@@ -15,8 +15,8 @@ importers:
         specifier: ^0.16.6
         version: 0.16.6(@tanstack/react-query@5.74.11(react@19.1.0))(@types/react-dom@19.1.2(@types/react@19.1.2))(@types/react@19.1.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(typescript@5.8.3)
       '@mysten/sui':
-        specifier: ^1.29.0
-        version: 1.29.0(typescript@5.8.3)
+        specifier: ^1.30.2
+        version: 1.30.2(typescript@5.8.3)
       '@radix-ui/react-dialog':
         specifier: ^1.1.13
         version: 1.1.13(@types/react-dom@19.1.2(@types/react@19.1.2))(@types/react@19.1.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -1152,9 +1152,6 @@ packages:
   '@mdx-js/mdx@2.3.0':
     resolution: {integrity: sha512-jLuwRlz8DQfQNiUCJR50Y09CGPq3fLtmtUQfVrj79E0JWu3dvsVcxVIcfhR5h0iXu+/z++zDrYeiJqifRynJkA==}
 
-  '@mysten/bcs@1.6.0':
-    resolution: {integrity: sha512-ydDRYdIkIFCpHCcPvAkMC91fVwumjzbTgjqds0KsphDQI3jUlH3jFG5lfYNTmV6V3pkhOiRk1fupLBcsQsiszg==}
-
   '@mysten/bcs@1.6.1':
     resolution: {integrity: sha512-pywsl2+jxbib5CbteAjMpmJpnj1pcUco2ff+lXCK3hfppPbkyWEMbZDQn1jNngV6ADQ3IFIvPs0FaS7fKWPOLA==}
 
@@ -1166,10 +1163,6 @@ packages:
 
   '@mysten/slush-wallet@0.1.6':
     resolution: {integrity: sha512-Gvuff2o/0q5GXBKqMcWJ1ToJwd/saxsIIIMAAmaps1tIyVvr6GxPvDz81ly+zTyAiY6fCQnjinIMhMlODYyFGQ==}
-
-  '@mysten/sui@1.29.0':
-    resolution: {integrity: sha512-0rOGYy97DZaD+TocjKOgqPalPh/IZnbMYVI1ncAKYGR59SMeunuk7RCWL6rGA8hN//JBor4nVkXpId6FlbhEeA==}
-    engines: {node: '>=18'}
 
   '@mysten/sui@1.30.2':
     resolution: {integrity: sha512-eIeFbMGHnTjAj+ZnTVXNU9ruu456cT7D+carwXCs4QTVITTjsYF91JUyGcsAAiZ3L+SzEbZPhUGVpZPT2Jt+0g==}
@@ -6778,10 +6771,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@mysten/bcs@1.6.0':
-    dependencies:
-      '@scure/base': 1.2.5
-
   '@mysten/bcs@1.6.1':
     dependencies:
       '@mysten/utils': 0.0.0
@@ -6820,25 +6809,6 @@ snapshots:
       '@mysten/wallet-standard': 0.15.3(typescript@5.8.3)
       '@mysten/window-wallet-core': 0.0.3
       mitt: 3.0.1
-      valibot: 0.36.0
-    transitivePeerDependencies:
-      - '@gql.tada/svelte-support'
-      - '@gql.tada/vue-support'
-      - typescript
-
-  '@mysten/sui@1.29.0(typescript@5.8.3)':
-    dependencies:
-      '@graphql-typed-document-node/core': 3.2.0(graphql@16.11.0)
-      '@mysten/bcs': 1.6.0
-      '@mysten/utils': 0.0.0
-      '@noble/curves': 1.9.0
-      '@noble/hashes': 1.8.0
-      '@scure/base': 1.2.5
-      '@scure/bip32': 1.7.0
-      '@scure/bip39': 1.6.0
-      gql.tada: 1.8.10(graphql@16.11.0)(typescript@5.8.3)
-      graphql: 16.11.0
-      poseidon-lite: 0.2.1
       valibot: 0.36.0
     transitivePeerDependencies:
       - '@gql.tada/svelte-support'
@@ -10394,7 +10364,7 @@ snapshots:
 
   media-query-parser@2.0.2:
     dependencies:
-      '@babel/runtime': 7.27.0
+      '@babel/runtime': 7.27.3
 
   media-typer@0.3.0: {}
 
