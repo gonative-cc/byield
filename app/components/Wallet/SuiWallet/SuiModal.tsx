@@ -14,21 +14,16 @@ import { ByieldWallet } from "~/types";
 import { useToast } from "~/hooks/use-toast";
 import { Link } from "@remix-run/react";
 
-function SlushWalletLink() {
-	return (
-		<Link target="_blank" to="https://slush.app/" rel="noreferrer" className="m-0 p-0">
-			<Button type="button" variant="link" className="p-0 m-0">
-				Install Slush Wallet
-			</Button>
-		</Link>
-	);
+interface InstallWalletProps {
+	link: string;
+	name: string;
 }
 
-function PhantomWalletLink() {
+function InstallWallet({ link, name }: InstallWalletProps) {
 	return (
-		<Link target="_blank" to="https://phantom.app/" rel="noreferrer" className="m-0 p-0">
+		<Link target="_blank" to={link} rel="noreferrer" className="m-0 p-0">
 			<Button type="button" variant="link" className="p-0 m-0">
-				Install Phantom Wallet
+				Install {name}
 			</Button>
 		</Link>
 	);
@@ -50,8 +45,8 @@ function AvailableWallets() {
 			<>
 				<DialogDescription className="text-red-500">No Sui-compatible wallets detected</DialogDescription>
 				<div className="flex flex-col gap-1">
-					<SlushWalletLink />
-					<PhantomWalletLink />
+					<InstallWallet link="https://slush.app/" name="Slush" />
+					<InstallWallet link="https://phantom.app/" name="Phantom" />
 				</div>
 			</>
 		);
@@ -60,12 +55,16 @@ function AvailableWallets() {
 	// Case 2: One wallet installed
 	if (wallets.length === 1) {
 		const installedWallet = slushWallet || phantomWallet;
-		const otherWalletLink = slushWallet ? <PhantomWalletLink /> : <SlushWalletLink />;
+		const otherWalletLink = slushWallet ? (
+			<InstallWallet link="https://phantom.app/" name="Phantom" />
+		) : (
+			<InstallWallet link="https://slush.app/" name="Slush" />
+		);
 
 		return (
 			<div className="flex flex-col gap-2">
 				{installedWallet && (
-					<div className="flex gap-2">
+					<div className="flex gap-2 w-full">
 						<Button
 							variant="outline"
 							onClick={() => {
@@ -82,10 +81,10 @@ function AvailableWallets() {
 									},
 								);
 							}}
-							className="w-fit"
+							className="justify-between flex w-full text-primary h-16"
 						>
 							<img src={installedWallet.icon} alt={installedWallet.name} width={20} height={20} />
-							Connect to {installedWallet.name}
+							{installedWallet.name}
 						</Button>
 					</div>
 				)}
@@ -98,7 +97,7 @@ function AvailableWallets() {
 	return (
 		<div className="flex flex-col gap-2">
 			{wallets.map((wallet) => (
-				<div key={wallet.name} className="flex justify-center max-w-fit">
+				<div key={wallet.name} className="flex justify-center w-full">
 					<Button
 						variant="outline"
 						onClick={() =>
@@ -115,10 +114,10 @@ function AvailableWallets() {
 								},
 							)
 						}
-						className="justify-start w-fit"
+						className="justify-between flex w-full text-primary h-16"
 					>
-						<img src={wallet.icon} alt={wallet.name} width={20} height={20} />
-						Connect to {wallet.name}
+						<img src={wallet.icon} alt={wallet.name} width={40} height={40} />
+						{wallet.name}
 					</Button>
 				</div>
 			))}
