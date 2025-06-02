@@ -1,6 +1,6 @@
 import { Link } from "@remix-run/react";
 import { Button } from "~/components/ui/button";
-import { useContext, useMemo } from "react";
+import { useContext } from "react";
 import { XverseWallet } from "./Wallet/XverseWallet/XverseWallet";
 import { SuiWallet } from "./Wallet/SuiWallet/SuiWallet";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
