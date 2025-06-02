@@ -22,7 +22,7 @@
 	},
 	"dependencies": {
 		"@ethersproject/units": "^5.8.0",
-		"@mysten/dapp-kit": "^0.16.1",
+		"@mysten/dapp-kit": "^0.16.6",
 		"@mysten/sui": "^1.29.0",
 		"@radix-ui/react-dialog": "^1.1.13",
 		"@radix-ui/react-navigation-menu": "^1.2.12",

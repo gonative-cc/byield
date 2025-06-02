@@ -63,12 +63,11 @@ function AvailableWallets() {
 		const otherWalletLink = slushWallet ? <PhantomWalletLink /> : <SlushWalletLink />;
 
 		return (
-			<div className="flex flex-col gap-1">
+			<div className="flex flex-col gap-2">
 				{installedWallet && (
 					<div className="flex gap-2">
-						<img src={installedWallet.icon} alt={installedWallet.name} width={20} height={20} />
 						<Button
-							variant="link"
+							variant="outline"
 							onClick={() => {
 								connect(
 									{ wallet: installedWallet },
@@ -85,6 +84,7 @@ function AvailableWallets() {
 							}}
 							className="w-fit"
 						>
+							<img src={installedWallet.icon} alt={installedWallet.name} width={20} height={20} />
 							Connect to {installedWallet.name}
 						</Button>
 					</div>
@@ -96,12 +96,11 @@ function AvailableWallets() {
 
 	// Case 3: Both wallets installed
 	return (
-		<div className="flex flex-col">
+		<div className="flex flex-col gap-2">
 			{wallets.map((wallet) => (
 				<div key={wallet.name} className="flex justify-center max-w-fit">
-					<img src={wallet.icon} alt={wallet.name} width={20} height={20} />
 					<Button
-						variant="link"
+						variant="outline"
 						onClick={() =>
 							connect(
 								{ wallet },
@@ -118,6 +117,7 @@ function AvailableWallets() {
 						}
 						className="justify-start w-fit"
 					>
+						<img src={wallet.icon} alt={wallet.name} width={20} height={20} />
 						Connect to {wallet.name}
 					</Button>
 				</div>
