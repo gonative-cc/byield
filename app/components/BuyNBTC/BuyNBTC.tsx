@@ -20,10 +20,10 @@ import { useSuiBalance } from "../Wallet/SuiWallet/useSuiBalance";
 import { Instructions } from "./Instructions";
 import { TransactionStatus } from "./TransactionStatus";
 
-interface BuyNBTCForm {
-	suiAmount: string;
-	youReceive?: number;
-}
+const calculateYouReceive = (_mistAmount: bigint, _gasFee: bigint): number => {
+	const mistAmountAfterFee = _mistAmount - _gasFee;
+	return Number(formatSUI(mistAmountAfterFee)) / PRICE_PER_NBTC_IN_SUI;
+};
 
 function SUIIcon() {
 	return (
@@ -46,6 +46,36 @@ function NBTCIcon() {
 			<img src="/nbtc.svg" alt="Bitcoin" className="w-7 h-7 mr-2" />
 		</div>
 	);
+}
+
+interface YouReceiveProps {
+	mistAmount: bigint;
+	isSuiWalletConnected: boolean;
+}
+
+function YouReceive({ mistAmount, isSuiWalletConnected }: YouReceiveProps) {
+	const youReceive = calculateYouReceive(mistAmount, parseSUI(BUY_NBTC_GAS_FEE_IN_SUI));
+
+	return (
+		<div className="flex flex-col gap-2">
+			<FormNumericInput
+				name="amountOfNBTC"
+				className="h-16"
+				value={isSuiWalletConnected && youReceive && youReceive > 0 ? youReceive : "0.0"}
+				allowNegative={false}
+				placeholder={isSuiWalletConnected && youReceive && youReceive <= 0 ? "0.0" : ""}
+				readOnly
+				rightAdornments={<NBTCIcon />}
+			/>
+			<span className="tracking-tighter text-gray-500 text-sm dark:text-gray-400">
+				This is a fixed price buy. The price is 25,000 SUI / nBTC.
+			</span>
+		</div>
+	);
+}
+
+interface BuyNBTCForm {
+	suiAmount: string;
 }
 
 export function BuyNBTC() {
@@ -82,18 +112,11 @@ export function BuyNBTC() {
 		reValidateMode: "onChange",
 		disabled: isPending || isSuccess || isError,
 	});
-	const { watch, trigger, setValue, handleSubmit, reset } = buyNBTCForm;
+	const { watch, trigger, handleSubmit, reset } = buyNBTCForm;
 	const suiAmount = watch("suiAmount");
-	const youReceive = watch("youReceive");
 	const gasFee = parseSUI(BUY_NBTC_GAS_FEE_IN_SUI);
 
-	const revalidateForm = useCallback(() => {
-		trigger();
-	}, [trigger]);
-
-	const mistAmount: bigint = useMemo(() => {
-		return parseSUI(suiAmount?.length > 0 && suiAmount !== "." ? suiAmount : "0");
-	}, [suiAmount]);
+	const mistAmount: bigint = parseSUI(suiAmount?.length > 0 && suiAmount !== "." ? suiAmount : "0");
 
 	const handleTransaction = useCallback(async () => {
 		if (!account) {
@@ -106,10 +129,10 @@ export function BuyNBTC() {
 			return;
 		}
 		const suiAmountMistAfterFee = mistAmount - gasFee;
-		const txn = createBuyNBTCTxn(account.address, suiAmountMistAfterFee, nbtcOTC);
+		const transaction = createBuyNBTCTxn(account.address, suiAmountMistAfterFee, nbtcOTC);
 		signAndExecuteTransaction(
 			{
-				transaction: txn,
+				transaction,
 			},
 			{
 				onSettled: () => {
@@ -133,28 +156,14 @@ export function BuyNBTC() {
 		resetMutation();
 		reset({
 			suiAmount: "",
-			youReceive: undefined,
 		});
 	}, [reset, resetMutation]);
 
-	const calculateYouReceive = useCallback((_mistAmount: bigint, _gasFee: bigint): number => {
-		const mistAmountAfterFee = _mistAmount - _gasFee;
-		return Number(formatSUI(mistAmountAfterFee)) / PRICE_PER_NBTC_IN_SUI;
-	}, []);
-
-	useEffect(() => {
-		if (isSuiWalletConnected && mistAmount) {
-			const amountToBeReceived = calculateYouReceive(mistAmount, gasFee);
-			setValue("youReceive", amountToBeReceived);
-			revalidateForm();
-		}
-	}, [calculateYouReceive, gasFee, isSuiWalletConnected, mistAmount, revalidateForm, setValue]);
-
 	useEffect(() => {
 		if (suiAmount) {
-			revalidateForm();
+			trigger();
 		}
-	}, [isSuiWalletConnected, revalidateForm, suiAmount]);
+	}, [isSuiWalletConnected, suiAmount, trigger]);
 
 	return (
 		<FormProvider {...buyNBTCForm}>
@@ -179,46 +188,23 @@ export function BuyNBTC() {
 							rules={{
 								validate: {
 									isWalletConnected: () => isSuiWalletConnected || "Please connect SUI wallet",
-									balance: (value: string) =>
-										(balance?.totalBalance && parseSUI(value) <= BigInt(balance.totalBalance)) ||
-										"Not enough balance available",
+									enoughBalance: (value: string) =>
+										(balance?.totalBalance &&
+											parseSUI(value) + gasFee <= BigInt(balance.totalBalance)) ||
+										`Entered SUI is too big. Leave at-least ${formatSUI(gasFee)} SUI to cover the gas fee.`,
 									smallAmount: async (value: string) => {
 										// balance and address should be there
 										if (!balance?.totalBalance || !account?.address) return true;
-										// calculate the gas fee based on SUI amount and the transaction
 										const currentSUIAmount = parseSUI(value);
 										const amountToBeReceived = calculateYouReceive(currentSUIAmount, gasFee);
 										if (amountToBeReceived > 0) return true;
 										return "Not enough SUI to cover gas payment";
 									},
-									maxSUIUserCanSpend: (value: string) => {
-										if (balance?.totalBalance) {
-											const currentSUIAmount = parseSUI(value);
-											const maxSUIAmountUserCanSpend = BigInt(balance.totalBalance) - gasFee;
-											if (currentSUIAmount <= maxSUIAmountUserCanSpend) {
-												return true;
-											}
-											return `You can spend maximum ${formatSUI(maxSUIAmountUserCanSpend)} SUI.`;
-										}
-									},
 								},
 							}}
 						/>
 						<ArrowDown className="text-primary justify-center w-full flex mb-2 p-0 m-0" />
-						<div className="flex flex-col gap-2">
-							<FormNumericInput
-								name="amountOfNBTC"
-								className="h-16"
-								value={isSuiWalletConnected && youReceive && youReceive > 0 ? youReceive : "0.0"}
-								allowNegative={false}
-								placeholder={isSuiWalletConnected && youReceive && youReceive <= 0 ? "0.0" : ""}
-								readOnly
-								rightAdornments={<NBTCIcon />}
-							/>
-							<span className="tracking-tighter text-gray-500 text-sm dark:text-gray-400">
-								This is a fixed price buy. The price is 25,000 SUI / nBTC.
-							</span>
-						</div>
+						<YouReceive isSuiWalletConnected={isSuiWalletConnected} mistAmount={mistAmount} />
 						{isSuiWalletConnected ? (
 							<Button type="submit" disabled={isPending} isLoading={isPending}>
 								Buy
