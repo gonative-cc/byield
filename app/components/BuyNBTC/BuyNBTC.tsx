@@ -19,7 +19,7 @@ import { Modal } from "../ui/dialog";
 import { useSuiBalance } from "../Wallet/SuiWallet/useSuiBalance";
 import { Instructions } from "./Instructions";
 import { TransactionStatus } from "./TransactionStatus";
-import { Icon } from "../icons";
+import { NBTCIcon, SUIIcon } from "../icons";
 
 const calculateYouReceive = (mistAmount: bigint): bigint => {
 	return mistAmount / PRICE_PER_NBTC_IN_SUI;
@@ -42,7 +42,7 @@ function YouReceive({ mistAmount, isSuiWalletConnected }: YouReceiveProps) {
 				allowNegative={false}
 				placeholder={isSuiWalletConnected && youReceive && youReceive <= 0 ? "0.0" : ""}
 				readOnly
-				rightAdornments={<Icon prefix={"nBTC"} src="/assets/nbtc.svg" alt="nBTC" className="mr-2" />}
+				rightAdornments={<NBTCIcon />}
 			/>
 			<span className="tracking-tighter text-gray-500 text-sm dark:text-gray-400">
 				This is a fixed price buy. The price is 25,000 SUI / nBTC.
@@ -142,6 +142,15 @@ export function BuyNBTC() {
 		}
 	}, [isSuiWalletConnected, suiAmount, trigger]);
 
+	const suiAmountInputRules = {
+		validate: {
+			isWalletConnected: () => isSuiWalletConnected || "Please connect SUI wallet",
+			enoughBalance: (value: string) =>
+				(balance?.totalBalance && parseSUI(value) + gasFee <= BigInt(balance.totalBalance)) ||
+				`Entered SUI is too big. Leave at-least ${formatSUI(gasFee)} SUI to cover the gas fee.`,
+		},
+	};
+
 	return (
 		<FormProvider {...buyNBTCForm}>
 			<form onSubmit={handleSubmit(handleTransaction)} className="flex flex-col gap-4 items-center">
@@ -161,22 +170,8 @@ export function BuyNBTC() {
 							allowNegative={false}
 							decimalScale={6}
 							createEmptySpace
-							rightAdornments={
-								<Icon
-									prefix={"SUI"}
-									src="https://cdn.prod.website-files.com/6425f546844727ce5fb9e5ab/65690e5e73e9e2a416e3502f_sui-mark.svg"
-									alt="SUI"
-								/>
-							}
-							rules={{
-								validate: {
-									isWalletConnected: () => isSuiWalletConnected || "Please connect SUI wallet",
-									enoughBalance: (value: string) =>
-										(balance?.totalBalance &&
-											parseSUI(value) + gasFee <= BigInt(balance.totalBalance)) ||
-										`Entered SUI is too big. Leave at-least ${formatSUI(gasFee)} SUI to cover the gas fee.`,
-								},
-							}}
+							rightAdornments={<SUIIcon />}
+							rules={suiAmountInputRules}
 						/>
 						<ArrowDown className="text-primary justify-center w-full flex mb-2 p-0 m-0" />
 						<YouReceive isSuiWalletConnected={isSuiWalletConnected} mistAmount={mistAmount} />
