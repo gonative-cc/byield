@@ -28,5 +28,9 @@ export function SUIIcon() {
 }
 
 export function NBTCIcon() {
-	return <Icon prefix={"nBTC"} src="/assets/nbtc.svg" alt="nBTC" className="mr-4" />;
+	return <Icon prefix={"nBTC"} src="/assets/ui-icons/nbtc.svg" alt="nBTC" className="mr-4" />;
+}
+
+export function BitCoinIcon() {
+	return <Icon src="/assets/ui-icons/bitcoin.svg" alt="bitcoin" />;
 }
