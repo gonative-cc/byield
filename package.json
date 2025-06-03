@@ -17,7 +17,7 @@
 		"start": "wrangler dev",
 		"typecheck": "tsc",
 		"typegen": "wrangler types",
-		"db:migrate": "wrangler d1 migrations apply byield",
+		"db:migrate": "wrangler d1 migrations apply byield-dev",
 		"test": "vitest"
 	},
 	"dependencies": {

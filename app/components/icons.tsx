@@ -2,8 +2,8 @@ import { twMerge } from "tailwind-merge";
 
 interface IconProps {
 	prefix?: string;
-	src: string;
-	alt: string;
+	src?: string;
+	alt?: string;
 	className?: string;
 }
 
@@ -27,6 +27,10 @@ export function SUIIcon() {
 	);
 }
 
-export function NBTCIcon() {
-	return <Icon prefix={"nBTC"} src="/assets/nbtc.svg" alt="nBTC" className="mr-4" />;
+export function BitCoinIcon() {
+	return <Icon src="/assets/coins/bitcoin.svg" alt="bitcoin" />;
+}
+
+export function NBTCIcon(props: IconProps) {
+	return <Icon prefix={"nBTC"} src="/assets/coins/nbtc.svg" alt="nBTC" className="mr-4" {...props} />;
 }
