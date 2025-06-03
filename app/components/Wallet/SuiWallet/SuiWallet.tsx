@@ -21,6 +21,11 @@ enum SuiNetwork {
 	MainNet = "mainnet",
 }
 
+const SuiNetworkLabel: Record<SuiNetwork, string> = {
+	[SuiNetwork.TestNet]: "Testnet",
+	[SuiNetwork.MainNet]: "Mainnet",
+};
+
 function NetWorkOptions() {
 	const { network, selectNetwork } = useSuiClientContext();
 	const handleChange = useCallback(
@@ -32,7 +37,7 @@ function NetWorkOptions() {
 
 	// TODO: we only support sui test net for now
 	const suiWalletNetworks: Option[] = useMemo(
-		() => [{ label: SuiNetwork.TestNet, value: SuiNetwork.TestNet }],
+		() => [{ label: SuiNetworkLabel[SuiNetwork.TestNet], value: SuiNetwork.TestNet }],
 		[],
 	);
 
