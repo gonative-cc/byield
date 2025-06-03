@@ -105,8 +105,7 @@ export function BuyNBTC() {
 			});
 			return;
 		}
-		const suiAmountMistAfterFee = mistAmount - gasFee;
-		const transaction = createBuyNBTCTxn(account.address, suiAmountMistAfterFee, nbtcOTC);
+		const transaction = createBuyNBTCTxn(account.address, mistAmount, nbtcOTC);
 		signAndExecuteTransaction(
 			{
 				transaction,
@@ -119,7 +118,6 @@ export function BuyNBTC() {
 			},
 		);
 	}, [
-		gasFee,
 		account,
 		mistAmount,
 		nbtcOTC,
