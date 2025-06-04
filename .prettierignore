@@ -2,3 +2,4 @@
 build
 .github
 pnpm-lock.yaml
+package.json

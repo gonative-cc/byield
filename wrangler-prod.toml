@@ -6,6 +6,7 @@ name = "byield"
 compatibility_date = "2025-05-29"
 compatibility_flags = [ "nodejs_compat" ]
 main = "./server.ts"
+minify = true
 
 [vars]
 VITE_APP_MODE = "production"
