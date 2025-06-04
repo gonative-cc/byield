@@ -1,6 +1,7 @@
 # For more details on how to configure Wrangler, refer to:
 # https://developers.cloudflare.com/workers/wrangler/configuration/
 name = "byield"
+# url: https://byield.gonative.cc
 compatibility_date = "2025-05-29"
 compatibility_flags = [ "nodejs_compat" ]
 main = "./server.ts"
