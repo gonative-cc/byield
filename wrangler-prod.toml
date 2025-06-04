@@ -2,6 +2,7 @@
 # https://developers.cloudflare.com/workers/wrangler/configuration/
 name = "byield"
 # url: https://byield.gonative.cc
+# preview url:  *-byield.gonative-cc.workers.dev
 compatibility_date = "2025-05-29"
 compatibility_flags = [ "nodejs_compat" ]
 main = "./server.ts"
