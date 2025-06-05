@@ -49,7 +49,10 @@ function SUIRightAdornment({ isSuiWalletConnected, gasFee, onMaxClick }: SUIRigh
 					Max
 				</Button>
 			)}
-			<SUIIcon prefix={isSuiWalletConnected ? "" : " SUI"} className="flex justify-end mr-1" />
+			<SUIIcon
+				prefix={isSuiWalletConnected && isValidMaxSUIAmount ? "" : " SUI"}
+				className="flex justify-end mr-1"
+			/>
 		</div>
 	);
 }
