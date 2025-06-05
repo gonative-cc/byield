@@ -32,13 +32,14 @@ function SUIRightAdornment({ isSuiWalletConnected, gasFee, onMaxClick }: SUIRigh
 	const { balance } = useSuiBalance();
 	const totalBalance = BigInt(balance?.totalBalance || "0");
 	const maxSUIAmount = balance?.totalBalance && totalBalance > 0 ? formatSUI(totalBalance - gasFee) : "0";
+	const isValidMaxSUIAmount = balance?.totalBalance && maxSUIAmount !== "0";
 
 	return (
 		<div className="flex gap-1 items-center">
-			{balance?.totalBalance && (
+			{isValidMaxSUIAmount && (
 				<p className="text-xs text-white w-[74px]">{maxSUIAmount.substring(0, 4)} SUI </p>
 			)}
-			{balance?.totalBalance && (
+			{isValidMaxSUIAmount && (
 				<Button
 					variant="link"
 					type="button"
