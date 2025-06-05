@@ -16,13 +16,13 @@ function Icon({ src, prefix, alt, className }: IconProps) {
 	);
 }
 
-export function SUIIcon() {
+export function SUIIcon(props: IconProps) {
 	return (
 		<Icon
 			prefix={"SUI"}
 			src="https://cdn.prod.website-files.com/6425f546844727ce5fb9e5ab/65690e5e73e9e2a416e3502f_sui-mark.svg"
 			alt="SUI"
-			className="mr-2"
+			{...props}
 		/>
 	);
 }
@@ -32,5 +32,5 @@ export function BitCoinIcon() {
 }
 
 export function NBTCIcon(props: IconProps) {
-	return <Icon prefix={"nBTC"} src="/assets/coins/nbtc.svg" alt="nBTC" className="mr-4" {...props} />;
+	return <Icon prefix={"nBTC"} src="/assets/coins/nbtc.svg" alt="nBTC" {...props} />;
 }
