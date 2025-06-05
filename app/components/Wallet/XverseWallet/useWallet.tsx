@@ -16,10 +16,11 @@ import { ByieldWallet } from "~/types";
 
 export const useXverseConnect = () => {
 	const { toast } = useToast();
-	const { handleWalletConnect } = useContext(WalletContext);
+	const { handleWalletConnect, toggleBitcoinModal } = useContext(WalletContext);
 
 	const connectWallet = useCallback(async () => {
 		try {
+			toggleBitcoinModal(true);
 			const response = await Wallet.request(connectMethodName, {
 				permissions: [
 					{
