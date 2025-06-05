@@ -8,7 +8,7 @@ import { SuiModal } from "../Wallet/SuiWallet/SuiModal";
 import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
 import { useNetworkVariables } from "~/networkConfig";
 import { createBuyNBTCTxn } from "~/util/util";
-import { BUY_NBTC_GAS_FEE_IN_SUI, PRICE_PER_NBTC_IN_SUI } from "~/constant";
+import { BUY_NBTC_GAS_FEE_IN_SUI } from "~/constant";
 import { ArrowDown } from "lucide-react";
 import { formatSUI, parseSUI } from "~/lib/denoms";
 import { useToast } from "~/hooks/use-toast";
@@ -19,34 +19,36 @@ import { Modal } from "../ui/dialog";
 import { useSuiBalance } from "../Wallet/SuiWallet/useSuiBalance";
 import { Instructions } from "./Instructions";
 import { TransactionStatus } from "./TransactionStatus";
-import { NBTCIcon, SUIIcon } from "../icons";
+import { SUIIcon } from "../icons";
+import { YouReceive } from "./YouReceive";
 
-const calculateYouReceive = (mistAmount: bigint): bigint => {
-	return mistAmount / PRICE_PER_NBTC_IN_SUI;
-};
-
-interface YouReceiveProps {
-	mistAmount: bigint;
+interface SUIRightAdornmentProps {
 	isSuiWalletConnected: boolean;
+	gasFee: bigint;
+	onMaxClick: (val: string) => void;
 }
 
-function YouReceive({ mistAmount, isSuiWalletConnected }: YouReceiveProps) {
-	const youReceive = calculateYouReceive(mistAmount);
+function SUIRightAdornment({ isSuiWalletConnected, gasFee, onMaxClick }: SUIRightAdornmentProps) {
+	const { balance } = useSuiBalance();
+	const totalBalance = BigInt(balance?.totalBalance || "0");
+	const maxSUIAmount = balance?.totalBalance && totalBalance > 0 ? formatSUI(totalBalance - gasFee) : "0";
 
 	return (
-		<div className="flex flex-col gap-2">
-			<FormNumericInput
-				name="amountOfNBTC"
-				className="h-16"
-				value={isSuiWalletConnected && youReceive && youReceive > 0 ? formatSUI(youReceive) : "0.0"}
-				allowNegative={false}
-				placeholder={isSuiWalletConnected && youReceive && youReceive <= 0 ? "0.0" : ""}
-				readOnly
-				rightAdornments={<NBTCIcon />}
-			/>
-			<span className="tracking-tighter text-gray-500 text-sm dark:text-gray-400">
-				This is a fixed price buy. The price is 25,000 SUI / nBTC.
-			</span>
+		<div className="flex gap-1 items-center">
+			{balance?.totalBalance && (
+				<p className="text-xs text-white w-[74px]">{maxSUIAmount.substring(0, 4)} SUI </p>
+			)}
+			{balance?.totalBalance && (
+				<Button
+					variant="link"
+					type="button"
+					onClick={() => onMaxClick(maxSUIAmount)}
+					className="text-xs w-fit p-0 pr-2"
+				>
+					Max
+				</Button>
+			)}
+			<SUIIcon prefix={isSuiWalletConnected ? "" : " SUI"} className="flex justify-end mr-1" />
 		</div>
 	);
 }
@@ -89,7 +91,7 @@ export function BuyNBTC() {
 		reValidateMode: "onChange",
 		disabled: isPending || isSuccess || isError,
 	});
-	const { watch, trigger, handleSubmit, reset } = buyNBTCForm;
+	const { watch, trigger, handleSubmit, reset, setValue } = buyNBTCForm;
 	const suiAmount = watch("suiAmount");
 	const gasFee = parseSUI(BUY_NBTC_GAS_FEE_IN_SUI);
 
@@ -168,7 +170,13 @@ export function BuyNBTC() {
 							allowNegative={false}
 							decimalScale={6}
 							createEmptySpace
-							rightAdornments={<SUIIcon />}
+							rightAdornments={
+								<SUIRightAdornment
+									gasFee={gasFee}
+									isSuiWalletConnected={isSuiWalletConnected}
+									onMaxClick={(val: string) => setValue("suiAmount", val)}
+								/>
+							}
 							rules={suiAmountInputRules}
 						/>
 						<ArrowDown className="text-primary justify-center w-full flex mb-2 p-0 m-0" />

@@ -1,43 +1,7 @@
 import { Link } from "@remix-run/react";
-import { Button } from "~/components/ui/button";
-import { useContext } from "react";
-import { XverseWallet } from "./Wallet/XverseWallet/XverseWallet";
-import { SuiWallet } from "./Wallet/SuiWallet/SuiWallet";
-import { WalletContext } from "~/providers/ByieldWalletProvider";
-import { ByieldWallet } from "~/types";
-import { useXverseConnect } from "./Wallet/XverseWallet/useWallet";
-import { SuiModal } from "./Wallet/SuiWallet/SuiModal";
 import { NavMenu, NavMenuItem } from "./ui/navigation-menu";
 import { isProduction } from "~/lib/appenv";
-
-interface SelectWalletProps {
-	isAppModeProduction: boolean;
-}
-
-function SelectWallet({ isAppModeProduction }: SelectWalletProps) {
-	const { connectWallet } = useXverseConnect();
-	const { connectedWallet } = useContext(WalletContext);
-
-	// none of the wallet is connected, than show connect button for all available wallets
-	if (!connectedWallet) {
-		return (
-			<>
-				{/* Xverse wallet connect button */}
-				{!isAppModeProduction && <Button onClick={connectWallet}>Connect Bitcoin Wallet</Button>}
-				{/* Sui Wallet Connect Modal */}
-				<SuiModal />
-			</>
-		);
-	}
-
-	// one of the wallet is connected
-	return (
-		<>
-			{connectedWallet === ByieldWallet.Xverse && <XverseWallet />}
-			{connectedWallet === ByieldWallet.SuiWallet && <SuiWallet />}
-		</>
-	);
-}
+import { SelectWallet } from "./SelectWallet";
 
 function navMenuItems(isProduction: boolean): NavMenuItem[] {
 	if (isProduction) {
