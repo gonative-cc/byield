@@ -1,5 +1,5 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { ReactNode, createContext, useEffect, useState } from "react";
+import { ReactNode, createContext, useEffect, useRef, useState } from "react";
 import { useXverseAddress } from "~/components/Wallet/XverseWallet/useXverseAddress";
 import { ByieldWallet } from "~/types";
 
@@ -27,11 +27,18 @@ export const ByieldWalletProvider = ({ children }: { children: ReactNode }) => {
 	const isSuiWalletActive = !!currentAccount;
 	const { currentAddress } = useXverseAddress();
 	const isBitcoinWalletActive = !!currentAddress;
+	const observerRef = useRef<MutationObserver | null>(null);
 
 	useEffect(() => {
 		setIsLoading(() => true);
+		// Update wallet state
+		setConnectedWallet(() =>
+			isSuiWalletActive ? ByieldWallet.SuiWallet : isBitcoinWalletActive ? ByieldWallet.Xverse : null,
+		);
+		setIsLoading(() => false);
+	}, [isBitcoinWalletActive, isSuiWalletActive, isModalHidden]);
 
-		// Function to update bitcoin modal visibility
+	useEffect(() => {
 		const updateModalVisibility = () => {
 			const modal = document.getElementById("sats-connect-wallet-provider-selector");
 			if (modal) {
@@ -42,22 +49,17 @@ export const ByieldWalletProvider = ({ children }: { children: ReactNode }) => {
 		// Run immediately to set initial modal state
 		updateModalVisibility();
 
-		// Set up MutationObserver to watch for modal being added dynamically
 		const observer = new MutationObserver(() => {
 			updateModalVisibility();
 		});
-
+		observerRef.current = observer;
+		// Attach observer to the modal DOM node here if needed
 		observer.observe(document.body, { childList: true, subtree: true });
 
-		// Update wallet state
-		setConnectedWallet(() =>
-			isSuiWalletActive ? ByieldWallet.SuiWallet : isBitcoinWalletActive ? ByieldWallet.Xverse : null,
-		);
-		setIsLoading(() => false);
-
-		// Cleanup observer on component unmount
-		return () => observer.disconnect();
-	}, [isBitcoinWalletActive, isSuiWalletActive, isModalHidden]);
+		return () => {
+			observer.disconnect();
+		};
+	}, [isModalHidden]);
 
 	const handleWalletConnect = async (walletToBeConnected: WalletType): Promise<void> => {
 		setConnectedWallet(walletToBeConnected);
