@@ -105,12 +105,14 @@ function AvailableWallets() {
 								{ wallet },
 								{
 									onSuccess: () => handleWalletConnect(ByieldWallet.SuiWallet),
-									onError: () =>
+									onError: (error) => {
+										console.error(`Failed to connect wallet ${wallet.name}`, error);
 										toast({
 											title: "Sui Wallet Connect",
 											description: `Failed to connect wallet ${wallet.name}`,
 											variant: "destructive",
-										}),
+										});
+									},
 								},
 							)
 						}
