@@ -26,15 +26,19 @@ export const links: LinksFunction = () => [
 	},
 ];
 
-const GoogleAnalyics = () => (
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-CNXYT4HED9"></script>
-	<script>
-		window.dataLayer = window.dataLayer || [];
-		function gtag(){dataLayer.push(arguments);}
-		gtag('js', new Date());
-		gtag('config', 'G-CNXYT4HED9');
-	</script>
-);
+function GoogleAnalyics() {
+	if (!isProduction()) return null;
+	return (
+		<>
+			<script async src="https://www.googletagmanager.com/gtag/js?id=G-CNXYT4HED9"></script>
+			<script>
+				{
+					"window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-CNXYT4HED9'); console.log('GA Connected');"
+				}
+			</script>
+		</>
+	);
+}
 
 export function Layout({ children }: { children: React.ReactNode }) {
 	return (
