@@ -4,12 +4,13 @@ interface IconProps {
 	prefix?: string;
 	src?: string;
 	alt?: string;
+	containerClassName?: string;
 	className?: string;
 }
 
-function Icon({ src, prefix, alt, className }: IconProps) {
+function Icon({ src, prefix, alt, className, containerClassName }: IconProps) {
 	return (
-		<div className="flex gap-2 items-center">
+		<div className={twMerge("flex gap-2 items-center", containerClassName)}>
 			{prefix}
 			<img src={src} alt={alt} loading="lazy" className={twMerge("w-7 h-7", className)} />
 		</div>

@@ -23,36 +23,32 @@ import { SUIIcon } from "../icons";
 import { YouReceive } from "./YouReceive";
 
 interface SUIRightAdornmentProps {
-	isSuiWalletConnected: boolean;
 	gasFee: bigint;
 	onMaxClick: (val: string) => void;
 }
 
-function SUIRightAdornment({ isSuiWalletConnected, gasFee, onMaxClick }: SUIRightAdornmentProps) {
+function SUIRightAdornment({ gasFee, onMaxClick }: SUIRightAdornmentProps) {
 	const { balance } = useSuiBalance();
 	const totalBalance = BigInt(balance?.totalBalance || "0");
 	const maxSUIAmount = balance?.totalBalance && totalBalance > 0 ? formatSUI(totalBalance - gasFee) : "0";
 	const isValidMaxSUIAmount = balance?.totalBalance && maxSUIAmount !== "0";
 
 	return (
-		<div className="flex gap-1 items-center">
+		<div className="flex flex-col items-center">
 			{isValidMaxSUIAmount && (
-				<p className="text-xs text-white w-[74px]">{maxSUIAmount.substring(0, 4)} SUI </p>
+				<div className="flex items-center gap-2">
+					<p className="text-xs whitespace-nowrap">Balance: {maxSUIAmount.substring(0, 4)} SUI</p>
+					<Button
+						variant="link"
+						type="button"
+						onClick={() => onMaxClick(maxSUIAmount)}
+						className="text-xs w-fit p-0 pr-2"
+					>
+						Max
+					</Button>
+				</div>
 			)}
-			{isValidMaxSUIAmount && (
-				<Button
-					variant="link"
-					type="button"
-					onClick={() => onMaxClick(maxSUIAmount)}
-					className="text-xs w-fit p-0 pr-2"
-				>
-					Max
-				</Button>
-			)}
-			<SUIIcon
-				prefix={isSuiWalletConnected && isValidMaxSUIAmount ? "" : " SUI"}
-				className="flex justify-end mr-1"
-			/>
+			<SUIIcon prefix={"SUI"} className="flex justify-end mr-1" containerClassName="w-full justify-end" />
 		</div>
 	);
 }
@@ -169,7 +165,7 @@ export function BuyNBTC() {
 							required
 							name="suiAmount"
 							placeholder="Enter SUI amount"
-							className="h-16"
+							className="h-24"
 							inputMode="decimal"
 							allowNegative={false}
 							decimalScale={6}
@@ -177,7 +173,6 @@ export function BuyNBTC() {
 							rightAdornments={
 								<SUIRightAdornment
 									gasFee={gasFee}
-									isSuiWalletConnected={isSuiWalletConnected}
 									onMaxClick={(val: string) => setValue("suiAmount", val)}
 								/>
 							}
