@@ -26,6 +26,20 @@ export const links: LinksFunction = () => [
 	},
 ];
 
+function GoogleAnalyics() {
+	if (!isProduction()) return null;
+	return (
+		<>
+			<script async src="https://www.googletagmanager.com/gtag/js?id=G-CNXYT4HED9"></script>
+			<script>
+				{
+					"window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-CNXYT4HED9'); console.log('GA Connected');"
+				}
+			</script>
+		</>
+	);
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
 	return (
 		<html lang="en" className="dark">
@@ -33,6 +47,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<meta charSet="utf-8" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<Meta />
+				<GoogleAnalyics />
 				<Links />
 			</head>
 			<body className="min-h-screen bg-background antialiased">
