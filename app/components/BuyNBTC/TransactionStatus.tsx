@@ -1,5 +1,5 @@
 import { Check, CircleX } from "lucide-react";
-import { classNames } from "~/lib/utils";
+import { classNames } from "~/util/tailwind";
 import { Button } from "../ui/button";
 import { Link } from "@remix-run/react";
 

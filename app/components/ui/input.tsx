@@ -1,5 +1,5 @@
 import * as React from "react";
-import { cn } from "~/lib/utils";
+import { cn } from "~/util/tailwind";
 
 export interface InputProps extends React.ComponentProps<"input"> {
 	leftAdornments?: React.ReactNode;

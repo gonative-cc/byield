@@ -21,6 +21,8 @@ import { Instructions } from "./Instructions";
 import { TransactionStatus } from "./TransactionStatus";
 import { SUIIcon } from "../icons";
 import { YouReceive } from "./YouReceive";
+import { BYIELD_GA_EVENT_NAME, BYIELD_GA_CATEGORY } from "~/types/googleAnalytics";
+import { trackEvent } from "~/util/googleAnalaytic";
 
 interface SUIRightAdornmentProps {
 	gasFee: bigint;
@@ -108,11 +110,25 @@ export function BuyNBTC() {
 			return;
 		}
 		const transaction = createBuyNBTCTxn(account.address, mistAmount, nbtcOTC);
+		const label = `user tried to buy ${formatSUI(mistAmount)} SUI`;
+
 		signAndExecuteTransaction(
 			{
 				transaction,
 			},
 			{
+				onSuccess: () => {
+					trackEvent(BYIELD_GA_EVENT_NAME.BUY_NBTC, {
+						category: BYIELD_GA_CATEGORY.BUY_NBTC_SUCCESS,
+						label,
+					});
+				},
+				onError: () => {
+					trackEvent(BYIELD_GA_EVENT_NAME.BUY_NBTC, {
+						category: BYIELD_GA_CATEGORY.BUY_NBTC_ERROR,
+						label,
+					});
+				},
 				onSettled: () => {
 					refetchSUIBalance();
 					refetchNBTCBalance();
