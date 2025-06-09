@@ -161,9 +161,14 @@ export function BuyNBTC() {
 	const suiAmountInputRules = {
 		validate: {
 			isWalletConnected: () => isSuiWalletConnected || "Please connect SUI wallet",
-			enoughBalance: (value: string) =>
-				(balance?.totalBalance && parseSUI(value) + gasFee <= BigInt(balance.totalBalance)) ||
-				`Entered SUI is too big. Leave at-least ${formatSUI(gasFee)} SUI to cover the gas fee.`,
+			enoughBalance: (value: string) => {
+				if (balance?.totalBalance) {
+					if (parseSUI(value) + gasFee <= BigInt(balance.totalBalance)) {
+						return true;
+					}
+					return `Entered SUI is too big. Leave at-least ${formatSUI(gasFee)} SUI to cover the gas fee.`;
+				}
+			},
 		},
 	};
 
@@ -184,7 +189,6 @@ export function BuyNBTC() {
 							className="h-24"
 							inputMode="decimal"
 							allowNegative={false}
-							decimalScale={6}
 							createEmptySpace
 							rightAdornments={
 								<SUIRightAdornment
