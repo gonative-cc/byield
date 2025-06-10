@@ -22,7 +22,7 @@ import { TransactionStatus } from "./TransactionStatus";
 import { SUIIcon } from "../icons";
 import { YouReceive } from "./YouReceive";
 import { BYIELD_GA_EVENT_NAME, BYIELD_GA_CATEGORY } from "~/types/googleAnalytics";
-import { trackEvent } from "~/util/googleAnalytics";
+import { trackEvent } from "~/lib/googleAnalytics";
 
 interface SUIRightAdornmentProps {
 	gasFee: bigint;
