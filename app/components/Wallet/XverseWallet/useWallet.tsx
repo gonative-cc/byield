@@ -51,7 +51,7 @@ export const useXverseConnect = () => {
 		} catch (err) {
 			console.error(err);
 		}
-	}, [handleWalletConnect, toast]);
+	}, [handleWalletConnect, toast, toggleBitcoinModal]);
 
 	return { connectWallet };
 };

@@ -10,6 +10,7 @@ import { Tooltip, TooltipProvider } from "./components/ui/tooltip";
 import { ByieldWalletProvider } from "./providers/ByieldWalletProvider";
 import { isProduction, printAppEnv } from "./lib/appenv";
 import { useEffect } from "react";
+import { Footer } from "./components/Footer";
 
 const queryClient = new QueryClient();
 
@@ -82,9 +83,7 @@ function NativeApp({ children }: { children: React.ReactNode }) {
 						</SuiWalletProvider>
 					</SuiClientProvider>
 				</QueryClientProvider>
-				<footer className="border-t py-4 text-center text-sm text-muted-foreground">
-					© {new Date().getFullYear()} Native App
-				</footer>
+				<Footer />
 			</div>
 			<ScrollRestoration />
 			<Scripts />
