@@ -36,6 +36,10 @@ export default defineConfig({
 		mainFields: ["browser", "module", "main"],
 	},
 	build: {
-		minify: true,
+		rollupOptions: {
+			output: {
+				manualChunks: () => "bundle.js",
+			},
+		},
 	},
 });
