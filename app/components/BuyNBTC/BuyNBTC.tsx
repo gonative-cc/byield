@@ -10,7 +10,7 @@ import { useNetworkVariables } from "~/networkConfig";
 import { createBuyNBTCTxn } from "~/util/util";
 import { BUY_NBTC_GAS_FEE_IN_SUI } from "~/constant";
 import { ArrowDown } from "lucide-react";
-import { formatSUI, parseSUI } from "~/lib/denoms";
+import { formatSUI, parseSUI, SUI } from "~/lib/denoms";
 import { useToast } from "~/hooks/use-toast";
 import { useNBTCBalance } from "../Wallet/SuiWallet/useNBTCBalance";
 import { NBTCBalance } from "./NBTCBalance";
@@ -187,6 +187,7 @@ export function BuyNBTC() {
 							placeholder="Enter SUI amount"
 							className="h-24"
 							inputMode="decimal"
+							decimalScale={SUI}
 							allowNegative={false}
 							createEmptySpace
 							rightAdornments={
