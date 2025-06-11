@@ -21,6 +21,7 @@ import { Instructions } from "./Instructions";
 import { TransactionStatus } from "./TransactionStatus";
 import { SUIIcon } from "../icons";
 import { YouReceive } from "./YouReceive";
+import { trackEvent, GA_CATEGORY, GA_EVENT_NAME } from "~/lib/googleAnalytics";
 
 interface SUIRightAdornmentProps {
 	gasFee: bigint;
@@ -108,11 +109,25 @@ export function BuyNBTC() {
 			return;
 		}
 		const transaction = createBuyNBTCTxn(account.address, mistAmount, nbtcOTC);
+		const label = `user tried to buy ${formatSUI(mistAmount)} SUI`;
+
 		signAndExecuteTransaction(
 			{
 				transaction,
 			},
 			{
+				onSuccess: () => {
+					trackEvent(GA_EVENT_NAME.BUY_NBTC, {
+						category: GA_CATEGORY.BUY_NBTC_SUCCESS,
+						label,
+					});
+				},
+				onError: () => {
+					trackEvent(GA_EVENT_NAME.BUY_NBTC, {
+						category: GA_CATEGORY.BUY_NBTC_ERROR,
+						label,
+					});
+				},
 				onSettled: () => {
 					refetchSUIBalance();
 					refetchNBTCBalance();
@@ -145,9 +160,14 @@ export function BuyNBTC() {
 	const suiAmountInputRules = {
 		validate: {
 			isWalletConnected: () => isSuiWalletConnected || "Please connect SUI wallet",
-			enoughBalance: (value: string) =>
-				(balance?.totalBalance && parseSUI(value) + gasFee <= BigInt(balance.totalBalance)) ||
-				`Entered SUI is too big. Leave at-least ${formatSUI(gasFee)} SUI to cover the gas fee.`,
+			enoughBalance: (value: string) => {
+				if (balance?.totalBalance) {
+					if (parseSUI(value) + gasFee <= BigInt(balance.totalBalance)) {
+						return true;
+					}
+					return `Entered SUI is too big. Leave at-least ${formatSUI(gasFee)} SUI to cover the gas fee.`;
+				}
+			},
 		},
 	};
 
@@ -168,7 +188,6 @@ export function BuyNBTC() {
 							className="h-24"
 							inputMode="decimal"
 							allowNegative={false}
-							decimalScale={6}
 							createEmptySpace
 							rightAdornments={
 								<SUIRightAdornment
