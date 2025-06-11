@@ -21,8 +21,7 @@ import { Instructions } from "./Instructions";
 import { TransactionStatus } from "./TransactionStatus";
 import { SUIIcon } from "../icons";
 import { YouReceive } from "./YouReceive";
-import { trackEvent } from "~/lib/googleAnalytics";
-import { GA_CATEGORY, GA_EVENT_NAME } from "~/types/googleAnalytics";
+import { trackEvent, GA_CATEGORY, GA_EVENT_NAME } from "~/lib/googleAnalytics";
 
 interface SUIRightAdornmentProps {
 	gasFee: bigint;
