@@ -21,8 +21,8 @@ import { Instructions } from "./Instructions";
 import { TransactionStatus } from "./TransactionStatus";
 import { SUIIcon } from "../icons";
 import { YouReceive } from "./YouReceive";
-import { BYIELD_GA_EVENT_NAME, BYIELD_GA_CATEGORY } from "~/types/googleAnalytics";
 import { trackEvent } from "~/lib/googleAnalytics";
+import { GA_CATEGORY, GA_EVENT_NAME } from "~/types/googleAnalytics";
 
 interface SUIRightAdornmentProps {
 	gasFee: bigint;
@@ -118,14 +118,14 @@ export function BuyNBTC() {
 			},
 			{
 				onSuccess: () => {
-					trackEvent(BYIELD_GA_EVENT_NAME.BUY_NBTC, {
-						category: BYIELD_GA_CATEGORY.BUY_NBTC_SUCCESS,
+					trackEvent(GA_EVENT_NAME.BUY_NBTC, {
+						category: GA_CATEGORY.BUY_NBTC_SUCCESS,
 						label,
 					});
 				},
 				onError: () => {
-					trackEvent(BYIELD_GA_EVENT_NAME.BUY_NBTC, {
-						category: BYIELD_GA_CATEGORY.BUY_NBTC_ERROR,
+					trackEvent(GA_EVENT_NAME.BUY_NBTC, {
+						category: GA_CATEGORY.BUY_NBTC_ERROR,
 						label,
 					});
 				},
