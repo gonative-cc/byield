@@ -11,7 +11,7 @@ export function Instructions() {
 				<h2 className="mb-2 font-semibold text-gray-900 dark:text-white">Instructions:</h2>
 				<ul className="space-y-2 text-gray-500 list-disc list-inside dark:text-gray-400">
 					<li>Click on Connect Sui Wallet button, if not already connected.</li>
-					<li>Connect your wallet.</li>
+					<li>Connect your wallet. Slush recommended.</li>
 					<li>
 						Make sure you have testnet Sui tokens:
 						<ul className="ps-8 mt-2 space-y-1 list-disc list-outside">
