@@ -62,6 +62,10 @@
 				{
 					"title": "Homepage",
 					"link": "/"
+				},
+				{
+					"title": "Newsletter",
+					"link": "https://www.gonative.cc/#newsletter"
 				}
 			]
 		},
