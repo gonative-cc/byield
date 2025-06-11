@@ -1,0 +1,82 @@
+{
+	"socials": [
+		{
+			"id": "x",
+			"src": "https://cdn.prod.website-files.com/669384bb0581e8c6129231e2/67137e7bb8e666f9945a5641_Group%2074.svg",
+			"link": "https://x.com/goNativecc/"
+		},
+		{
+			"id": "telegram",
+			"src": "https://cdn.prod.website-files.com/669384bb0581e8c6129231e2/67137e7b66e8fea1dc7a34e4_Group%2075.svg",
+			"link": "https://t.me/goNativecc"
+		},
+		{
+			"id": "github",
+			"src": "https://cdn.prod.website-files.com/669384bb0581e8c6129231e2/67137e7bb8e666f9945a564a_Group%2076.svg",
+			"link": "https://github.com/gonative-cc"
+		},
+		{
+			"id": "discord",
+			"src": "https://cdn.prod.website-files.com/669384bb0581e8c6129231e2/67137e7b2f98d2b03a4eda52_Group%2077.svg",
+			"link": "https://discord.com/invite/gonative"
+		}
+	],
+	"redirects": [
+		{
+			"heading": "Developers",
+			"subHeaders": [
+				{
+					"title": "Docs (Coming soon)",
+					"link": ""
+				},
+				{
+					"title": "Github",
+					"link": "https://github.com/gonative-cc"
+				}
+			]
+		},
+		{
+			"heading": "Company",
+			"subHeaders": [
+				{
+					"title": "Teams",
+					"link": "https://www.gonative.cc/team"
+				},
+				{
+					"title": "Blogs",
+					"link": "https://www.gonative.cc/blogs"
+				},
+				{
+					"title": "Brand Kit",
+					"link": "https://www.figma.com/design/I4StBJAgqc9s42bsesq3Ho/Brand-Kit-(External)?node-id=1-9&t=ZTmT40zftwxvUFLK-1"
+				}
+			]
+		},
+		{
+			"heading": "Explore",
+			"subHeaders": [
+				{
+					"title": "One pager",
+					"link": "https://cdn.prod.website-files.com/669384bb0581e8c6129231e2/6808d77ba1fb691c56bc545b_Native%201-pager%20latest.pdf"
+				},
+				{
+					"title": "Homepage",
+					"link": "/"
+				},
+				{
+					"title": "Newsletter",
+					"link": "https://www.gonative.cc/#newsletter"
+				}
+			]
+		},
+		{
+			"heading": "Feedback",
+			"subHeaders": [
+				{
+					"title": "UI Feedback",
+					"link": "https://discord.com/channels/1262723650424016946/1377596206942785586"
+				}
+			]
+		}
+	]
+}
