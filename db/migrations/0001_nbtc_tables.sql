@@ -10,7 +10,7 @@ CREATE TABLE nbtc_minting (
 	note TEXT, -- additional note that we can include for the user
 	sent_at INTEGER NOT NULL, -- timestamp
 	sui_tx_id TEXT, -- the transactoin that the nBTC was minted to the recipient
-	status INTEGER NOT NULL CHECK(status IN (1,2,3,4,5,6,7,8,9))
+	status INTEGER NOT NULL
 	-- confirmations INTEGER NOT NULL,
 );
 
@@ -50,7 +50,7 @@ CREATE TABLE nbtc_withdrawal (
 	note TEXT, -- additional note that we can include for the user. eg. you are sending funds to a collegue, this note will be included (maybe op_return?)
 	sent_at INTEGER NOT NULL,
 	btc_tx_id TEXT, -- at the beginning it will be null, later will appear
-	status INTEGER NOT NULL CHECK(status in (1,2,3,4,5,6))
+	status INTEGER NOT NULL
 )
 
 CREATE INDEX nbtc_withdraw_sender
