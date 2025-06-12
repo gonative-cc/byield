@@ -1,3 +1,5 @@
+import { isProduction, getNetworkMode } from "./appenv";
+
 export type eventParam = {
 	label: string;
 	category: GA_CATEGORY;
@@ -15,6 +17,6 @@ export enum GA_CATEGORY {
 
 export function trackEvent(eventName: GA_EVENT_NAME, params: eventParam) {
 	if (typeof window !== "undefined" && window.gtag) {
-		window.gtag("event", eventName, { ...params, network: "testnet", prod: import.meta.env.PROD });
+		window.gtag("event", eventName, { ...params, network: getNetworkMode(), prod: isProduction() });
 	}
 }

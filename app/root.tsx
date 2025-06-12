@@ -34,7 +34,7 @@ function GoogleAnalyics() {
 			<script async src="https://www.googletagmanager.com/gtag/js?id=G-CNXYT4HED9"></script>
 			<script>
 				{
-					"window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-CNXYT4HED9'); console.log('GA Connected');"
+					"window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-CNXYT4HED9');"
 				}
 			</script>
 		</>

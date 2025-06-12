@@ -1,5 +1,11 @@
+export type NETWORK_MODE = "mainnet" | "testnet";
+
 export function isProduction(): boolean {
 	return import.meta.env.VITE_APP_MODE === "production";
+}
+
+export function getNetworkMode(): NETWORK_MODE {
+	return import.meta.env.VITE_APP_NETWORK_MODE;
 }
 
 export function printAppEnv() {
