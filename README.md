@@ -32,6 +32,12 @@ pnpm run build
 pnpm start
 ```
 
+To apply migrations to the local cloudflare env:
+
+``` sh
+pnpm run db:migrate:local
+```
+
 ## Typegen
 
 Generate types for your Cloudflare bindings in `wrangler.toml`:
