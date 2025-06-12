@@ -21,7 +21,7 @@ import { useSuiBalance } from "../Wallet/SuiWallet/useSuiBalance";
 import { Instructions } from "./Instructions";
 import { TransactionStatus } from "./TransactionStatus";
 import { YouReceive } from "./YouReceive";
-import { trackEvent, GA_CATEGORY, GA_EVENT_NAME } from "~/lib/googleAnalytics";
+import { GA_CATEGORY, GA_EVENT_NAME, useGoogleAnalytics } from "~/lib/googleAnalytics";
 import { classNames } from "~/util/tailwind";
 import { SUIIcon } from "../icons";
 
@@ -60,7 +60,8 @@ export function BuyNBTC() {
 	const { toast } = useToast();
 	const client = useSuiClient();
 	const account = useCurrentAccount();
-	const { connectedWallet, network } = useContext(WalletContext);
+	const { connectedWallet } = useContext(WalletContext);
+	const { trackEvent } = useGoogleAnalytics();
 	const isSuiWalletConnected = connectedWallet === ByieldWallet.SuiWallet;
 	const { balance: nBTCBalance, refetchBalance: refetchNBTCBalance } = useNBTCBalance();
 	const { balance, refetchSUIBalance } = useSuiBalance();
@@ -115,24 +116,16 @@ export function BuyNBTC() {
 			},
 			{
 				onSuccess: () => {
-					trackEvent(
-						GA_EVENT_NAME.BUY_NBTC,
-						{
-							category: GA_CATEGORY.BUY_NBTC_SUCCESS,
-							label,
-						},
-						network,
-					);
+					trackEvent(GA_EVENT_NAME.BUY_NBTC, {
+						category: GA_CATEGORY.BUY_NBTC_SUCCESS,
+						label,
+					});
 				},
 				onError: () => {
-					trackEvent(
-						GA_EVENT_NAME.BUY_NBTC,
-						{
-							category: GA_CATEGORY.BUY_NBTC_ERROR,
-							label,
-						},
-						network,
-					);
+					trackEvent(GA_EVENT_NAME.BUY_NBTC, {
+						category: GA_CATEGORY.BUY_NBTC_ERROR,
+						label,
+					});
 				},
 				onSettled: () => {
 					refetchSUIBalance();
