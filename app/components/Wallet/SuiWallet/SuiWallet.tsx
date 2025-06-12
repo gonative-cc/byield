@@ -9,7 +9,7 @@ import { SelectInput, type Option } from "../../ui/select";
 import { Button } from "../../ui/button";
 import { useCallback, useContext, useMemo } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
-import { trimAddress } from "../wallethelper";
+import { trimAddress } from "../walletHelper";
 import { useSuiBalance } from "./useSuiBalance";
 import { NumericFormat } from "react-number-format";
 import { EllipsisVertical } from "lucide-react";

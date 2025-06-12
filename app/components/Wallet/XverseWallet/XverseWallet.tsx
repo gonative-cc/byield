@@ -3,7 +3,7 @@ import { Button } from "../../ui/button";
 import { type Option, SelectInput } from "../../ui/select";
 import { BitcoinNetworkType } from "sats-connect";
 import { useCallback, useMemo } from "react";
-import { trimAddress } from "../wallethelper";
+import { trimAddress } from "../walletHelper";
 import { NumericFormat } from "react-number-format";
 
 function NetWorkOptions() {
