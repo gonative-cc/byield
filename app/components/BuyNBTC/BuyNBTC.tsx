@@ -19,23 +19,20 @@ import { Modal } from "../ui/dialog";
 import { useSuiBalance } from "../Wallet/SuiWallet/useSuiBalance";
 import { Instructions } from "./Instructions";
 import { TransactionStatus } from "./TransactionStatus";
-import { SUIIcon } from "../icons";
 import { YouReceive } from "./YouReceive";
 import { trackEvent, GA_CATEGORY, GA_EVENT_NAME } from "~/lib/googleAnalytics";
+import { classNames } from "~/util/tailwind";
+import { SUIIcon } from "../icons";
 
 interface SUIRightAdornmentProps {
-	gasFee: bigint;
+	maxSUIAmount: string;
+	isValidMaxSUIAmount: boolean;
 	onMaxClick: (val: string) => void;
 }
 
-function SUIRightAdornment({ gasFee, onMaxClick }: SUIRightAdornmentProps) {
-	const { balance } = useSuiBalance();
-	const totalBalance = BigInt(balance?.totalBalance || "0");
-	const maxSUIAmount = balance?.totalBalance && totalBalance > 0 ? formatSUI(totalBalance - gasFee) : "0";
-	const isValidMaxSUIAmount = balance?.totalBalance && maxSUIAmount !== "0";
-
+export function SUIRightAdornment({ isValidMaxSUIAmount, maxSUIAmount, onMaxClick }: SUIRightAdornmentProps) {
 	return (
-		<div className="flex flex-col items-center">
+		<div className="flex flex-col items-center gap-2 py-2">
 			{isValidMaxSUIAmount && (
 				<div className="flex items-center gap-2">
 					<p className="text-xs whitespace-nowrap">Balance: {maxSUIAmount.substring(0, 4)} SUI</p>
@@ -43,7 +40,7 @@ function SUIRightAdornment({ gasFee, onMaxClick }: SUIRightAdornmentProps) {
 						variant="link"
 						type="button"
 						onClick={() => onMaxClick(maxSUIAmount)}
-						className="text-xs w-fit p-0 pr-2"
+						className="text-xs w-fit p-0 pr-2 h-fit"
 					>
 						Max
 					</Button>
@@ -157,6 +154,10 @@ export function BuyNBTC() {
 		}
 	}, [isSuiWalletConnected, suiAmount, trigger]);
 
+	const totalBalance = BigInt(balance?.totalBalance || "0");
+	const maxSUIAmount = balance?.totalBalance && totalBalance > 0 ? formatSUI(totalBalance - gasFee) : "0";
+	const isValidMaxSUIAmount = (balance?.totalBalance && maxSUIAmount !== "0") || false;
+
 	const suiAmountInputRules = {
 		validate: {
 			isWalletConnected: () => isSuiWalletConnected || "Please connect SUI wallet",
@@ -185,15 +186,19 @@ export function BuyNBTC() {
 							required
 							name="suiAmount"
 							placeholder="Enter SUI amount"
-							className="h-24"
+							className={classNames({
+								"h-16": true,
+								"pt-8": isValidMaxSUIAmount,
+							})}
 							inputMode="decimal"
 							decimalScale={SUI}
 							allowNegative={false}
 							createEmptySpace
 							rightAdornments={
 								<SUIRightAdornment
-									gasFee={gasFee}
 									onMaxClick={(val: string) => setValue("suiAmount", val)}
+									maxSUIAmount={maxSUIAmount}
+									isValidMaxSUIAmount={isValidMaxSUIAmount}
 								/>
 							}
 							rules={suiAmountInputRules}
