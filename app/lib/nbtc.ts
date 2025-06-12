@@ -4,15 +4,14 @@ import { fetchUTXOs, fetchValidateAddress } from "~/api/api";
 import { nBTC_ADDR } from "~/constants";
 import { ToastFunction } from "~/hooks/use-toast";
 import { UTXO, ValidateAddressI } from "~/types";
-import { Transaction } from "@mysten/sui/transactions";
 
-const sendTxn = async (
+export async function nBTCMintTxn(
 	bitcoinAddress: Address,
 	sendAmount: number,
 	opReturnInput: string,
 	network: bitcoin.Network,
 	toast?: ToastFunction,
-) => {
+) {
 	try {
 		// fetch utxos
 		const utxos: UTXO[] = await fetchUTXOs(bitcoinAddress.address);
@@ -84,27 +83,4 @@ const sendTxn = async (
 	} catch (error) {
 		console.error(error);
 	}
-};
-
-const trimAddress = (address: string): string => {
-	return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
-};
-
-type Targets = { packageId: string; module: string; swapFunction: string; vaultId: string };
-
-const createBuyNBTCTxn = (
-	senderAddress: string,
-	suiAmountMist: bigint,
-	{ packageId, module, swapFunction, vaultId }: Targets,
-): Transaction => {
-	const txn = new Transaction();
-	txn.setSender(senderAddress);
-	const [coins] = txn.splitCoins(txn.gas, [txn.pure.u64(suiAmountMist)]);
-	txn.moveCall({
-		target: `${packageId}::${module}::${swapFunction}`,
-		arguments: [txn.object(vaultId), coins],
-	});
-	return txn;
-};
-
-export { sendTxn, trimAddress, createBuyNBTCTxn };
+}

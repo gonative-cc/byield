@@ -1,15 +1,16 @@
+import { Transaction } from "@mysten/sui/transactions";
+import { useContext, useCallback, useEffect } from "react";
+import { ArrowDown } from "lucide-react";
+import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
+
 import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
 import { FormProvider, useForm } from "react-hook-form";
-import { useContext, useCallback, useEffect } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { ByieldWallet } from "~/types";
 import { SuiModal } from "../Wallet/SuiWallet/SuiModal";
-import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
 import { useNetworkVariables } from "~/networkConfig";
-import { createBuyNBTCTxn } from "~/util/util";
 import { BUY_NBTC_GAS_FEE_IN_SUI } from "~/constant";
-import { ArrowDown } from "lucide-react";
 import { formatSUI, parseSUI, SUI } from "~/lib/denoms";
 import { useToast } from "~/hooks/use-toast";
 import { useNBTCBalance } from "../Wallet/SuiWallet/useNBTCBalance";
@@ -227,3 +228,20 @@ export function BuyNBTC() {
 		</FormProvider>
 	);
 }
+
+type Targets = { packageId: string; module: string; swapFunction: string; vaultId: string };
+
+const createBuyNBTCTxn = (
+	senderAddress: string,
+	suiAmountMist: bigint,
+	{ packageId, module, swapFunction, vaultId }: Targets,
+): Transaction => {
+	const txn = new Transaction();
+	txn.setSender(senderAddress);
+	const [coins] = txn.splitCoins(txn.gas, [txn.pure.u64(suiAmountMist)]);
+	txn.moveCall({
+		target: `${packageId}::${module}::${swapFunction}`,
+		arguments: [txn.object(vaultId), coins],
+	});
+	return txn;
+};
