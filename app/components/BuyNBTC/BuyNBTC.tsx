@@ -60,7 +60,7 @@ export function BuyNBTC() {
 	const { toast } = useToast();
 	const client = useSuiClient();
 	const account = useCurrentAccount();
-	const { connectedWallet } = useContext(WalletContext);
+	const { connectedWallet, network } = useContext(WalletContext);
 	const isSuiWalletConnected = connectedWallet === ByieldWallet.SuiWallet;
 	const { balance: nBTCBalance, refetchBalance: refetchNBTCBalance } = useNBTCBalance();
 	const { balance, refetchSUIBalance } = useSuiBalance();
@@ -115,16 +115,24 @@ export function BuyNBTC() {
 			},
 			{
 				onSuccess: () => {
-					trackEvent(GA_EVENT_NAME.BUY_NBTC, {
-						category: GA_CATEGORY.BUY_NBTC_SUCCESS,
-						label,
-					});
+					trackEvent(
+						GA_EVENT_NAME.BUY_NBTC,
+						{
+							category: GA_CATEGORY.BUY_NBTC_SUCCESS,
+							label,
+						},
+						network,
+					);
 				},
 				onError: () => {
-					trackEvent(GA_EVENT_NAME.BUY_NBTC, {
-						category: GA_CATEGORY.BUY_NBTC_ERROR,
-						label,
-					});
+					trackEvent(
+						GA_EVENT_NAME.BUY_NBTC,
+						{
+							category: GA_CATEGORY.BUY_NBTC_ERROR,
+							label,
+						},
+						network,
+					);
 				},
 				onSettled: () => {
 					refetchSUIBalance();

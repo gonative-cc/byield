@@ -10,7 +10,6 @@ minify = true
 
 [vars]
 VITE_APP_MODE = "production"
-VITE_APP_NETWORK_MODE = "testnet"
 
 [assets]
 directory = "./build/client"

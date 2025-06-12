@@ -1,4 +1,5 @@
-import { isProduction, getNetworkMode } from "./appenv";
+import { Network } from "~/providers/ByieldWalletProvider";
+import { isProduction } from "./appenv";
 
 export type eventParam = {
 	label: string;
@@ -15,8 +16,8 @@ export enum GA_CATEGORY {
 	BUY_NBTC_ERROR = "ERROR",
 }
 
-export function trackEvent(eventName: GA_EVENT_NAME, params: eventParam) {
+export function trackEvent(eventName: GA_EVENT_NAME, params: eventParam, network: Network) {
 	if (typeof window !== "undefined" && window.gtag) {
-		window.gtag("event", eventName, { ...params, network: getNetworkMode(), prod: isProduction() });
+		window.gtag("event", eventName, { ...params, network, prod: isProduction() });
 	}
 }
