@@ -19,10 +19,10 @@ function LoadingSkeleton() {
 }
 
 interface SelectWalletProps {
-	isAppModeProduction: boolean;
+	isProductionMode: boolean;
 }
 
-export function SelectWallet({ isAppModeProduction }: SelectWalletProps) {
+export function SelectWallet({ isProductionMode }: SelectWalletProps) {
 	const { connectedWallet, isLoading } = useContext(WalletContext);
 	const { connectWallet } = useXverseConnect();
 
@@ -33,7 +33,7 @@ export function SelectWallet({ isAppModeProduction }: SelectWalletProps) {
 		return (
 			<>
 				{/* Xverse wallet connect button */}
-				{!isAppModeProduction && (
+				{!isProductionMode && (
 					<Button type="button" onClick={connectWallet}>
 						Connect Bitcoin Wallet
 					</Button>

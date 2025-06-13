@@ -1,6 +1,6 @@
 import { Link } from "@remix-run/react";
 import { NavMenu, NavMenuItem } from "./ui/navigation-menu";
-import { isProduction } from "~/lib/appenv";
+import { isProductionMode } from "~/lib/appenv";
 import { SelectWallet } from "./SelectWallet";
 
 function navMenuItems(isProduction: boolean): NavMenuItem[] {
@@ -27,7 +27,7 @@ function navMenuItems(isProduction: boolean): NavMenuItem[] {
 }
 
 export function NavBar() {
-	const isProd = isProduction();
+	const isProd = isProductionMode();
 
 	return (
 		<header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -42,7 +42,7 @@ export function NavBar() {
 					<NavMenu items={navMenuItems(isProd)} />
 				</div>
 				<div className="flex flex-1 items-center justify-end gap-4">
-					<SelectWallet isAppModeProduction={isProd} />
+					<SelectWallet isProductionMode={isProd} />
 				</div>
 			</nav>
 		</header>
