@@ -34,7 +34,7 @@ pnpm start
 
 To apply migrations to the local cloudflare env:
 
-``` sh
+```sh
 pnpm run db:migrate:local
 ```
 
