@@ -9,7 +9,7 @@ main = "./server.ts"
 minify = true
 
 [vars]
-VITE_APP_MODE = "production"
+# var = "value"
 
 [assets]
 directory = "./build/client"

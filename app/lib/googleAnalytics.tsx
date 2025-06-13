@@ -1,5 +1,5 @@
 import { WalletContext } from "~/providers/ByieldWalletProvider";
-import { isProduction } from "./appenv";
+import { isProductionMode } from "./appenv";
 import { useContext } from "react";
 
 export type eventParam = {
@@ -22,7 +22,7 @@ export function useGoogleAnalytics() {
 
 	function trackEvent(eventName: GA_EVENT_NAME, params: eventParam) {
 		if (typeof window !== "undefined" && window.gtag) {
-			window.gtag("event", eventName, { ...params, network, prod: isProduction() });
+			window.gtag("event", eventName, { ...params, network, prod: isProductionMode() });
 		}
 	}
 	return { trackEvent };

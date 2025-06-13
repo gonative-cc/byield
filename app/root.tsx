@@ -8,7 +8,7 @@ import { SuiClientProvider, WalletProvider as SuiWalletProvider } from "@mysten/
 import { Toaster } from "./components/ui/toaster";
 import { Tooltip, TooltipProvider } from "./components/ui/tooltip";
 import { ByieldWalletProvider } from "./providers/ByieldWalletProvider";
-import { isProduction, printAppEnv } from "./lib/appenv";
+import { isProductionMode, printAppEnv } from "./lib/appenv";
 import { useEffect } from "react";
 import { Footer } from "./components/Footer";
 
@@ -27,8 +27,8 @@ export const links: LinksFunction = () => [
 	},
 ];
 
-function GoogleAnalyics() {
-	if (!isProduction()) return null;
+function GoogleAnalytics() {
+	if (!isProductionMode()) return null;
 	return (
 		<>
 			<script async src="https://www.googletagmanager.com/gtag/js?id=G-CNXYT4HED9"></script>
@@ -48,7 +48,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<meta charSet="utf-8" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<Meta />
-				<GoogleAnalyics />
+				<GoogleAnalytics />
 				<Links />
 			</head>
 			<body className="min-h-screen bg-background antialiased">
@@ -60,7 +60,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 function NativeApp({ children }: { children: React.ReactNode }) {
 	useEffect(() => {
-		if (!isProduction()) {
+		if (!isProductionMode()) {
 			printAppEnv();
 		}
 	}, []);
