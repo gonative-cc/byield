@@ -27,7 +27,7 @@ export const links: LinksFunction = () => [
 	},
 ];
 
-function GoogleAnalyics() {
+function GoogleAnalytics() {
 	if (!isProductionMode()) return null;
 	return (
 		<>
@@ -48,7 +48,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<meta charSet="utf-8" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<Meta />
-				<GoogleAnalyics />
+				<GoogleAnalytics />
 				<Links />
 			</head>
 			<body className="min-h-screen bg-background antialiased">
