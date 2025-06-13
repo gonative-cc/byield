@@ -157,8 +157,8 @@ export function BuyNBTC() {
 
 	const totalBalance = BigInt(balance?.totalBalance || "0");
 	const suiAmountAfterFee = totalBalance - gasFee
-	const maxSUIAmount = balance?.totalBalance && totalBalance > 0 ? formatSUI(suiAmountAfterFee) : "0";
-	const isValidMaxSUIAmount = suiAmountAfterFee >= 0;
+	const isValidMaxSUIAmount = suiAmountAfterFee > 0;
+	const maxSUIAmount = formatSUI(suiAmountAfterFee);
 
 	const suiAmountInputRules = {
 		validate: {
