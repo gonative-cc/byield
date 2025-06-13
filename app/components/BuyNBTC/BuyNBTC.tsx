@@ -30,7 +30,7 @@ interface SUIRightAdornmentProps {
 	onMaxClick: (val: string) => void;
 }
 
-export function SUIRightAdornment({ isValidMaxSUIAmount, maxSUIAmount, onMaxClick }: SUIRightAdornmentProps) {
+function SUIRightAdornment({ isValidMaxSUIAmount, maxSUIAmount, onMaxClick }: SUIRightAdornmentProps) {
 	return (
 		<div className="flex flex-col items-center gap-2 py-2">
 			{isValidMaxSUIAmount && (
