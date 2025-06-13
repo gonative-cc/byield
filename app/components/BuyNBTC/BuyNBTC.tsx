@@ -156,7 +156,7 @@ export function BuyNBTC() {
 	}, [isSuiWalletConnected, suiAmount, trigger]);
 
 	const totalBalance = BigInt(balance?.totalBalance || "0");
-	const suiAmountAfterFee = totalBalance - gasFee
+	const suiAmountAfterFee = totalBalance - gasFee;
 	const isValidMaxSUIAmount = suiAmountAfterFee > 0;
 	const maxSUIAmount = formatSUI(suiAmountAfterFee);
 
