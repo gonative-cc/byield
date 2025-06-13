@@ -175,10 +175,14 @@ export function BuyNBTC() {
 
 	return (
 		<FormProvider {...buyNBTCForm}>
-			<form onSubmit={handleSubmit(handleTransaction)} className="flex flex-col gap-4 items-center">
-				<span className="text-3xl font-semibold text-primary">Buy nBTC</span>
+			<form onSubmit={handleSubmit(handleTransaction)} className="flex flex-col items-center gap-8">
+				<p className="md:text-3xl text-2xl text-center font-semibold max-w-96">
+					Native enables <span className="text-2xl text-primary md:text-3xl">BTCFi</span> in the{" "}
+					<span className="text-2xl text-primary md:text-3xl">Web3 native</span> way!
+				</p>
 				<Card>
 					<CardContent className="p-6 rounded-lg text-white flex flex-col gap-4 bg-azure-10">
+						<span className="text-3xl font-semibold text-primary text-center">Buy nBTC</span>
 						{isSuiWalletConnected && nBTCBalance && (
 							<NBTCBalance balance={BigInt(nBTCBalance.totalBalance)} />
 						)}

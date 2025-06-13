@@ -67,7 +67,7 @@ function NativeApp({ children }: { children: React.ReactNode }) {
 
 	return (
 		<>
-			<div className="flex flex-col min-h-screen">
+			<div className="flex flex-col min-h-screen gap-4">
 				<QueryClientProvider client={queryClient}>
 					<SuiClientProvider networks={networkConfig} defaultNetwork="testnet">
 						<SuiWalletProvider autoConnect>
@@ -75,7 +75,7 @@ function NativeApp({ children }: { children: React.ReactNode }) {
 								<TooltipProvider>
 									<Tooltip>
 										<NavBar />
-										<main className="flex-1 container mx-auto px-4 py-8">{children}</main>
+										<main className="flex-1 container mx-auto px-4">{children}</main>
 										<Toaster />
 									</Tooltip>
 								</TooltipProvider>
