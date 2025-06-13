@@ -5,9 +5,16 @@ import { ByieldWallet } from "~/types";
 
 type WalletType = ByieldWallet | null | undefined;
 
+export enum Network {
+	MAINNET = "mainnet",
+	TESTNET = "testnet",
+}
+
 interface WalletContextI {
 	isLoading: boolean;
 	connectedWallet: WalletType;
+	network: Network;
+	handleNetwork: (newNetwork: Network) => void;
 	handleWalletConnect: (walletToBeConnected: WalletType) => void;
 	toggleBitcoinModal: (show: boolean) => void;
 }
@@ -15,11 +22,15 @@ interface WalletContextI {
 export const WalletContext = createContext<WalletContextI>({
 	isLoading: false,
 	connectedWallet: null,
+	network: Network.TESTNET,
+	handleNetwork: () => {},
 	handleWalletConnect: () => {},
 	toggleBitcoinModal: () => {},
 });
 
 export const ByieldWalletProvider = ({ children }: { children: ReactNode }) => {
+	// TODO: default network is testnet. Change it to mainnet when app goes in prod
+	const [network, setNetwork] = useState<Network>(Network.TESTNET);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [connectedWallet, setConnectedWallet] = useState<WalletType>();
 	const [isModalHidden, setIsModalHidden] = useState<boolean>(true); // State to control modal visibility
@@ -69,6 +80,10 @@ export const ByieldWalletProvider = ({ children }: { children: ReactNode }) => {
 		}
 	};
 
+	const handleNetwork = (newNetwork: Network) => {
+		setNetwork(() => newNetwork);
+	};
+
 	const toggleBitcoinModal = (show: boolean) => {
 		setIsModalHidden(!show);
 	};
@@ -78,6 +93,8 @@ export const ByieldWalletProvider = ({ children }: { children: ReactNode }) => {
 			value={{
 				isLoading,
 				connectedWallet,
+				network,
+				handleNetwork,
 				handleWalletConnect,
 				toggleBitcoinModal,
 			}}

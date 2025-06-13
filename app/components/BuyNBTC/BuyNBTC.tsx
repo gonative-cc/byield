@@ -2,7 +2,6 @@ import { Transaction } from "@mysten/sui/transactions";
 import { useContext, useCallback, useEffect } from "react";
 import { ArrowDown } from "lucide-react";
 import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
-
 import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
 import { FormProvider, useForm } from "react-hook-form";
@@ -21,7 +20,7 @@ import { useSuiBalance } from "../Wallet/SuiWallet/useSuiBalance";
 import { Instructions } from "./Instructions";
 import { TransactionStatus } from "./TransactionStatus";
 import { YouReceive } from "./YouReceive";
-import { trackEvent, GA_CATEGORY, GA_EVENT_NAME } from "~/lib/googleAnalytics";
+import { GA_CATEGORY, GA_EVENT_NAME, useGoogleAnalytics } from "~/lib/googleAnalytics";
 import { classNames } from "~/util/tailwind";
 import { SUIIcon } from "../icons";
 
@@ -31,7 +30,7 @@ interface SUIRightAdornmentProps {
 	onMaxClick: (val: string) => void;
 }
 
-export function SUIRightAdornment({ isValidMaxSUIAmount, maxSUIAmount, onMaxClick }: SUIRightAdornmentProps) {
+function SUIRightAdornment({ isValidMaxSUIAmount, maxSUIAmount, onMaxClick }: SUIRightAdornmentProps) {
 	return (
 		<div className="flex flex-col items-center gap-2 py-2">
 			{isValidMaxSUIAmount && (
@@ -61,6 +60,7 @@ export function BuyNBTC() {
 	const client = useSuiClient();
 	const account = useCurrentAccount();
 	const { connectedWallet } = useContext(WalletContext);
+	const { trackEvent } = useGoogleAnalytics();
 	const isSuiWalletConnected = connectedWallet === ByieldWallet.SuiWallet;
 	const { balance: nBTCBalance, refetchBalance: refetchNBTCBalance } = useNBTCBalance();
 	const { balance, refetchSUIBalance } = useSuiBalance();
