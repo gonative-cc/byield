@@ -66,7 +66,7 @@ function AvailableWallets() {
 				{installedWallet && (
 					<div className="flex gap-2 w-full">
 						<Button
-							variant="outline"
+							variant="ghost"
 							onClick={() => {
 								connect(
 									{ wallet: installedWallet },
@@ -99,7 +99,7 @@ function AvailableWallets() {
 			{wallets.map((wallet) => (
 				<div key={wallet.name} className="flex justify-center w-full">
 					<Button
-						variant="outline"
+						variant="ghost"
 						onClick={() =>
 							connect(
 								{ wallet },
