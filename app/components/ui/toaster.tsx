@@ -7,15 +7,32 @@ import {
 	ToastTitle,
 	ToastViewport,
 } from "~/components/ui/toast";
+import { CircleCheck, Info, TriangleAlert } from "lucide-react";
+
+interface ToastIconProps {
+	variant: "default" | "destructive" | "warning" | null | undefined;
+}
+
+function ToastIcon({ variant }: ToastIconProps) {
+	switch (variant) {
+		case "destructive":
+			return <Info className="rotate-180" />;
+		case "warning":
+			return <TriangleAlert />;
+		default:
+			return <CircleCheck />;
+	}
+}
 
 export function Toaster() {
 	const { toasts } = useToast();
 
 	return (
 		<ToastProvider duration={Infinity}>
-			{toasts.map(function ({ id, title, description, action, ...props }) {
+			{toasts.map(function ({ id, title, description, action, variant, ...props }) {
 				return (
-					<Toast key={id} {...props}>
+					<Toast key={id} variant={variant} {...props}>
+						<ToastIcon variant={variant} />
 						<div className="grid gap-1">
 							{title && <ToastTitle>{title}</ToastTitle>}
 							{description && <ToastDescription>{description}</ToastDescription>}

@@ -138,6 +138,7 @@ export function BuyNBTC() {
 		nbtcOTC,
 		signAndExecuteTransaction,
 		toast,
+		trackEvent,
 		refetchSUIBalance,
 		refetchNBTCBalance,
 	]);
