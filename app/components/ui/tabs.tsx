@@ -52,6 +52,7 @@ TabsContent.displayName = TabsPrimitive.Content.displayName;
 interface TabList {
 	value: string;
 	label: string;
+	content: React.ReactNode;
 }
 
 interface TabsProps {
@@ -69,9 +70,9 @@ export function Tabs({ tabs }: TabsProps) {
 						</TabsTrigger>
 					))}
 				</TabsList>
-				{tabs.map(({ value, label }) => (
+				{tabs.map(({ value, content }) => (
 					<TabsContent key={value} value={value}>
-						{label}
+						{content}
 					</TabsContent>
 				))}
 			</TabsRoot>

@@ -14,7 +14,6 @@ interface ToastIconProps {
 }
 
 function ToastIcon({ variant }: ToastIconProps) {
-	console.log(variant);
 	switch (variant) {
 		case "destructive":
 			return <Info className="rotate-180" />;
