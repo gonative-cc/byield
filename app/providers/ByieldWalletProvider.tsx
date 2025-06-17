@@ -14,7 +14,7 @@ interface WalletContextI {
 	isLoading: boolean;
 	connectedWallet: WalletType;
 	network: Network;
-	activeAddress: string | null;
+	suiAddr: string | null;
 	handleNetwork: (newNetwork: Network) => void;
 	handleWalletConnect: (walletToBeConnected: WalletType) => void;
 	toggleBitcoinModal: (show: boolean) => void;
@@ -24,7 +24,7 @@ export const WalletContext = createContext<WalletContextI>({
 	isLoading: false,
 	connectedWallet: null,
 	network: Network.TESTNET,
-	activeAddress: null,
+	suiAddr: null,
 	handleNetwork: () => {},
 	handleWalletConnect: () => {},
 	toggleBitcoinModal: () => {},
@@ -41,12 +41,8 @@ export const ByieldWalletProvider = ({ children }: { children: ReactNode }) => {
 	const isSuiWalletActive = !!currentAccount;
 	const isBitcoinWalletActive = !!currentAddress;
 	const observerRef = useRef<MutationObserver | null>(null);
-	// current active wallet address
-	const activeAddress = isSuiWalletActive
-		? currentAccount.address
-		: isBitcoinWalletActive
-			? currentAddress?.address
-			: null;
+	// current sui address
+	const suiAddr = isSuiWalletActive ? currentAccount.address : null;
 
 	useEffect(() => {
 		setIsLoading(() => true);
@@ -99,7 +95,7 @@ export const ByieldWalletProvider = ({ children }: { children: ReactNode }) => {
 	return (
 		<WalletContext.Provider
 			value={{
-				activeAddress,
+				suiAddr,
 				isLoading,
 				connectedWallet,
 				network,
