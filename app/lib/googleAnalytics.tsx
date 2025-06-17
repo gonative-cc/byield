@@ -1,6 +1,7 @@
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { isProductionMode } from "./appenv";
 import { useContext } from "react";
+import { ByieldWallet } from "~/types";
 
 export type eventParam = {
 	label: string;
@@ -18,14 +19,15 @@ export enum GA_CATEGORY {
 }
 
 export function useGoogleAnalytics() {
-	const { network, suiAddr } = useContext(WalletContext);
+	const { network, suiAddr, connectedWallet } = useContext(WalletContext);
+	const isSuiWalletConnected = connectedWallet === ByieldWallet.SuiWallet;
 
 	function trackEvent(eventName: GA_EVENT_NAME, params: eventParam) {
 		if (typeof window !== "undefined" && window.gtag) {
 			window.gtag("event", eventName, {
 				...params,
 				network,
-				suiAddr,
+				suiAddr: isSuiWalletConnected ? suiAddr : undefined,
 				prod: isProductionMode(),
 			});
 		}
