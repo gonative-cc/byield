@@ -14,6 +14,7 @@ interface WalletContextI {
 	isLoading: boolean;
 	connectedWallet: WalletType;
 	network: Network;
+	activeAddress: string | null;
 	handleNetwork: (newNetwork: Network) => void;
 	handleWalletConnect: (walletToBeConnected: WalletType) => void;
 	toggleBitcoinModal: (show: boolean) => void;
@@ -23,6 +24,7 @@ export const WalletContext = createContext<WalletContextI>({
 	isLoading: false,
 	connectedWallet: null,
 	network: Network.TESTNET,
+	activeAddress: null,
 	handleNetwork: () => {},
 	handleWalletConnect: () => {},
 	toggleBitcoinModal: () => {},
@@ -35,10 +37,16 @@ export const ByieldWalletProvider = ({ children }: { children: ReactNode }) => {
 	const [connectedWallet, setConnectedWallet] = useState<WalletType>();
 	const [isModalHidden, setIsModalHidden] = useState<boolean>(true); // State to control modal visibility
 	const currentAccount = useCurrentAccount();
-	const isSuiWalletActive = !!currentAccount;
 	const { currentAddress } = useXverseAddress();
+	const isSuiWalletActive = !!currentAccount;
 	const isBitcoinWalletActive = !!currentAddress;
 	const observerRef = useRef<MutationObserver | null>(null);
+	// current active wallet address
+	const activeAddress = isSuiWalletActive
+		? currentAccount.address
+		: isBitcoinWalletActive
+			? currentAddress?.address
+			: null;
 
 	useEffect(() => {
 		setIsLoading(() => true);
@@ -85,12 +93,13 @@ export const ByieldWalletProvider = ({ children }: { children: ReactNode }) => {
 	};
 
 	const toggleBitcoinModal = (show: boolean) => {
-		setIsModalHidden(!show);
+		setIsModalHidden(() => !show);
 	};
 
 	return (
 		<WalletContext.Provider
 			value={{
+				activeAddress,
 				isLoading,
 				connectedWallet,
 				network,
