@@ -24,7 +24,7 @@ export const WalletContext = createContext<WalletContextI>({
 	isLoading: false,
 	connectedWallet: null,
 	network: Network.TESTNET,
-	activeAddress: "",
+	activeAddress: null,
 	handleNetwork: () => {},
 	handleWalletConnect: () => {},
 	toggleBitcoinModal: () => {},
