@@ -41,12 +41,8 @@ export const ByieldWalletProvider = ({ children }: { children: ReactNode }) => {
 	const isSuiWalletActive = !!currentAccount;
 	const isBitcoinWalletActive = !!currentAddress;
 	const observerRef = useRef<MutationObserver | null>(null);
-	// current active wallet address
-	const suiAddr = isSuiWalletActive
-		? currentAccount.address
-		: isBitcoinWalletActive
-			? currentAddress?.address
-			: null;
+	// current sui address
+	const suiAddr = isSuiWalletActive ? currentAccount.address : null;
 
 	useEffect(() => {
 		setIsLoading(() => true);

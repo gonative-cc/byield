@@ -19,15 +19,14 @@ export enum GA_CATEGORY {
 }
 
 export function useGoogleAnalytics() {
-	const { network, suiAddr, connectedWallet } = useContext(WalletContext);
-	const isSuiWalletConnected = connectedWallet === ByieldWallet.SuiWallet;
+	const { network, suiAddr } = useContext(WalletContext);
 
 	function trackEvent(eventName: GA_EVENT_NAME, params: eventParam) {
 		if (typeof window !== "undefined" && window.gtag) {
 			window.gtag("event", eventName, {
 				...params,
 				network,
-				suiAddr: isSuiWalletConnected ? suiAddr : undefined,
+				suiAddr: suiAddr || undefined,
 				prod: isProductionMode(),
 			});
 		}
