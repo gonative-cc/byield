@@ -25,7 +25,7 @@ export function useGoogleAnalytics() {
 			window.gtag("event", eventName, {
 				...params,
 				network,
-				address: activeAddress,
+				suiAddr: activeAddress,
 				prod: isProductionMode(),
 			});
 		}
