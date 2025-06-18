@@ -1,8 +1,9 @@
 {
 	"nbtcOTC": {
 		"packageId": "",
+		"vaultId": "",
 		"module": "",
-		"swapFunction": "",
-		"vaultId": ""
+		"buyNBTCFunction": "",
+		"sellNBTCFunction": ""
 	}
 }
