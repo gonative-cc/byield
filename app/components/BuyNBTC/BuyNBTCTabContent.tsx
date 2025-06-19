@@ -20,7 +20,6 @@ import { YouReceive } from "./YouReceive";
 import { GA_CATEGORY, GA_EVENT_NAME, useGoogleAnalytics } from "~/lib/googleAnalytics";
 import { classNames } from "~/util/tailwind";
 import { SUIIcon } from "../icons";
-import { SuiClient } from "@mysten/sui/client";
 
 interface SUIRightAdornmentProps {
 	maxSUIAmount: string;
@@ -104,7 +103,7 @@ export function BuyNBTCTabContent() {
 			});
 			return;
 		}
-		const transaction = await createNBTCTxn(account.address, mistAmount, client, true, nbtcOTC);
+		const transaction = await createBuyNBTCTxn(account.address, mistAmount, nbtcOTC);
 		const label = `user tried to buy ${formatSUI(mistAmount)} SUI`;
 
 		signAndExecuteTransaction(
@@ -133,7 +132,6 @@ export function BuyNBTCTabContent() {
 	}, [
 		account,
 		mistAmount,
-		client,
 		nbtcOTC,
 		signAndExecuteTransaction,
 		toast,
@@ -225,52 +223,21 @@ type Targets = {
 	packageId: string;
 	module: string;
 	buyNBTCFunction: string;
-	sellNBTCFunction: string;
 	vaultId: string;
 };
 
-const createNBTCTxn = async (
+const createBuyNBTCTxn = async (
 	senderAddress: string,
 	suiAmountMist: bigint,
-	client: SuiClient,
-	shouldBuy: boolean,
-	{ packageId, module, buyNBTCFunction, sellNBTCFunction, vaultId }: Targets,
+	{ packageId, module, buyNBTCFunction, vaultId }: Targets,
 ): Promise<Transaction> => {
 	const txn = new Transaction();
 	txn.setSender(senderAddress);
-
-	const { data: suiCoins } = await client.getAllCoins({
-		owner: senderAddress,
+	const [coins] = txn.splitCoins(txn.gas, [txn.pure.u64(suiAmountMist)]);
+	const resultCoin = txn.moveCall({
+		target: `${packageId}::${module}::${buyNBTCFunction}`,
+		arguments: [txn.object(vaultId), coins],
 	});
-
-	// Calculate total available balance and collect coin IDs
-	const coinIds: string[] = [];
-	for (const coin of suiCoins) {
-		coinIds.push(coin.coinObjectId);
-	}
-
-	console.log("coinIds", coinIds);
-
-	// Select a coin for gas payment (avoid using it for merging)
-	// const gasCoinId = coinIds.pop()!; // Use the last coin for gas
-	// txn.setGasPayment([{
-	//   objectId: gasCoinId,
-	//   version: suiCoins.find(c => c.coinObjectId === gasCoinId)!.version,
-	//   digest: suiCoins.find(c => c.coinObjectId === gasCoinId)!.digest
-	// }]);
-	// Merge all remaining SUI coins
-	const primaryCoin = txn.object(coinIds[0]);
-	for (let i = 1; i < coinIds.length; i++) {
-		txn.mergeCoins(primaryCoin, [txn.object(coinIds[i])]);
-	}
-	// txn.mergeCoins(primaryCoin, [txn.gas])
-	// txn.mergeCoins(primaryCoin, [txn.pure.u64(suiAmountMist)])
-	// const purchaseCoin = txn.splitCoins(txn.gas, [txn.pure.u64(suiAmountMist)])
-
-	// const [coins] = txn.mergeCoins(txn.gas, [txn.pure.u64(suiAmountMist)]);
-	txn.moveCall({
-		target: `${packageId}::${module}::${shouldBuy ? buyNBTCFunction : sellNBTCFunction}`,
-		arguments: [txn.object(vaultId), primaryCoin],
-	});
+	txn.transferObjects([resultCoin], senderAddress);
 	return txn;
 };
