@@ -1,5 +1,5 @@
 import { NumericFormat } from "react-number-format";
-import { formatBTC, formatNBTC } from "~/lib/denoms";
+import { formatNBTC } from "~/lib/denoms";
 import { NBTCIcon } from "../icons";
 
 interface NBTCBalanceProps {

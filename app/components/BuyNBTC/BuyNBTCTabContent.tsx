@@ -1,25 +1,17 @@
-import { Transaction } from "@mysten/sui/transactions";
-import { useContext, useCallback, useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { ArrowDown } from "lucide-react";
-import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
 import { Button } from "../ui/button";
 import { FormProvider, useForm } from "react-hook-form";
-import { WalletContext } from "~/providers/ByieldWalletProvider";
-import { ByieldWallet } from "~/types";
 import { SuiModal } from "../Wallet/SuiWallet/SuiModal";
-import { useNetworkVariables } from "~/networkConfig";
 import { BUY_NBTC_GAS_FEE_IN_SUI } from "~/constant";
 import { formatSUI, parseSUI, SUI } from "~/lib/denoms";
-import { useToast } from "~/hooks/use-toast";
-import { useNBTCBalance } from "../Wallet/SuiWallet/useNBTCBalance";
 import { FormNumericInput } from "../form/FormNumericInput";
 import { Modal } from "../ui/dialog";
-import { useSuiBalance } from "../Wallet/SuiWallet/useSuiBalance";
 import { TransactionStatus } from "./TransactionStatus";
 import { YouReceive } from "./YouReceive";
-import { GA_CATEGORY, GA_EVENT_NAME, useGoogleAnalytics } from "~/lib/googleAnalytics";
 import { classNames } from "~/util/tailwind";
 import { SUIIcon } from "../icons";
+import { useNBTC } from "./useNBTC";
 
 interface SUIRightAdornmentProps {
 	maxSUIAmount: string;
@@ -53,34 +45,16 @@ interface BuyNBTCForm {
 }
 
 export function BuyNBTCTabContent() {
-	const { toast } = useToast();
-	const client = useSuiClient();
-	const account = useCurrentAccount();
-	const { connectedWallet } = useContext(WalletContext);
-	const { trackEvent } = useGoogleAnalytics();
-	const isSuiWalletConnected = connectedWallet === ByieldWallet.SuiWallet;
-	const { refetchBalance: refetchNBTCBalance } = useNBTCBalance();
-	const { balance, refetchSUIBalance } = useSuiBalance();
-	const { nbtcOTC } = useNetworkVariables();
 	const {
-		mutate: signAndExecuteTransaction,
-		reset: resetMutation,
+		handleTransaction,
+		resetMutation,
 		isPending,
 		isSuccess,
 		isError,
 		data,
-	} = useSignAndExecuteTransaction({
-		execute: async ({ bytes, signature }) =>
-			await client.executeTransactionBlock({
-				transactionBlock: bytes,
-				signature,
-				options: {
-					showObjectChanges: true,
-					showEffects: true,
-					showRawEffects: true,
-				},
-			}),
-	});
+		balance,
+		isSuiWalletConnected,
+	} = useNBTC({ variant: "BUY" });
 
 	const buyNBTCForm = useForm<BuyNBTCForm>({
 		mode: "all",
@@ -92,53 +66,6 @@ export function BuyNBTCTabContent() {
 	const gasFee = parseSUI(BUY_NBTC_GAS_FEE_IN_SUI);
 
 	const mistAmount: bigint = parseSUI(suiAmount?.length > 0 && suiAmount !== "." ? suiAmount : "0");
-
-	const handleTransaction = useCallback(async () => {
-		if (!account) {
-			console.error("Account is not available. Cannot proceed with the transaction.");
-			toast({
-				title: "Buy nBTC",
-				description: "Account is not available. Cannot proceed with the transaction.",
-				variant: "destructive",
-			});
-			return;
-		}
-		const transaction = await createBuyNBTCTxn(account.address, mistAmount, nbtcOTC);
-		const label = `user tried to buy ${formatSUI(mistAmount)} SUI`;
-
-		signAndExecuteTransaction(
-			{
-				transaction,
-			},
-			{
-				onSuccess: () => {
-					trackEvent(GA_EVENT_NAME.BUY_NBTC, {
-						category: GA_CATEGORY.BUY_NBTC_SUCCESS,
-						label,
-					});
-				},
-				onError: () => {
-					trackEvent(GA_EVENT_NAME.BUY_NBTC, {
-						category: GA_CATEGORY.BUY_NBTC_ERROR,
-						label,
-					});
-				},
-				onSettled: () => {
-					refetchSUIBalance();
-					refetchNBTCBalance();
-				},
-			},
-		);
-	}, [
-		account,
-		mistAmount,
-		nbtcOTC,
-		signAndExecuteTransaction,
-		toast,
-		trackEvent,
-		refetchSUIBalance,
-		refetchNBTCBalance,
-	]);
 
 	const resetForm = useCallback(() => {
 		resetMutation();
@@ -174,7 +101,10 @@ export function BuyNBTCTabContent() {
 
 	return (
 		<FormProvider {...buyNBTCForm}>
-			<form onSubmit={handleSubmit(handleTransaction)} className="flex w-full flex-col gap-2">
+			<form
+				onSubmit={(e) => handleSubmit(() => handleTransaction(mistAmount))(e)}
+				className="flex w-full flex-col gap-2"
+			>
 				<FormNumericInput
 					required
 					name="suiAmount"
@@ -218,26 +148,3 @@ export function BuyNBTCTabContent() {
 		</FormProvider>
 	);
 }
-
-type Targets = {
-	packageId: string;
-	module: string;
-	buyNBTCFunction: string;
-	vaultId: string;
-};
-
-const createBuyNBTCTxn = async (
-	senderAddress: string,
-	suiAmountMist: bigint,
-	{ packageId, module, buyNBTCFunction, vaultId }: Targets,
-): Promise<Transaction> => {
-	const txn = new Transaction();
-	txn.setSender(senderAddress);
-	const [coins] = txn.splitCoins(txn.gas, [txn.pure.u64(suiAmountMist)]);
-	const resultCoin = txn.moveCall({
-		target: `${packageId}::${module}::${buyNBTCFunction}`,
-		arguments: [txn.object(vaultId), coins],
-	});
-	txn.transferObjects([resultCoin], senderAddress);
-	return txn;
-};
