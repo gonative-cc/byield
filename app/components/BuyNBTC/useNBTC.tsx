@@ -42,13 +42,12 @@ const createNBTCTxn = async (
 ): Promise<Transaction | null> => {
 	const txn = new Transaction();
 	txn.setSender(senderAddress);
-	const NBTCFunction = shouldBuy ? buyNBTCFunction : sellNBTCFunction;
 
 	let resultCoin: TransactionResult;
 	if (shouldBuy) {
 		const [coins] = txn.splitCoins(txn.gas, [txn.pure.u64(suiAmountMist)]);
 		resultCoin = txn.moveCall({
-			target: `${packageId}::${module}::${NBTCFunction}`,
+			target: `${packageId}::${module}::${buyNBTCFunction}`,
 			arguments: [txn.object(vaultId), coins],
 		});
 	} else {
