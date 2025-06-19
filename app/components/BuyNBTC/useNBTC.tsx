@@ -37,7 +37,7 @@ const createNBTCTxn = async (
 	toast: ToastFunction,
 	shouldBuy: boolean,
 	client: SuiClient,
-	nBTCBalance?: CoinBalance | null
+	nBTCBalance?: CoinBalance | null,
 ): Promise<Transaction | null> => {
 	const txn = new Transaction();
 	txn.setSender(senderAddress);
@@ -53,6 +53,9 @@ const createNBTCTxn = async (
 		const nbtcCoins = await getNBTCCoins(senderAddress, client);
 		const remainingCoins = nbtcCoins.data.map(({ coinObjectId }) => txn.object(coinObjectId));
 		if (remainingCoins.length > 0) txn.mergeCoins(resultCoin, remainingCoins);
+		// Check user have nBTC here, if yes, then we try to merge,
+		// if no we will transfer
+		txn.transferObjects([resultCoin], senderAddress);
 	} else {
 		if (nBTCBalance?.totalBalance && parseNBTC(nBTCBalance.totalBalance) < MIN_NBTC_BALANCE) {
 			console.error("Not enough nBTC balance available.");
@@ -65,10 +68,14 @@ const createNBTCTxn = async (
 		}
 		resultCoin = txn.moveCall({
 			target: `${packageId}::${module}::${sellNBTCFunction}`,
-			arguments: [txn.object(vaultId), coinWithBalance({balance: MIN_NBTC_BALANCE , type: NBTC_COINT_TYPE})],
+			arguments: [
+				txn.object(vaultId),
+				coinWithBalance({ balance: MIN_NBTC_BALANCE, type: NBTC_COINT_TYPE }),
+			],
 		});
+		txn.mergeCoins(txn.gas, [txn.object(resultCoin)]);
 	}
-	txn.transferObjects([resultCoin], senderAddress);
+
 	return txn;
 };
 
@@ -120,7 +127,15 @@ export const useNBTC = ({ variant }: NBTCProps) => {
 				return;
 			}
 			const amount = variant === "BUY" ? mistAmount : 0n;
-			const transaction = await createNBTCTxn(account.address, amount, nbtcOTC, toast, shouldBuy, client, nBTCBalance);
+			const transaction = await createNBTCTxn(
+				account.address,
+				amount,
+				nbtcOTC,
+				toast,
+				shouldBuy,
+				client,
+				nBTCBalance,
+			);
 			const label = `user tried to buy ${formatSUI(mistAmount)} SUI`;
 			if (!transaction) {
 				console.error("Failed to create the transaction");
@@ -152,7 +167,18 @@ export const useNBTC = ({ variant }: NBTCProps) => {
 				},
 			);
 		},
-		[variant, account, nbtcOTC, shouldBuy, client, nBTCBalance, signAndExecuteTransaction, trackEvent, refetchSUIBalance, refetchNBTCBalance],
+		[
+			variant,
+			account,
+			nbtcOTC,
+			shouldBuy,
+			client,
+			nBTCBalance,
+			signAndExecuteTransaction,
+			trackEvent,
+			refetchSUIBalance,
+			refetchNBTCBalance,
+		],
 	);
 
 	return {
