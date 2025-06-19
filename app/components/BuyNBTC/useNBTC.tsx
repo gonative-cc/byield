@@ -1,5 +1,5 @@
 import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
-import { PaginatedCoins, SuiClient } from "@mysten/sui/client";
+import { CoinBalance, PaginatedCoins, SuiClient } from "@mysten/sui/client";
 import { coinWithBalance, Transaction, TransactionResult } from "@mysten/sui/transactions";
 import { useCallback, useContext } from "react";
 import { NBTC_COINT_TYPE } from "~/constant";
@@ -23,19 +23,11 @@ type Targets = {
 };
 
 // get nBTC coins
-const getNBTCCoin = async (owner: string, client: SuiClient): Promise<PaginatedCoins> => {
+const getNBTCCoins = async (owner: string, client: SuiClient): Promise<PaginatedCoins> => {
 	return await client.getCoins({
 		owner,
 		coinType: NBTC_COINT_TYPE,
 	});
-};
-
-// get min nBTC coin object id
-const getCoinObjectId = async (owner: string, client: SuiClient): Promise<string | null> => {
-	const coins = await getNBTCCoin(owner, client);
-	// find coin thw min nbtc balance
-	const suitableCoin = coins.data.find((coin) => BigInt(coin.balance) >= MIN_NBTC_BALANCE);
-	return suitableCoin ? suitableCoin.coinObjectId : null;
 };
 
 const createNBTCTxn = async (
@@ -45,6 +37,7 @@ const createNBTCTxn = async (
 	toast: ToastFunction,
 	shouldBuy: boolean,
 	client: SuiClient,
+	nBTCBalance?: CoinBalance | null
 ): Promise<Transaction | null> => {
 	const txn = new Transaction();
 	txn.setSender(senderAddress);
@@ -57,12 +50,11 @@ const createNBTCTxn = async (
 			arguments: [txn.object(vaultId), coins],
 		});
 		// merge nbtc coins with the result coin
-		const nbtcCoins = await getNBTCCoin(senderAddress, client);
+		const nbtcCoins = await getNBTCCoins(senderAddress, client);
 		const remainingCoins = nbtcCoins.data.map(({ coinObjectId }) => txn.object(coinObjectId));
 		if (remainingCoins.length > 0) txn.mergeCoins(resultCoin, remainingCoins);
 	} else {
-		const nbtcCoinId = await getCoinObjectId(senderAddress, client);
-		if (!nbtcCoinId) {
+		if (nBTCBalance?.totalBalance && parseNBTC(nBTCBalance.totalBalance) < MIN_NBTC_BALANCE) {
 			console.error("Not enough nBTC balance available.");
 			toast({
 				title: "Sell nBTC",
@@ -73,10 +65,7 @@ const createNBTCTxn = async (
 		}
 		resultCoin = txn.moveCall({
 			target: `${packageId}::${module}::${sellNBTCFunction}`,
-			arguments: [
-				txn.object(vaultId),
-				coinWithBalance({ balance: MIN_NBTC_BALANCE, type: NBTC_COINT_TYPE }),
-			],
+			arguments: [txn.object(vaultId), coinWithBalance({balance: MIN_NBTC_BALANCE , type: NBTC_COINT_TYPE})],
 		});
 	}
 	txn.transferObjects([resultCoin], senderAddress);
@@ -94,7 +83,7 @@ export const useNBTC = ({ variant }: NBTCProps) => {
 	const { connectedWallet } = useContext(WalletContext);
 	const { trackEvent } = useGoogleAnalytics();
 	const isSuiWalletConnected = connectedWallet === ByieldWallet.SuiWallet;
-	const { refetchBalance: refetchNBTCBalance } = useNBTCBalance();
+	const { balance: nBTCBalance, refetchBalance: refetchNBTCBalance } = useNBTCBalance();
 	const { balance, refetchSUIBalance } = useSuiBalance();
 	const { nbtcOTC } = useNetworkVariables();
 
@@ -131,7 +120,7 @@ export const useNBTC = ({ variant }: NBTCProps) => {
 				return;
 			}
 			const amount = variant === "BUY" ? mistAmount : 0n;
-			const transaction = await createNBTCTxn(account.address, amount, nbtcOTC, toast, shouldBuy, client);
+			const transaction = await createNBTCTxn(account.address, amount, nbtcOTC, toast, shouldBuy, client, nBTCBalance);
 			const label = `user tried to buy ${formatSUI(mistAmount)} SUI`;
 			if (!transaction) {
 				console.error("Failed to create the transaction");
@@ -163,17 +152,7 @@ export const useNBTC = ({ variant }: NBTCProps) => {
 				},
 			);
 		},
-		[
-			account,
-			variant,
-			nbtcOTC,
-			shouldBuy,
-			client,
-			signAndExecuteTransaction,
-			trackEvent,
-			refetchSUIBalance,
-			refetchNBTCBalance,
-		],
+		[variant, account, nbtcOTC, shouldBuy, client, nBTCBalance, signAndExecuteTransaction, trackEvent, refetchSUIBalance, refetchNBTCBalance],
 	);
 
 	return {
