@@ -150,7 +150,17 @@ export const useNBTC = ({ variant }: NBTCProps) => {
 				},
 			);
 		},
-		[account, variant, nbtcOTC, shouldBuy, client, signAndExecuteTransaction, trackEvent, refetchSUIBalance, refetchNBTCBalance],
+		[
+			account,
+			variant,
+			nbtcOTC,
+			shouldBuy,
+			client,
+			signAndExecuteTransaction,
+			trackEvent,
+			refetchSUIBalance,
+			refetchNBTCBalance,
+		],
 	);
 
 	return {
