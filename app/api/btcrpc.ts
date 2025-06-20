@@ -56,6 +56,6 @@ export async function fetchValidateAddress(address: string): Promise<ValidateAdd
 		const response = await axios.get(`${MEMPOOL_API}/v1/validate-address/${address}`);
 		return response.data;
 	} catch (error) {
-		throw new Error(`Failed to fetch UTXOs: ${error}`);
+		throw new Error(`Failed to validate address: ${error}`);
 	}
 }
