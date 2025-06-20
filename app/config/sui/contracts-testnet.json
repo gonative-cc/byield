@@ -1,8 +1,9 @@
 {
 	"nbtcOTC": {
-		"packageId": "0x4995e309e990a6a93224153108b26bf79197b234c51db6447bbae10b431c42fb",
+		"packageId": "0xac799dd8708c2882fcbe2191cfb27bdc9f7654d997ffaa9b530009349f698f3b",
+		"vaultId": "0x148a3a004f19aeea0b5df7ffc82a23935ff6cccca433e8e9c14c0f55595425e8",
 		"module": "nbtc_swap",
-		"swapFunction": "swap_sui_for_nbtc",
-		"vaultId": "0xf280477ca196a4bced5e1db4cd82fcdd647b55585b1d3838dcd8e1b829d263a4"
+		"buyNBTCFunction": "buy_nbtc",
+		"sellNBTCFunction": "sell_nbtc"
 	}
 }
