@@ -10,7 +10,7 @@ import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { useNBTCBalance } from "../Wallet/SuiWallet/useNBTCBalance";
 import { useSuiBalance } from "../Wallet/SuiWallet/useSuiBalance";
 import { Wallets } from "../Wallet";
-import { NBTC_COIN_TYPE, NBTC_TO_SELL } from "~/lib/nbtc";
+import { NBTC_COIN_TYPE } from "~/lib/nbtc";
 
 type Targets = {
 	packageId: string;
@@ -30,7 +30,7 @@ const getNBTCCoins = async (owner: string, client: SuiClient): Promise<Paginated
 
 const createNBTCTxn = async (
 	senderAddress: string,
-	suiAmountMist: bigint,
+	amount: bigint,
 	{ packageId, module, buyNBTCFunction, sellNBTCFunction, vaultId }: Targets,
 	toast: ToastFunction,
 	shouldBuy: boolean,
@@ -42,7 +42,7 @@ const createNBTCTxn = async (
 
 	let resultCoin: TransactionResult;
 	if (shouldBuy) {
-		const [coins] = txn.splitCoins(txn.gas, [txn.pure.u64(suiAmountMist)]);
+		const [coins] = txn.splitCoins(txn.gas, [txn.pure.u64(amount)]);
 		resultCoin = txn.moveCall({
 			target: `${packageId}::${module}::${buyNBTCFunction}`,
 			arguments: [txn.object(vaultId), coins],
@@ -55,7 +55,7 @@ const createNBTCTxn = async (
 		// if no we will transfer
 		txn.transferObjects([resultCoin], senderAddress);
 	} else {
-		if (nBTCBalance?.totalBalance && BigInt(nBTCBalance.totalBalance) < NBTC_TO_SELL) {
+		if (nBTCBalance?.totalBalance && BigInt(nBTCBalance.totalBalance) < amount) {
 			console.error("Not enough nBTC balance available.");
 			toast({
 				title: "Sell nBTC",
@@ -66,7 +66,7 @@ const createNBTCTxn = async (
 		}
 		resultCoin = txn.moveCall({
 			target: `${packageId}::${module}::${sellNBTCFunction}`,
-			arguments: [txn.object(vaultId), coinWithBalance({ balance: NBTC_TO_SELL, type: NBTC_COIN_TYPE })],
+			arguments: [txn.object(vaultId), coinWithBalance({ balance: amount, type: NBTC_COIN_TYPE })],
 		});
 		txn.mergeCoins(txn.gas, [txn.object(resultCoin)]);
 	}
@@ -110,7 +110,7 @@ export const useNBTC = ({ variant }: NBTCProps) => {
 	});
 
 	const handleTransaction = useCallback(
-		async (mistAmount: bigint) => {
+		async (amount: bigint) => {
 			const title = variant === "BUY" ? "Buy nBTC" : "Sell nBTC";
 			if (!account) {
 				console.error("Account is not available. Cannot proceed with the transaction.");
@@ -121,7 +121,6 @@ export const useNBTC = ({ variant }: NBTCProps) => {
 				});
 				return;
 			}
-			const amount = variant === "BUY" ? mistAmount : 0n;
 			const transaction = await createNBTCTxn(
 				account.address,
 				amount,
@@ -131,7 +130,7 @@ export const useNBTC = ({ variant }: NBTCProps) => {
 				client,
 				nBTCBalance,
 			);
-			const label = `user tried to buy ${formatSUI(mistAmount)} SUI`;
+			const label = variant === "BUY" ? `user tried to buy ${formatSUI(amount)} SUI` : "";
 			if (!transaction) {
 				console.error("Failed to create the transaction");
 				return;
@@ -184,6 +183,7 @@ export const useNBTC = ({ variant }: NBTCProps) => {
 		data,
 		resetMutation,
 		balance,
+		nBTCBalance,
 		isSuiWalletConnected,
 	};
 };

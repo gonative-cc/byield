@@ -4,7 +4,6 @@ import { fetchUTXOs, fetchValidateAddress } from "~/api/btcrpc";
 import type { UTXO, ValidateAddressI } from "~/api/btcrpc";
 import { ToastFunction } from "~/hooks/use-toast";
 
-export const NBTC_TO_SELL = 2000n;
 export const PRICE_PER_NBTC_IN_SUI = 25000n;
 export const nBTC_ADDR = "tb1qe60n447jylrxa96y6pfgy8pq6x9zafu09ky7cq";
 export const NBTC_COIN_TYPE =

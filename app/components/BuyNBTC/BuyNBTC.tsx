@@ -2,15 +2,12 @@ import { useContext } from "react";
 import { Card, CardContent } from "../ui/card";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
-import { parseSUI } from "~/lib/denoms";
 import { useNBTCBalance } from "../Wallet/SuiWallet/useNBTCBalance";
 import { NBTCBalance } from "./NBTCBalance";
 import { Instructions } from "./Instructions";
 import { BuyNBTCTabContent } from "./BuyNBTCTabContent";
 import { SellNBTCTabContent } from "./SellNBTCTabContent";
 import { Tabs } from "../ui/tabs";
-
-const BUY_NBTC_GAS = parseSUI("0.01");
 
 export function BuyNBTC() {
 	const { connectedWallet } = useContext(WalletContext);
