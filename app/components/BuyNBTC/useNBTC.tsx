@@ -2,17 +2,15 @@ import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@
 import { CoinBalance, PaginatedCoins, SuiClient } from "@mysten/sui/client";
 import { coinWithBalance, Transaction, TransactionResult } from "@mysten/sui/transactions";
 import { useCallback, useContext } from "react";
-import { NBTC_COINT_TYPE } from "~/constant";
+import { NBTC_TO_SELL, NBTC_COINT_TYPE } from "~/constant";
 import { toast, ToastFunction } from "~/hooks/use-toast";
-import { formatSUI, parseNBTC } from "~/lib/denoms";
+import { formatSUI } from "~/lib/denoms";
 import { GA_EVENT_NAME, GA_CATEGORY, useGoogleAnalytics } from "~/lib/googleAnalytics";
 import { useNetworkVariables } from "~/networkConfig";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { ByieldWallet } from "~/types";
 import { useNBTCBalance } from "../Wallet/SuiWallet/useNBTCBalance";
 import { useSuiBalance } from "../Wallet/SuiWallet/useSuiBalance";
-
-const MIN_NBTC_BALANCE = parseNBTC("0.00002");
 
 type Targets = {
 	packageId: string;
@@ -57,7 +55,7 @@ const createNBTCTxn = async (
 		// if no we will transfer
 		txn.transferObjects([resultCoin], senderAddress);
 	} else {
-		if (nBTCBalance?.totalBalance && parseNBTC(nBTCBalance.totalBalance) < MIN_NBTC_BALANCE) {
+		if (nBTCBalance?.totalBalance && BigInt(nBTCBalance.totalBalance) < NBTC_TO_SELL) {
 			console.error("Not enough nBTC balance available.");
 			toast({
 				title: "Sell nBTC",
@@ -68,10 +66,7 @@ const createNBTCTxn = async (
 		}
 		resultCoin = txn.moveCall({
 			target: `${packageId}::${module}::${sellNBTCFunction}`,
-			arguments: [
-				txn.object(vaultId),
-				coinWithBalance({ balance: MIN_NBTC_BALANCE, type: NBTC_COINT_TYPE }),
-			],
+			arguments: [txn.object(vaultId), coinWithBalance({ balance: NBTC_TO_SELL, type: NBTC_COINT_TYPE })],
 		});
 		txn.mergeCoins(txn.gas, [txn.object(resultCoin)]);
 	}

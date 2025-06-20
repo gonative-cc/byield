@@ -7,9 +7,8 @@ import { TransactionStatus } from "./TransactionStatus";
 import { NBTCIcon, SUIIcon } from "../icons";
 import { NumericInput } from "../ui/NumericInput";
 import { useNBTC } from "./useNBTC";
-
-const NBTC_TO_SELL = 0.00002;
-const SUI_AMOUNT_RECEIVED_ON_SELL = 0.5;
+import { NBTC_TO_SELL, SUI_AMOUNT_RECEIVED_ON_SELL } from "~/constant";
+import { formatNBTC } from "~/lib/denoms";
 
 export function SellNBTCTabContent() {
 	const { handleTransaction, resetMutation, isPending, isSuccess, isError, data, isSuiWalletConnected } =
@@ -23,7 +22,7 @@ export function SellNBTCTabContent() {
 		<div className="flex flex-col w-full gap-2">
 			<NumericInput
 				className="h-16"
-				value={NBTC_TO_SELL}
+				value={formatNBTC(NBTC_TO_SELL)}
 				readOnly
 				rightAdornments={<NBTCIcon className="mr-5" />}
 			/>
@@ -32,7 +31,7 @@ export function SellNBTCTabContent() {
 			</span>
 			<ArrowDown className="text-primary justify-center w-full flex p-0 m-0" />
 			<NumericInput
-				value={SUI_AMOUNT_RECEIVED_ON_SELL}
+				value={formatNBTC(SUI_AMOUNT_RECEIVED_ON_SELL)}
 				readOnly
 				className="h-16"
 				rightAdornments={<SUIIcon className="mr-2" />}
