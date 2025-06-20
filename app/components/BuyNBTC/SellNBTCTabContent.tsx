@@ -7,8 +7,11 @@ import { TransactionStatus } from "./TransactionStatus";
 import { NBTCIcon, SUIIcon } from "../icons";
 import { NumericInput } from "../ui/NumericInput";
 import { useNBTC } from "./useNBTC";
-import { NBTC_TO_SELL, SUI_AMOUNT_RECEIVED_ON_SELL } from "~/constant";
 import { formatNBTC } from "~/lib/denoms";
+import { PRICE_PER_NBTC_IN_SUI } from "~/lib/nbtc";
+
+const NBTC_TO_SELL = 2000n;
+const SUI_AMOUNT_RECEIVED_ON_SELL = NBTC_TO_SELL * (PRICE_PER_NBTC_IN_SUI / 2n);
 
 export function SellNBTCTabContent() {
 	const { handleTransaction, resetMutation, isPending, isSuccess, isError, data, isSuiWalletConnected } =

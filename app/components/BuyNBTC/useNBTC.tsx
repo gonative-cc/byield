@@ -2,15 +2,15 @@ import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@
 import { CoinBalance, PaginatedCoins, SuiClient } from "@mysten/sui/client";
 import { coinWithBalance, Transaction, TransactionResult } from "@mysten/sui/transactions";
 import { useCallback, useContext } from "react";
-import { NBTC_TO_SELL, NBTC_COINT_TYPE } from "~/constant";
 import { toast, ToastFunction } from "~/hooks/use-toast";
 import { formatSUI } from "~/lib/denoms";
 import { GA_EVENT_NAME, GA_CATEGORY, useGoogleAnalytics } from "~/lib/googleAnalytics";
 import { useNetworkVariables } from "~/networkConfig";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
-import { ByieldWallet } from "~/types";
 import { useNBTCBalance } from "../Wallet/SuiWallet/useNBTCBalance";
 import { useSuiBalance } from "../Wallet/SuiWallet/useSuiBalance";
+import { Wallets } from "../Wallet";
+import { NBTC_COIN_TYPE, NBTC_TO_SELL } from "~/lib/nbtc";
 
 type Targets = {
 	packageId: string;
@@ -24,7 +24,7 @@ type Targets = {
 const getNBTCCoins = async (owner: string, client: SuiClient): Promise<PaginatedCoins> => {
 	return await client.getCoins({
 		owner,
-		coinType: NBTC_COINT_TYPE,
+		coinType: NBTC_COIN_TYPE,
 	});
 };
 
@@ -66,7 +66,7 @@ const createNBTCTxn = async (
 		}
 		resultCoin = txn.moveCall({
 			target: `${packageId}::${module}::${sellNBTCFunction}`,
-			arguments: [txn.object(vaultId), coinWithBalance({ balance: NBTC_TO_SELL, type: NBTC_COINT_TYPE })],
+			arguments: [txn.object(vaultId), coinWithBalance({ balance: NBTC_TO_SELL, type: NBTC_COIN_TYPE })],
 		});
 		txn.mergeCoins(txn.gas, [txn.object(resultCoin)]);
 	}
@@ -84,7 +84,7 @@ export const useNBTC = ({ variant }: NBTCProps) => {
 	const client = useSuiClient();
 	const { connectedWallet } = useContext(WalletContext);
 	const { trackEvent } = useGoogleAnalytics();
-	const isSuiWalletConnected = connectedWallet === ByieldWallet.SuiWallet;
+	const isSuiWalletConnected = connectedWallet === Wallets.SuiWallet;
 	const { balance: nBTCBalance, refetchBalance: refetchNBTCBalance } = useNBTCBalance();
 	const { balance, refetchSUIBalance } = useSuiBalance();
 	const { nbtcOTC } = useNetworkVariables();

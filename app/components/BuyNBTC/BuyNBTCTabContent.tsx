@@ -3,7 +3,6 @@ import { ArrowDown } from "lucide-react";
 import { Button } from "../ui/button";
 import { FormProvider, useForm } from "react-hook-form";
 import { SuiModal } from "../Wallet/SuiWallet/SuiModal";
-import { BUY_NBTC_GAS_FEE_IN_SUI } from "~/constant";
 import { formatSUI, parseSUI, SUI } from "~/lib/denoms";
 import { FormNumericInput } from "../form/FormNumericInput";
 import { Modal } from "../ui/dialog";
@@ -12,6 +11,8 @@ import { YouReceive } from "./YouReceive";
 import { classNames } from "~/util/tailwind";
 import { SUIIcon } from "../icons";
 import { useNBTC } from "./useNBTC";
+
+const BUY_NBTC_GAS = parseSUI("0.01");
 
 interface SUIRightAdornmentProps {
 	maxSUIAmount: string;
@@ -63,7 +64,6 @@ export function BuyNBTCTabContent() {
 	});
 	const { watch, trigger, handleSubmit, reset, setValue } = buyNBTCForm;
 	const suiAmount = watch("suiAmount");
-	const gasFee = parseSUI(BUY_NBTC_GAS_FEE_IN_SUI);
 
 	const mistAmount: bigint = parseSUI(suiAmount?.length > 0 && suiAmount !== "." ? suiAmount : "0");
 
@@ -81,7 +81,7 @@ export function BuyNBTCTabContent() {
 	}, [isSuiWalletConnected, suiAmount, trigger]);
 
 	const totalBalance = BigInt(balance?.totalBalance || "0");
-	const suiAmountAfterFee = totalBalance - gasFee;
+	const suiAmountAfterFee = totalBalance - BUY_NBTC_GAS;
 	const isValidMaxSUIAmount = suiAmountAfterFee > 0;
 	const maxSUIAmount = formatSUI(suiAmountAfterFee);
 
@@ -90,10 +90,10 @@ export function BuyNBTCTabContent() {
 			isWalletConnected: () => isSuiWalletConnected || "Please connect SUI wallet",
 			enoughBalance: (value: string) => {
 				if (balance?.totalBalance) {
-					if (parseSUI(value) + gasFee <= BigInt(balance.totalBalance)) {
+					if (parseSUI(value) + BUY_NBTC_GAS <= BigInt(balance.totalBalance)) {
 						return true;
 					}
-					return `Entered SUI is too big. Leave at-least ${formatSUI(gasFee)} SUI to cover the gas fee.`;
+					return `Entered SUI is too big. Leave at-least ${formatSUI(BUY_NBTC_GAS)} SUI to cover the gas fee.`;
 				}
 			},
 		},
