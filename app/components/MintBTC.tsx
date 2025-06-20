@@ -7,11 +7,12 @@ import { FormInput } from "./form/FormInput";
 import { useXverseWallet } from "./Wallet/XverseWallet/useWallet";
 import { useContext } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
-import { ByieldWallet } from "~/types";
+import { Wallets } from "~/components/Wallet";
 import { FormNumericInput } from "./form/FormNumericInput";
 import { NumericFormat } from "react-number-format";
 import { formatBTC, parseBTC } from "~/lib/denoms";
-import { nBTCMintFeeInSatoshi } from "~/constant";
+
+const nBTCMintFeeInSatoshi = 10n;
 
 const PERCENTAGES = [
 	{
@@ -80,7 +81,7 @@ interface MintNBTCForm {
 export function MintBTC() {
 	const { balance: walletBalance } = useXverseWallet();
 	const { connectedWallet } = useContext(WalletContext);
-	const isBitCoinWalletConnected = connectedWallet === ByieldWallet.Xverse;
+	const isBitCoinWalletConnected = connectedWallet === Wallets.Xverse;
 	const balance = parseBTC(walletBalance ?? "0");
 	const mintNBTCForm = useForm<MintNBTCForm>({
 		mode: "all",

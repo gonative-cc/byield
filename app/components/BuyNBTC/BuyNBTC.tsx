@@ -6,10 +6,9 @@ import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
 import { FormProvider, useForm } from "react-hook-form";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
-import { ByieldWallet } from "~/types";
+import { Wallets } from "~/components/Wallet";
 import { SuiModal } from "../Wallet/SuiWallet/SuiModal";
 import { useNetworkVariables } from "~/networkConfig";
-import { BUY_NBTC_GAS_FEE_IN_SUI } from "~/constant";
 import { formatSUI, parseSUI, SUI } from "~/lib/denoms";
 import { useToast } from "~/hooks/use-toast";
 import { useNBTCBalance } from "../Wallet/SuiWallet/useNBTCBalance";
@@ -23,6 +22,8 @@ import { YouReceive } from "./YouReceive";
 import { GA_CATEGORY, GA_EVENT_NAME, useGoogleAnalytics } from "~/lib/googleAnalytics";
 import { classNames } from "~/util/tailwind";
 import { SUIIcon } from "../icons";
+
+const BUY_NBTC_GAS = parseSUI("0.01");
 
 interface SUIRightAdornmentProps {
 	maxSUIAmount: string;
@@ -61,7 +62,7 @@ export function BuyNBTC() {
 	const account = useCurrentAccount();
 	const { connectedWallet } = useContext(WalletContext);
 	const { trackEvent } = useGoogleAnalytics();
-	const isSuiWalletConnected = connectedWallet === ByieldWallet.SuiWallet;
+	const isSuiWalletConnected = connectedWallet === Wallets.SuiWallet;
 	const { balance: nBTCBalance, refetchBalance: refetchNBTCBalance } = useNBTCBalance();
 	const { balance, refetchSUIBalance } = useSuiBalance();
 	const { nbtcOTC } = useNetworkVariables();
@@ -92,8 +93,6 @@ export function BuyNBTC() {
 	});
 	const { watch, trigger, handleSubmit, reset, setValue } = buyNBTCForm;
 	const suiAmount = watch("suiAmount");
-	const gasFee = parseSUI(BUY_NBTC_GAS_FEE_IN_SUI);
-
 	const mistAmount: bigint = parseSUI(suiAmount?.length > 0 && suiAmount !== "." ? suiAmount : "0");
 
 	const handleTransaction = useCallback(async () => {
@@ -157,7 +156,7 @@ export function BuyNBTC() {
 	}, [isSuiWalletConnected, suiAmount, trigger]);
 
 	const totalBalance = BigInt(balance?.totalBalance || "0");
-	const suiAmountAfterFee = totalBalance - gasFee;
+	const suiAmountAfterFee = totalBalance - BUY_NBTC_GAS;
 	const isValidMaxSUIAmount = suiAmountAfterFee > 0;
 	const maxSUIAmount = formatSUI(suiAmountAfterFee);
 
@@ -166,10 +165,10 @@ export function BuyNBTC() {
 			isWalletConnected: () => isSuiWalletConnected || "Please connect SUI wallet",
 			enoughBalance: (value: string) => {
 				if (balance?.totalBalance) {
-					if (parseSUI(value) + gasFee <= BigInt(balance.totalBalance)) {
+					if (parseSUI(value) + BUY_NBTC_GAS <= BigInt(balance.totalBalance)) {
 						return true;
 					}
-					return `Entered SUI is too big. Leave at-least ${formatSUI(gasFee)} SUI to cover the gas fee.`;
+					return `Entered SUI is too big. Leave at-least ${formatSUI(BUY_NBTC_GAS)} SUI to cover the gas fee.`;
 				}
 			},
 		},

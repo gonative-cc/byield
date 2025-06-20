@@ -3,7 +3,7 @@ import { useContext } from "react";
 import { XverseWallet } from "./Wallet/XverseWallet/XverseWallet";
 import { SuiWallet } from "./Wallet/SuiWallet/SuiWallet";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
-import { ByieldWallet } from "~/types";
+import { Wallets } from "~/components/Wallet";
 import { useXverseConnect } from "./Wallet/XverseWallet/useWallet";
 import { SuiModal } from "./Wallet/SuiWallet/SuiModal";
 import { Skeleton } from "./ui/skeleton";
@@ -47,8 +47,8 @@ export function SelectWallet({ isProductionMode }: SelectWalletProps) {
 	// one of the wallet is connected
 	return (
 		<>
-			{connectedWallet === ByieldWallet.Xverse && <XverseWallet />}
-			{connectedWallet === ByieldWallet.SuiWallet && <SuiWallet />}
+			{connectedWallet === Wallets.Xverse && <XverseWallet />}
+			{connectedWallet === Wallets.SuiWallet && <SuiWallet />}
 		</>
 	);
 }

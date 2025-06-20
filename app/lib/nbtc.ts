@@ -1,9 +1,12 @@
 import * as bitcoin from "bitcoinjs-lib";
 import Wallet, { Address } from "sats-connect";
-import { fetchUTXOs, fetchValidateAddress } from "~/api/api";
-import { nBTC_ADDR } from "~/constants";
+import { fetchUTXOs, fetchValidateAddress } from "~/api/btcrpc";
+import type { UTXO, ValidateAddressI } from "~/api/btcrpc";
 import { ToastFunction } from "~/hooks/use-toast";
-import { UTXO, ValidateAddressI } from "~/types";
+
+export const nBTC_ADDR = "tb1qe60n447jylrxa96y6pfgy8pq6x9zafu09ky7cq";
+export const NBTC_COINT_TYPE =
+	"0x5419f6e223f18a9141e91a42286f2783eee27bf2667422c2100afc7b2296731b::nbtc::NBTC";
 
 export async function nBTCMintTxn(
 	bitcoinAddress: Address,

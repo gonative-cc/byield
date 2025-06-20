@@ -12,7 +12,7 @@ import Wallet, {
 } from "sats-connect";
 import { useToast } from "~/hooks/use-toast";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
-import { ByieldWallet } from "~/types";
+import { Wallets } from "~/components/Wallet";
 
 export const useXverseConnect = () => {
 	const { toast } = useToast();
@@ -40,7 +40,7 @@ export const useXverseConnect = () => {
 				],
 			});
 			if (response.status === "success") {
-				handleWalletConnect(ByieldWallet.Xverse);
+				handleWalletConnect(Wallets.Xverse);
 			} else {
 				toast({
 					title: "Wallet",
@@ -59,7 +59,7 @@ export const useXverseConnect = () => {
 export const useXverseWallet = () => {
 	const { toast } = useToast();
 	const { handleWalletConnect, connectedWallet } = useContext(WalletContext);
-	const isBitCoinWalletConnected = connectedWallet === ByieldWallet.Xverse;
+	const isBitCoinWalletConnected = connectedWallet === Wallets.Xverse;
 	const [addressInfo, setAddressInfo] = useState<Address[]>([]);
 	const [currentAddress, setCurrentAddress] = useState<Address | null>(null);
 	const [balance, setBalance] = useState<string>();
