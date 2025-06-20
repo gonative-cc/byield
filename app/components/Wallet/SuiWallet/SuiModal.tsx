@@ -10,7 +10,7 @@ import {
 } from "../../ui/dialog";
 import { useContext } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
-import { ByieldWallet } from "~/types";
+import { Wallets } from "~/components/Wallet";
 import { useToast } from "~/hooks/use-toast";
 import { Link } from "@remix-run/react";
 
@@ -71,7 +71,7 @@ function AvailableWallets() {
 								connect(
 									{ wallet: installedWallet },
 									{
-										onSuccess: () => handleWalletConnect(ByieldWallet.SuiWallet),
+										onSuccess: () => handleWalletConnect(Wallets.SuiWallet),
 										onError: () =>
 											toast({
 												title: "Sui Wallet Connect",
@@ -104,7 +104,7 @@ function AvailableWallets() {
 							connect(
 								{ wallet },
 								{
-									onSuccess: () => handleWalletConnect(ByieldWallet.SuiWallet),
+									onSuccess: () => handleWalletConnect(Wallets.SuiWallet),
 									onError: (error) => {
 										console.error(`Failed to connect wallet ${wallet.name}`, error);
 										toast({

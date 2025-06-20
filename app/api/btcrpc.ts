@@ -1,3 +1,7 @@
+import axios from "axios";
+
+export const MEMPOOL_API = "https://mempool.space/testnet4/api";
+
 /**
  * @typedef {object} UTXO
  * @property {string} scriptpubkey - The scriptPubKey (locking script) of the Unspent Transaction Output.
@@ -5,7 +9,7 @@
  * @property {number} value - The value of this UTXO in satoshis.
  * @property {number} vout - The output index (vout) within the transaction that created this UTXO.
  */
-type UTXO = {
+export type UTXO = {
 	scriptpubkey: string;
 	txid: string;
 	value: number;
@@ -22,7 +26,7 @@ type UTXO = {
  * @property {number} witness_version - The version number of the SegWit witness program, if it's a SegWit address.
  * @property {string} witness_program - The hexadecimal representation of the SegWit witness program, if it's a SegWit address.
  */
-type ValidateAddressI = {
+export type ValidateAddressI = {
 	isValid: boolean;
 	address: string;
 	scriptPubKey: string;
@@ -32,26 +36,26 @@ type ValidateAddressI = {
 	witness_program: string;
 };
 
-interface DApp {
-	name: string;
-	type: string;
-	labels: string[];
-	apy: number;
-	chain: string;
-	logo: string;
+export async function fetchUTXOs(address: string): Promise<UTXO[]> {
+	try {
+		// TOOD: maybe other wallet will provide it.
+		const response = await axios.get(`${MEMPOOL_API}/address/${address}/utxo`);
+		return response.data.map((utxo: UTXO) => ({
+			txid: utxo.txid,
+			vout: utxo.vout,
+			value: utxo.value,
+			scriptPubKey: utxo.scriptpubkey,
+		}));
+	} catch (error) {
+		throw new Error(`Failed to fetch UTXOs: ${error}`);
+	}
 }
 
-enum TRANSACTION_STATUS {
-	NONE = 0,
-	FAILED = 1,
-	PENDING = 2,
-	FINALIZED = 3,
-}
-
-export type { UTXO, ValidateAddressI, DApp, TRANSACTION_STATUS };
-
-// Supported wallets in BYield DApp
-export enum ByieldWallet {
-	Xverse = "Xverse",
-	SuiWallet = "SuiWallet",
+export async function fetchValidateAddress(address: string): Promise<ValidateAddressI> {
+	try {
+		const response = await axios.get(`${MEMPOOL_API}/v1/validate-address/${address}`);
+		return response.data;
+	} catch (error) {
+		throw new Error(`Failed to validate address: ${error}`);
+	}
 }

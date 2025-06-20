@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSuiClient, useCurrentAccount } from "@mysten/dapp-kit";
 import type { CoinBalance } from "@mysten/sui/client";
-import { NBTC_COINT_TYPE } from "~/constant";
+import { NBTC_COIN_TYPE } from "~/lib/nbtc";
 
 export const useNBTCBalance = () => {
 	const suiClient = useSuiClient();
@@ -15,7 +15,7 @@ export const useNBTCBalance = () => {
 		}
 		return await suiClient.getBalance({
 			owner: account.address,
-			coinType: NBTC_COINT_TYPE,
+			coinType: NBTC_COIN_TYPE,
 		});
 	};
 

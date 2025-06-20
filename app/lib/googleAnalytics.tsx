@@ -1,7 +1,6 @@
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { isProductionMode } from "./appenv";
 import { useContext } from "react";
-import { ByieldWallet } from "~/types";
 
 export type eventParam = {
 	label: string;

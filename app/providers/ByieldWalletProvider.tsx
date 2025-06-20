@@ -1,9 +1,9 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { ReactNode, createContext, useEffect, useRef, useState } from "react";
 import { useXverseAddress } from "~/components/Wallet/XverseWallet/useXverseAddress";
-import { ByieldWallet } from "~/types";
+import { Wallets } from "~/components/Wallet";
 
-type WalletType = ByieldWallet | null | undefined;
+type WalletType = Wallets | null | undefined;
 
 export enum Network {
 	MAINNET = "mainnet",
@@ -48,7 +48,7 @@ export const ByieldWalletProvider = ({ children }: { children: ReactNode }) => {
 		setIsLoading(() => true);
 		// Update wallet state
 		setConnectedWallet(() =>
-			isSuiWalletActive ? ByieldWallet.SuiWallet : isBitcoinWalletActive ? ByieldWallet.Xverse : null,
+			isSuiWalletActive ? Wallets.SuiWallet : isBitcoinWalletActive ? Wallets.Xverse : null,
 		);
 		setIsLoading(() => false);
 	}, [isBitcoinWalletActive, isSuiWalletActive, isModalHidden]);
@@ -79,7 +79,7 @@ export const ByieldWalletProvider = ({ children }: { children: ReactNode }) => {
 	const handleWalletConnect = async (walletToBeConnected: WalletType): Promise<void> => {
 		setConnectedWallet(walletToBeConnected);
 		// hide the bitcoin wallet from document DOM
-		if (walletToBeConnected === ByieldWallet.Xverse) {
+		if (walletToBeConnected === Wallets.Xverse) {
 			setIsModalHidden(false);
 		}
 	};

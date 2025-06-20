@@ -1,11 +1,12 @@
 import { formatSUI } from "~/lib/denoms";
 import { FormNumericInput } from "../form/FormNumericInput";
 import { NBTCIcon } from "../icons";
-import { PRICE_PER_NBTC_IN_SUI } from "~/constant";
 
-const calculateYouReceive = (mistAmount: bigint): bigint => {
+const PRICE_PER_NBTC_IN_SUI = 25000n;
+
+function calculateYouReceive(mistAmount: bigint): bigint {
 	return mistAmount / PRICE_PER_NBTC_IN_SUI;
-};
+}
 
 interface YouReceiveProps {
 	mistAmount: bigint;
