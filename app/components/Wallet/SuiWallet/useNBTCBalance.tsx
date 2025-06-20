@@ -15,7 +15,7 @@ export const useNBTCBalance = () => {
 		}
 		return await suiClient.getBalance({
 			owner: account.address,
-			coinType: NBTC_COINT_TYPE,
+			coinType: NBTC_COIN_TYPE,
 		});
 	};
 
