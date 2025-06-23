@@ -6,7 +6,7 @@ import { Modal } from "../ui/dialog";
 import { TransactionStatus } from "./TransactionStatus";
 import { NBTCIcon, SUIIcon } from "../icons";
 import { useNBTC } from "./useNBTC";
-import { formatNBTC, parseNBTC } from "~/lib/denoms";
+import { formatNBTC, NBTC, parseNBTC } from "~/lib/denoms";
 import { PRICE_PER_NBTC_IN_SUI } from "~/lib/nbtc";
 import { FormProvider, useForm } from "react-hook-form";
 import { FormNumericInput } from "../form/FormNumericInput";
@@ -79,6 +79,7 @@ export function SellNBTCTabContent() {
 					rightAdornments={<NBTCIcon className="mr-5" />}
 					rules={nBTCAmountInputRules}
 					createEmptySpace
+					decimalScale={NBTC}
 				/>
 				<ArrowDown className="text-primary justify-center w-full flex p-0 m-0" />
 				<FormNumericInput
