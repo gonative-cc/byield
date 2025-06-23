@@ -9,7 +9,7 @@ Dashboard for the Bitcoin Yield Hub and Native `nBTC`.
 ### Dependencies
 
 - node >= v22
-- pnpm >= 10.8
+- pnpm >= 10.11
 - proper editorconfig mode setup in your editor!
 
 ### Quick Start
@@ -43,7 +43,7 @@ pnpm run db:migrate:local
 Generate types for your Cloudflare bindings in `wrangler.toml`:
 
 ```sh
-npm run typegen
+pnpm run typegen
 ```
 
 You will need to rerun typegen whenever you make changes to `wrangler.toml`.
