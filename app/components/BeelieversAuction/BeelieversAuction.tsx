@@ -3,7 +3,7 @@ import { Button } from "../ui/button";
 import { Wallet } from "lucide-react";
 import { Link } from "@remix-run/react";
 import { AuctionInstructions } from "./AuctionInstructions";
-import { AuctionTable } from "./AuctionTable";
+import { AuctionTable, Bid } from "./AuctionTable";
 import { Avatar } from "./Avatar";
 import { BeelieversBid } from "./BeelieversBid";
 
@@ -13,6 +13,7 @@ function Instructions() {
 			<CardContent className="p-5 rounded-lg text-white flex flex-col gap-2 bg-azure-20">
 				<span className="text-xl text-primary">How The Auction Works</span>
 				<AuctionInstructions
+					key="auction-mechanism"
 					heading="Auction Mechanism"
 					instructions={[
 						{
@@ -30,6 +31,7 @@ function Instructions() {
 					]}
 				/>
 				<AuctionInstructions
+					key="mint-distribution"
 					heading="Mint Distribution"
 					instructions={[
 						{
@@ -66,13 +68,14 @@ function Instructions() {
 
 interface BeelieversAuctionProps {
 	data: {
+		leaders: Bid[];
 		bidders: number;
 		highest_bid: number;
 		entry_bid: number;
 	};
 }
 
-export function BeelieversAuction({ data }: BeelieversAuctionProps) {
+export function BeelieversAuction({ data: { leaders } }: BeelieversAuctionProps) {
 	// TODO: fetch from the API
 	const isEligible = true;
 
@@ -104,7 +107,7 @@ export function BeelieversAuction({ data }: BeelieversAuctionProps) {
 			{isEligible && <Avatar />}
 			<BeelieversBid />
 			<div className="flex gap-4 w-full">
-				<AuctionTable />
+				<AuctionTable data={leaders} />
 				<Instructions />
 			</div>
 		</div>

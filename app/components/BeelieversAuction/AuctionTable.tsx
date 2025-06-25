@@ -4,14 +4,14 @@ import { CellProps, Column } from "react-table";
 import { SUIIcon } from "../icons";
 import { trimAddress } from "../Wallet/walletHelper";
 
-interface Bid {
+export interface Bid {
 	rank: number;
 	bidder: string;
 	time: number;
 	amount: string;
 }
 
-export const columns: Column<Bid>[] = [
+const columns: Column<Bid>[] = [
 	{
 		Header: "Rank",
 		accessor: "rank",
@@ -47,51 +47,16 @@ export const columns: Column<Bid>[] = [
 	},
 ];
 
-const mockLeaderBoard: Bid[] = [
-	{
-		rank: 1,
-		bidder: "0xe670405731f97182a4e5056b63385ddd6f7929dfa1a64f82c5f0bdd780dc79f4",
-		time: 12,
-		amount: "20",
-	},
-	{
-		rank: 1,
-		bidder: "0xe670405731f97182a4e5056b63385ddd6f7929dfa1a64f82c5f0bdd780dc79f4",
-		time: 12,
-		amount: "20",
-	},
-	{
-		rank: 1,
-		bidder: "0xe670405731f97182a4e5056b63385ddd6f7929dfa1a64f82c5f0bdd780dc79f4",
-		time: 12,
-		amount: "20",
-	},
-	{
-		rank: 1,
-		bidder: "0xe670405731f97182a4e5056b63385ddd6f7929dfa1a64f82c5f0bdd780dc79f4",
-		time: 12,
-		amount: "20",
-	},
-	{
-		rank: 1,
-		bidder: "0xe670405731f97182a4e5056b63385ddd6f7929dfa1a64f82c5f0bdd780dc79f4",
-		time: 12,
-		amount: "20",
-	},
-	{
-		rank: 1,
-		bidder: "0xe670405731f97182a4e5056b63385ddd6f7929dfa1a64f82c5f0bdd780dc79f4",
-		time: 12,
-		amount: "20",
-	},
-];
+interface AuctionTableProps {
+	data: Bid[];
+}
 
-export function AuctionTable() {
+export function AuctionTable({ data }: AuctionTableProps) {
 	return (
 		<Card className="w-full h-fit">
 			<CardContent className="p-5 rounded-lg text-white flex flex-col gap-2 bg-azure-20">
 				<span className="text-xl text-primary">Leaderboard</span>
-				<Table columns={columns} data={mockLeaderBoard} />
+				<Table columns={columns} data={data} />
 			</CardContent>
 		</Card>
 	);
