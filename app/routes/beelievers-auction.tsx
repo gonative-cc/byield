@@ -1,6 +1,6 @@
 import { BeelieversAuction } from "~/components/BeelieversAuction/BeelieversAuction";
 import { useLoaderData } from "@remix-run/react";
-import { getLeaderBoardData } from "~/components/BeelieversAuction/leaderboard.server";
+import { getLeaderBoardData } from "~/BeelieversAuction/leaderboard.server";
 
 export async function loader() {
 	return await getLeaderBoardData();
