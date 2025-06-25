@@ -8,7 +8,6 @@ import { Instructions } from "./Instructions";
 import { BuyNBTCTabContent } from "./BuyNBTCTabContent";
 import { SellNBTCTabContent } from "./SellNBTCTabContent";
 import { Tabs } from "../ui/tabs";
-import { Link } from "@remix-run/react";
 import { ArrowUpRight } from "lucide-react";
 
 export function BuyNBTC() {
@@ -43,15 +42,15 @@ export function BuyNBTC() {
 							},
 						]}
 					/>
-					<Link
-						to={transactionHistoryLink}
+					<a
+						href={transactionHistoryLink}
 						target="_blank"
 						rel="noreferrer"
 						className="flex gap-1 items-center text-primary hover:underline"
 					>
 						Check Transaction History
-						<ArrowUpRight size={22} />
-					</Link>
+						<ArrowUpRight size="22" />
+					</a>
 				</CardContent>
 			</Card>
 		</div>
