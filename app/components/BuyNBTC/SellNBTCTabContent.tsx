@@ -80,6 +80,7 @@ export function SellNBTCTabContent() {
 					rules={nBTCAmountInputRules}
 					createEmptySpace
 					decimalScale={NBTC}
+					allowNegative={false}
 				/>
 				<ArrowDown className="text-primary justify-center w-full flex p-0 m-0" />
 				<FormNumericInput
