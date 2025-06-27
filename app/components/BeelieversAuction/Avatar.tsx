@@ -22,7 +22,7 @@ const AVATARS = [
 export function Avatar() {
 	return (
 		<div className="flex flex-col gap-2 items-center">
-			<div className="flex gap-4 items-center">
+			<div className="flex flex-col md:flex-row gap-4 items-center">
 				<div className="flex -space-x-4 rtl:space-x-reverse">
 					{AVATARS.map(({ key, src }) => (
 						<img

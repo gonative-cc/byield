@@ -1,9 +1,9 @@
 import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
-import { Gavel } from "lucide-react";
 import { FormProvider, useForm } from "react-hook-form";
 import { FormNumericInput } from "../form/FormNumericInput";
 import { SUI } from "~/lib/denoms";
+import { AttemptAuction } from "./AttemptAuction";
 
 interface BeelieversBidForm {
 	bid: string;
@@ -28,28 +28,29 @@ export function BeelieversBid() {
 				})}
 				className="flex justify-center w-full"
 			>
-				<Card className="w-1/2">
+				<Card className="md:w-1/2">
 					<CardContent className="p-4 rounded-lg text-white flex flex-col w-full gap-4 bg-azure-10">
 						<div className="flex justify-between">
 							<span className="text-2xl font-bold">Beelievers Bid</span>
-							<Gavel />
+							<AttemptAuction />
 						</div>
-						<div className="flex flex-col gap-2">
+						<div className="flex flex-col w-full">
 							<FormNumericInput
 								required
 								name="bid"
-								placeholder="Put your bid"
+								placeholder="Minimum Bid: 1 SUI"
 								rightAdornments={<Button>Bid Amount</Button>}
 								className="h-14"
 								allowNegative={false}
 								decimalScale={SUI}
+								createEmptySpace
 								rules={{
 									validate: {
 										minVal: (val: string) => Number(val) >= 1 || "Min bid amount is 1",
 									},
 								}}
 							/>
-							<span className="text-sm text-gray-400">Minimum Bid : 1 SUI</span>
+							<span className="text-sm self-center">Auction ends in 00 : 23 :12</span>
 						</div>
 					</CardContent>
 				</Card>

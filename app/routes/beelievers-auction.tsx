@@ -1,17 +1,27 @@
 import { BeelieversAuction } from "~/components/BeelieversAuction/BeelieversAuction";
-import { useLoaderData } from "@remix-run/react";
+import { useActionData, useLoaderData } from "@remix-run/react";
 import { getLeaderBoardData } from "~/BeelieversAuction/leaderboard.server";
+import { checkEligibility } from "~/BeelieversAuction/eligibility.server";
 
 export async function loader() {
 	return await getLeaderBoardData();
 }
 
+export async function action() {
+	const isEligible = await checkEligibility("");
+	return {
+		isEligible,
+		isError: false,
+	};
+}
+
 export default function BeelieversAuctionPage() {
-	const data = useLoaderData<typeof loader>();
+	const leaderBoardData = useLoaderData<typeof loader>();
+	const eligibilityData = useActionData<typeof action>();
 
 	return (
 		<div className="flex justify-center">
-			<BeelieversAuction data={data} />
+			<BeelieversAuction leaderBoardData={leaderBoardData} eligibilityData={eligibilityData} />
 		</div>
 	);
 }

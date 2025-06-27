@@ -43,6 +43,6 @@ const MOCK_LEADER_BOARD_DATA = {
 	entry_bid: 2,
 };
 
-export const getLeaderBoardData = () => {
-	return MOCK_LEADER_BOARD_DATA;
-};
+export function getLeaderBoardData() {
+	return { ...MOCK_LEADER_BOARD_DATA, isError: false };
+}
