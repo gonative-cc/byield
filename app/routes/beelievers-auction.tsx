@@ -8,6 +8,7 @@ export async function loader() {
 }
 
 export async function action() {
+	// Using an empty string as a placeholder for eligibility checks.
 	const isEligible = await checkEligibility("");
 	return {
 		isEligible,
