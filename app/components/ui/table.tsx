@@ -1,4 +1,5 @@
 import { useTable, Column, HeaderGroup, Row } from "react-table";
+import { twMerge } from "tailwind-merge";
 
 const TableHead = <T extends object>({ headerGroups }: { headerGroups: HeaderGroup<T>[] }) => (
 	<thead>
@@ -45,9 +46,10 @@ const TableRows = <T extends object>({
 interface TableProps<T extends object> {
 	columns: Column<T>[];
 	data: T[];
+	className?: string;
 }
 
-export const Table = <T extends object>({ columns, data }: TableProps<T>) => {
+export const Table = <T extends object>({ columns, data, className }: TableProps<T>) => {
 	const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<T>({
 		columns,
 		data,
@@ -62,7 +64,7 @@ export const Table = <T extends object>({ columns, data }: TableProps<T>) => {
 	);
 
 	return (
-		<div className="overflow-x-auto">
+		<div className={twMerge("flex w-full overflow-x-auto", className)}>
 			<table {...getTableProps()} className="w-full text-left bg-azure-10 rounded-3xl">
 				<TableHead headerGroups={headerGroups} />
 				<tbody {...getTableBodyProps()}>

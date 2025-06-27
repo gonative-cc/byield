@@ -13,6 +13,7 @@ import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
 import { useToast } from "~/hooks/use-toast";
 import { Link } from "@remix-run/react";
+import { Wallet } from "lucide-react";
 
 interface InstallWalletProps {
 	link: string;
@@ -131,7 +132,10 @@ export function SuiModal() {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<Button>Connect Sui Wallet</Button>
+				<Button>
+					<Wallet />
+					Connect Sui Wallet
+				</Button>
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-[425px]">
 				<DialogHeader>
