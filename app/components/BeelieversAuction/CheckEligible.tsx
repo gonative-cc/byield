@@ -45,7 +45,7 @@ export function CheckEligible({ isEligible }: CheckEligibleProps) {
 									clearing price is refunded.
 								</span>
 								<div className="flex gap-2 justify-between w-full items-end">
-									<Form method="POST" action="?check=eligibility">
+									<Form method="POST">
 										<Button type="submit" className="flex w-[163px]">
 											<Wallet />
 											Check Eligibility

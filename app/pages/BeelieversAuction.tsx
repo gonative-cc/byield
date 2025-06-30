@@ -1,9 +1,9 @@
-import { Card, CardContent } from "../ui/card";
-import { Button } from "../ui/button";
+import { Card, CardContent } from "../components/ui/card";
+import { Button } from "../components/ui/button";
 import { Link } from "@remix-run/react";
-import { AuctionInstructions } from "./AuctionInstructions";
-import { AuctionTable } from "./AuctionTable";
-import { CheckEligible } from "./CheckEligible";
+import { AuctionInstructions } from "../components/BeelieversAuction/AuctionInstructions";
+import { AuctionTable } from "../components/BeelieversAuction/AuctionTable";
+import { CheckEligible } from "../components/BeelieversAuction/CheckEligible";
 
 function Instructions() {
 	return (
