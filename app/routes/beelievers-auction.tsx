@@ -1,7 +1,7 @@
-import { BeelieversAuction } from "~/pages/BeelieversAuction";
+import { BeelieversAuction } from "~/pages/BeelieversAuction/BeelieversAuction";
 import { useActionData, useLoaderData } from "@remix-run/react";
 import { getLeaderBoardData } from "~/server/BeelieversAuction/leaderboard.server";
-import { checkEligibility } from "~/pages/eligibility.server";
+import { checkEligibility } from "~/pages/BeelieversAuction/whitelist.server";
 
 export async function loader() {
 	return await getLeaderBoardData();
