@@ -2,7 +2,6 @@ import { Check, CircleX } from "lucide-react";
 import { classNames } from "~/util/tailwind";
 import { Button } from "../ui/button";
 import { Link } from "@remix-run/react";
-import { useEffect } from "react";
 
 interface TransactionStatusProps {
 	isSuccess: boolean;
@@ -12,12 +11,6 @@ interface TransactionStatusProps {
 
 export function TransactionStatus({ isSuccess, txnId, handleRetry }: TransactionStatusProps) {
 	const Icon = isSuccess ? Check : CircleX;
-
-	useEffect(() => {
-		if (isSuccess) {
-			window.open("https://forms.gle/Hu4WUSfgQkp1xsyNA", "_blank", "noreferrer");
-		}
-	}, [isSuccess]);
 
 	return (
 		<div className="p-4 rounded-lg text-white flex flex-col gap-4">
