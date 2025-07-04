@@ -12,7 +12,7 @@ import { useContext } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
 import { useToast } from "~/hooks/use-toast";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import { Wallet } from "lucide-react";
 
 interface InstallWalletProps {

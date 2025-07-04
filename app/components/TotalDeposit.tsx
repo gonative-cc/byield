@@ -4,7 +4,7 @@ import { TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { Table } from "./ui/table";
 import { Column, CellProps } from "react-table";
 import { Badge } from "./ui/badge";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import { SelectInput } from "./ui/select";
 import { Input } from "./ui/input";
 

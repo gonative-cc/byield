@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import { NavMenu, NavMenuItem } from "./ui/navigation-menu";
 import { isProductionMode } from "~/lib/appenv";
 import { SelectWallet } from "./SelectWallet";

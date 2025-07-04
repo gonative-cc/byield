@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import { socials, redirects } from "~/config/footer.json";
 
 export function Footer() {

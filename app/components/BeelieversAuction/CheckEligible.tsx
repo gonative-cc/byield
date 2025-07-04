@@ -5,7 +5,7 @@ import { AttemptAuction } from "./AttemptAuction";
 import { Avatar } from "./Avatar";
 import { BeelieversBid } from "./BeelieversBid";
 import { NotEligible } from "./NotEligible";
-import { Form } from "@remix-run/react";
+import { Form } from "react-router";
 
 interface CheckEligibleProps {
 	isEligible?: boolean;
