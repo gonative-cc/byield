@@ -1,6 +1,6 @@
-import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "@remix-run/react";
-import type { LinksFunction } from "@remix-run/cloudflare";
-import "./tailwind.css";
+import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
+import type { LinksFunction } from "react-router";
+import tailwindStyle from "./tailwind.css?url";
 import { NavBar } from "./components/NavBar";
 import { networkConfig } from "./networkConfig";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -15,6 +15,7 @@ import { Footer } from "./components/Footer";
 const queryClient = new QueryClient();
 
 export const links: LinksFunction = () => [
+	{ rel: "stylesheet", href: tailwindStyle },
 	{ rel: "preconnect", href: "https://fonts.googleapis.com" },
 	{
 		rel: "preconnect",

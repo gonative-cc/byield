@@ -1,6 +1,6 @@
 import { Card, CardContent } from "./ui/card";
 import { BitcoinBalance } from "./BitcoinBalance";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import { Button } from "./ui/button";
 import { FormProvider, useForm } from "react-hook-form";
 import { FormInput } from "./form/FormInput";

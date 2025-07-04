@@ -1,7 +1,7 @@
 import { Check, CircleX } from "lucide-react";
 import { classNames } from "~/util/tailwind";
 import { Button } from "../ui/button";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 
 interface TransactionStatusProps {
 	isSuccess: boolean;

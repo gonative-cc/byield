@@ -1,7 +1,7 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 
 export function Instructions() {
 	const account = useCurrentAccount();

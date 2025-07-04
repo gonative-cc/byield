@@ -1,5 +1,5 @@
 import { BeelieversAuction } from "~/pages/BeelieversAuction/BeelieversAuction";
-import { useActionData, useLoaderData } from "@remix-run/react";
+import { useActionData, useLoaderData } from "react-router";
 import { getLeaderBoardData } from "~/server/BeelieversAuction/leaderboard.server";
 import { checkEligibility } from "~/pages/BeelieversAuction/whitelist.server";
 

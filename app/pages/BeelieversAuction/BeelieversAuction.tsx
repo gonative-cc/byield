@@ -1,6 +1,6 @@
 import { Card, CardContent } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import { AuctionInstructions } from "../../components/BeelieversAuction/AuctionInstructions";
 import { AuctionTable } from "../../components/BeelieversAuction/AuctionTable";
 import { CheckEligible } from "../../components/BeelieversAuction/CheckEligible";
