@@ -2,4 +2,7 @@
 build
 .github
 pnpm-lock.yaml
+node_modules
 package.json
+
+worker-configuration.d.ts
