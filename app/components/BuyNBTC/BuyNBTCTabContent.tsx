@@ -36,7 +36,11 @@ function SUIRightAdornment({ isValidMaxSUIAmount, maxSUIAmount, onMaxClick }: SU
 					</Button>
 				</div>
 			)}
-			<SUIIcon prefix={"SUI"} className="flex justify-end mr-1" containerClassName="w-full justify-end" />
+			<SUIIcon
+				prefix={"SUI"}
+				className="flex justify-end mr-1"
+				containerClassName="w-full justify-end"
+			/>
 		</div>
 	);
 }

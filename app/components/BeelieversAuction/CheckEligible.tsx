@@ -41,8 +41,8 @@ export function CheckEligible({ isEligible }: CheckEligibleProps) {
 									</div>
 								</div>
 								<span className="text-sm">
-									You bid your true value; winners pay the lowest winning bid. Any amount above the
-									clearing price is refunded.
+									You bid your true value; winners pay the lowest winning bid. Any amount
+									above the clearing price is refunded.
 								</span>
 								<div className="flex gap-2 justify-between w-full items-end">
 									<Form method="POST">
@@ -51,7 +51,9 @@ export function CheckEligible({ isEligible }: CheckEligibleProps) {
 											Check Eligibility
 										</Button>
 									</Form>
-									<span className="text-sm md:hidden block">Auction ends in 00 : 23 :12</span>
+									<span className="text-sm md:hidden block">
+										Auction ends in 00 : 23 :12
+									</span>
 								</div>
 							</div>
 							<div className="md:flex flex-col justify-between shrink-0 hidden">

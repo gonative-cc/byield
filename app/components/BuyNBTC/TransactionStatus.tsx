@@ -28,8 +28,8 @@ export function TransactionStatus({ isSuccess, txnId, handleRetry }: Transaction
 				{isSuccess && (
 					<div className="max-w-md mx-auto p-4 text-center">
 						<p className="text-sm leading-relaxed">
-							If you want to increase your chances to be whitelisted for BTCFi Beelievers NFT, please
-							fill this{" "}
+							If you want to increase your chances to be whitelisted for BTCFi Beelievers NFT,
+							please fill this{" "}
 							<Link
 								target="_blank"
 								to="https://forms.gle/Hu4WUSfgQkp1xsyNA"

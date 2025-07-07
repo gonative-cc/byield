@@ -5,7 +5,9 @@ export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
 }
 
-export function classNames(...args: (string | { [key: string]: boolean } | undefined | null)[]): string {
+export function classNames(
+	...args: (string | { [key: string]: boolean } | undefined | null)[]
+): string {
 	const classes: string[] = [];
 
 	args.forEach((arg) => {

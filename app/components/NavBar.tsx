@@ -35,7 +35,11 @@ export function NavBar() {
 				<Link to="/" className="font-bold text-lg">
 					<div className="md:w-32">
 						<img src="/assets/app-logos/logo.svg" alt="Remix" className="hidden md:block" />
-						<img src="/assets/app-logos/logo-mobile.svg" alt="Remix" className="block md:hidden" />
+						<img
+							src="/assets/app-logos/logo-mobile.svg"
+							alt="Remix"
+							className="block md:hidden"
+						/>
 					</div>
 				</Link>
 				<div className="flex flex-1 justify-center">

@@ -28,7 +28,9 @@ export async function nBTCMintTxn(
 			});
 		}
 		// validate address
-		const validateAddress: ValidateAddressI = await fetchValidateAddress(bitcoinAddress.address);
+		const validateAddress: ValidateAddressI = await fetchValidateAddress(
+			bitcoinAddress.address,
+		);
 		if (!validateAddress) {
 			console.error("Not able to find validate the address.");
 			toast?.({
@@ -56,7 +58,10 @@ export async function nBTCMintTxn(
 
 		// Add OP_RETURN output
 		const opReturnData = Buffer.from(opReturnInput, "hex");
-		const opReturnScript = bitcoin.script.compile([bitcoin.opcodes.OP_RETURN, opReturnData]);
+		const opReturnScript = bitcoin.script.compile([
+			bitcoin.opcodes.OP_RETURN,
+			opReturnData,
+		]);
 		psbt.addOutput({
 			script: opReturnScript,
 			value: 0,

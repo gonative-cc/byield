@@ -135,7 +135,11 @@ export function SuiWallet() {
 				<NetWorkOptions />
 				<Accounts />
 				{balance?.totalBalance && (
-					<NumericFormat displayType="text" value={formatSUI(balance?.totalBalance)} suffix=" SUI" />
+					<NumericFormat
+						displayType="text"
+						value={formatSUI(balance?.totalBalance)}
+						suffix=" SUI"
+					/>
 				)}
 				<Button
 					onClick={() => {

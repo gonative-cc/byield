@@ -44,7 +44,9 @@ function AvailableWallets() {
 	if (!slushWallet && !phantomWallet) {
 		return (
 			<>
-				<DialogDescription className="text-red-500">No Sui-compatible wallets detected</DialogDescription>
+				<DialogDescription className="text-red-500">
+					No Sui-compatible wallets detected
+				</DialogDescription>
 				<div className="flex flex-col gap-1">
 					<InstallWallet link="https://slush.app/" name="Slush" />
 					<InstallWallet link="https://phantom.app/" name="Phantom" />
@@ -84,7 +86,12 @@ function AvailableWallets() {
 							}}
 							className="justify-between flex w-full text-primary h-16"
 						>
-							<img src={installedWallet.icon} alt={installedWallet.name} width={20} height={20} />
+							<img
+								src={installedWallet.icon}
+								alt={installedWallet.name}
+								width={20}
+								height={20}
+							/>
 							{installedWallet.name}
 						</Button>
 					</div>

@@ -7,8 +7,16 @@ export function NotEligible() {
 	return (
 		<Card className="w-full md:w-[72%]">
 			<CardContent className="p-4 rounded-lg text-white flex flex-col md:flex-row gap-4 md:gap-8 bg-azure-25">
-				<img src="/assets/bee/bee-looking-right.svg" alt="bee-with-hammer" className="hidden md:block" />
-				<img src="/assets/bee/bee-with-face-only.svg" alt="bee-with-hammer" className="md:hidden block" />
+				<img
+					src="/assets/bee/bee-looking-right.svg"
+					alt="bee-with-hammer"
+					className="hidden md:block"
+				/>
+				<img
+					src="/assets/bee/bee-with-face-only.svg"
+					alt="bee-with-hammer"
+					className="md:hidden block"
+				/>
 				<div className="flex flex-col md:flex-row gap-2 md:gap-8 py-0 md:py-4 w-full">
 					<div className="flex flex-col gap-4 justify-between">
 						<div className="flex justify-between gap-2">
