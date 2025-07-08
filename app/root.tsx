@@ -11,6 +11,8 @@ import { ByieldWalletProvider } from "./providers/ByieldWalletProvider";
 import { isProductionMode, printAppEnv } from "./lib/appenv";
 import { useEffect } from "react";
 import { Footer } from "./components/Footer";
+import { SideBarProvider } from "./providers/SiderBarProvider";
+import { Sidebar } from "./components/sidebar";
 
 const queryClient = new QueryClient();
 
@@ -52,8 +54,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<GoogleAnalytics />
 				<Links />
 			</head>
-			<body className="min-h-screen bg-background antialiased">
-				<NativeApp>{children}</NativeApp>
+			<body className="flex w-full">
+				<SideBarProvider>
+					<Sidebar />
+					<div className="flex flex-col gap-2">
+						<NativeApp>
+							<NavBar />
+							{children}
+						</NativeApp>
+					</div>
+				</SideBarProvider>
 			</body>
 		</html>
 	);
@@ -75,8 +85,7 @@ function NativeApp({ children }: { children: React.ReactNode }) {
 							<ByieldWalletProvider>
 								<TooltipProvider>
 									<Tooltip>
-										<NavBar />
-										<main className="flex-1 container mx-auto px-4">{children}</main>
+										<main className="flex-1">{children}</main>
 										<Toaster />
 									</Tooltip>
 								</TooltipProvider>

@@ -29,7 +29,6 @@
 		"@mysten/dapp-kit": "^0.16.14",
 		"@mysten/sui": "^1.35.0",
 		"@radix-ui/react-dialog": "^1.1.14",
-		"@radix-ui/react-navigation-menu": "^1.2.13",
 		"@radix-ui/react-popover": "^1.1.14",
 		"@radix-ui/react-select": "^2.2.5",
 		"@radix-ui/react-slot": "^1.2.3",

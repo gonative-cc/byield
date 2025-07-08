@@ -139,6 +139,7 @@ export function SuiWallet() {
 						displayType="text"
 						value={formatSUI(balance?.totalBalance)}
 						suffix=" SUI"
+						className="shrink-0"
 					/>
 				)}
 				<Button
