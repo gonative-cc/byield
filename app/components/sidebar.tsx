@@ -53,7 +53,7 @@ function navMenuItems() {
 	];
 }
 
-export const Sidebar = () => {
+export function Sidebar() {
 	const location = useLocation();
 	const currentPath = location.pathname;
 
@@ -156,4 +156,4 @@ export const Sidebar = () => {
 			)}
 		</div>
 	);
-};
+}

@@ -12,7 +12,7 @@ import { isProductionMode, printAppEnv } from "./lib/appenv";
 import { useEffect } from "react";
 import { Footer } from "./components/Footer";
 import { SideBarProvider } from "./providers/SiderBarProvider";
-import { Sidebar } from "./components/sidebar";
+import { Sidebar } from "./components/SideBar";
 
 const queryClient = new QueryClient();
 
