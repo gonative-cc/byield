@@ -80,7 +80,11 @@ export const Sidebar = () => {
 						{!isCollapsed && (
 							<Link to="/" className="font-bold text-lg">
 								<div className="md:w-32">
-									<img src="/assets/app-logos/logo.svg" alt="Remix" className="hidden md:block" />
+									<img
+										src="/assets/app-logos/logo.svg"
+										alt="Remix"
+										className="hidden md:block"
+									/>
 								</div>
 							</Link>
 						)}
@@ -102,7 +106,8 @@ export const Sidebar = () => {
 									<button
 										type="button"
 										className={classNames({
-											"flex items-center w-full px-2 py-1 gap-2 rounded cursor-pointer mb-2": true,
+											"flex items-center w-full px-2 py-1 gap-2 rounded cursor-pointer mb-2":
+												true,
 											"bg-primary": currentPath === item.link,
 											"hover:bg-accent": currentPath !== item.link,
 										})}
