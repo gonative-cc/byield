@@ -65,8 +65,7 @@ export function Sidebar() {
 			{/* Sidebar */}
 			<div
 				className={classNames({
-					"md:translate-x-0 fixed md:static top-0 border-r-[1px] left-0 h-full text-white transition-all duration-300 ease-in-out z-50 bg-slate-950 md:bg-background":
-						true,
+					"md:translate-x-0 fixed md:static top-0 border-r-[1px] left-0 h-full text-white transition-all duration-300 ease-in-out z-50 bg-slate-950 md:bg-background": true,
 					"translate-x-0 mt-6 md:mt-0": isMobileOpen,
 					"-translate-x-full": !isMobileOpen,
 					"w-16": isCollapsed,
@@ -106,8 +105,7 @@ export function Sidebar() {
 									<button
 										type="button"
 										className={classNames({
-											"flex items-center w-full px-2 py-1 gap-2 rounded cursor-pointer mb-2":
-												true,
+											"flex items-center w-full px-2 py-1 gap-2 rounded cursor-pointer mb-2": true,
 											"bg-primary": currentPath === item.link,
 											"hover:bg-accent": currentPath !== item.link,
 										})}
@@ -129,8 +127,7 @@ export function Sidebar() {
 												key={subItem.id}
 												to={subItem.link}
 												className={classNames({
-													"flex items-center p-2 hover:bg-accent rounded cursor-pointer mb-2 text-sm":
-														true,
+													"flex items-center p-2 hover:bg-accent rounded cursor-pointer mb-2 text-sm": true,
 													"bg-primary": currentPath === subItem.link,
 													"hover:bg-accent": currentPath !== subItem.link,
 												})}
