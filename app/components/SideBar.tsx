@@ -11,7 +11,7 @@ function navMenuItems() {
 			{
 				icon: "/assets/navigation/nBTC.svg",
 				id: "navigation-2",
-				title: "Buy nBTC",
+				title: "nBTC",
 				link: "",
 				subNavItems: [
 					{
