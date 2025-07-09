@@ -10,15 +10,16 @@ import { formatNBTC, NBTC, parseNBTC } from "~/lib/denoms";
 import { PRICE_PER_NBTC_IN_SUI } from "~/lib/nbtc";
 import { FormProvider, useForm } from "react-hook-form";
 import { FormNumericInput } from "../form/FormNumericInput";
+import { classNames } from "~/util/tailwind";
 
 interface NBTCRightAdornmentProps {
 	maxNBTCAmount: bigint;
 	onMaxClick: (val: string) => void;
+	isValidMaxNBTCAmount: boolean;
 }
 
-function NBTCRightAdornment({ maxNBTCAmount, onMaxClick }: NBTCRightAdornmentProps) {
+function NBTCRightAdornment({ maxNBTCAmount, isValidMaxNBTCAmount, onMaxClick }: NBTCRightAdornmentProps) {
 	const totalNBTCBalance = formatNBTC(maxNBTCAmount);
-	const isValidMaxNBTCAmount = maxNBTCAmount > 0;
 
 	return (
 		<div className="flex flex-col items-center gap-2 py-2">
@@ -94,6 +95,8 @@ export function SellNBTCTabContent() {
 		},
 	};
 
+	const isValidMaxNBTCAmount = nBTCBalance?.totalBalance ? BigInt(nBTCBalance.totalBalance) > 0 : false;
+
 	return (
 		<FormProvider {...sellNBTCForm}>
 			<form
@@ -108,11 +111,15 @@ export function SellNBTCTabContent() {
 					required
 					name="nBTCAmount"
 					placeholder="Enter nBTC amount"
-					className="h-16"
+					className={classNames({
+						"h-16": true,
+						"pt-8": isValidMaxNBTCAmount,
+					})}
 					rightAdornments={
 						<NBTCRightAdornment
 							onMaxClick={(val: string) => setValue("nBTCAmount", val)}
 							maxNBTCAmount={BigInt(nBTCBalance?.totalBalance || "0")}
+							isValidMaxNBTCAmount={isValidMaxNBTCAmount}
 						/>
 					}
 					rules={nBTCAmountInputRules}
