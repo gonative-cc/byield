@@ -17,7 +17,7 @@ export function BuyNBTC() {
 	const transactionHistoryLink = `https://suiscan.xyz/testnet/account/${suiAddr}/tx-blocks`;
 
 	return (
-		<div className="flex flex-col items-center gap-8">
+		<div className="flex flex-col items-center gap-8 px-2 pt-2">
 			<p className="md:text-3xl text-2xl text-center font-semibold max-w-96">
 				Native enables <span className="text-2xl text-primary md:text-3xl">BTCFi</span> in the{" "}
 				<span className="text-2xl text-primary md:text-3xl">Web3 native</span> way!
