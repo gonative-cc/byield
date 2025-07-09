@@ -10,6 +10,40 @@ import { formatNBTC, NBTC, parseNBTC } from "~/lib/denoms";
 import { PRICE_PER_NBTC_IN_SUI } from "~/lib/nbtc";
 import { FormProvider, useForm } from "react-hook-form";
 import { FormNumericInput } from "../form/FormNumericInput";
+import { classNames } from "~/util/tailwind";
+
+interface NBTCRightAdornmentProps {
+	maxNBTCAmount: bigint;
+	onMaxClick: (val: string) => void;
+	isValidMaxNBTCAmount: boolean;
+}
+
+function NBTCRightAdornment({ maxNBTCAmount, isValidMaxNBTCAmount, onMaxClick }: NBTCRightAdornmentProps) {
+	const totalNBTCBalance = formatNBTC(maxNBTCAmount);
+
+	return (
+		<div className="flex flex-col items-center gap-2 py-2">
+			{isValidMaxNBTCAmount && (
+				<div className="flex items-center gap-2">
+					<p className="text-xs whitespace-nowrap">Balance: {totalNBTCBalance} nBTC</p>
+					<Button
+						variant="link"
+						type="button"
+						onClick={() => onMaxClick(totalNBTCBalance)}
+						className="text-xs w-fit p-0 pr-2 h-fit"
+					>
+						Max
+					</Button>
+				</div>
+			)}
+			<NBTCIcon
+				prefix={"nBTC"}
+				className="flex justify-end mr-1"
+				containerClassName="w-full justify-end"
+			/>
+		</div>
+	);
+}
 
 interface SellNBTCForm {
 	nBTCAmount: string;
@@ -33,7 +67,7 @@ export function SellNBTCTabContent() {
 		disabled: isPending || isSuccess || isError,
 	});
 
-	const { watch, handleSubmit, reset } = sellNBTCForm;
+	const { watch, handleSubmit, reset, setValue } = sellNBTCForm;
 	const inputNBTCAmount = watch("nBTCAmount");
 	const nBTCAmount = parseNBTC(
 		inputNBTCAmount?.length > 0 && inputNBTCAmount !== "." ? inputNBTCAmount : "0",
@@ -61,6 +95,8 @@ export function SellNBTCTabContent() {
 		},
 	};
 
+	const isValidMaxNBTCAmount = nBTCBalance?.totalBalance ? BigInt(nBTCBalance.totalBalance) > 0 : false;
+
 	return (
 		<FormProvider {...sellNBTCForm}>
 			<form
@@ -75,8 +111,17 @@ export function SellNBTCTabContent() {
 					required
 					name="nBTCAmount"
 					placeholder="Enter nBTC amount"
-					className="h-16"
-					rightAdornments={<NBTCIcon className="mr-5" />}
+					className={classNames({
+						"h-16": true,
+						"pt-8": isValidMaxNBTCAmount,
+					})}
+					rightAdornments={
+						<NBTCRightAdornment
+							onMaxClick={(val: string) => setValue("nBTCAmount", val)}
+							maxNBTCAmount={BigInt(nBTCBalance?.totalBalance || "0")}
+							isValidMaxNBTCAmount={isValidMaxNBTCAmount}
+						/>
+					}
 					rules={nBTCAmountInputRules}
 					createEmptySpace
 					decimalScale={NBTC}
