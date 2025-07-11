@@ -1,5 +1,5 @@
-import { Card, CardContent } from "../ui/card";
 import { ReactNode } from "react";
+import { Card, CardContent } from "~/components/ui/card";
 
 type Instructions = { id: string; content: string | ReactNode };
 

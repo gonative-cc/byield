@@ -1,11 +1,11 @@
 import { Wallet } from "lucide-react";
-import { Button } from "../ui/button";
-import { Card, CardContent } from "../ui/card";
 import { AttemptAuction } from "./AttemptAuction";
 import { Avatar } from "./Avatar";
 import { BeelieversBid } from "./BeelieversBid";
 import { NotEligible } from "./NotEligible";
 import { Form } from "react-router";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent } from "~/components/ui/card";
 
 interface CheckEligibleProps {
 	isEligible?: boolean;

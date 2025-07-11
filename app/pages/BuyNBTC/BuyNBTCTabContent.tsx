@@ -1,15 +1,15 @@
 import { useCallback, useEffect } from "react";
 import { ArrowDown } from "lucide-react";
-import { Button } from "../ui/button";
+import { Button } from "~/components/ui/button";
 import { FormProvider, useForm } from "react-hook-form";
-import { SuiModal } from "../Wallet/SuiWallet/SuiModal";
+import { SuiModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import { formatSUI, parseSUI, SUI } from "~/lib/denoms";
-import { FormNumericInput } from "../form/FormNumericInput";
-import { Modal } from "../ui/dialog";
+import { FormNumericInput } from "~/components/form/FormNumericInput";
+import { Modal } from "~/components/ui/dialog";
 import { TransactionStatus } from "./TransactionStatus";
 import { YouReceive } from "./YouReceive";
 import { classNames } from "~/util/tailwind";
-import { SUIIcon } from "../icons";
+import { SUIIcon } from "~/components/icons";
 import { useNBTC } from "./useNBTC";
 
 const BUY_NBTC_GAS = parseSUI("0.01");

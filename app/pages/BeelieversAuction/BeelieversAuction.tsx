@@ -1,9 +1,9 @@
-import { Card, CardContent } from "../../components/ui/card";
-import { Button } from "../../components/ui/button";
+import { Card, CardContent } from "~/components/ui/card";
+import { Button } from "~/components/ui/button";
 import { Link } from "react-router";
-import { AuctionInstructions } from "../../components/BeelieversAuction/AuctionInstructions";
-import { AuctionTable } from "../../components/BeelieversAuction/AuctionTable";
-import { CheckEligible } from "../../components/BeelieversAuction/CheckEligible";
+import { AuctionInstructions } from "./AuctionInstructions";
+import { CheckEligible } from "./CheckEligible";
+import { AuctionTable } from "./AuctionTable";
 
 function Instructions() {
 	return (

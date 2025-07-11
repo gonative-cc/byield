@@ -1,7 +1,7 @@
 import { Link } from "react-router";
-import { Card, CardContent } from "../ui/card";
-import { Button } from "../ui/button";
 import { AttemptAuction } from "./AttemptAuction";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent } from "~/components/ui/card";
 
 export function NotEligible() {
 	return (

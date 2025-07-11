@@ -1,9 +1,9 @@
-import { Card, CardContent } from "../ui/card";
-import { Button } from "../ui/button";
 import { FormProvider, useForm } from "react-hook-form";
-import { FormNumericInput } from "../form/FormNumericInput";
 import { SUI } from "~/lib/denoms";
 import { AttemptAuction } from "./AttemptAuction";
+import { Card, CardContent } from "~/components/ui/card";
+import { FormNumericInput } from "~/components/form/FormNumericInput";
+import { Button } from "~/components/ui/button";
 
 interface BeelieversBidForm {
 	bid: string;
