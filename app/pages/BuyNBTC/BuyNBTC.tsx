@@ -1,13 +1,13 @@
 import { useContext } from "react";
-import { Card, CardContent } from "../../components/ui/card";
+import { Card, CardContent } from "~/components/ui/card";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
-import { useNBTCBalance } from "../../components/Wallet/SuiWallet/useNBTCBalance";
-import { NBTCBalance } from "../../components/NBTCBalance";
+import { useNBTCBalance } from "~/components/Wallet/SuiWallet/useNBTCBalance";
+import { NBTCBalance } from "~/components/NBTCBalance";
 import { Instructions } from "./Instructions";
 import { BuyNBTCTabContent } from "./BuyNBTCTabContent";
 import { SellNBTCTabContent } from "./SellNBTCTabContent";
-import { Tabs } from "../../components/ui/tabs";
+import { Tabs } from "~/components/ui/tabs";
 import { ArrowUpRight } from "lucide-react";
 
 export function BuyNBTC() {

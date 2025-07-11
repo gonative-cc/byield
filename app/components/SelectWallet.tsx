@@ -6,7 +6,7 @@ import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
 import { useXverseConnect } from "./Wallet/XverseWallet/useWallet";
 import { SuiModal } from "./Wallet/SuiWallet/SuiModal";
-import { Skeleton } from "./ui/skeleton";
+import { Skeleton } from "~/components/ui/skeleton";
 
 function LoadingSkeleton() {
 	return (

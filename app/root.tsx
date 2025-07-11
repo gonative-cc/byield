@@ -1,18 +1,18 @@
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 import type { LinksFunction } from "react-router";
 import tailwindStyle from "./tailwind.css?url";
-import { NavBar } from "./components/NavBar";
+import { NavBar } from "~/components/NavBar";
 import { networkConfig } from "./networkConfig";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SuiClientProvider, WalletProvider as SuiWalletProvider } from "@mysten/dapp-kit";
-import { Toaster } from "./components/ui/toaster";
-import { Tooltip, TooltipProvider } from "./components/ui/tooltip";
+import { Toaster } from "~/components/ui/toaster";
+import { Tooltip, TooltipProvider } from "~/components/ui/tooltip";
 import { ByieldWalletProvider } from "./providers/ByieldWalletProvider";
 import { isProductionMode, printAppEnv } from "./lib/appenv";
 import { useEffect } from "react";
-import { Footer } from "./components/Footer";
+import { Footer } from "~/components/Footer";
 import { SideBarProvider } from "./providers/SiderBarProvider";
-import { Sidebar } from "./components/SideBar";
+import { Sidebar } from "~/components/SideBar";
 
 const queryClient = new QueryClient();
 

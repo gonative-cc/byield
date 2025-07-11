@@ -1,6 +1,6 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { Button } from "../../components/ui/button";
-import { Card, CardContent } from "../../components/ui/card";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent } from "~/components/ui/card";
 import { Link } from "react-router";
 
 export function Instructions() {
