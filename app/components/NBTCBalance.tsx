@@ -1,6 +1,6 @@
 import { NumericFormat } from "react-number-format";
 import { formatNBTC } from "~/lib/denoms";
-import { NBTCIcon } from "../icons";
+import { NBTCIcon } from "./icons";
 
 interface NBTCBalanceProps {
 	balance: bigint;

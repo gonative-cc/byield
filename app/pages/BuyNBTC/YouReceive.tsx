@@ -1,6 +1,6 @@
 import { formatSUI } from "~/lib/denoms";
-import { FormNumericInput } from "../form/FormNumericInput";
-import { NBTCIcon } from "../icons";
+import { FormNumericInput } from "../../components/form/FormNumericInput";
+import { NBTCIcon } from "../../components/icons";
 
 const PRICE_PER_NBTC_IN_SUI = 25000n;
 

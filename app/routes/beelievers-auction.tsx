@@ -21,7 +21,7 @@ export default function BeelieversAuctionPage() {
 	const eligibilityData = useActionData<typeof action>();
 
 	return (
-		<div className="flex justify-center">
+		<div className="flex justify-center p-4">
 			<BeelieversAuction leaderBoardData={leaderBoardData} eligibilityData={eligibilityData} />
 		</div>
 	);

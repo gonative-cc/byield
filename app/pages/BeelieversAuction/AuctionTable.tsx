@@ -1,8 +1,8 @@
-import { Card, CardContent } from "../ui/card";
-import { Table } from "../ui/table";
 import { CellProps, Column } from "react-table";
-import { SUIIcon } from "../icons";
-import { trimAddress } from "../Wallet/walletHelper";
+import { SUIIcon } from "~/components/icons";
+import { Card, CardContent } from "~/components/ui/card";
+import { Table } from "~/components/ui/table";
+import { trimAddress } from "~/components/Wallet/walletHelper";
 
 export interface Bid {
 	rank: number;

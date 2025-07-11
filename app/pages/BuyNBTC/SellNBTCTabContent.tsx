@@ -1,15 +1,15 @@
 import { useCallback } from "react";
 import { ArrowDown, ChevronRight } from "lucide-react";
-import { Button } from "../ui/button";
-import { SuiModal } from "../Wallet/SuiWallet/SuiModal";
-import { Modal } from "../ui/dialog";
+import { Button } from "../../components/ui/button";
+import { SuiModal } from "../../components/Wallet/SuiWallet/SuiModal";
+import { Modal } from "../../components/ui/dialog";
 import { TransactionStatus } from "./TransactionStatus";
-import { NBTCIcon, SUIIcon } from "../icons";
+import { NBTCIcon, SUIIcon } from "../../components/icons";
 import { useNBTC } from "./useNBTC";
 import { formatNBTC, NBTC, parseNBTC } from "~/lib/denoms";
 import { PRICE_PER_NBTC_IN_SUI } from "~/lib/nbtc";
 import { FormProvider, useForm } from "react-hook-form";
-import { FormNumericInput } from "../form/FormNumericInput";
+import { FormNumericInput } from "../../components/form/FormNumericInput";
 import { classNames } from "~/util/tailwind";
 
 interface NBTCRightAdornmentProps {

@@ -1,6 +1,6 @@
 import { Check, CircleX } from "lucide-react";
 import { classNames } from "~/util/tailwind";
-import { Button } from "../ui/button";
+import { Button } from "../../components/ui/button";
 import { Link } from "react-router";
 
 interface TransactionStatusProps {
