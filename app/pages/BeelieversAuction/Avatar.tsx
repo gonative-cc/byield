@@ -1,6 +1,5 @@
 import { Button } from "~/components/ui/button";
 
-
 export function Avatar() {
 	return (
 		<div className="flex flex-col gap-2 items-center">
