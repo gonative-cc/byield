@@ -75,10 +75,10 @@ export const columns: Column<DApp>[] = [
 		Cell: () => (
 			<div className="flex space-x-2">
 				{/* TODO: replace hard coded colors when theme design is ready */}
-				<Link to="#" className="bg-azure-15 px-4 py-2 rounded border-[1px] border-[#FAFAFA14]">
+				<Link to="#" className="bg-azure-15 px-4 py-2 rounded border border-[#FAFAFA14]">
 					<span className="text-[#FFFFFFCC]">Deposit</span>
 				</Link>
-				<Link to="#" className="bg-azure-10 px-4 py-2 rounded border-[1px] border-[#FAFAFA14]">
+				<Link to="#" className="bg-azure-10 px-4 py-2 rounded border border-[#FAFAFA14]">
 					<span className="text-[#FFFFFF80]">Withdraw</span>
 				</Link>
 			</div>

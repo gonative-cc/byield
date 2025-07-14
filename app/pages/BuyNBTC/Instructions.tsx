@@ -6,7 +6,7 @@ import { Link } from "react-router";
 export function Instructions() {
 	const account = useCurrentAccount();
 	return (
-		<Card className="p-4 bg-azure-10 rounded-2xl md:bg-[url('/assets/bee/bee-with-question-mark.png')] bg-no-repeat bg-right-bottom bg-[length:min(150px,100%)]">
+		<Card className="p-4 bg-azure-10 rounded-2xl md:bg-[url('/assets/bee/bee-with-question-mark.png')] bg-no-repeat bg-bottom-right bg-size-[min(150px,100%)]">
 			<CardContent className="flex flex-col justify-between p-0">
 				<h2 className="mb-2 font-semibold text-gray-900 dark:text-white">Instructions:</h2>
 				<ul className="space-y-2 text-gray-500 list-disc list-inside dark:text-gray-400">
