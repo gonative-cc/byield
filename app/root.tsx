@@ -57,7 +57,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 			<body className="flex w-full">
 				<SideBarProvider>
 					<Sidebar />
-					<div className="flex flex-col gap-2">
+					<div className="flex flex-col gap-2 w-full">
 						<NativeApp>
 							<NavBar />
 							{children}
