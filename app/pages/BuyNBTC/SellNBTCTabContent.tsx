@@ -135,9 +135,15 @@ export function SellNBTCTabContent() {
 					className="h-16"
 					rightAdornments={<SUIIcon className="mr-2" />}
 				/>
-				<span className="tracking-tighter text-gray-500 text-sm dark:text-gray-400">
-					This is a fixed price sell. The nBTC will be sold at price 12,500.
-				</span>
+				<div className="flex flex-col gap-2">
+					<span className="tracking-tighter text-gray-500 text-sm dark:text-gray-400">
+						This is a fixed price sell. The nBTC will be sold at price 12,500.
+					</span>
+					<span className="tracking-tighter text-gray-500 text-sm dark:text-gray-400">
+						<span className="font-bold">Testnet measure:</span>To reduce testnet bot spam, nBTC to
+						SUI swaps have a 50% reduction.
+					</span>
+				</div>
 				{isSuiWalletConnected ? (
 					<Button type="submit" disabled={isPending} isLoading={isPending}>
 						Sell nBTC
