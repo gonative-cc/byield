@@ -24,9 +24,7 @@ test("parseBTC x formatBTC", () => {
 		new TC("0.00000215", 0, BigInt(215n)),
 	];
 
-	testCases.forEach((tc, i) =>
-		expect(denoms.parseBTC(tc.input), i.toString()).toBe(tc.expected),
-	);
+	testCases.forEach((tc, i) => expect(denoms.parseBTC(tc.input), i.toString()).toBe(tc.expected));
 
 	expect(() => denoms.parseBTC("0.000000001")).toThrowError();
 });

@@ -58,10 +58,7 @@ export async function nBTCMintTxn(
 
 		// Add OP_RETURN output
 		const opReturnData = Buffer.from(opReturnInput, "hex");
-		const opReturnScript = bitcoin.script.compile([
-			bitcoin.opcodes.OP_RETURN,
-			opReturnData,
-		]);
+		const opReturnScript = bitcoin.script.compile([bitcoin.opcodes.OP_RETURN, opReturnData]);
 		psbt.addOutput({
 			script: opReturnScript,
 			value: 0,
