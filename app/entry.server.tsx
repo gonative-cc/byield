@@ -7,7 +7,7 @@
 import type { AppLoadContext, EntryContext } from "react-router";
 import { ServerRouter } from "react-router";
 import { isbot } from "isbot";
-import { renderToReadableStream } from "react-dom/server.browser";
+import { renderToReadableStream } from "react-dom/server.edge";
 
 const ABORT_DELAY = 5000;
 
