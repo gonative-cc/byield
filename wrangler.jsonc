@@ -13,14 +13,10 @@
 	"compatibility_flags": ["nodejs_compat"],
 	"upload_source_maps": true,
 
-	/**
-	 * Static Assets
-	 * https://developers.cloudflare.com/workers/static-assets/binding/
-	 */
-	// "assets": { "directory": "./public/", "binding": "ASSETS" },
-	// TODO fix this - we should use bindngs
+	// Static Assets
+	// https://developers.cloudflare.com/workers/static-assets/binding/
 	"assets": {
-		"directory": "./build/client"
+		"directory": "./public"
 	}
 
 	// "d1_databases": [
