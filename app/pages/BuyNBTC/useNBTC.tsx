@@ -1,5 +1,5 @@
 import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
-import type { SuiClient , CoinBalance, PaginatedCoins } from "@mysten/sui/client";
+import type { SuiClient, CoinBalance, PaginatedCoins } from "@mysten/sui/client";
 import { coinWithBalance, Transaction } from "@mysten/sui/transactions";
 import type { TransactionResult } from "@mysten/sui/transactions";
 import { useCallback, useContext } from "react";
