@@ -1,5 +1,7 @@
-import { Controller, FieldValues, RegisterOptions, useFormContext } from "react-hook-form";
-import { NumericInput, NumericInputProps } from "../ui/NumericInput";
+import { Controller, useFormContext } from "react-hook-form";
+import type { FieldValues, RegisterOptions } from "react-hook-form";
+import { NumericInput } from "../ui/NumericInput";
+import type { NumericInputProps } from "../ui/NumericInput";
 import { classNames } from "~/util/tailwind";
 
 interface FormInputProps extends NumericInputProps {

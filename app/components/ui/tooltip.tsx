@@ -4,9 +4,7 @@ import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import { cn } from "~/util/tailwind";
 
 const TooltipProvider = TooltipPrimitive.Provider;
-
 const Tooltip = TooltipPrimitive.Root;
-
 const TooltipTrigger = TooltipPrimitive.Trigger;
 
 const TooltipContent = React.forwardRef<

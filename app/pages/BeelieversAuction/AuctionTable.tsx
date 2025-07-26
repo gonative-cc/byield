@@ -1,4 +1,4 @@
-import { CellProps, Column } from "react-table";
+import type { CellProps, Column } from "react-table";
 import { SUIIcon } from "~/components/icons";
 import { Card, CardContent } from "~/components/ui/card";
 import { Table } from "~/components/ui/table";

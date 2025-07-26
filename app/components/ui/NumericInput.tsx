@@ -1,6 +1,7 @@
 import * as React from "react";
 import { cn } from "~/util/tailwind";
-import { NumericFormat, NumericFormatProps } from "react-number-format";
+import { NumericFormat } from "react-number-format";
+import type { NumericFormatProps } from "react-number-format";
 
 export interface NumericInputProps extends NumericFormatProps {
 	leftAdornments?: React.ReactNode;

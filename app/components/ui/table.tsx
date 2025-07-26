@@ -1,4 +1,5 @@
-import { useTable, Column, HeaderGroup, Row } from "react-table";
+import { useTable } from "react-table";
+import type { Column, HeaderGroup, Row } from "react-table";
 import { twMerge } from "tailwind-merge";
 
 const TableHead = <T extends object>({ headerGroups }: { headerGroups: HeaderGroup<T>[] }) => (

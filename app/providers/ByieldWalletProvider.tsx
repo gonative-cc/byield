@@ -1,5 +1,6 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { ReactNode, createContext, useEffect, useRef, useState } from "react";
+import { createContext, useEffect, useRef, useState } from "react";
+import type { ReactNode } from "react";
 import { useXverseAddress } from "~/components/Wallet/XverseWallet/useXverseAddress";
 import { Wallets } from "~/components/Wallet";
 

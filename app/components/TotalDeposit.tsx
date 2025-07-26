@@ -2,7 +2,7 @@ import { Info, Zap } from "lucide-react";
 import { Card, CardContent } from "./ui/card";
 import { TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { Table } from "./ui/table";
-import { Column, CellProps } from "react-table";
+import type { Column, CellProps } from "react-table";
 import { Badge } from "./ui/badge";
 import { Link } from "react-router";
 import { SelectInput } from "./ui/select";

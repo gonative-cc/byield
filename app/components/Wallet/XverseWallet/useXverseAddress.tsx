@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
-import Wallet, { Address, getAddressesMethodName, AddressPurpose } from "sats-connect";
+import Wallet, { getAddressesMethodName, AddressPurpose } from "sats-connect";
+import type { Address } from "sats-connect";
 
 export const useXverseAddress = () => {
 	const [currentAddress, setCurrentAddress] = useState<Address | null>(null);

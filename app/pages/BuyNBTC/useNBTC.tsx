@@ -1,8 +1,10 @@
 import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
-import { CoinBalance, PaginatedCoins, SuiClient } from "@mysten/sui/client";
-import { coinWithBalance, Transaction, TransactionResult } from "@mysten/sui/transactions";
+import type { SuiClient , CoinBalance, PaginatedCoins } from "@mysten/sui/client";
+import { coinWithBalance, Transaction } from "@mysten/sui/transactions";
+import type { TransactionResult } from "@mysten/sui/transactions";
 import { useCallback, useContext } from "react";
-import { toast, ToastFunction } from "~/hooks/use-toast";
+import { toast } from "~/hooks/use-toast";
+import type { ToastFunction } from "~/hooks/use-toast";
 import { formatSUI } from "~/lib/denoms";
 import { GA_EVENT_NAME, GA_CATEGORY, useGoogleAnalytics } from "~/lib/googleAnalytics";
 import { useNetworkVariables } from "~/networkConfig";

@@ -1,6 +1,5 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import Wallet, {
-	Address,
 	AddressPurpose,
 	BitcoinNetworkType,
 	changeNetworkMethodName,
@@ -10,6 +9,7 @@ import Wallet, {
 	getBalanceMethodName,
 	getNetworkMethodName,
 } from "sats-connect";
+import type { Address } from "sats-connect";
 import { useToast } from "~/hooks/use-toast";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";

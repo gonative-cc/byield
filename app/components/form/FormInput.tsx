@@ -1,5 +1,7 @@
-import { Controller, FieldValues, RegisterOptions, useFormContext } from "react-hook-form";
-import { Input, InputProps } from "../ui/input";
+import { Controller, useFormContext } from "react-hook-form";
+import type { FieldValues, RegisterOptions } from "react-hook-form";
+import { Input } from "../ui/input";
+import type { InputProps } from "../ui/input";
 
 interface FormInputProps extends InputProps {
 	name: string;
