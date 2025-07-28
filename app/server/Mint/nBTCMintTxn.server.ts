@@ -1,20 +1,17 @@
-import * as bitcoin from "bitcoinjs-lib";
+import type { Network } from "bitcoinjs-lib";
+import { opcodes, Psbt, script } from "bitcoinjs-lib";
 import Wallet from "sats-connect";
 import type { Address } from "sats-connect";
 import { fetchUTXOs, fetchValidateAddress } from "~/api/btcrpc";
 import type { UTXO, ValidateAddressI } from "~/api/btcrpc";
+import { nBTC_ADDR } from "~/constants/constant";
 import type { ToastFunction } from "~/hooks/use-toast";
-
-export const PRICE_PER_NBTC_IN_SUI = 25000n;
-export const nBTC_ADDR = "tb1qe60n447jylrxa96y6pfgy8pq6x9zafu09ky7cq";
-export const NBTC_COIN_TYPE =
-	"0x5419f6e223f18a9141e91a42286f2783eee27bf2667422c2100afc7b2296731b::nbtc::NBTC";
 
 export async function nBTCMintTxn(
 	bitcoinAddress: Address,
 	sendAmount: number,
 	opReturnInput: string,
-	network: bitcoin.Network,
+	network: Network,
 	toast?: ToastFunction,
 ) {
 	try {
@@ -40,7 +37,7 @@ export async function nBTCMintTxn(
 				variant: "destructive",
 			});
 		}
-		const psbt = new bitcoin.Psbt({ network });
+		const psbt = new Psbt({ network });
 
 		psbt.addInput({
 			hash: utxos?.[0]?.txid,
@@ -59,7 +56,7 @@ export async function nBTCMintTxn(
 
 		// Add OP_RETURN output
 		const opReturnData = Buffer.from(opReturnInput, "hex");
-		const opReturnScript = bitcoin.script.compile([bitcoin.opcodes.OP_RETURN, opReturnData]);
+		const opReturnScript = script.compile([opcodes.OP_RETURN, opReturnData]);
 		psbt.addOutput({
 			script: opReturnScript,
 			value: 0,

@@ -3,7 +3,6 @@ import { cloudflare } from "@cloudflare/vite-plugin";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
-import { nodePolyfills } from "vite-plugin-node-polyfills";
 
 export default defineConfig({
 	plugins: [
@@ -11,13 +10,6 @@ export default defineConfig({
 		tailwindcss(),
 		reactRouter(),
 		tsconfigPaths(),
-		nodePolyfills({
-			globals: {
-				Buffer: true,
-				global: true,
-				process: true,
-			},
-		}),
 	],
 	build: {
 		minify: true,
