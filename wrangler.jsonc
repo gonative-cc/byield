@@ -8,7 +8,7 @@
 	"compatibility_date": "2025-07-25",
 	"main": "./workers/app.ts",
 	"observability": {
-		"enabled": true
+		"enabled": true,
 	},
 	"compatibility_flags": ["nodejs_compat"],
 	"upload_source_maps": true,
@@ -16,8 +16,8 @@
 	// Static Assets
 	// https://developers.cloudflare.com/workers/static-assets/binding/
 	"assets": {
-		"directory": "./public"
-	}
+		"directory": "./public",
+	},
 
 	// "d1_databases": [
 	// 	{
