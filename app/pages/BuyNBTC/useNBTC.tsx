@@ -12,7 +12,7 @@ import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { useNBTCBalance } from "~/components/Wallet/SuiWallet/useNBTCBalance";
 import { useSuiBalance } from "~/components/Wallet/SuiWallet/useSuiBalance";
 import { Wallets } from "~/components/Wallet";
-import { NBTC_COIN_TYPE } from "~/constants/constant";
+import { NBTC_COIN_TYPE } from "~/lib/nbtc";
 
 type Targets = {
 	packageId: string;

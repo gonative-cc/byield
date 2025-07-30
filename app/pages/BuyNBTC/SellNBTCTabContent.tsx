@@ -7,10 +7,10 @@ import { TransactionStatus } from "./TransactionStatus";
 import { NBTCIcon, SUIIcon } from "~/components/icons";
 import { useNBTC } from "./useNBTC";
 import { formatNBTC, NBTC, parseNBTC } from "~/lib/denoms";
-import { PRICE_PER_NBTC_IN_SUI } from "~/constants/constant";
 import { FormProvider, useForm } from "react-hook-form";
 import { FormNumericInput } from "~/components/form/FormNumericInput";
 import { classNames } from "~/util/tailwind";
+import { PRICE_PER_NBTC_IN_SUI } from "~/lib/nbtc";
 
 interface NBTCRightAdornmentProps {
 	maxNBTCAmount: bigint;

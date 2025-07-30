@@ -4,7 +4,7 @@ import Wallet from "sats-connect";
 import type { Address } from "sats-connect";
 import { fetchUTXOs, fetchValidateAddress } from "~/api/btcrpc";
 import type { UTXO, ValidateAddressI } from "~/api/btcrpc";
-import { nBTC_ADDR } from "~/constants/constant";
+import { nBTC_ADDR } from "~/lib/constant";
 import type { ToastFunction } from "~/hooks/use-toast";
 
 export async function nBTCMintTxn(
