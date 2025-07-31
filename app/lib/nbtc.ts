@@ -1,6 +1,6 @@
 import { networks, opcodes, Psbt, script, type Network } from "bitcoinjs-lib";
 import Wallet from "sats-connect";
-import type { Address } from "sats-connect";
+import type { Address, RpcResult } from "sats-connect";
 import { fetchUTXOs, fetchValidateAddress } from "~/api/btcrpc";
 import type { UTXO, ValidateAddressI } from "~/api/btcrpc";
 import type { ToastFunction } from "~/hooks/use-toast";
@@ -18,7 +18,7 @@ export async function nBTCMintTxn(
 	opReturnInput: string,
 	network: Network,
 	toast?: ToastFunction,
-) {
+): Promise<RpcResult<"signPsbt"> | undefined> {
 	try {
 		const depositAddress = networks.bitcoin
 			? mintMainNetConfig.mint.depositAddress
@@ -56,8 +56,6 @@ export async function nBTCMintTxn(
 		const totalAvailable = utxos[0].value;
 		const totalRequired = sendAmountInSatoshi + estimatedFee;
 
-		console.log("mum", totalAvailable, totalRequired);
-
 		if (totalAvailable < totalRequired) {
 			console.error("Insufficient funds for transaction and fee.");
 			toast?.({
@@ -82,7 +80,6 @@ export async function nBTCMintTxn(
 
 		// Add output to nBTC address
 		psbt.addOutput({
-			// TODO: replace hardcoded P2WPKH address for nBTC deposits
 			address: depositAddress,
 			value: sendAmountInSatoshi,
 		});
@@ -138,7 +135,6 @@ export async function nBTCMintTxn(
 				description: "Bitcoin transaction has been broadcast successfully.",
 				variant: "default",
 			});
-			console.log("Transaction successful:", response);
 		} else {
 			toast?.({
 				title: "Transaction Failed",
@@ -147,6 +143,7 @@ export async function nBTCMintTxn(
 			});
 			console.error("Transaction failed:", response);
 		}
+		return response;
 	} catch (error) {
 		console.error("nBTC Mint Transaction Error:", error);
 		toast?.({
