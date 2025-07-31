@@ -4,8 +4,8 @@ import { Link } from "react-router";
 import { Button } from "./ui/button";
 import { FormProvider, useForm } from "react-hook-form";
 import { FormInput } from "./form/FormInput";
-import { useXverseWallet } from "./Wallet/XverseWallet/useWallet";
-import { useContext } from "react";
+import { useXverseConnect, useXverseWallet } from "./Wallet/XverseWallet/useWallet";
+import { useContext, useState } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
 import { FormNumericInput } from "./form/FormNumericInput";
@@ -14,6 +14,13 @@ import { BTC, formatBTC, parseBTC } from "~/lib/denoms";
 import { nBTCMintTxn } from "~/lib/nbtc";
 import { networks, type Network } from "bitcoinjs-lib";
 import { useToast } from "~/hooks/use-toast";
+
+function remove0xPrefix(hexString: string) {
+	if (hexString.toLowerCase().startsWith("0x")) {
+		return hexString.substring(2);
+	}
+	return hexString;
+}
 
 const nBTCMintFeeInSatoshi = 10n;
 
@@ -82,10 +89,12 @@ interface MintNBTCForm {
 }
 
 export function MintBTC() {
+	const { toast } = useToast();
+	const [txId, setTxId] = useState<string | undefined>(undefined);
+	const { connectWallet } = useXverseConnect();
 	const { balance: walletBalance, currentAddress } = useXverseWallet();
 	const { isWalletConnected } = useContext(WalletContext);
 	const isBitCoinWalletConnected = isWalletConnected(Wallets.Xverse);
-	const { toast } = useToast();
 	const balance = parseBTC(walletBalance ?? "0");
 	const mintNBTCForm = useForm<MintNBTCForm>({
 		mode: "all",
@@ -106,15 +115,20 @@ export function MintBTC() {
 			<form
 				onSubmit={handleSubmit(async ({ numberOfBTC, suiAddress }) => {
 					// TODO: Support for mainnet
-					if (currentAddress)
-						await nBTCMintTxn(
+					if (currentAddress) {
+						const response = await nBTCMintTxn(
 							currentAddress,
 							Number(parseBTC(numberOfBTC)),
-							suiAddress,
+							remove0xPrefix(suiAddress),
 							networks.testnet,
 							toast,
 						);
+						if (response && response.status === "success") {
+							setTxId(response.result.txid);
+						}
+					}
 				})}
+				className="w-full md:w-2/5"
 			>
 				<Card>
 					<CardContent className="p-6 rounded-lg text-white flex flex-col bg-azure-10">
@@ -134,8 +148,14 @@ export function MintBTC() {
 								validate: {
 									isWalletConnected: () =>
 										isBitCoinWalletConnected || "Please connect Bitcoin wallet",
-									balance: (value: string) =>
-										parseBTC(value) <= balance || "Not enough balance available",
+									enoughBalance: (value: string) => {
+										if (walletBalance) {
+											if (parseBTC(value) <= BigInt(walletBalance)) {
+												return true;
+											}
+											return "Not enough balance";
+										}
+									},
 								},
 							}}
 						/>
@@ -158,17 +178,24 @@ export function MintBTC() {
 						{/* {youReceive && (
 							<Fee feeInSatoshi={nBTCMintFeeInSatoshi} youReceive={formatBTC(youReceive)} />
 						)} */}
-						<Button type="submit">Deposit BTC and mint nBTC</Button>
-						<div className="flex justify-between mt-2">
-							<span>TX ID: b99d9a361ac9db3...</span>
-							<Link
-								target="_blank"
-								to={"https://v3.tailwindcss.com/docs/font-weight"}
-								rel="noreferrer"
-							>
-								Track confirmation in explorer
-							</Link>
-						</div>
+						{isBitCoinWalletConnected ? (
+							<Button type="submit">Deposit BTC and mint nBTC</Button>
+						) : (
+							<Button type="button" onClick={connectWallet}>
+								Connect Bitcoin Wallet
+							</Button>
+						)}
+						{txId && (
+							<div className="flex justify-between mt-2">
+								<Link
+									target="_blank"
+									to={`https://mempool.space/testnet4/tx/${txId}`}
+									rel="noreferrer"
+								>
+									Track confirmation in explorer
+								</Link>
+							</div>
+						)}
 					</CardContent>
 				</Card>
 			</form>
