@@ -1,41 +1,28 @@
 import type { Network } from "bitcoinjs-lib";
 import { opcodes, Psbt, script } from "bitcoinjs-lib";
-import Wallet from "sats-connect";
 import type { Address } from "sats-connect";
 import { fetchUTXOs, fetchValidateAddress } from "~/api/btcrpc";
 import type { UTXO, ValidateAddressI } from "~/api/btcrpc";
-import { nBTC_ADDR } from "~/lib/constant";
-import type { ToastFunction } from "~/hooks/use-toast";
+import { nBTC_ADDR } from "~/lib/nbtc";
 
 export async function nBTCMintTxn(
 	bitcoinAddress: Address,
 	sendAmount: number,
 	opReturnInput: string,
-	network: Network,
-	toast?: ToastFunction,
+	network: Network
 ) {
 	try {
 		// fetch utxos
 		const utxos: UTXO[] = await fetchUTXOs(bitcoinAddress.address);
 		if (!utxos?.length) {
 			console.error("utxos not found.");
-			toast?.({
-				title: "UTXO",
-				description: "utxos not found.",
-				variant: "destructive",
-			});
 		}
 		// validate address
 		const validateAddress: ValidateAddressI = await fetchValidateAddress(
-			bitcoinAddress.address,
+			bitcoinAddress.address
 		);
 		if (!validateAddress) {
 			console.error("Not able to find validate the address.");
-			toast?.({
-				title: "Address",
-				description: "Not able to find validate the address.",
-				variant: "destructive",
-			});
 		}
 		const psbt = new Psbt({ network });
 
@@ -65,11 +52,6 @@ export async function nBTCMintTxn(
 		const changeAmount = utxos?.[0]?.value - sendAmount - fee;
 		if (changeAmount <= 0) {
 			console.error("Insufficient funds for transaction and fee.");
-			toast?.({
-				title: "Balance",
-				description: "Insufficient funds for transaction and fee.",
-				variant: "destructive",
-			});
 		}
 		psbt.addOutput({
 			address: bitcoinAddress.address,
@@ -77,13 +59,7 @@ export async function nBTCMintTxn(
 		});
 
 		const txHex = psbt.toBase64();
-		await Wallet.request("signPsbt", {
-			psbt: txHex,
-			signInputs: {
-				[bitcoinAddress.address]: [0],
-			},
-			broadcast: true,
-		});
+		return txHex;
 	} catch (error) {
 		console.error(error);
 	}
