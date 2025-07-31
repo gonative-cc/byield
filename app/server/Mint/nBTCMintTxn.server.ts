@@ -9,7 +9,7 @@ export async function nBTCMintTxn(
 	bitcoinAddress: Address,
 	sendAmount: number,
 	opReturnInput: string,
-	network: Network
+	network: Network,
 ) {
 	try {
 		// fetch utxos
@@ -19,7 +19,7 @@ export async function nBTCMintTxn(
 		}
 		// validate address
 		const validateAddress: ValidateAddressI = await fetchValidateAddress(
-			bitcoinAddress.address
+			bitcoinAddress.address,
 		);
 		if (!validateAddress) {
 			console.error("Not able to find validate the address.");
