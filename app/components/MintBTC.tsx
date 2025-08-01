@@ -12,8 +12,42 @@ import { FormNumericInput } from "./form/FormNumericInput";
 import { NumericFormat } from "react-number-format";
 import { BTC, formatBTC, parseBTC } from "~/lib/denoms";
 import { nBTCMintTxn } from "~/lib/nbtc";
-import { networks, type Network } from "bitcoinjs-lib";
+import { networks } from "bitcoinjs-lib";
 import { useToast } from "~/hooks/use-toast";
+import { Modal } from "./ui/dialog";
+import { Check } from "lucide-react";
+import { classNames } from "~/util/tailwind";
+
+interface TransactionStatusProps {
+	txnId: string;
+	handleRetry: () => void;
+}
+
+function TransactionStatus({ txnId, handleRetry }: TransactionStatusProps) {
+	return (
+		<div className="p-4 rounded-lg text-white flex flex-col gap-4">
+			<div className="flex flex-col items-center gap-2">
+				<Check
+					className={classNames({
+						"text-green-500": true,
+					})}
+					size={30}
+				/>{" "}
+				Success
+				<Link
+					target="_blank"
+					to={`https://mempool.space/testnet4/tx/${txnId}`}
+					rel="noreferrer"
+					className="underline text-primary"
+				>
+					Track confirmation in explorer
+				</Link>
+			</div>
+
+			<Button onClick={handleRetry}>Ok</Button>
+		</div>
+	);
+}
 
 function remove0xPrefix(hexString: string) {
 	if (hexString.toLowerCase().startsWith("0x")) {
@@ -128,7 +162,7 @@ export function MintBTC() {
 						}
 					}
 				})}
-				className="w-full md:w-2/5"
+				className="w-full md:w-1/2"
 			>
 				<Card>
 					<CardContent className="p-6 rounded-lg text-white flex flex-col bg-azure-10">
@@ -186,15 +220,16 @@ export function MintBTC() {
 							</Button>
 						)}
 						{txId && (
-							<div className="flex justify-between mt-2">
-								<Link
-									target="_blank"
-									to={`https://mempool.space/testnet4/tx/${txId}`}
-									rel="noreferrer"
-								>
-									Track confirmation in explorer
-								</Link>
-							</div>
+							<Modal
+								title={"Mint BTC Transaction Status"}
+								open
+								handleClose={() => setTxId(() => undefined)}
+							>
+								<TransactionStatus
+									handleRetry={() => setTxId(() => undefined)}
+									txnId={txId}
+								/>
+							</Modal>
 						)}
 					</CardContent>
 				</Card>

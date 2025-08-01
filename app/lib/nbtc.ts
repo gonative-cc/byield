@@ -17,7 +17,7 @@ export async function nBTCMintTxn(
 	sendAmountInSatoshi: number,
 	opReturnInput: string,
 	network: Network,
-	toast?: ToastFunction,
+	toast?: ToastFunction
 ): Promise<RpcResult<"signPsbt"> | undefined> {
 	try {
 		const depositAddress = networks.bitcoin
@@ -37,7 +37,7 @@ export async function nBTCMintTxn(
 
 		// validate address
 		const validateAddress: ValidateAddressI = await fetchValidateAddress(
-			bitcoinAddress.address,
+			bitcoinAddress.address
 		);
 		if (!validateAddress) {
 			console.error("Not able to validate the address.");
@@ -129,13 +129,7 @@ export async function nBTCMintTxn(
 			broadcast: true,
 		});
 
-		if (response.status === "success") {
-			toast?.({
-				title: "Transaction Sent",
-				description: "Bitcoin transaction has been broadcast successfully.",
-				variant: "default",
-			});
-		} else {
+		if (response.status !== "success") {
 			toast?.({
 				title: "Transaction Failed",
 				description: "Failed to broadcast the transaction.",
