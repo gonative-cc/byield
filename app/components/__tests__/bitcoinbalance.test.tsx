@@ -15,6 +15,6 @@ describe("Bitcoin balance tests:", () => {
 		render(<RemixStub />);
 
 		expect(await screen.findByText("Available Balance")).toBeInTheDocument();
-		expect(await screen.findByText("20 BTC")).toBeInTheDocument();
+		expect(await screen.findByText("0.0000002 BTC")).toBeInTheDocument();
 	});
 });
