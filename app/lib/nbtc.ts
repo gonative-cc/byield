@@ -23,7 +23,6 @@ export async function nBTCMintTxn(
 		const depositAddress = networks.bitcoin
 			? mintMainNetConfig.mint.depositAddress
 			: mintTestNetConfig.mint.depositAddress;
-		// fetch utxos
 		const utxos: UTXO[] = await fetchUTXOs(bitcoinAddress.address);
 		if (!utxos?.length) {
 			console.error("utxos not found.");
@@ -32,10 +31,9 @@ export async function nBTCMintTxn(
 				description: "UTXOs not found for this address.",
 				variant: "destructive",
 			});
-			return; // Early return to prevent further execution
+			return;
 		}
 
-		// validate address
 		const validateAddress: ValidateAddressI = await fetchValidateAddress(
 			bitcoinAddress.address,
 		);
@@ -46,11 +44,10 @@ export async function nBTCMintTxn(
 				description: "Unable to validate the Bitcoin address.",
 				variant: "destructive",
 			});
-			return; // Early return to prevent further execution
+			return;
 		}
 
-		// Estimate transaction fee (typical fee for a 2-input, 3-output transaction)
-		const estimatedFee = 1000; // 1000 satoshis as a reasonable fee
+		const estimatedFee = 1000;
 
 		// Check if we have sufficient funds
 		const totalAvailable = utxos[0].value;
@@ -63,12 +60,11 @@ export async function nBTCMintTxn(
 				description: `Need ${totalRequired} satoshis but only have ${totalAvailable} available.`,
 				variant: "destructive",
 			});
-			return; // Early return to prevent further execution
+			return;
 		}
 
 		const psbt = new Psbt({ network });
 
-		// Add input
 		psbt.addInput({
 			hash: utxos[0].txid,
 			index: utxos[0].vout,
@@ -78,19 +74,14 @@ export async function nBTCMintTxn(
 			},
 		});
 
-		// Add output to nBTC address
 		psbt.addOutput({
 			address: depositAddress,
 			value: sendAmountInSatoshi,
 		});
 
-		// Add OP_RETURN output (validate opReturnInput is valid hex or convert from string)
 		let opReturnData: Buffer;
 		try {
-			// Try to parse as hex first, if it fails, treat as UTF-8 string
-			opReturnData = opReturnInput.match(/^[0-9a-fA-F]+$/)
-				? Buffer.from(opReturnInput, "hex")
-				: Buffer.from(opReturnInput, "utf8");
+			opReturnData = Buffer.from(opReturnInput, "hex");
 		} catch (error) {
 			console.error("Invalid OP_RETURN data:", error);
 			toast?.({
@@ -107,7 +98,6 @@ export async function nBTCMintTxn(
 			value: 0,
 		});
 
-		// Calculate change amount
 		const changeAmount = totalAvailable - sendAmountInSatoshi - estimatedFee;
 
 		// Only add change output if change amount is significant (> dust threshold)
