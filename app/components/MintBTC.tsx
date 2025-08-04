@@ -17,13 +17,16 @@ import { useToast } from "~/hooks/use-toast";
 import { Modal } from "./ui/dialog";
 import { Check } from "lucide-react";
 import { classNames } from "~/util/tailwind";
+import { isValidSuiAddress } from "@mysten/sui/utils";
+import { isMainNetNetwork } from "~/lib/appenv";
 
 interface TransactionStatusProps {
+	SUIAddress: string;
 	txnId: string;
 	handleRetry: () => void;
 }
 
-function TransactionStatus({ txnId, handleRetry }: TransactionStatusProps) {
+function TransactionStatus({ SUIAddress, txnId, handleRetry }: TransactionStatusProps) {
 	return (
 		<div className="p-4 rounded-lg text-white flex flex-col gap-4">
 			<div className="flex flex-col items-center gap-2">
@@ -40,7 +43,15 @@ function TransactionStatus({ txnId, handleRetry }: TransactionStatusProps) {
 					rel="noreferrer"
 					className="underline text-primary"
 				>
-					Track confirmation in explorer
+					Track bitcoin transaction confirmation in explorer
+				</Link>
+				<Link
+					target="_blank"
+					to={`https://suiscan.xyz/testnet/account/${SUIAddress}`}
+					rel="noreferrer"
+					className="underline text-primary"
+				>
+					Explore SUI coins
 				</Link>
 			</div>
 
@@ -142,19 +153,20 @@ export function MintBTC() {
 	const { handleSubmit, watch, setValue } = mintNBTCForm;
 
 	const numberOfBTC = watch("numberOfBTC");
+	const SUIAddress = watch("suiAddress");
 	// const youReceive = parseBTC(numberOfBTC || "0") - nBTCMintFeeInSatoshi;
 
 	return (
 		<FormProvider {...mintNBTCForm}>
 			<form
 				onSubmit={handleSubmit(async ({ numberOfBTC, suiAddress }) => {
-					// TODO: Support for mainnet
+					const isMainNetMode = isMainNetNetwork();
 					if (currentAddress) {
 						const response = await nBTCMintTxn(
 							currentAddress,
 							Number(parseBTC(numberOfBTC)),
 							remove0xPrefix(suiAddress),
-							networks.testnet,
+							isMainNetMode ? networks.bitcoin : networks.testnet,
 							toast,
 						);
 						if (response && response.status === "success") {
@@ -207,6 +219,16 @@ export function MintBTC() {
 							placeholder="Enter destination Sui Address..."
 							className="h-16"
 							createEmptySpace
+							rules={{
+								validate: {
+									validateSUIAddress: (value: string) => {
+										if (isValidSuiAddress(value)) {
+											return true;
+										}
+										return "Enter valid SUI address";
+									},
+								},
+							}}
 						/>
 						{/* TODO: Add fee support in minting BTC */}
 						{/* {youReceive && (
@@ -228,6 +250,7 @@ export function MintBTC() {
 								<TransactionStatus
 									handleRetry={() => setTxId(() => undefined)}
 									txnId={txId}
+									SUIAddress={SUIAddress}
 								/>
 							</Modal>
 						)}
