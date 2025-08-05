@@ -12,7 +12,6 @@ import { FormNumericInput } from "./form/FormNumericInput";
 import { NumericFormat } from "react-number-format";
 import { BTC, formatBTC, parseBTC } from "~/lib/denoms";
 import { nBTCMintTxn } from "~/lib/nbtc";
-import { networks } from "bitcoinjs-lib";
 import { useToast } from "~/hooks/use-toast";
 import { Modal } from "./ui/dialog";
 import { Check } from "lucide-react";
