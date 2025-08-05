@@ -5,7 +5,7 @@ import { Button } from "./ui/button";
 import { FormProvider, useForm } from "react-hook-form";
 import { FormInput } from "./form/FormInput";
 import { useXverseConnect, useXverseWallet } from "./Wallet/XverseWallet/useWallet";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
 import { FormNumericInput } from "./form/FormNumericInput";
@@ -143,19 +143,22 @@ export function MintBTC() {
 	const [txId, setTxId] = useState<string | undefined>(undefined);
 	const { connectWallet } = useXverseConnect();
 	const { balance: walletBalance, currentAddress } = useXverseWallet();
-	const { isWalletConnected } = useContext(WalletContext);
+	const { isWalletConnected, suiAddr } = useContext(WalletContext);
 	const isBitCoinWalletConnected = isWalletConnected(Wallets.Xverse);
+
 	const mintNBTCForm = useForm<MintNBTCForm>({
 		mode: "all",
 		reValidateMode: "onChange",
 		defaultValues: {
 			numberOfBTC: "",
-			suiAddress: "",
+			suiAddress: suiAddr || "",
 		},
 	});
 
 	const { handleSubmit, watch, setValue } = mintNBTCForm;
 	const SuiAddress = watch("suiAddress");
+
+	useEffect(() => setValue("suiAddress", suiAddr || ""), [setValue, suiAddr]);
 
 	return (
 		<FormProvider {...mintNBTCForm}>
