@@ -6,6 +6,7 @@ import type { UTXO, ValidateAddressI } from "~/api/btcrpc";
 import type { ToastFunction } from "~/hooks/use-toast";
 import mintTestNetConfig from "~/config/mint/contracts-testnet.json";
 import mintMainNetConfig from "~/config/mint/contracts-mainnet.json";
+import { isMainNetNetwork } from "./appenv";
 
 export const PRICE_PER_NBTC_IN_SUI = 25000n;
 export const NBTC_COIN_TYPE =
@@ -16,13 +17,15 @@ export async function nBTCMintTxn(
 	bitcoinAddress: Address,
 	sendAmountInSatoshi: number,
 	opReturnInput: string,
-	network: Network,
 	toast?: ToastFunction,
 ): Promise<RpcResult<"signPsbt"> | undefined> {
 	try {
-		const depositAddress = networks.bitcoin
+		const isMainNetMode = isMainNetNetwork();
+		const network: Network = isMainNetMode ? networks.bitcoin : networks.testnet;
+		const depositAddress = isMainNetMode
 			? mintMainNetConfig.mint.depositAddress
 			: mintTestNetConfig.mint.depositAddress;
+
 		const utxos: UTXO[] = await fetchUTXOs(bitcoinAddress.address);
 		if (!utxos?.length) {
 			console.error("utxos not found.");

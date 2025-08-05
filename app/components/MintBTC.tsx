@@ -27,6 +27,14 @@ interface TransactionStatusProps {
 }
 
 function TransactionStatus({ SUIAddress, txnId, handleRetry }: TransactionStatusProps) {
+	const isMainNetMode = isMainNetNetwork();
+	const bitcoinBroadcastLink = isMainNetMode
+		? `https://mempool.space/tx/${txnId}`
+		: `https://mempool.space/testnet4/tx/${txnId}`;
+	const suiScanExplorerLink = isMainNetMode
+		? `https://suiscan.xyz/mainnet/account/${SUIAddress}`
+		: `https://suiscan.xyz/testnet/account/${SUIAddress}`;
+
 	return (
 		<div className="p-4 rounded-lg text-white flex flex-col gap-4">
 			<div className="flex flex-col items-center gap-2">
@@ -39,7 +47,7 @@ function TransactionStatus({ SUIAddress, txnId, handleRetry }: TransactionStatus
 				Success
 				<Link
 					target="_blank"
-					to={`https://mempool.space/testnet4/tx/${txnId}`}
+					to={bitcoinBroadcastLink}
 					rel="noreferrer"
 					className="underline text-primary"
 				>
@@ -47,7 +55,7 @@ function TransactionStatus({ SUIAddress, txnId, handleRetry }: TransactionStatus
 				</Link>
 				<Link
 					target="_blank"
-					to={`https://suiscan.xyz/testnet/account/${SUIAddress}`}
+					to={suiScanExplorerLink}
 					rel="noreferrer"
 					className="underline text-primary"
 				>
@@ -60,14 +68,12 @@ function TransactionStatus({ SUIAddress, txnId, handleRetry }: TransactionStatus
 	);
 }
 
-function remove0xPrefix(hexString: string) {
-	if (hexString.toLowerCase().startsWith("0x")) {
-		return hexString.substring(2);
+function formatSuiAddress(SuiAddress: string) {
+	if (SuiAddress.toLowerCase().startsWith("0x")) {
+		return SuiAddress.substring(2);
 	}
-	return hexString;
+	return SuiAddress;
 }
-
-const nBTCMintFeeInSatoshi = 10n;
 
 const PERCENTAGES = [
 	{
@@ -140,7 +146,6 @@ export function MintBTC() {
 	const { balance: walletBalance, currentAddress } = useXverseWallet();
 	const { isWalletConnected } = useContext(WalletContext);
 	const isBitCoinWalletConnected = isWalletConnected(Wallets.Xverse);
-	const balance = parseBTC(walletBalance ?? "0");
 	const mintNBTCForm = useForm<MintNBTCForm>({
 		mode: "all",
 		reValidateMode: "onChange",
@@ -151,22 +156,17 @@ export function MintBTC() {
 	});
 
 	const { handleSubmit, watch, setValue } = mintNBTCForm;
-
-	const numberOfBTC = watch("numberOfBTC");
-	const SUIAddress = watch("suiAddress");
-	// const youReceive = parseBTC(numberOfBTC || "0") - nBTCMintFeeInSatoshi;
+	const SuiAddress = watch("suiAddress");
 
 	return (
 		<FormProvider {...mintNBTCForm}>
 			<form
 				onSubmit={handleSubmit(async ({ numberOfBTC, suiAddress }) => {
-					const isMainNetMode = isMainNetNetwork();
 					if (currentAddress) {
 						const response = await nBTCMintTxn(
 							currentAddress,
 							Number(parseBTC(numberOfBTC)),
-							remove0xPrefix(suiAddress),
-							isMainNetMode ? networks.bitcoin : networks.testnet,
+							formatSuiAddress(suiAddress),
 							toast,
 						);
 						if (response && response.status === "success") {
@@ -225,15 +225,11 @@ export function MintBTC() {
 										if (isValidSuiAddress(value)) {
 											return true;
 										}
-										return "Enter valid SUI address";
+										return "Enter valid Sui address";
 									},
 								},
 							}}
 						/>
-						{/* TODO: Add fee support in minting BTC */}
-						{/* {youReceive && (
-							<Fee feeInSatoshi={nBTCMintFeeInSatoshi} youReceive={formatBTC(youReceive)} />
-						)} */}
 						{isBitCoinWalletConnected ? (
 							<Button type="submit">Deposit BTC and mint nBTC</Button>
 						) : (
@@ -250,7 +246,7 @@ export function MintBTC() {
 								<TransactionStatus
 									handleRetry={() => setTxId(() => undefined)}
 									txnId={txId}
-									SUIAddress={SUIAddress}
+									SUIAddress={SuiAddress}
 								/>
 							</Modal>
 						)}
