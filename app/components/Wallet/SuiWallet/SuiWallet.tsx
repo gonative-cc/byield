@@ -9,6 +9,7 @@ import { SelectInput, type Option } from "../../ui/select";
 import { Button } from "../../ui/button";
 import { useCallback, useContext, useMemo } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
+import { Wallets } from "~/components/Wallet";
 import { trimAddress } from "../walletHelper";
 import { useSuiBalance } from "./useSuiBalance";
 import { NumericFormat } from "react-number-format";
@@ -111,7 +112,7 @@ function SuiWalletMobileView() {
 						<Button
 							onClick={() => {
 								disconnect();
-								handleWalletConnect(null);
+								handleWalletConnect(Wallets.SuiWallet, false);
 							}}
 						>
 							Disconnect
@@ -145,7 +146,7 @@ export function SuiWallet() {
 				<Button
 					onClick={() => {
 						disconnect();
-						handleWalletConnect(null);
+						handleWalletConnect(Wallets.SuiWallet, false);
 					}}
 				>
 					Disconnect

@@ -84,9 +84,9 @@ export const useNBTC = ({ variant }: NBTCProps) => {
 	const shouldBuy = variant === "BUY";
 	const account = useCurrentAccount();
 	const client = useSuiClient();
-	const { connectedWallet } = useContext(WalletContext);
+	const { isWalletConnected } = useContext(WalletContext);
 	const { trackEvent } = useGoogleAnalytics();
-	const isSuiWalletConnected = connectedWallet === Wallets.SuiWallet;
+	const isSuiWalletConnected = isWalletConnected(Wallets.SuiWallet);
 	const { balance: nBTCBalance, refetchBalance: refetchNBTCBalance } = useNBTCBalance();
 	const { balance, refetchSUIBalance } = useSuiBalance();
 	const { nbtcOTC } = useNetworkVariables();

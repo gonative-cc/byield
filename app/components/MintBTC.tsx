@@ -80,8 +80,8 @@ interface MintNBTCForm {
 
 export function MintBTC() {
 	const { balance: walletBalance } = useXverseWallet();
-	const { connectedWallet } = useContext(WalletContext);
-	const isBitCoinWalletConnected = connectedWallet === Wallets.Xverse;
+	const { isWalletConnected } = useContext(WalletContext);
+	const isBitCoinWalletConnected = isWalletConnected(Wallets.Xverse);
 	const balance = parseBTC(walletBalance ?? "0");
 	const mintNBTCForm = useForm<MintNBTCForm>({
 		mode: "all",
