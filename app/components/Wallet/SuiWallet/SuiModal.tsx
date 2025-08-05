@@ -74,7 +74,7 @@ function AvailableWallets() {
 								connect(
 									{ wallet: installedWallet },
 									{
-										onSuccess: () => handleWalletConnect(Wallets.SuiWallet),
+										onSuccess: () => handleWalletConnect(Wallets.SuiWallet, true),
 										onError: () =>
 											toast({
 												title: "Sui Wallet Connect",
@@ -112,7 +112,7 @@ function AvailableWallets() {
 							connect(
 								{ wallet },
 								{
-									onSuccess: () => handleWalletConnect(Wallets.SuiWallet),
+									onSuccess: () => handleWalletConnect(Wallets.SuiWallet, true),
 									onError: (error) => {
 										console.error(`Failed to connect wallet ${wallet.name}`, error);
 										toast({

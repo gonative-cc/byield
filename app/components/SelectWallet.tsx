@@ -23,32 +23,24 @@ interface SelectWalletProps {
 }
 
 export function SelectWallet({ isProductionMode }: SelectWalletProps) {
-	const { connectedWallet, isLoading } = useContext(WalletContext);
+	const { isLoading, isWalletConnected } = useContext(WalletContext);
 	const { connectWallet } = useXverseConnect();
 
 	if (isLoading) return <LoadingSkeleton />;
 
-	// none of the wallet is connected, than show connect button for all available wallets
-	if (!connectedWallet) {
-		return (
-			<>
-				{/* Xverse wallet connect button */}
-				{!isProductionMode && (
-					<Button type="button" onClick={connectWallet}>
-						Connect Bitcoin Wallet
-					</Button>
-				)}
-				{/* Sui Wallet Connect Modal */}
-				<SuiModal />
-			</>
-		);
-	}
-
-	// one of the wallet is connected
 	return (
 		<>
-			{connectedWallet === Wallets.Xverse && <XverseWallet />}
-			{connectedWallet === Wallets.SuiWallet && <SuiWallet />}
+			{/* Show connect buttons for wallets that aren't connected */}
+			{!isWalletConnected(Wallets.Xverse) && !isProductionMode && (
+				<Button type="button" onClick={connectWallet}>
+					Connect Bitcoin Wallet
+				</Button>
+			)}
+			{!isWalletConnected(Wallets.SuiWallet) && <SuiModal />}
+
+			{/* Show connected wallets */}
+			{isWalletConnected(Wallets.Xverse) && <XverseWallet />}
+			{isWalletConnected(Wallets.SuiWallet) && <SuiWallet />}
 		</>
 	);
 }

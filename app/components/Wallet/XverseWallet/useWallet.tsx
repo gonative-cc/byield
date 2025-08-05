@@ -40,7 +40,7 @@ export const useXverseConnect = () => {
 				],
 			});
 			if (response.status === "success") {
-				handleWalletConnect(Wallets.Xverse);
+				handleWalletConnect(Wallets.Xverse, true);
 			} else {
 				toast({
 					title: "Wallet",
@@ -58,8 +58,8 @@ export const useXverseConnect = () => {
 
 export const useXverseWallet = () => {
 	const { toast } = useToast();
-	const { handleWalletConnect, connectedWallet } = useContext(WalletContext);
-	const isBitCoinWalletConnected = connectedWallet === Wallets.Xverse;
+	const { handleWalletConnect, isWalletConnected } = useContext(WalletContext);
+	const isBitCoinWalletConnected = isWalletConnected(Wallets.Xverse);
 	const [addressInfo, setAddressInfo] = useState<Address[]>([]);
 	const [currentAddress, setCurrentAddress] = useState<Address | null>(null);
 	const [balance, setBalance] = useState<string>();
@@ -132,7 +132,7 @@ export const useXverseWallet = () => {
 			const response = await Wallet.request(disconnectMethodName, null);
 			if (response.status === "success") {
 				setAddressInfo([]);
-				handleWalletConnect(null);
+				handleWalletConnect(Wallets.Xverse, false);
 				setCurrentAddress(null);
 			} else
 				toast({

@@ -12,8 +12,8 @@ import { ArrowUpRight } from "lucide-react";
 
 export function BuyNBTC() {
 	const { balance: nBTCBalance } = useNBTCBalance();
-	const { connectedWallet, suiAddr } = useContext(WalletContext);
-	const isSuiWalletConnected = connectedWallet === Wallets.SuiWallet;
+	const { isWalletConnected, suiAddr } = useContext(WalletContext);
+	const isSuiWalletConnected = isWalletConnected(Wallets.SuiWallet);
 	const transactionHistoryLink = `https://suiscan.xyz/testnet/account/${suiAddr}/tx-blocks`;
 
 	return (
