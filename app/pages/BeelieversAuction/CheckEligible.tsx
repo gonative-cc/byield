@@ -2,18 +2,20 @@ import { Wallet } from "lucide-react";
 import { AttemptAuction } from "./AttemptAuction";
 import { Avatar } from "./Avatar";
 import { BeelieversBid } from "./BeelieversBid";
-import { NotEligible } from "./NotEligible";
+import { Eligible } from "./Eligible";
 import { Form } from "react-router";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
+import { EligibilityTypeEnum } from "./whitelist.server";
 
 interface CheckEligibleProps {
 	isEligible?: boolean;
+	type?: EligibilityTypeEnum;
+	isError?: boolean;
 }
 
-export function CheckEligible({ isEligible }: CheckEligibleProps) {
+export function CheckEligible({ isEligible, type }: CheckEligibleProps) {
 	const shouldCheckEligibility = isEligible === undefined;
-	const isEligibleForAuction = !shouldCheckEligibility && isEligible;
 
 	if (shouldCheckEligibility) {
 		return (
@@ -68,5 +70,10 @@ export function CheckEligible({ isEligible }: CheckEligibleProps) {
 		);
 	}
 
-	return isEligibleForAuction ? <BeelieversBid /> : <NotEligible />;
+	return (
+		<>
+			<Eligible type={type} />
+			<BeelieversBid />
+		</>
+	);
 }
