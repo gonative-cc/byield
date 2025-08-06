@@ -5,7 +5,7 @@ import { EligibilityTypeEnum } from "./types";
 function getEligibilityMessage(type?: EligibilityTypeEnum) {
 	switch (type) {
 		case EligibilityTypeEnum.PARTNER_WHITELIST:
-			return "Congratulations!! You're you are part of our partners activation program and you get 5% boost to your price + stand a chance to win 1 out 10 Mythic collections and stand a chance to win 10% of NFT sale amount in Bitcoin (nBTC) given to 21 lucky winners.";
+			return "Congratulations!! you are part of our partners activation program and you get 5% boost to your price + stand a chance to win 1 out 10 Mythic collections and stand a chance to win 10% of NFT sale amount in Bitcoin (nBTC) given to 21 lucky winners.";
 		case EligibilityTypeEnum.TESTNET_WHITELIST_ADDRESS:
 			return "Congratulations!! Due to your testnet participation, you're eligible for 5% boost to your bid price and stand a chance to win 10% of NFT sale amount in Bitcoin (nBTC) given to 21 lucky winners.";
 		case EligibilityTypeEnum.NON_WHITELIST_ADDRESS:
