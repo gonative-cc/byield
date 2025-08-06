@@ -9,7 +9,7 @@ function getEligibilityMessage(type?: EligibilityTypeEnum) {
 		case EligibilityTypeEnum.TESTNET_WHITELIST_ADDRESS:
 			return "Congratulations!! You're eligible to participate in auction and get 5% boost for your bid price and stand a chance to win 10% of NFT sale amount in Bitcoin (nBTC) given to 21 lucky winners.";
 		case EligibilityTypeEnum.NON_WHITELIST_ADDRESS:
-			return "You're not in white list but you can still particiapte in auction and stand a chance to win 10% of NFT sale amount in Bitcoin (nBTC) given to 21 lucky winners.";
+			return "Participate in auction to buy NFT and stand a chance to win 10% of NFT sale amount in Bitcoin (nBTC) given to 21 lucky winners.";
 		default:
 			return "";
 	}
