@@ -6,7 +6,7 @@ import { Eligible } from "./Eligible";
 import { Form } from "react-router";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
-import { EligibilityTypeEnum } from "./whitelist.server";
+import { EligibilityTypeEnum } from "./types";
 
 interface CheckEligibleProps {
 	isEligible?: boolean;

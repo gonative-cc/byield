@@ -1,6 +1,6 @@
 import { AttemptAuction } from "./AttemptAuction";
 import { Card, CardContent } from "~/components/ui/card";
-import { EligibilityTypeEnum } from "./whitelist.server";
+import { EligibilityTypeEnum } from "./types";
 
 function getEligibilityMessage(type?: EligibilityTypeEnum) {
 	switch (type) {

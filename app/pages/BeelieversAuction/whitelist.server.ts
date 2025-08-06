@@ -1,8 +1,4 @@
-export enum EligibilityTypeEnum {
-	PARTNER_WHITELIST = "PARTNER_WHITELIST",
-	TESTNET_WHITELIST_ADDRESS = "TESTNET_WHITELIST_ADDRESS",
-	NON_WHITELIST_ADDRESS = "NON_WHITELIST_ADDRESS",
-}
+import { EligibilityTypeEnum } from "./types";
 
 const MOCK_ELIGIBILITY_DATA = {
 	isEligible: true,
