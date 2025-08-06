@@ -1,6 +1,5 @@
-import { Info, Zap } from "lucide-react";
+import { Zap } from "lucide-react";
 import { Card, CardContent } from "./ui/card";
-import { TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { Table } from "./ui/table";
 import type { Column, CellProps } from "react-table";
 import { Badge } from "./ui/badge";
@@ -9,6 +8,8 @@ import { SelectInput } from "./ui/select";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { action } from "../config/market.json";
+import { useNBTCBalance } from "./Wallet/SuiWallet/useNBTCBalance";
+import { formatNBTC } from "~/lib/denoms";
 
 enum MarketIntegration {
 	TURBOS = "TURBOS",
@@ -18,7 +19,6 @@ interface DepositData {
 	id: string;
 	title: string;
 	value: string;
-	tooltip: string;
 }
 
 interface DApp {
@@ -109,18 +109,12 @@ export const columns: Column<DApp>[] = [
 	},
 ];
 
-function DepositCard({ title, value, tooltip }: DepositData) {
+function DepositCard({ title, value }: DepositData) {
 	return (
 		<Card className="flex flex-1 max-w-1/4">
 			<CardContent className="p-6 rounded-lg text-white flex flex-col gap-2 bg-azure-10 w-full">
 				<div className="flex gap-2">
 					<span className="text-base font-medium">{title}</span>
-					<TooltipTrigger>
-						<Info />
-					</TooltipTrigger>
-					<TooltipContent>
-						<p>{tooltip}</p>
-					</TooltipContent>
 				</div>
 				<span className="text-base font-medium">{value}</span>
 			</CardContent>
@@ -129,12 +123,18 @@ function DepositCard({ title, value, tooltip }: DepositData) {
 }
 
 export function TotalDeposit() {
+	const { balance: nBTCBalance } = useNBTCBalance();
+
 	return (
 		<div className="flex flex-col gap-10 w-full">
 			<div className="flex justify-between w-full gap-4">
-				{MOCK_DEPOSIT_DATA.map((deposit) => (
-					<DepositCard key={deposit.id} {...deposit} />
-				))}
+				{nBTCBalance && (
+					<DepositCard
+						id="nbtc-balance"
+						title="nBTC Balance"
+						value={formatNBTC(BigInt(nBTCBalance.totalBalance))}
+					/>
+				)}
 			</div>
 			<div className="flex flex-col gap-4">
 				<div className="flex justify-between items-center w-full">
@@ -147,13 +147,13 @@ export function TotalDeposit() {
 						<Input type="text" placeholder="Search vaults..." />
 					</div>
 				</div>
-				<Table columns={columns} data={mockVaults} />
+				<Table columns={columns} data={VAULTS} />
 			</div>
 		</div>
 	);
 }
 
-const mockVaults: DApp[] = [
+const VAULTS: DApp[] = [
 	{
 		name: "Turbos",
 		type: "DEX",
@@ -162,14 +162,5 @@ const mockVaults: DApp[] = [
 		apy: 11.71,
 		chain: "SUI",
 		logo: "/assets/ui-icons/market/turbos.svg",
-	},
-];
-
-const MOCK_DEPOSIT_DATA: DepositData[] = [
-	{
-		id: "nbtc-balance",
-		title: "nBTC Balance",
-		value: "12.34",
-		tooltip: "",
 	},
 ];
