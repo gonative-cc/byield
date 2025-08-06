@@ -94,6 +94,7 @@ export const columns: Column<DApp>[] = [
 			},
 		}: CellProps<DApp>) => {
 			const action = getActionLinks(integration);
+			if (!action) return null;
 			return (
 				<div className="flex space-x-2">
 					<Link to={action.trade} target="_blank">
