@@ -1,15 +1,18 @@
-import { Card, CardContent } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { Link } from "react-router";
 import { AuctionInstructions } from "./AuctionInstructions";
 import { CheckEligible } from "./CheckEligible";
 import { AuctionTable } from "./AuctionTable";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "~/components/ui/dialog";
+import { Info } from "lucide-react";
 
-function Instructions() {
+function InstructionsModal() {
 	return (
-		<Card className="w-full h-fit">
-			<CardContent className="p-5 rounded-lg text-white flex flex-col gap-2 bg-azure-20">
-				<span className="text-xl text-primary">How The Auction Works</span>
+		<DialogContent className="max-w-2xl">
+			<DialogHeader>
+				<DialogTitle className="text-xl text-primary">How The Auction Works</DialogTitle>
+			</DialogHeader>
+			<div className="flex flex-col gap-4">
 				<AuctionInstructions
 					key="auction-mechanism"
 					heading="Auction Mechanism"
@@ -59,8 +62,8 @@ function Instructions() {
 						},
 					]}
 				/>
-			</CardContent>
-		</Card>
+			</div>
+		</DialogContent>
 	);
 }
 
@@ -70,7 +73,6 @@ interface BeelieversAuctionProps {
 		leaders: {
 			rank: number;
 			bidder: string;
-			time: number;
 			amount: string;
 		}[];
 		bidders: number;
@@ -85,14 +87,27 @@ interface BeelieversAuctionProps {
 
 export function BeelieversAuction({ leaderBoardData: { leaders }, eligibilityData }: BeelieversAuctionProps) {
 	return (
-		<div className="flex flex-col items-center gap-8 w-full">
+		<div className="flex flex-col items-center gap-8 w-full relative">
+			<Dialog>
+				<DialogTrigger asChild>
+					<Button
+						variant="ghost"
+						size="sm"
+						className="absolute top-0 left-0 p-2 hover:bg-gray-100 rounded-full"
+						aria-label="View auction instructions"
+					>
+						<Info className="h-5 w-5 text-primary" /> Info
+					</Button>
+				</DialogTrigger>
+				<InstructionsModal />
+			</Dialog>
+
 			<p className="md:text-3xl text-2xl text-center font-semibold max-w-96">
 				<span className="text-2xl text-primary md:text-3xl">Beelievers</span> Auction
 			</p>
 			<CheckEligible isEligible={eligibilityData?.isEligible} />
 			<div className="flex flex-col-reverse md:flex-row gap-4 w-full">
 				<AuctionTable data={leaders} />
-				<Instructions />
 			</div>
 		</div>
 	);

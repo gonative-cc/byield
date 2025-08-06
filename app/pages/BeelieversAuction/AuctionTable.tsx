@@ -2,13 +2,30 @@ import type { CellProps, Column } from "react-table";
 import { SUIIcon } from "~/components/icons";
 import { Card, CardContent } from "~/components/ui/card";
 import { Table } from "~/components/ui/table";
+import { Input } from "~/components/ui/input";
 import { trimAddress } from "~/components/Wallet/walletHelper";
+import { useState } from "react";
 
 export interface Bid {
 	rank: number;
 	bidder: string;
-	time: number;
 	amount: string;
+	note?: string;
+}
+
+function NoteInput({ bidder }: { bidder: string }) {
+	const [note, setNote] = useState("");
+
+	return (
+		<Input
+			type="text"
+			placeholder="Add note..."
+			value={note}
+			onChange={(e) => setNote(e.target.value)}
+			maxLength={30}
+			containerClassName="max-w-1/2"
+		/>
+	);
 }
 
 const columns: Column<Bid>[] = [
@@ -27,13 +44,9 @@ const columns: Column<Bid>[] = [
 		),
 	},
 	{
-		Header: "Bid Time",
-		accessor: "time",
-		Cell: ({ row }: CellProps<Bid>) => (
-			<div className="flex space-x-2">
-				<span>{row.original.time} hr ago</span>
-			</div>
-		),
+		Header: "Note",
+		accessor: "note",
+		Cell: ({ row }: CellProps<Bid>) => <NoteInput bidder={row.original.bidder} />,
 	},
 	{
 		Header: "Bid Amount",
