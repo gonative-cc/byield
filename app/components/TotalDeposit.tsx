@@ -13,6 +13,7 @@ import { formatNBTC } from "~/lib/denoms";
 
 enum MarketIntegration {
 	TURBOS = "TURBOS",
+	MAGMA = "MAGMA",
 }
 
 interface DepositData {
@@ -35,8 +36,8 @@ const getActionLinks = (integration: MarketIntegration) => {
 	switch (integration) {
 		case MarketIntegration.TURBOS:
 			return action.turbos;
-		default:
-			return "";
+		case MarketIntegration.MAGMA:
+			return action.magma;
 	}
 };
 

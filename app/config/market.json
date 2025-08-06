@@ -3,6 +3,10 @@
 		"turbos": {
 			"trade": "http://testnet.turbos.finance/#/trade?input=0x2::sui::SUI&output=0x5419f6e223f18a9141e91a42286f2783eee27bf2667422c2100afc7b2296731b::nbtc::NBTC",
 			"deposit": "http://testnet.turbos.finance/#/pools/0x0b3260b467d0f47d3da80740c072ef1dac09b1fba7b4d56a6a0664a14097f5c2/add-liquidity"
+		},
+		"magma": {
+			"trade": "https://testnet.magmafinance.io/swap?from=0x0000000000000000000000000000000000000000000000000000000000000002%3A%3Asui%3A%3ASUI&to=0x5419f6e223f18a9141e91a42286f2783eee27bf2667422c2100afc7b2296731b%3A%3Anbtc%3A%3ANBTC",
+			"deposit": "https://testnet.magmafinance.io/liquidity/deposit?poolAddress=0x7d965b3d3d50c3a0e59360c61dbcd5f4b7c4d7bf829c2478018fc805663dd4c1"
 		}
 	}
 }
