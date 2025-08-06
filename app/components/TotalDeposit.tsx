@@ -35,6 +35,8 @@ const getActionLinks = (integration: MarketIntegration) => {
 	switch (integration) {
 		case MarketIntegration.TURBOS:
 			return action.turbos;
+		default:
+			return "";
 	}
 };
 
@@ -44,7 +46,7 @@ export const columns: Column<DApp>[] = [
 		accessor: "name",
 		Cell: ({ value, row }: CellProps<DApp>) => (
 			<div className="flex items-center gap-2">
-				<img src={row.original.logo} alt={value} width={30} height={30} />
+				<img src={row.original.logo} alt={value} className="h-6 w-6 object-contain" />
 				{value}
 			</div>
 		),
