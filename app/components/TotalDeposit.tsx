@@ -7,6 +7,12 @@ import { Badge } from "./ui/badge";
 import { Link } from "react-router";
 import { SelectInput } from "./ui/select";
 import { Input } from "./ui/input";
+import { Button } from "./ui/button";
+import { action } from "../config/market.json";
+
+enum MarketIntegration {
+	TURBOS = "TURBOS",
+}
 
 interface DepositData {
 	id: string;
@@ -18,11 +24,19 @@ interface DepositData {
 interface DApp {
 	name: string;
 	type: string;
+	integration: MarketIntegration;
 	labels: string[];
 	apy: number;
 	chain: string;
 	logo: string;
 }
+
+const getActionLinks = (integration: MarketIntegration) => {
+	switch (integration) {
+		case MarketIntegration.TURBOS:
+			return action.turbos;
+	}
+};
 
 export const columns: Column<DApp>[] = [
 	{
@@ -30,7 +44,7 @@ export const columns: Column<DApp>[] = [
 		accessor: "name",
 		Cell: ({ value, row }: CellProps<DApp>) => (
 			<div className="flex items-center gap-2">
-				<img src={row.original.logo} alt={value} />
+				<img src={row.original.logo} alt={value} width={30} height={30} />
 				{value}
 			</div>
 		),
@@ -72,17 +86,23 @@ export const columns: Column<DApp>[] = [
 	{ Header: "Chain", accessor: "chain" },
 	{
 		Header: "Action",
-		Cell: () => (
-			<div className="flex space-x-2">
-				{/* TODO: replace hard coded colors when theme design is ready */}
-				<Link to="#" className="bg-azure-15 px-4 py-2 rounded border border-[#FAFAFA14]">
-					<span className="text-[#FFFFFFCC]">Deposit</span>
-				</Link>
-				<Link to="#" className="bg-azure-10 px-4 py-2 rounded border border-[#FAFAFA14]">
-					<span className="text-[#FFFFFF80]">Withdraw</span>
-				</Link>
-			</div>
-		),
+		Cell: ({
+			row: {
+				original: { integration },
+			},
+		}: CellProps<DApp>) => {
+			const action = getActionLinks(integration);
+			return (
+				<div className="flex space-x-2">
+					<Link to={action.trade} target="_blank">
+						<Button variant="secondary">Trade nBTC</Button>
+					</Link>
+					<Link to={action.deposit} target="_blank">
+						<Button variant="ghost">Deposit</Button>
+					</Link>
+				</div>
+			);
+		},
 	},
 ];
 
@@ -132,20 +152,13 @@ export function TotalDeposit() {
 
 const mockVaults: DApp[] = [
 	{
-		name: "Desig Vault",
+		name: "Turbos",
 		type: "DEX",
-		labels: ["Boosted", "Farming"],
+		integration: MarketIntegration.TURBOS,
+		labels: ["Farming"],
 		apy: 11.71,
 		chain: "SUI",
-		logo: "/assets/ui-icons/market/desigVault.svg",
-	},
-	{
-		name: "Bucket Protocol",
-		type: "LENDING",
-		labels: ["Boosted", "Farming"],
-		apy: 5.71,
-		chain: "SUI",
-		logo: "/assets/ui-icons/market/bucketProtocol.svg",
+		logo: "/assets/ui-icons/market/turbos.svg",
 	},
 ];
 
