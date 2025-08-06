@@ -11,7 +11,7 @@ function getEligibilityMessage(type?: EligibilityTypeEnum) {
 		case EligibilityTypeEnum.NON_WHITELIST_ADDRESS:
 			return "Participate in auction to buy NFT and stand a chance to win 10% of NFT sale amount in Bitcoin (nBTC) given to 21 lucky winners.";
 		default:
-			return "";
+			return "Connect Sui wallet to continue";
 	}
 }
 
