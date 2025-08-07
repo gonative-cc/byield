@@ -6,7 +6,7 @@ function getEligibilityMessage(type?: EligibilityEnum) {
 	switch (type) {
 		case EligibilityEnum.PARTNER_WHITELIST:
 			return "Congratulations!! you are part of our partners activation program and you get a 5% boost to your price + stand a chance to win 1 out 10 Mythic collections and stand a chance to win 10% of NFT sale amount in Bitcoin (nBTC) given to 21 lucky winners.";
-		case EligibilityEnum.TESTNET_WHITELIST_ADDRESS:
+		case EligibilityEnum.TESTNET_WHITELIST:
 			return "Congratulations!! Due to your testnet participation, you're eligible for a 5% boost to your bid price and stand a chance to win 10% of NFT sale amount in Bitcoin (nBTC) given to 21 lucky winners.";
 		case EligibilityEnum.DEFAULT:
 			return "Participate in auction to buy NFT and stand a chance to win 10% of NFT sale amount in Bitcoin (nBTC) given to 21 lucky winners.";

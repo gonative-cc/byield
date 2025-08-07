@@ -28,7 +28,7 @@ export function checkEligibility(addr: string) {
 	// Check if address is in testnet whitelist
 	if (TESTNET_WHITELIST.includes(addr)) {
 		return {
-			type: EligibilityEnum.TESTNET_WHITELIST_ADDRESS,
+			type: EligibilityEnum.TESTNET_WHITELIST,
 		};
 	}
 
