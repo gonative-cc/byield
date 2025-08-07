@@ -1,19 +1,23 @@
-import { Wallet } from "lucide-react";
+import { useContext } from "react";
 import { AttemptAuction } from "./AttemptAuction";
 import { Avatar } from "./Avatar";
 import { BeelieversBid } from "./BeelieversBid";
-import { NotEligible } from "./NotEligible";
-import { Form } from "react-router";
-import { Button } from "~/components/ui/button";
+import { Eligible } from "./Eligible";
 import { Card, CardContent } from "~/components/ui/card";
+import { EligibilityEnum } from "./types";
+import { WalletContext } from "~/providers/ByieldWalletProvider";
+import { Wallets } from "~/components/Wallet";
+import { SuiModal } from "~/components/Wallet/SuiWallet/SuiModal";
 
 interface CheckEligibleProps {
-	isEligible?: boolean;
+	type?: EligibilityEnum;
+	isError?: boolean;
 }
 
-export function CheckEligible({ isEligible }: CheckEligibleProps) {
-	const shouldCheckEligibility = isEligible === undefined;
-	const isEligibleForAuction = !shouldCheckEligibility && isEligible;
+export function CheckEligible({ type }: CheckEligibleProps) {
+	const { isWalletConnected } = useContext(WalletContext);
+	const isSuiWalletConnected = isWalletConnected(Wallets.SuiWallet);
+	const shouldCheckEligibility = type === undefined;
 
 	if (shouldCheckEligibility) {
 		return (
@@ -45,12 +49,7 @@ export function CheckEligible({ isEligible }: CheckEligibleProps) {
 									above the clearing price is refunded.
 								</span>
 								<div className="flex gap-2 justify-between w-full items-end">
-									<Form method="POST">
-										<Button type="submit" className="flex w-[163px]">
-											<Wallet />
-											Check Eligibility
-										</Button>
-									</Form>
+									{!isSuiWalletConnected && <SuiModal />}
 									<span className="text-sm md:hidden block">
 										Auction ends in 00 : 23 :12
 									</span>
@@ -68,5 +67,10 @@ export function CheckEligible({ isEligible }: CheckEligibleProps) {
 		);
 	}
 
-	return isEligibleForAuction ? <BeelieversBid /> : <NotEligible />;
+	return (
+		<>
+			<Eligible type={type} />
+			<BeelieversBid />
+		</>
+	);
 }

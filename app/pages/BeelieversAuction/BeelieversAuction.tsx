@@ -5,6 +5,7 @@ import { CheckEligible } from "./CheckEligible";
 import { AuctionTable } from "./AuctionTable";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "~/components/ui/dialog";
 import { Info } from "lucide-react";
+import type { EligibilityEnum } from "./types";
 
 function InstructionsModal() {
 	return (
@@ -80,9 +81,10 @@ interface BeelieversAuctionProps {
 		entry_bid: number;
 	};
 	eligibilityData?: {
-		isEligible: boolean;
-		isError: boolean;
+		type?: EligibilityEnum;
+		isError?: boolean;
 	};
+	isCheckingEligibility?: boolean;
 }
 
 export function BeelieversAuction({ leaderBoardData: { leaders }, eligibilityData }: BeelieversAuctionProps) {
@@ -105,7 +107,7 @@ export function BeelieversAuction({ leaderBoardData: { leaders }, eligibilityDat
 			<p className="md:text-3xl text-2xl text-center font-semibold max-w-96">
 				<span className="text-2xl text-primary md:text-3xl">Beelievers</span> Auction
 			</p>
-			<CheckEligible isEligible={eligibilityData?.isEligible} />
+			<CheckEligible {...eligibilityData} />
 			<div className="flex flex-col-reverse md:flex-row gap-4 w-full">
 				<AuctionTable data={leaders} />
 			</div>
