@@ -70,6 +70,7 @@ function AvailableWallets() {
 					<div className="flex gap-2 w-full">
 						<Button
 							variant="ghost"
+							type="button"
 							onClick={() => {
 								connect(
 									{ wallet: installedWallet },
@@ -108,6 +109,7 @@ function AvailableWallets() {
 				<div key={wallet.name} className="flex justify-center w-full">
 					<Button
 						variant="ghost"
+						type="button"
 						onClick={() =>
 							connect(
 								{ wallet },
@@ -135,13 +137,17 @@ function AvailableWallets() {
 	);
 }
 
-export function SuiModal() {
+interface SuiModalProps {
+	label?: string;
+}
+
+export function SuiModal({ label = "Connect Sui Wallet" }: SuiModalProps) {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<Button>
+				<Button type="button">
 					<Wallet />
-					Connect Sui Wallet
+					{label}
 				</Button>
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-[425px]">

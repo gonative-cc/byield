@@ -1,20 +1,32 @@
-import { Wallet } from "lucide-react";
+import { Wallet, Loader2 } from "lucide-react";
+import { useContext } from "react";
 import { AttemptAuction } from "./AttemptAuction";
 import { Avatar } from "./Avatar";
 import { BeelieversBid } from "./BeelieversBid";
 import { Eligible } from "./Eligible";
-import { Form } from "react-router";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { EligibilityTypeEnum } from "./types";
+import { WalletContext } from "~/providers/ByieldWalletProvider";
+import { Wallets } from "~/components/Wallet";
+import { SuiModal } from "~/components/Wallet/SuiWallet/SuiModal";
 
 interface CheckEligibleProps {
 	isEligible?: boolean;
 	type?: EligibilityTypeEnum;
 	isError?: boolean;
+	isCheckingEligibility?: boolean;
+	onCheckEligibility?: () => void;
 }
 
-export function CheckEligible({ isEligible, type }: CheckEligibleProps) {
+export function CheckEligible({
+	isEligible,
+	type,
+	isCheckingEligibility,
+	onCheckEligibility,
+}: CheckEligibleProps) {
+	const { isWalletConnected } = useContext(WalletContext);
+	const isSuiWalletConnected = isWalletConnected(Wallets.SuiWallet);
 	const shouldCheckEligibility = isEligible === undefined;
 
 	if (shouldCheckEligibility) {
@@ -47,12 +59,27 @@ export function CheckEligible({ isEligible, type }: CheckEligibleProps) {
 									above the clearing price is refunded.
 								</span>
 								<div className="flex gap-2 justify-between w-full items-end">
-									<Form method="POST">
-										<Button type="submit" className="flex w-[163px]">
-											<Wallet />
-											Check Eligibility
+									{!isSuiWalletConnected ? (
+										<SuiModal />
+									) : (
+										<Button
+											onClick={onCheckEligibility}
+											disabled={isCheckingEligibility}
+											className="flex w-[163px]"
+										>
+											{isCheckingEligibility ? (
+												<>
+													<Loader2 className="animate-spin" />
+													Checking...
+												</>
+											) : (
+												<>
+													<Wallet />
+													Check Eligibility
+												</>
+											)}
 										</Button>
-									</Form>
+									)}
 									<span className="text-sm md:hidden block">
 										Auction ends in 00 : 23 :12
 									</span>
