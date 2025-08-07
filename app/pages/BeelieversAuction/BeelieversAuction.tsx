@@ -5,6 +5,7 @@ import { CheckEligible } from "./CheckEligible";
 import { AuctionTable } from "./AuctionTable";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "~/components/ui/dialog";
 import { Info } from "lucide-react";
+import type { EligibilityEnum } from "./types";
 
 function InstructionsModal() {
 	return (
