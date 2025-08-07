@@ -13,7 +13,7 @@ export interface Bid {
 	note?: string;
 }
 
-function NoteInput({ bidder }: { bidder: string }) {
+function NoteInput() {
 	const [note, setNote] = useState("");
 
 	return (
@@ -46,7 +46,7 @@ const columns: Column<Bid>[] = [
 	{
 		Header: "Note",
 		accessor: "note",
-		Cell: ({ row }: CellProps<Bid>) => <NoteInput bidder={row.original.bidder} />,
+		Cell: () => <NoteInput />,
 	},
 	{
 		Header: "Bid Amount",
