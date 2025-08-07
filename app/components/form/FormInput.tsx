@@ -2,18 +2,18 @@ import { Controller, useFormContext } from "react-hook-form";
 import type { FieldValues, RegisterOptions } from "react-hook-form";
 import { Input } from "../ui/input";
 import type { InputProps } from "../ui/input";
+import { classNames } from "~/util/tailwind";
 
 interface FormInputProps extends InputProps {
 	name: string;
-	rules?:
-		| Omit<
-				RegisterOptions<FieldValues, string>,
-				"disabled" | "valueAsNumber" | "valueAsDate" | "setValueAs"
-		  >
-		| undefined;
+	createEmptySpace?: boolean;
+	rules?: Omit<
+		RegisterOptions<FieldValues, string>,
+		"disabled" | "valueAsNumber" | "valueAsDate" | "setValueAs"
+	>;
 }
 
-export const FormInput = ({ name, required, rules, ...rest }: FormInputProps) => {
+export const FormInput = ({ name, required, rules, createEmptySpace = false, ...rest }: FormInputProps) => {
 	const { control } = useFormContext();
 
 	return (
@@ -27,7 +27,9 @@ export const FormInput = ({ name, required, rules, ...rest }: FormInputProps) =>
 			render={({ field: { onChange, value }, fieldState: { error } }) => (
 				<div>
 					<Input value={value} onChange={onChange} {...rest} />
-					{error && <p className="mt-1 text-sm text-red-500">{error.message}</p>}
+					<div className={classNames({ "min-h-[1.3rem] mt-0.5": createEmptySpace })}>
+						{error && <p className="text-sm text-red-500">{error.message}</p>}
+					</div>
 				</div>
 			)}
 		/>
