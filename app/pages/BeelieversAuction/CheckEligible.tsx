@@ -1,33 +1,23 @@
-import { Wallet, Loader2 } from "lucide-react";
 import { useContext } from "react";
 import { AttemptAuction } from "./AttemptAuction";
 import { Avatar } from "./Avatar";
 import { BeelieversBid } from "./BeelieversBid";
 import { Eligible } from "./Eligible";
-import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
-import { EligibilityTypeEnum } from "./types";
+import { EligibilityEnum } from "./types";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
 import { SuiModal } from "~/components/Wallet/SuiWallet/SuiModal";
 
 interface CheckEligibleProps {
-	isEligible?: boolean;
-	type?: EligibilityTypeEnum;
+	type?: EligibilityEnum;
 	isError?: boolean;
-	isCheckingEligibility?: boolean;
-	onCheckEligibility?: () => void;
 }
 
-export function CheckEligible({
-	isEligible,
-	type,
-	isCheckingEligibility,
-	onCheckEligibility,
-}: CheckEligibleProps) {
+export function CheckEligible({ type }: CheckEligibleProps) {
 	const { isWalletConnected } = useContext(WalletContext);
 	const isSuiWalletConnected = isWalletConnected(Wallets.SuiWallet);
-	const shouldCheckEligibility = isEligible === undefined;
+	const shouldCheckEligibility = type === undefined;
 
 	if (shouldCheckEligibility) {
 		return (
@@ -59,27 +49,7 @@ export function CheckEligible({
 									above the clearing price is refunded.
 								</span>
 								<div className="flex gap-2 justify-between w-full items-end">
-									{!isSuiWalletConnected ? (
-										<SuiModal />
-									) : (
-										<Button
-											onClick={onCheckEligibility}
-											disabled={isCheckingEligibility}
-											className="flex w-[163px]"
-										>
-											{isCheckingEligibility ? (
-												<>
-													<Loader2 className="animate-spin" />
-													Checking...
-												</>
-											) : (
-												<>
-													<Wallet />
-													Check Eligibility
-												</>
-											)}
-										</Button>
-									)}
+									{!isSuiWalletConnected && <SuiModal />}
 									<span className="text-sm md:hidden block">
 										Auction ends in 00 : 23 :12
 									</span>

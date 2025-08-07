@@ -15,7 +15,6 @@ export async function action({ request }: { request: Request }) {
 
 	if (!suiAddress) {
 		return {
-			isEligible: false,
 			type: undefined,
 			isError: true,
 		};
@@ -34,26 +33,22 @@ export default function BeelieversAuctionPage() {
 	const { suiAddr } = useContext(WalletContext);
 	const lastCheckedAddress = useRef<string | null>(null);
 
-	// Reset state when wallet is disconnected
+	// Check eligibility when wallet connects or address changes, reset when disconnected
 	useEffect(() => {
-		if (!suiAddr && lastCheckedAddress.current) {
-			// Wallet disconnected - reset state
-			lastCheckedAddress.current = null;
-		}
-	}, [suiAddr]);
-
-	// Reset eligibility data when wallet is disconnected
-	const eligibilityData = suiAddr ? fetcher.data : undefined;
-
-	// Function to manually check eligibility
-	const checkEligibility = () => {
-		if (suiAddr && fetcher.state === "idle") {
+		if (suiAddr && suiAddr !== lastCheckedAddress.current && fetcher.state === "idle") {
+			// Wallet connected or address changed - check eligibility
 			lastCheckedAddress.current = suiAddr;
 			const formData = new FormData();
 			formData.append("suiAddress", suiAddr);
 			fetcher.submit(formData, { method: "POST" });
+		} else if (!suiAddr && lastCheckedAddress.current) {
+			// Wallet disconnected - reset state
+			lastCheckedAddress.current = null;
 		}
-	};
+	}, [suiAddr, fetcher.state, fetcher]);
+
+	// Reset eligibility data when wallet is disconnected
+	const eligibilityData = suiAddr ? fetcher.data : undefined;
 
 	return (
 		<div className="flex justify-center p-4">
@@ -61,7 +56,6 @@ export default function BeelieversAuctionPage() {
 				leaderBoardData={leaderBoardData}
 				eligibilityData={eligibilityData}
 				isCheckingEligibility={fetcher.state === "submitting"}
-				onCheckEligibility={checkEligibility}
 			/>
 		</div>
 	);

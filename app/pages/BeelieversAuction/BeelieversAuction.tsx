@@ -80,20 +80,13 @@ interface BeelieversAuctionProps {
 		entry_bid: number;
 	};
 	eligibilityData?: {
-		isEligible?: boolean;
-		type?: EligibilityTypeEnum;
+		type?: EligibilityEnum;
 		isError?: boolean;
 	};
 	isCheckingEligibility?: boolean;
-	onCheckEligibility?: () => void;
 }
 
-export function BeelieversAuction({
-	leaderBoardData: { leaders },
-	eligibilityData,
-	isCheckingEligibility,
-	onCheckEligibility,
-}: BeelieversAuctionProps) {
+export function BeelieversAuction({ leaderBoardData: { leaders }, eligibilityData }: BeelieversAuctionProps) {
 	return (
 		<div className="flex flex-col items-center gap-8 w-full relative">
 			<Dialog>
@@ -113,11 +106,7 @@ export function BeelieversAuction({
 			<p className="md:text-3xl text-2xl text-center font-semibold max-w-96">
 				<span className="text-2xl text-primary md:text-3xl">Beelievers</span> Auction
 			</p>
-			<CheckEligible
-				{...eligibilityData}
-				isCheckingEligibility={isCheckingEligibility}
-				onCheckEligibility={onCheckEligibility}
-			/>
+			<CheckEligible {...eligibilityData} />
 			<div className="flex flex-col-reverse md:flex-row gap-4 w-full">
 				<AuctionTable data={leaders} />
 			</div>

@@ -1,14 +1,14 @@
 import { AttemptAuction } from "./AttemptAuction";
 import { Card, CardContent } from "~/components/ui/card";
-import { EligibilityTypeEnum } from "./types";
+import { EligibilityEnum } from "./types";
 
-function getEligibilityMessage(type?: EligibilityTypeEnum) {
+function getEligibilityMessage(type?: EligibilityEnum) {
 	switch (type) {
-		case EligibilityTypeEnum.PARTNER_WHITELIST:
-			return "Congratulations!! you are part of our partners activation program and you get 5% boost to your price + stand a chance to win 1 out 10 Mythic collections and stand a chance to win 10% of NFT sale amount in Bitcoin (nBTC) given to 21 lucky winners.";
-		case EligibilityTypeEnum.TESTNET_WHITELIST_ADDRESS:
-			return "Congratulations!! Due to your testnet participation, you're eligible for 5% boost to your bid price and stand a chance to win 10% of NFT sale amount in Bitcoin (nBTC) given to 21 lucky winners.";
-		case EligibilityTypeEnum.NON_WHITELIST_ADDRESS:
+		case EligibilityEnum.PARTNER_WHITELIST:
+			return "Congratulations!! you are part of our partners activation program and you get a 5% boost to your price + stand a chance to win 1 out 10 Mythic collections and stand a chance to win 10% of NFT sale amount in Bitcoin (nBTC) given to 21 lucky winners.";
+		case EligibilityEnum.TESTNET_WHITELIST_ADDRESS:
+			return "Congratulations!! Due to your testnet participation, you're eligible for a 5% boost to your bid price and stand a chance to win 10% of NFT sale amount in Bitcoin (nBTC) given to 21 lucky winners.";
+		case EligibilityEnum.DEFAULT:
 			return "Participate in auction to buy NFT and stand a chance to win 10% of NFT sale amount in Bitcoin (nBTC) given to 21 lucky winners.";
 		default:
 			return "Connect Sui wallet to continue";
@@ -16,7 +16,7 @@ function getEligibilityMessage(type?: EligibilityTypeEnum) {
 }
 
 interface NotEligibleProps {
-	type?: EligibilityTypeEnum;
+	type?: EligibilityEnum;
 }
 
 export function Eligible({ type }: NotEligibleProps) {
@@ -36,7 +36,7 @@ export function Eligible({ type }: NotEligibleProps) {
 					className="md:hidden block"
 				/>
 				<div className="flex flex-col md:flex-row gap-2 md:gap-8 py-0 md:py-4 w-full">
-					<div className="flex flex-col gap-4 justify-between">
+					<div className="flex flex-col gap-12">
 						<div className="flex justify-between gap-2">
 							<span className="text-xl md:text-2xl font-bold leading-8 md:leading-10">
 								Participate in Beelievers Auction
@@ -46,7 +46,6 @@ export function Eligible({ type }: NotEligibleProps) {
 							</div>
 						</div>
 						<span className="text-sm">{eligibilityMessage}</span>
-						<span className="text-sm"></span>
 					</div>
 					<div className="md:flex flex-col justify-between shrink-0 hidden">
 						<AttemptAuction className="pt-2 self-start md:self-auto" />
