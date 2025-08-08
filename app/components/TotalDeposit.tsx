@@ -13,6 +13,7 @@ import { formatNBTC } from "~/lib/denoms";
 
 enum MarketIntegration {
 	TURBOS = "TURBOS",
+	MAGMA = "MAGMA",
 }
 
 interface DepositData {
@@ -35,8 +36,10 @@ const getActionLinks = (integration: MarketIntegration) => {
 	switch (integration) {
 		case MarketIntegration.TURBOS:
 			return action.turbos;
+		case MarketIntegration.MAGMA:
+			return action.magma;
 		default:
-			return "";
+			return null;
 	}
 };
 
@@ -162,5 +165,14 @@ const VAULTS: DApp[] = [
 		apy: 11.71,
 		chain: "SUI",
 		logo: "/assets/ui-icons/market/turbos.svg",
+	},
+	{
+		name: "Magma",
+		type: "DEX",
+		integration: MarketIntegration.MAGMA,
+		labels: ["Farming"],
+		apy: 11.71,
+		chain: "SUI",
+		logo: "/assets/ui-icons/market/magma.svg",
 	},
 ];
