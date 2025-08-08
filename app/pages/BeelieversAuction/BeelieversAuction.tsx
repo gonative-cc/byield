@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { AuctionInstructions } from "./AuctionInstructions";
 import { CheckEligible } from "./CheckEligible";
 import { AuctionTable } from "./AuctionTable";
+import { AuctionTotals } from "./AuctionTotals";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "~/components/ui/dialog";
 import { Info } from "lucide-react";
 import type { EligibilityEnum } from "./types";
@@ -76,7 +77,8 @@ interface BeelieversAuctionProps {
 			bidder: string;
 			amount: string;
 		}[];
-		bidders: number;
+		unique_bidders: number;
+		total_bids: number;
 		highest_bid: number;
 		entry_bid: number;
 	};
@@ -87,7 +89,10 @@ interface BeelieversAuctionProps {
 	isCheckingEligibility?: boolean;
 }
 
-export function BeelieversAuction({ leaderBoardData: { leaders }, eligibilityData }: BeelieversAuctionProps) {
+export function BeelieversAuction({
+	leaderBoardData: { leaders, unique_bidders, total_bids },
+	eligibilityData,
+}: BeelieversAuctionProps) {
 	return (
 		<div className="flex flex-col items-center gap-8 w-full relative">
 			<Dialog>
@@ -103,10 +108,10 @@ export function BeelieversAuction({ leaderBoardData: { leaders }, eligibilityDat
 				</DialogTrigger>
 				<InstructionsModal />
 			</Dialog>
-
 			<p className="md:text-3xl text-2xl text-center font-semibold max-w-96">
 				<span className="text-2xl text-primary md:text-3xl">Beelievers</span> Auction
 			</p>
+			<AuctionTotals uniqueBidders={unique_bidders} totalBids={total_bids} />
 			<CheckEligible {...eligibilityData} />
 			<div className="flex flex-col-reverse md:flex-row gap-4 w-full">
 				<AuctionTable data={leaders} />
