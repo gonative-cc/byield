@@ -38,6 +38,8 @@ const getActionLinks = (integration: MarketIntegration) => {
 			return action.turbos;
 		case MarketIntegration.MAGMA:
 			return action.magma;
+		default:
+			return null;
 	}
 };
 
@@ -163,5 +165,14 @@ const VAULTS: DApp[] = [
 		apy: 11.71,
 		chain: "SUI",
 		logo: "/assets/ui-icons/market/turbos.svg",
+	},
+	{
+		name: "Magma",
+		type: "DEX",
+		integration: MarketIntegration.MAGMA,
+		labels: ["Farming"],
+		apy: 11.71,
+		chain: "SUI",
+		logo: "/assets/ui-icons/market/magma.svg",
 	},
 ];
