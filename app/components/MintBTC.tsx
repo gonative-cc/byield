@@ -11,7 +11,7 @@ import { Wallets } from "~/components/Wallet";
 import { FormNumericInput } from "./form/FormNumericInput";
 import { NumericFormat } from "react-number-format";
 import { BTC, formatBTC, parseBTC } from "~/lib/denoms";
-import { nBTCMintTxn } from "~/lib/nbtc";
+import { nBTCMintTx } from "~/lib/nbtc";
 import { useToast } from "~/hooks/use-toast";
 import { Modal } from "./ui/dialog";
 import { Check } from "lucide-react";
@@ -165,7 +165,7 @@ export function MintBTC() {
 			<form
 				onSubmit={handleSubmit(async ({ numberOfBTC, suiAddress }) => {
 					if (currentAddress) {
-						const response = await nBTCMintTxn(
+						const response = await nBTCMintTx(
 							currentAddress,
 							Number(parseBTC(numberOfBTC)),
 							formatSuiAddress(suiAddress),
