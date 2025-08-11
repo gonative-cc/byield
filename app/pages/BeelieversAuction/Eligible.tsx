@@ -1,4 +1,3 @@
-import { AttemptAuction } from "./AttemptAuction";
 import { Card, CardContent } from "~/components/ui/card";
 import { EligibilityEnum } from "./types";
 
@@ -41,14 +40,8 @@ export function Eligible({ type }: NotEligibleProps) {
 							<span className="text-xl md:text-2xl font-bold leading-8 md:leading-10">
 								Participate in Beelievers Auction
 							</span>
-							<div className="flex flex-col justify-between shrink-0 md:hidden">
-								<AttemptAuction className="pt-2 self-start md:self-auto" />
-							</div>
 						</div>
 						<span className="text-sm">{eligibilityMessage}</span>
-					</div>
-					<div className="md:flex flex-col justify-between shrink-0 hidden">
-						<AttemptAuction className="pt-2 self-start md:self-auto" />
 					</div>
 				</div>
 			</CardContent>
