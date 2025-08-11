@@ -4,12 +4,16 @@ import { Card, CardContent } from "~/components/ui/card";
 import { Table } from "~/components/ui/table";
 import { Input } from "~/components/ui/input";
 import { trimAddress } from "~/components/Wallet/walletHelper";
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { WalletContext } from "~/providers/ByieldWalletProvider";
 
-export interface Bid {
+const MAX_LEADERBOARD_ROWS = 21;
+
+interface Bid {
 	rank: number;
 	bidder: string;
 	amount: string;
+	timestamp: string;
 	note?: string;
 }
 
@@ -28,7 +32,7 @@ function NoteInput() {
 	);
 }
 
-const columns: Column<Bid>[] = [
+const createColumns = (): Column<Bid>[] => [
 	{
 		Header: "Rank",
 		accessor: "rank",
@@ -44,11 +48,6 @@ const columns: Column<Bid>[] = [
 		),
 	},
 	{
-		Header: "Note",
-		accessor: "note",
-		Cell: () => <NoteInput />,
-	},
-	{
 		Header: "Bid Amount",
 		accessor: "amount",
 		Cell: ({ row }: CellProps<Bid>) => (
@@ -58,6 +57,18 @@ const columns: Column<Bid>[] = [
 			</div>
 		),
 	},
+	{
+		Header: "Time",
+		accessor: "timestamp",
+		Cell: ({ value }: CellProps<Bid>) => (
+			<div className="text-sm text-gray-500">{value ? new Date(value).toLocaleTimeString() : "-"}</div>
+		),
+	},
+	{
+		Header: "Note",
+		accessor: "note",
+		Cell: () => <NoteInput />,
+	},
 ];
 
 interface AuctionTableProps {
@@ -65,11 +76,38 @@ interface AuctionTableProps {
 }
 
 export function AuctionTable({ data }: AuctionTableProps) {
+	const { suiAddr } = useContext(WalletContext);
+
+	const userBid = data.find((bid) => bid.bidder === suiAddr);
+	const userPosition = userBid?.rank;
+
+	const getDisplayData = (): Bid[] => {
+		const top21 = data.slice(0, MAX_LEADERBOARD_ROWS);
+
+		if (userPosition && userPosition > MAX_LEADERBOARD_ROWS && userBid) {
+			return [...top21, userBid];
+		}
+
+		return top21;
+	};
+
+	const displayData = getDisplayData();
+	const columns = createColumns();
+
+	const getRowProps = (row: { original: Bid }) => {
+		const isUserRow = row.original.bidder === suiAddr;
+		return {
+			className: isUserRow ? "bg-primary/10 border-l-4 border-primary" : "",
+		};
+	};
+
 	return (
 		<Card className="w-full h-fit">
 			<CardContent className="p-5 rounded-lg text-white flex flex-col gap-2 bg-azure-20">
-				<span className="text-xl text-primary">Leaderboard</span>
-				<Table columns={columns} data={data} />
+				<div className="flex justify-between items-center">
+					<span className="text-xl text-primary">Leaderboard</span>
+				</div>
+				<Table columns={columns} data={displayData} getRowProps={getRowProps} />
 			</CardContent>
 		</Card>
 	);
