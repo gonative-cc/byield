@@ -14,7 +14,7 @@ function InstructionsAccordion() {
 				</AccordionTrigger>
 				<AccordionContent>
 					<div className="space-y-6">
-						<div className="accordion-highlight border border-primary/30 rounded-lg p-4 shadow-sm">
+						<div>
 							<div className="flex items-center gap-2 mb-2">
 								<span className="text-2xl">💰</span>
 								<span className="font-semibold text-lg text-primary">
@@ -26,7 +26,6 @@ function InstructionsAccordion() {
 								auction.
 							</p>
 						</div>
-
 						<AuctionInstructions
 							key="auction-mechanism"
 							heading="How it works"
@@ -52,8 +51,7 @@ function InstructionsAccordion() {
 								},
 							]}
 						/>
-
-						<div className="accordion-content-bg border border-primary/20 rounded-lg p-4 shadow-sm">
+						<div>
 							<h3 className="font-semibold text-lg text-primary/90 mb-2 flex items-center gap-2">
 								<span className="text-xl">📊</span>
 								Simple example:

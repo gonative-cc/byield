@@ -50,7 +50,7 @@ function AccordionContent({
 	return (
 		<AccordionPrimitive.Content
 			data-slot="accordion-content"
-			className="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden border-t border-border bg-muted/30"
+			className="overflow-hidden border-t border-border bg-muted/30"
 			{...props}
 		>
 			<div className={cn("px-6 py-5", className)}>{children}</div>
