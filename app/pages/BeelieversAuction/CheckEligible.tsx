@@ -1,5 +1,4 @@
 import { useContext } from "react";
-import { AttemptAuction } from "./AttemptAuction";
 import { Avatar } from "./Avatar";
 import { BeelieversBid } from "./BeelieversBid";
 import { Eligible } from "./Eligible";
@@ -40,9 +39,6 @@ export function CheckEligible({ type }: CheckEligibleProps) {
 									<span className="text-xl md:text-2xl font-bold leading-8 md:leading-10">
 										Participate in Beelievers Auction
 									</span>
-									<div className="flex flex-col justify-between shrink-0 md:hidden">
-										<AttemptAuction className="pt-2 self-end" />
-									</div>
 								</div>
 								<span className="text-sm">
 									You bid your true value; winners pay the lowest winning bid. Any amount
@@ -55,8 +51,7 @@ export function CheckEligible({ type }: CheckEligibleProps) {
 									</span>
 								</div>
 							</div>
-							<div className="md:flex flex-col justify-between shrink-0 hidden">
-								<AttemptAuction className="pt-2 self-start md:self-end" />
+							<div className="md:flex flex-col justify-end shrink-0 hidden">
 								<span className="text-sm">Auction ends in 00 : 23 :12</span>
 							</div>
 						</div>
