@@ -7,13 +7,15 @@ import { EligibilityEnum } from "./types";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
 import { SuiModal } from "~/components/Wallet/SuiWallet/SuiModal";
+import type { Bid } from "./AuctionTable";
 
 interface CheckEligibleProps {
 	type?: EligibilityEnum;
 	isError?: boolean;
+	leaderBoardData?: Bid[];
 }
 
-export function CheckEligible({ type }: CheckEligibleProps) {
+export function CheckEligible({ type, leaderBoardData }: CheckEligibleProps) {
 	const { isWalletConnected } = useContext(WalletContext);
 	const isSuiWalletConnected = isWalletConnected(Wallets.SuiWallet);
 	const shouldCheckEligibility = type === undefined;
@@ -65,7 +67,7 @@ export function CheckEligible({ type }: CheckEligibleProps) {
 	return (
 		<>
 			<Eligible type={type} />
-			<BeelieversBid />
+			<BeelieversBid leaderBoardData={leaderBoardData} />
 		</>
 	);
 }
