@@ -109,7 +109,7 @@ interface BeelieversAuctionProps {
 }
 
 export function BeelieversAuction({
-	leaderBoardData: { leaders, unique_bidders, total_bids },
+	leaderBoardData: { leaders, unique_bidders, total_bids, entry_bid },
 	eligibilityData,
 }: BeelieversAuctionProps) {
 	return (
@@ -118,7 +118,7 @@ export function BeelieversAuction({
 				<span className="text-2xl text-primary md:text-3xl">Beelievers</span> Auction
 			</p>
 			<InstructionsAccordion />
-			<AuctionTotals uniqueBidders={unique_bidders} totalBids={total_bids} />
+			<AuctionTotals uniqueBidders={unique_bidders} totalBids={total_bids} entryBid={entry_bid} />
 			<CheckEligible {...eligibilityData} leaderBoardData={leaders} />
 			<div className="flex flex-col-reverse md:flex-row gap-4 w-full">
 				<AuctionTable data={leaders} />
