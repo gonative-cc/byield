@@ -1,6 +1,5 @@
 import { FormProvider, useForm } from "react-hook-form";
 import { SUI } from "~/lib/denoms";
-import { AttemptAuction } from "./AttemptAuction";
 import { Card, CardContent } from "~/components/ui/card";
 import { FormNumericInput } from "~/components/form/FormNumericInput";
 import { Button } from "~/components/ui/button";
@@ -31,11 +30,10 @@ export function BeelieversBid() {
 				})}
 				className="flex justify-center w-full"
 			>
-				<Card className="md:w-1/2">
+				<Card className="w-full md:w-1/2">
 					<CardContent className="p-4 rounded-lg text-white flex flex-col w-full gap-4 bg-azure-10">
 						<div className="flex justify-between">
 							<span className="text-2xl font-bold">Beelievers Bid</span>
-							<AttemptAuction />
 						</div>
 						<div className="flex flex-col w-full">
 							<FormNumericInput
