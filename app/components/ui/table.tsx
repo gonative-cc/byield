@@ -23,17 +23,20 @@ const TableHead = <T extends object>({ headerGroups }: { headerGroups: HeaderGro
 const TableRows = <T extends object>({
 	rows,
 	prepareRow,
+	getRowProps,
 }: {
 	rows: Row<T>[];
 	prepareRow: (row: Row<T>) => void;
+	getRowProps?: (row: Row<T>) => { className?: string };
 }) =>
 	rows.map((row) => {
 		prepareRow(row);
+		const customRowProps = getRowProps?.(row) || {};
 		return (
 			<tr
 				{...row.getRowProps()}
 				key={row.getRowProps().key}
-				className="border-t border-gray-700 text-[13px]"
+				className={twMerge("border-t border-gray-700 text-[13px]", customRowProps.className)}
 			>
 				{row.cells.map((cell) => (
 					<td {...cell.getCellProps()} key={cell.getCellProps().key} className="p-3">
@@ -48,9 +51,10 @@ interface TableProps<T extends object> {
 	columns: Column<T>[];
 	data: T[];
 	className?: string;
+	getRowProps?: (row: Row<T>) => { className?: string };
 }
 
-export const Table = <T extends object>({ columns, data, className }: TableProps<T>) => {
+export const Table = <T extends object>({ columns, data, className, getRowProps }: TableProps<T>) => {
 	const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<T>({
 		columns,
 		data,
@@ -69,7 +73,11 @@ export const Table = <T extends object>({ columns, data, className }: TableProps
 			<table {...getTableProps()} className="w-full text-left bg-azure-10 rounded-3xl">
 				<TableHead headerGroups={headerGroups} />
 				<tbody {...getTableBodyProps()}>
-					{isTableEmpty ? renderNoDataMessage : <TableRows rows={rows} prepareRow={prepareRow} />}
+					{isTableEmpty ? (
+						renderNoDataMessage
+					) : (
+						<TableRows rows={rows} prepareRow={prepareRow} getRowProps={getRowProps} />
+					)}
 				</tbody>
 			</table>
 		</div>
