@@ -1,5 +1,5 @@
 import { FormProvider, useForm } from "react-hook-form";
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import { SUI } from "~/lib/denoms";
 import { Card, CardContent } from "~/components/ui/card";
 import { FormNumericInput } from "~/components/form/FormNumericInput";
@@ -20,10 +20,9 @@ interface BeelieversBidProps {
 export function BeelieversBid({ leaderBoardData = [] }: BeelieversBidProps) {
 	const { suiAddr } = useContext(WalletContext);
 
-	// Check if current user has bid before
 	const hasUserBidBefore = useMemo(
 		() => (suiAddr ? leaderBoardData.some((bid) => bid.bidder === suiAddr) : false),
-		[leaderBoardData, suiAddr]
+		[leaderBoardData, suiAddr],
 	);
 
 	const bidForm = useForm<BeelieversBidForm>({
@@ -35,6 +34,17 @@ export function BeelieversBid({ leaderBoardData = [] }: BeelieversBidProps) {
 		},
 	});
 	const { handleSubmit } = bidForm;
+
+	function validateBidAmount(val: string) {
+		const bidAmount = Number(val);
+		if (!hasUserBidBefore && bidAmount < 1) {
+			return "First-time bidders must bid at least 1 SUI";
+		}
+		if (bidAmount <= 0) {
+			return "Bid amount must be greater than 0";
+		}
+		return true;
+	}
 
 	return (
 		<FormProvider {...bidForm}>
@@ -61,16 +71,7 @@ export function BeelieversBid({ leaderBoardData = [] }: BeelieversBidProps) {
 								createEmptySpace
 								rules={{
 									validate: {
-										minVal: (val: string) => {
-											const bidAmount = Number(val);
-											if (!hasUserBidBefore && bidAmount < 1) {
-												return "First-time bidders must bid at least 1 SUI";
-											}
-											if (bidAmount <= 0) {
-												return "Bid amount must be greater than 0";
-											}
-											return true;
-										},
+										minVal: (val: string) => validateBidAmount(val),
 									},
 								}}
 							/>
