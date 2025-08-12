@@ -8,6 +8,17 @@ import { FormInput } from "~/components/form/FormInput";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import type { Bid } from "./AuctionTable";
 
+function validateBidAmount(val: string, hasUserBidBefore: boolean) {
+	const bidAmount = Number(val);
+	if (!hasUserBidBefore && bidAmount < 1) {
+		return "First-time bidders must bid at least 1 SUI";
+	}
+	if (bidAmount <= 0) {
+		return "Bid amount must be greater than 0";
+	}
+	return true;
+}
+
 interface BeelieversBidForm {
 	bid: string;
 	note: string;
@@ -35,17 +46,6 @@ export function BeelieversBid({ leaderBoardData = [] }: BeelieversBidProps) {
 	});
 	const { handleSubmit } = bidForm;
 
-	function validateBidAmount(val: string) {
-		const bidAmount = Number(val);
-		if (!hasUserBidBefore && bidAmount < 1) {
-			return "First-time bidders must bid at least 1 SUI";
-		}
-		if (bidAmount <= 0) {
-			return "Bid amount must be greater than 0";
-		}
-		return true;
-	}
-
 	return (
 		<FormProvider {...bidForm}>
 			<form
@@ -71,7 +71,7 @@ export function BeelieversBid({ leaderBoardData = [] }: BeelieversBidProps) {
 								createEmptySpace
 								rules={{
 									validate: {
-										minVal: (val: string) => validateBidAmount(val),
+										minVal: (val: string) => validateBidAmount(val, hasUserBidBefore),
 									},
 								}}
 							/>
