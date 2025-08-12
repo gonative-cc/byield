@@ -21,7 +21,10 @@ export function BeelieversBid({ leaderBoardData = [] }: BeelieversBidProps) {
 	const { suiAddr } = useContext(WalletContext);
 
 	// Check if current user has bid before
-	const hasUserBidBefore = suiAddr ? leaderBoardData.some((bid) => bid.bidder === suiAddr) : false;
+	const hasUserBidBefore = useMemo(
+		() => (suiAddr ? leaderBoardData.some((bid) => bid.bidder === suiAddr) : false),
+		[leaderBoardData, suiAddr]
+	);
 
 	const bidForm = useForm<BeelieversBidForm>({
 		mode: "all",
