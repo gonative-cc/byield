@@ -76,7 +76,6 @@ interface BeelieversAuctionProps {
 			rank: number;
 			bidder: string;
 			amount: string;
-			timestamp: string;
 		}[];
 		unique_bidders: number;
 		total_bids: number;

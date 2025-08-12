@@ -13,7 +13,6 @@ interface Bid {
 	rank: number;
 	bidder: string;
 	amount: string;
-	timestamp: string;
 	note?: string;
 }
 
@@ -55,13 +54,6 @@ const createColumns = (): Column<Bid>[] => [
 				<SUIIcon prefix="" className="h-5 w-5" />
 				<span>{row.original.amount} SUI</span>
 			</div>
-		),
-	},
-	{
-		Header: "Time",
-		accessor: "timestamp",
-		Cell: ({ value }: CellProps<Bid>) => (
-			<div className="text-sm text-gray-500">{value ? new Date(value).toLocaleTimeString() : "-"}</div>
 		),
 	},
 	{
