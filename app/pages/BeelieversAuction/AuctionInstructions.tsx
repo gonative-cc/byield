@@ -10,7 +10,7 @@ interface InstructionsProps {
 
 export function AuctionInstructions({ heading, instructions }: InstructionsProps) {
 	return (
-		<Card className="p-4 bg-azure-10 rounded-2xl">
+		<Card className="rounded-2xl bg-transparent border-0">
 			<CardContent className="flex flex-col justify-between p-0">
 				<h2 className="mb-2 font-semibold text-gray-900 dark:text-white">{heading}:</h2>
 				<ul className="space-y-2 text-gray-500 list-disc list-inside dark:text-gray-400">
