@@ -3,6 +3,7 @@ import { AuctionTable } from "./AuctionTable";
 import { AuctionTotals } from "./AuctionTotals";
 import type { AuctionAccountType } from "./types";
 import { BeelieversBid } from "./BeelieversBid";
+import { TwitterShareButton } from "~/components/TwitterShareButton";
 
 interface BeelieversAuctionProps {
 	leaderBoardData: {
@@ -34,7 +35,8 @@ export function BeelieversAuction({
 				<span className="text-2xl text-primary md:text-3xl">🐝 BTCFi Beelievers</span> Auction
 			</p>
 			<AuctionTotals uniqueBidders={unique_bidders} totalBids={total_bids} entryBid={entry_bid} />
-			<Info {...eligibilityData}></Info>
+			<TwitterShareButton shareContent="Just placed my bid in the @goNativeCC BTCFi Beelievers NFT auction! \n\nSecuring my spot in the top 5810 at beelieversNFT.gonative.cc" />
+			<Info {...eligibilityData} />
 			<BeelieversBid leaderBoardData={leaders} />
 			<div className="flex flex-col-reverse md:flex-row gap-4 w-full">
 				<AuctionTable data={leaders} />
