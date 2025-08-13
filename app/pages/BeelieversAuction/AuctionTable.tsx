@@ -2,9 +2,8 @@ import type { CellProps, Column } from "react-table";
 import { SUIIcon } from "~/components/icons";
 import { Card, CardContent } from "~/components/ui/card";
 import { Table } from "~/components/ui/table";
-import { Input } from "~/components/ui/input";
 import { trimAddress } from "~/components/Wallet/walletHelper";
-import { useState, useContext } from "react";
+import { useContext } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 
 const MAX_LEADERBOARD_ROWS = 21;

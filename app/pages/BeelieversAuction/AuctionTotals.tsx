@@ -1,6 +1,6 @@
 import { Info } from "lucide-react";
 import { Card, CardContent } from "~/components/ui/card";
-import { TooltipButton, Tooltip } from "~/components/ui/tooltip";
+import { Tooltip } from "~/components/ui/tooltip";
 
 interface AuctionTotalsProps {
 	uniqueBidders: number;
