@@ -6,7 +6,6 @@ import { networkConfig } from "./networkConfig";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SuiClientProvider, WalletProvider as SuiWalletProvider } from "@mysten/dapp-kit";
 import { Toaster } from "~/components/ui/toaster";
-import { Tooltip, TooltipProvider } from "~/components/ui/tooltip";
 import { ByieldWalletProvider } from "./providers/ByieldWalletProvider";
 import { isProductionMode, printAppEnv } from "./lib/appenv";
 import { useEffect } from "react";
@@ -83,12 +82,8 @@ function NativeApp({ children }: { children: React.ReactNode }) {
 					<SuiClientProvider networks={networkConfig} defaultNetwork="testnet">
 						<SuiWalletProvider autoConnect>
 							<ByieldWalletProvider>
-								<TooltipProvider>
-									<Tooltip>
-										<main className="flex-1">{children}</main>
-										<Toaster />
-									</Tooltip>
-								</TooltipProvider>
+								<main className="flex-1">{children}</main>
+								<Toaster />
 							</ByieldWalletProvider>
 						</SuiWalletProvider>
 					</SuiClientProvider>

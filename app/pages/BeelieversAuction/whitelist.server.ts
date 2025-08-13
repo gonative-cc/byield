@@ -1,4 +1,4 @@
-import { EligibilityEnum } from "./types";
+import { AuctionAccountType } from "./types";
 
 // Mock whitelist data - replace with actual whitelist logic
 const PARTNER_WHITELIST = [
@@ -14,26 +14,26 @@ const TESTNET_WHITELIST = [
 export function checkEligibility(addr: string) {
 	if (!addr) {
 		return {
-			type: EligibilityEnum.DEFAULT,
+			type: AuctionAccountType.DEFAULT,
 		};
 	}
 
 	// Check if address is in partner whitelist
 	if (PARTNER_WHITELIST.includes(addr)) {
 		return {
-			type: EligibilityEnum.PARTNER_WHITELIST,
+			type: AuctionAccountType.PARTNER_WHITELIST,
 		};
 	}
 
 	// Check if address is in testnet whitelist
 	if (TESTNET_WHITELIST.includes(addr)) {
 		return {
-			type: EligibilityEnum.TESTNET_WHITELIST,
+			type: AuctionAccountType.TESTNET_WHITELIST,
 		};
 	}
 
 	// Default to non-whitelist but still eligible to participate
 	return {
-		type: EligibilityEnum.DEFAULT,
+		type: AuctionAccountType.DEFAULT,
 	};
 }

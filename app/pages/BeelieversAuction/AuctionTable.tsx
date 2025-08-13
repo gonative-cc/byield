@@ -9,7 +9,7 @@ import { WalletContext } from "~/providers/ByieldWalletProvider";
 
 const MAX_LEADERBOARD_ROWS = 21;
 
-interface Bid {
+export interface Bid {
 	rank: number;
 	bidder: string;
 	amount: string;
