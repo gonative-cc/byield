@@ -2,39 +2,43 @@ import React from "react";
 import { ChevronsDown, ChevronsUp } from "lucide-react";
 import { Card, CardContent } from "~/components/ui/card";
 import { AuctionAccountType } from "./types";
-import { TwitterShareButton } from "~/components/TwitterShareButton";
+import moment from "moment";
 
 interface InfoProps {
 	type?: AuctionAccountType;
 	isError?: boolean;
+	auction_end_timestamp?: number;
 }
 
-export function Info({ type }: InfoProps) {
+export function Info({ type, auction_end_timestamp }: InfoProps) {
 	const eligibilityMessage = getEligibilityMessage(type);
 	const [showInfo, setShowInfo] = React.useState(false);
 
 	return (
-		<Card className="w-full md:w-[72%]">
-			<CardContent className="p-4 rounded-lg text-white flex flex-col md:flex-row gap-4 md:gap-8 bg-azure-25">
-				<img
-					src="/assets/bee/bee-with-hammer.svg"
-					alt="bee-with-hammer"
-					className="hidden md:block"
-				/>
-				{/*TODO image shold not move when we open info*/}
-				<img
-					src="/assets/bee/bee-with-face-only.svg"
-					alt="bee-with-face-only"
-					className="md:hidden block"
-				/>
-				<div className="flex flex-col gap-2 md:gap-4 py-0 md:py-4 w-full">
-					{/*TODO auction start and auction end should come from the server*/}
-					<p className="text-sm mb-1 text-foreground/80">Auction ends in 00 : 23 :12</p>
-					<p>{eligibilityMessage}</p>
-					<p>
-						You bid your true value; winners pay the lowest winning bid. Any amount above the
-						clearing price is refunded.
-					</p>
+			<Card className="w-full md:w-[72%]">
+				<CardContent className="p-4 rounded-lg text-white flex flex-col md:flex-row gap-4 md:gap-8 bg-azure-25">
+					<div className="flex-shrink-0">
+						<img
+							src="/assets/bee/bee-with-hammer.svg"
+							alt="bee-with-hammer"
+							className="hidden md:block"
+						/>
+						<img
+							src="/assets/bee/bee-with-face-only.svg"
+							alt="bee-with-face-only"
+							className="md:hidden block"
+						/>
+					</div>
+					<div className="flex flex-col gap-2 md:gap-4 py-0 md:py-4 w-full">
+						<p className="text-sm mb-1 text-foreground/80">
+							{auction_end_timestamp &&
+								`Auction ends in ${moment.utc(moment.duration(moment(auction_end_timestamp).diff(moment())).asMilliseconds()).format("HH:mm:ss")}`}
+						</p>
+						<p>{eligibilityMessage}</p>
+						<p>
+							You bid your true value; winners pay the lowest winning bid. Any amount above the
+							clearing price is refunded.
+						</p>
 
 					<div className="flex gap-2 justify-between w-full items-end"></div>
 					<Instructions showInfo={showInfo} onToggle={() => setShowInfo(!showInfo)} />
