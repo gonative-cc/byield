@@ -7,6 +7,7 @@ import { Button } from "~/components/ui/button";
 import { FormInput } from "~/components/form/FormInput";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import type { Bid } from "./AuctionTable";
+import { SuiModal } from "~/components/Wallet/SuiWallet/SuiModal";
 
 function validateBidAmount(val: string, hasUserBidBefore: boolean) {
 	const bidAmount = Number(val);
@@ -30,7 +31,6 @@ interface BeelieversBidProps {
 
 export function BeelieversBid({ leaderBoardData = [] }: BeelieversBidProps) {
 	const { suiAddr } = useContext(WalletContext);
-
 	const hasUserBidBefore = useMemo(
 		() => (suiAddr ? leaderBoardData.some((bid) => bid.bidder === suiAddr) : false),
 		[leaderBoardData, suiAddr],
@@ -45,6 +45,12 @@ export function BeelieversBid({ leaderBoardData = [] }: BeelieversBidProps) {
 		},
 	});
 	const { handleSubmit } = bidForm;
+
+	if (suiAddr == null) return <SuiModal />;
+
+	// TOOD:
+	// * show your current bid
+	// * show your current position
 
 	return (
 		<FormProvider {...bidForm}>
@@ -83,7 +89,6 @@ export function BeelieversBid({ leaderBoardData = [] }: BeelieversBidProps) {
 								maxLength={30}
 							/>
 							<Button>Bid Amount</Button>
-							<span className="text-sm self-center">Auction ends in 00 : 23 :12</span>
 						</div>
 					</CardContent>
 				</Card>

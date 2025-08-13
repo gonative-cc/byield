@@ -9,26 +9,11 @@ import { WalletContext } from "~/providers/ByieldWalletProvider";
 
 const MAX_LEADERBOARD_ROWS = 21;
 
-interface Bid {
+export interface Bid {
 	rank: number;
 	bidder: string;
 	amount: string;
 	note?: string;
-}
-
-function NoteInput() {
-	const [note, setNote] = useState("");
-
-	return (
-		<Input
-			type="text"
-			placeholder="Add note..."
-			value={note}
-			onChange={(e) => setNote(e.target.value)}
-			maxLength={30}
-			containerClassName="max-w-1/2"
-		/>
-	);
 }
 
 const createColumns = (): Column<Bid>[] => [
@@ -59,7 +44,7 @@ const createColumns = (): Column<Bid>[] => [
 	{
 		Header: "Note",
 		accessor: "note",
-		Cell: () => <NoteInput />,
+		Cell: ({ row }: CellProps<Bid>) => <span>{row.original.note || "-"}</span>,
 	},
 ];
 
