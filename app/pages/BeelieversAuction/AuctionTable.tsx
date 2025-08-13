@@ -16,21 +16,6 @@ export interface Bid {
 	note?: string;
 }
 
-function NoteInput() {
-	const [note, setNote] = useState("");
-
-	return (
-		<Input
-			type="text"
-			placeholder="Add note..."
-			value={note}
-			onChange={(e) => setNote(e.target.value)}
-			maxLength={30}
-			containerClassName="max-w-1/2"
-		/>
-	);
-}
-
 const createColumns = (): Column<Bid>[] => [
 	{
 		Header: "Rank",
@@ -59,7 +44,7 @@ const createColumns = (): Column<Bid>[] => [
 	{
 		Header: "Note",
 		accessor: "note",
-		Cell: () => <NoteInput />,
+		Cell: ({ row }: CellProps<Bid>) => <span>{row.original.note || "-"}</span>,
 	},
 ];
 
