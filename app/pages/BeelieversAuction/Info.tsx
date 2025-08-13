@@ -55,7 +55,7 @@ const Instructions = ({ showInfo, onToggle }: { showInfo: boolean; onToggle: () 
 				<span className="font-bold">How It Works?</span>
 				{showInfo ? <ChevronsUp /> : <ChevronsDown />}
 			</button>
-			{showInfo && InstructionDetails()}
+			{showInfo && <InstructionDetails />}
 		</div>
 	);
 };
