@@ -3,7 +3,7 @@
 	"license": "MPL-2.0",
 	"private": true,
 	"type": "module",
-	"packageManager": "pnpm@10.13.1",
+	"packageManager": "pnpm@10.14.0",
 	"scripts": {
 		"prepare": "cd .git/hooks; ln -s -f ../../contrib/git-hooks/pre-commit ./",
 		"postinstall": "pnpm run cf-typegen",
@@ -86,7 +86,7 @@
 		"vite": "^6.3.5",
 		"vite-tsconfig-paths": "^5.1.4",
 		"vitest": "^3.2.4",
-		"wrangler": "^4.26.0"
+		"wrangler": "^4.29.0"
 	},
 	"engines": {
 		"node": ">=22.0.0"

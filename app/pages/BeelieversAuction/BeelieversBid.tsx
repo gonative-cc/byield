@@ -1,16 +1,41 @@
 import { FormProvider, useForm } from "react-hook-form";
+import { useContext, useMemo } from "react";
 import { SUI } from "~/lib/denoms";
 import { Card, CardContent } from "~/components/ui/card";
 import { FormNumericInput } from "~/components/form/FormNumericInput";
 import { Button } from "~/components/ui/button";
 import { FormInput } from "~/components/form/FormInput";
+import { WalletContext } from "~/providers/ByieldWalletProvider";
+import type { Bid } from "./AuctionTable";
+
+function validateBidAmount(val: string, hasUserBidBefore: boolean) {
+	const bidAmount = Number(val);
+	if (!hasUserBidBefore && bidAmount < 1) {
+		return "First-time bidders must bid at least 1 SUI";
+	}
+	if (bidAmount <= 0) {
+		return "Bid amount must be greater than 0";
+	}
+	return true;
+}
 
 interface BeelieversBidForm {
 	bid: string;
 	note: string;
 }
 
-export function BeelieversBid() {
+interface BeelieversBidProps {
+	leaderBoardData?: Bid[];
+}
+
+export function BeelieversBid({ leaderBoardData = [] }: BeelieversBidProps) {
+	const { suiAddr } = useContext(WalletContext);
+
+	const hasUserBidBefore = useMemo(
+		() => (suiAddr ? leaderBoardData.some((bid) => bid.bidder === suiAddr) : false),
+		[leaderBoardData, suiAddr],
+	);
+
 	const bidForm = useForm<BeelieversBidForm>({
 		mode: "all",
 		reValidateMode: "onChange",
@@ -39,14 +64,14 @@ export function BeelieversBid() {
 							<FormNumericInput
 								required
 								name="bid"
-								placeholder="Minimum Bid: 1 SUI"
+								placeholder={hasUserBidBefore ? "Enter bid amount" : "Minimum Bid: 1 SUI"}
 								className="h-14"
 								allowNegative={false}
 								decimalScale={SUI}
 								createEmptySpace
 								rules={{
 									validate: {
-										minVal: (val: string) => Number(val) >= 1 || "Min bid amount is 1",
+										minVal: (val: string) => validateBidAmount(val, hasUserBidBefore),
 									},
 								}}
 							/>

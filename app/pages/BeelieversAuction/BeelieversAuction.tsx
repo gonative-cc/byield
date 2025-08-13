@@ -116,7 +116,7 @@ export function BeelieversAuction({
 				<span className="text-2xl text-primary md:text-3xl">Beelievers</span> Auction
 			</p>
 			<AuctionTotals uniqueBidders={unique_bidders} totalBids={total_bids} />
-			<CheckEligible {...eligibilityData} />
+			<CheckEligible {...eligibilityData} leaderBoardData={leaders} />
 			<div className="flex flex-col-reverse md:flex-row gap-4 w-full">
 				<AuctionTable data={leaders} />
 			</div>
