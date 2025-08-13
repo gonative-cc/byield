@@ -11,7 +11,7 @@ function navMenuItems() {
 			{
 				icon: "/assets/navigation/nBTC.svg",
 				id: "navigation-1",
-				title: "nBTC",
+				title: "nBTC (testnet)",
 				link: "",
 				subNavItems: [
 					{
@@ -28,7 +28,7 @@ function navMenuItems() {
 		{
 			icon: "/assets/navigation/nBTC.svg",
 			id: "navigation-2",
-			title: "nBTC",
+			title: "nBTC (testnet)",
 			link: "",
 			subNavItems: [
 				{
@@ -46,14 +46,14 @@ function navMenuItems() {
 		{
 			icon: "/assets/navigation/byield.svg",
 			id: "navigation-3",
-			title: "Market",
+			title: "Market (testnet)",
 			link: "/market",
 			subNavItems: [],
 		},
 		{
 			icon: "/assets/navigation/bee-with-bitcoin.svg",
 			id: "navigation-4",
-			title: "Beelievers Auction",
+			title: "Beelievers Auction (mainnet)",
 			link: "/beelievers-auction",
 			subNavItems: [],
 		},
