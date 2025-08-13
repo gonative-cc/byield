@@ -8,12 +8,12 @@
 	"compatibility_date": "2025-08-12",
 	"main": "./workers/app.ts",
 	"observability": {
-		"enabled": true
+		"enabled": true,
 	},
 	"compatibility_flags": ["nodejs_compat"],
 	"upload_source_maps": false,
 
 	"assets": {
-		"directory": "./public"
-	}
+		"directory": "./public",
+	},
 }
