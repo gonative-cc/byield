@@ -7,17 +7,14 @@ interface TwitterShareButtonProps {
 
 export function TwitterShareButton({ shareContent }: TwitterShareButtonProps) {
 	const twitterIcon = footerConfig.socials.find((social) => social.id === "x")?.src;
+	const postMsg = () => {
+		const text = encodeURIComponent(shareContent);
+		// text = escape(text);
+		window.open(`https://twitter.com/intent/tweet?text=${text}`, "_blank");
+	};
 
 	return (
-		<Button
-			variant="outline"
-			size="sm"
-			onClick={() => {
-				const text = encodeURIComponent(shareContent);
-				window.open(`https://twitter.com/intent/tweet?text=${text}`, "_blank");
-			}}
-			className="flex items-center gap-2"
-		>
+		<Button variant="outline" size="sm" onClick={postMsg} className="flex items-center gap-2">
 			<img src={twitterIcon} alt="X" width={24} height={24} />
 			Share on X
 		</Button>
