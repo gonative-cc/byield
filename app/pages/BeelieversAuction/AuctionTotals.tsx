@@ -13,7 +13,7 @@ export function AuctionTotals({ uniqueBidders, totalBids, entryBid }: AuctionTot
 		<Card className="flex-1">
 			<CardContent className="p-4 text-center">
 				<div className="text-2xl font-bold text-primary">{title}</div>
-				<div className="text text-muted-foreground">{body}</div>
+				<div className="text-muted-foreground">{body}</div>
 			</CardContent>
 		</Card>
 	);
