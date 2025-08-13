@@ -1,12 +1,18 @@
 /**
- * For more details on how to configure Wrangler, refer to:
- * https://developers.cloudflare.com/workers/wrangler/configuration/
+ * NOTE: this config is supposed to be run with wrangle -c wrangler-prod.json
+ * We have to change the main and the assets.directory due to vite build process - which uses
+ * wrangler.json file, rather than this file.
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "byield",
 	"compatibility_date": "2025-08-12",
-	"main": "./workers/app.ts",
+	"main": "./build/server/index.js", // need to use build content directly!
+	// no need to specify build command
+	// "build": {
+	// 	"command": "pnpm run build"
+	// }
+
 	"observability": {
 		"enabled": true,
 	},
@@ -14,6 +20,7 @@
 	"upload_source_maps": false,
 
 	"assets": {
-		"directory": "./public",
+		// "directory": "./public"
+		"directory": "./build/client/",
 	},
 }
