@@ -3,6 +3,7 @@ import { ChevronsDown, ChevronsUp } from "lucide-react";
 import { Card, CardContent } from "~/components/ui/card";
 import { AuctionAccountType } from "./types";
 import moment from "moment";
+import { TwitterShareButton } from "~/components/TwitterShareButton";
 
 interface InfoProps {
 	type?: AuctionAccountType;
@@ -39,12 +40,16 @@ export function Info({ type, auction_end_timestamp }: InfoProps) {
 							You bid your true value; winners pay the lowest winning bid. Any amount above the
 							clearing price is refunded.
 						</p>
+						<TwitterShareButton
+							shareContent={`Just placed my bid in the @goNativeCC BTCFi Beelievers NFT auction!
 
-					<div className="flex gap-2 justify-between w-full items-end"></div>
-					<Instructions showInfo={showInfo} onToggle={() => setShowInfo(!showInfo)} />
-				</div>
-			</CardContent>
-		</Card>
+Securing my spot in the top 5810 at beelieversNFT.gonative.cc`}
+							className="max-w-fit"
+						/>
+						<Instructions showInfo={showInfo} onToggle={() => setShowInfo(!showInfo)} />
+					</div>
+				</CardContent>
+			</Card>
 	);
 }
 
@@ -53,7 +58,7 @@ const Instructions = ({ showInfo, onToggle }: { showInfo: boolean; onToggle: () 
 		<div className="backdrop-blur-sm  shadow-lg mb-6">
 			<button
 				onClick={onToggle}
-				className="rounded-2xl flex items-center justify-between w-full p-4 text-left border text-primary hover:text-primary/80 text-xl"
+				className="cursor-pointer rounded-2xl flex items-center justify-between w-full p-4 text-left border text-primary hover:text-primary/80 text-xl"
 			>
 				<span className="font-bold">How It Works?</span>
 				{showInfo ? <ChevronsUp /> : <ChevronsDown />}
