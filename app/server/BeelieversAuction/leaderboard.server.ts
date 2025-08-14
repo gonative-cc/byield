@@ -36,7 +36,7 @@ const MOCK_LEADER_BOARD_DATA = {
 	total_bids: 1250,
 	highest_bid: 100,
 	entry_bid: 2,
-	auction_end_timestamp: Date.now() + 24 * 60 * 60 * 1000,
+	auction_end_ms: Date.now() + 24 * 60 * 60 * 1000,
 };
 
 export function getLeaderBoardData() {

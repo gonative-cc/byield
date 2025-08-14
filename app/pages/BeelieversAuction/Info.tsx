@@ -8,12 +8,16 @@ import { TwitterShareButton } from "~/components/TwitterShareButton";
 interface InfoProps {
 	type?: AuctionAccountType;
 	isError?: boolean;
-	auction_end_timestamp?: number;
+	auction_end_ms?: number;
 }
 
-export function Info({ type, auction_end_timestamp }: InfoProps) {
+export function Info({ type, auction_end_ms }: InfoProps) {
 	const eligibilityMessage = getEligibilityMessage(type);
 	const [showInfo, setShowInfo] = React.useState(false);
+
+	const endTime = moment
+		.utc(moment.duration(moment(auction_end_ms).diff(moment())).asMilliseconds())
+		.format("HH:mm:ss");
 
 	return (
 			<Card className="w-full md:w-[72%]">
@@ -31,10 +35,9 @@ export function Info({ type, auction_end_timestamp }: InfoProps) {
 						/>
 					</div>
 					<div className="flex flex-col gap-2 md:gap-4 py-0 md:py-4 w-full">
-						<p className="text-sm mb-1 text-foreground/80">
-							{auction_end_timestamp &&
-								`Auction ends in ${moment.utc(moment.duration(moment(auction_end_timestamp).diff(moment())).asMilliseconds()).format("HH:mm:ss")}`}
-						</p>
+						{endTime && (
+							<p className="text-sm mb-1 text-foreground/80">Auction ends in {endTime}</p>
+						)}
 						<p>{eligibilityMessage}</p>
 						<p>
 							You bid your true value; winners pay the lowest winning bid. Any amount above the
