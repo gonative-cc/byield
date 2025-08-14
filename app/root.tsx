@@ -11,7 +11,7 @@ import { isProductionMode, printAppEnv } from "./lib/appenv";
 import { useEffect } from "react";
 import { Footer } from "~/components/Footer";
 import { SideBarProvider } from "./providers/SiderBarProvider";
-import { ByieldSideBar } from "./components/ByieldSideBar";
+import { SideBar } from "./components/SideBar";
 
 const queryClient = new QueryClient();
 
@@ -56,7 +56,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 			<body>
 				<SideBarProvider>
 					<div className="flex w-full">
-						<ByieldSideBar />
+						<SideBar />
 						<div className="flex flex-col gap-2 w-full">
 							<NativeApp>
 								<NavBar />
