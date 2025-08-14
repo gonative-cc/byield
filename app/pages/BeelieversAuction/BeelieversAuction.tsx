@@ -3,6 +3,7 @@ import { AuctionTable } from "./AuctionTable";
 import { AuctionTotals } from "./AuctionTotals";
 import type { AuctionAccountType } from "./types";
 import { BeelieversBid } from "./BeelieversBid";
+import { Partners } from "~/components/Partners";
 
 interface BeelieversAuctionProps {
 	leaderBoardData: {
@@ -43,6 +44,7 @@ Securing my spot in the top 5810 at beelieversNFT.gonative.cc`;
 			<div className="flex flex-col-reverse md:flex-row gap-4 w-full">
 				<AuctionTable data={leaders} />
 			</div>
+			<Partners />
 		</div>
 	);
 }
