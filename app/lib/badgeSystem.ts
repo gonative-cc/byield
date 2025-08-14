@@ -20,7 +20,7 @@ export const BADGE_CONDITIONS: BadgeCondition[] = [
 		priority: 1,
 	},
 	{
-		filename: "Crown top 3.svg",
+		filename: "Crown_top_3.svg",
 		condition: (bidder: Bidder) => bidder.rank <= 3,
 		priority: 2,
 	},
@@ -35,48 +35,48 @@ export const BADGE_CONDITIONS: BadgeCondition[] = [
 		priority: 4,
 	},
 	{
-		filename: "Whale for top 100.svg",
+		filename: "Whale_for_top_100.svg",
 		condition: (bidder: Bidder) => bidder.rank <= 100,
 		priority: 5,
 	},
 	{
-		filename: "Everyone in top 5810 positions.svg",
+		filename: "Everyone_in_top_5810_positions.svg",
 		condition: (bidder: Bidder) => bidder.rank <= 5810,
 		priority: 6,
 	},
 	{
-		filename: "highest single bid.svg",
+		filename: "highest_single_bid.svg",
 		condition: (bidder: Bidder, _allBidders: Bidder[], leaderboardData: LeaderboardData) =>
 			parseFloat(bidder.amount) === leaderboardData.highest_bid,
 		priority: 1,
 	},
 	{
-		filename: "Single bid over 10 Sui.svg",
+		filename: "Single_bid_over_10_Sui.svg",
 		condition: (bidder: Bidder) => parseFloat(bidder.amount) > 10,
 		priority: 7,
 	},
 	{
-		filename: "Single bid over 5 Sui.svg",
+		filename: "Single_bid_over_5_Sui.svg",
 		condition: (bidder: Bidder) => parseFloat(bidder.amount) > 5,
 		priority: 8,
 	},
 	{
-		filename: "Single bid over 3 Sui.svg",
+		filename: "Single_bid_over_3_Sui.svg",
 		condition: (bidder: Bidder) => parseFloat(bidder.amount) > 3,
 		priority: 9,
 	},
 	{
-		filename: "Logo Ika red every 10th position.svg",
+		filename: "Logo_Ika_red_every_10th_position.svg",
 		condition: (bidder: Bidder) => bidder.rank % 10 === 0,
 		priority: 10,
 	},
 	{
-		filename: "nbtc every 21st bidder.svg",
+		filename: "nbtc_every_21st_bidder.svg",
 		condition: (bidder: Bidder) => bidder.rank % 21 === 0,
 		priority: 11,
 	},
 	{
-		filename: "Last bid in Leaderboard.svg",
+		filename: "Last_bid_in_Leaderboard.svg",
 		condition: (bidder: Bidder, allBidders: Bidder[]) => bidder.rank === allBidders.length,
 		priority: 12,
 	},
