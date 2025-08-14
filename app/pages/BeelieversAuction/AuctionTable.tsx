@@ -19,7 +19,10 @@ interface AuctionTableProps {
 	leaderboardData?: LeaderboardData;
 }
 
-const createColumns = (allBidders: Bidder[], leaderboardData: LeaderboardData | undefined): Column<Bidder>[] => [
+const createColumns = (
+	allBidders: Bidder[],
+	leaderboardData: LeaderboardData | undefined,
+): Column<Bidder>[] => [
 	{
 		Header: "Rank",
 		accessor: "rank",

@@ -30,6 +30,8 @@ function navMenuItems(): MenuItem[] {
 				subNavItems: [
 					{
 						id: "navigation-2-1",
+						icon: "",
+						subNavItems: [],
 						link: "/",
 						title: "Buy or Sell nBTC",
 					},
@@ -48,11 +50,15 @@ function navMenuItems(): MenuItem[] {
 				{
 					id: "navigation-2-1",
 					link: "/",
+					icon: "",
+						subNavItems: [],
 					title: "Buy or Sell nBTC",
 				},
 				{
 					id: "navigation-2-2",
 					link: "/mint",
+					icon: "",
+						subNavItems: [],
 					title: "Mint nBTC",
 				},
 			],
@@ -89,8 +95,8 @@ export function Sidebar() {
 			}
 		};
 
-		document.addEventListener('mousedown', handleClickOutside);
-		return () => document.removeEventListener('mousedown', handleClickOutside);
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => document.removeEventListener("mousedown", handleClickOutside);
 	}, [isMobileOpen, toggleMobileMenu]);
 
 	return (
@@ -99,7 +105,8 @@ export function Sidebar() {
 			<div
 				ref={sidebarRef}
 				className={classNames({
-					"md:translate-x-0 fixed md:static top-0 border-r left-0 h-full text-white transition-all duration-300 ease-in-out z-50 bg-slate-950 md:bg-background": true,
+					"md:translate-x-0 fixed md:static top-0 border-r left-0 h-full text-white transition-all duration-300 ease-in-out z-50 bg-slate-950 md:bg-background":
+						true,
 					"translate-x-0 mt-6 md:mt-0": isMobileOpen,
 					"-translate-x-full": !isMobileOpen,
 					"w-16": isCollapsed,
@@ -134,8 +141,45 @@ export function Sidebar() {
 					<nav className="flex-1 p-4">
 						{navItems.map((item) => (
 							<div key={item.id}>
-								{ParentItem(item, currentPath, isCollapsed)}
-								{!isCollapsed && SubItems(item.subNavItems, currentPath)}
+								{/* Parent Nav Item */}
+								<Link to={item.subNavItems.length ? {} : item.link}>
+									<button
+										type="button"
+										className={classNames({
+											"flex items-center w-full px-2 py-1 gap-2 rounded cursor-pointer mb-2":
+												true,
+											"bg-primary": currentPath === item.link,
+											"hover:bg-accent": currentPath !== item.link,
+										})}
+									>
+										<img src={item.icon} alt="" className="flex h-8 w-8 object-fit" />
+										{!isCollapsed && (
+											<div className="flex w-full justify-between">
+												<span className="text-sm">{item.title}</span>
+											</div>
+										)}
+									</button>
+								</Link>
+
+								{/* Submenu Items */}
+								{!isCollapsed && item.subNavItems.length > 0 && (
+									<div className="pl-10 ml-4 border-l-2">
+										{item.subNavItems.map((subItem) => (
+											<Link
+												key={subItem.id}
+												to={subItem.link}
+												className={classNames({
+													"flex items-center p-2 hover:bg-accent rounded cursor-pointer mb-2 text-sm":
+														true,
+													"bg-primary": currentPath === subItem.link,
+													"hover:bg-accent": currentPath !== subItem.link,
+												})}
+											>
+												<span>{subItem.title}</span>
+											</Link>
+										))}
+									</div>
+								)}
 							</div>
 						))}
 					</nav>

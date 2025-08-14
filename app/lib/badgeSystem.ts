@@ -85,7 +85,7 @@ export const BADGE_CONDITIONS: BadgeCondition[] = [
 export function getBadgesForBidder(
 	bidder: Bidder,
 	allBidders: Bidder[],
-	leaderboardData: LeaderboardData
+	leaderboardData: LeaderboardData,
 ): Badge[] {
 	const applicableBadges: Badge[] = [];
 
