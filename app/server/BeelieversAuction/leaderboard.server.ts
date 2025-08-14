@@ -32,10 +32,11 @@ const MOCK_LEADER_BOARD_DATA = {
 			amount: "25",
 		},
 	],
-	unique_bidders: 600, // Total unique wallets that have bid
-	total_bids: 1250, // Total number of bids (wallets can bid multiple times)
+	unique_bidders: 600,
+	total_bids: 1250,
 	highest_bid: 100,
 	entry_bid: 2,
+	auction_end_ms: Date.now() + 24 * 60 * 60 * 1000,
 };
 
 export function getLeaderBoardData() {
