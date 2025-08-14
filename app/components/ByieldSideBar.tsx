@@ -80,7 +80,7 @@ function navMenuItems(): MenuItem[] {
 	];
 }
 
-export function AppSidebar() {
+export function ByieldSideBar() {
 	const location = useLocation();
 	const currentPath = location.pathname;
 	const sidebarRef = useRef<HTMLDivElement>(null);
