@@ -11,7 +11,6 @@ export function TwitterShareButton({ shareContent, className }: TwitterShareButt
 	const twitterIcon = footerConfig.socials.find((social) => social.id === "x")?.src;
 	const postMsg = () => {
 		const text = encodeURIComponent(shareContent);
-		// text = escape(text);
 		window.open(`https://twitter.com/intent/tweet?text=${text}`, "_blank");
 	};
 

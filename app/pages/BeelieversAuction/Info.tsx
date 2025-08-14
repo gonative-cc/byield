@@ -20,39 +20,37 @@ export function Info({ type, auction_end_ms }: InfoProps) {
 		.format("HH:mm:ss");
 
 	return (
-			<Card className="w-full md:w-[72%]">
-				<CardContent className="p-4 rounded-lg text-white flex flex-col md:flex-row gap-4 md:gap-8 bg-azure-25">
-					<div className="flex-shrink-0">
-						<img
-							src="/assets/bee/bee-with-hammer.svg"
-							alt="bee-with-hammer"
-							className="hidden md:block"
-						/>
-						<img
-							src="/assets/bee/bee-with-face-only.svg"
-							alt="bee-with-face-only"
-							className="md:hidden block"
-						/>
-					</div>
-					<div className="flex flex-col gap-2 md:gap-4 py-0 md:py-4 w-full">
-						{endTime && (
-							<p className="text-sm mb-1 text-foreground/80">Auction ends in {endTime}</p>
-						)}
-						<p>{eligibilityMessage}</p>
-						<p>
-							You bid your true value; winners pay the lowest winning bid. Any amount above the
-							clearing price is refunded.
-						</p>
-						<TwitterShareButton
-							shareContent={`Just placed my bid in the @goNativeCC BTCFi Beelievers NFT auction!
+		<Card className="w-full md:w-[72%]">
+			<CardContent className="p-4 rounded-lg text-white flex flex-col md:flex-row gap-4 md:gap-8 bg-azure-25">
+				<div className="flex-shrink-0">
+					<img
+						src="/assets/bee/bee-with-hammer.svg"
+						alt="bee-with-hammer"
+						className="hidden md:block"
+					/>
+					<img
+						src="/assets/bee/bee-with-face-only.svg"
+						alt="bee-with-face-only"
+						className="md:hidden block"
+					/>
+				</div>
+				<div className="flex flex-col gap-2 md:gap-4 py-0 md:py-4 w-full">
+					{endTime && <p className="text-sm mb-1 text-foreground/80">Auction ends in {endTime}</p>}
+					<p>{eligibilityMessage}</p>
+					<p>
+						You bid your true value; winners pay the lowest winning bid. Any amount above the
+						clearing price is refunded.
+					</p>
+					<TwitterShareButton
+						shareContent={`Just placed my bid in the @goNativeCC BTCFi Beelievers NFT auction!
 
 Securing my spot in the top 5810 at beelieversNFT.gonative.cc`}
-							className="max-w-fit"
-						/>
-						<Instructions showInfo={showInfo} onToggle={() => setShowInfo(!showInfo)} />
-					</div>
-				</CardContent>
-			</Card>
+						className="max-w-fit"
+					/>
+					<Instructions showInfo={showInfo} onToggle={() => setShowInfo(!showInfo)} />
+				</div>
+			</CardContent>
+		</Card>
 	);
 }
 
