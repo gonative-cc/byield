@@ -53,14 +53,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<GoogleAnalytics />
 				<Links />
 			</head>
-			<body className="flex w-full">
+			<body>
 				<SideBarProvider>
-					<Sidebar />
-					<div className="flex flex-col gap-2 w-full">
-						<NativeApp>
-							<NavBar />
-							{children}
-						</NativeApp>
+					<div className="flex w-full">
+						<Sidebar />
+						<div className="flex flex-col gap-2 w-full">
+							<NativeApp>
+								<NavBar />
+								{children}
+							</NativeApp>
+						</div>
 					</div>
 				</SideBarProvider>
 			</body>

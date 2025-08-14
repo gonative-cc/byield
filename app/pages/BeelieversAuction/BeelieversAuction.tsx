@@ -1,28 +1,13 @@
 import { Info } from "./Info";
 import { AuctionTable } from "./AuctionTable";
 import { AuctionTotals } from "./AuctionTotals";
-import type { AuctionAccountType } from "./types";
 import { BeelieversBid } from "./BeelieversBid";
 import { Partners } from "~/components/Partners";
+import type { LeaderboardResponse, EligibilityData } from "./types";
 
 interface BeelieversAuctionProps {
-	leaderBoardData: {
-		isError: boolean;
-		leaders: {
-			rank: number;
-			bidder: string;
-			amount: string;
-		}[];
-		unique_bidders: number;
-		total_bids: number;
-		highest_bid: number;
-		entry_bid: number;
-		auction_end_ms: number;
-	};
-	eligibilityData?: {
-		type?: AuctionAccountType;
-		isError?: boolean;
-	};
+	leaderBoardData: LeaderboardResponse;
+	eligibilityData?: EligibilityData;
 	isCheckingEligibility?: boolean;
 }
 
@@ -39,7 +24,16 @@ export function BeelieversAuction({
 			<Info {...eligibilityData} auction_end_ms={auction_end_ms} />
 			<BeelieversBid leaderBoardData={leaders} />
 			<div className="flex flex-col-reverse md:flex-row gap-4 w-full">
-				<AuctionTable data={leaders} />
+				<AuctionTable
+					data={leaders}
+					leaderboardData={{
+						unique_bidders,
+						total_bids,
+						highest_bid: Math.max(...leaders.map((l) => parseFloat(l.amount))),
+						entry_bid,
+						auction_end_ms,
+					}}
+				/>
 			</div>
 			<Partners />
 		</div>
