@@ -30,9 +30,6 @@ export function BeelieversAuction({
 	leaderBoardData: { leaders, unique_bidders, total_bids, entry_bid, auction_end_ms },
 	eligibilityData,
 }: BeelieversAuctionProps) {
-	const tweet = `Just placed my bid in the @goNativeCC BTCFi Beelievers NFT auction!
-Securing my spot in the top 5810 at beelieversNFT.gonative.cc`;
-
 	return (
 		<div className="flex flex-col items-center gap-8 w-full relative">
 			<p className="md:text-3xl text-2xl text-center font-semibold max-w-120">
