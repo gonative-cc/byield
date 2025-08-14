@@ -165,3 +165,8 @@
   animation: scroll-rtl 40s linear infinite;
   width: max-content;
 }
+
+a,
+button {
+  cursor: pointer;
+}

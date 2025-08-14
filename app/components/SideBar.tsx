@@ -4,7 +4,21 @@ import { SideBarContext } from "~/providers/SiderBarProvider";
 import { classNames } from "~/util/tailwind";
 import { isProductionMode } from "~/lib/appenv";
 
-function navMenuItems() {
+interface MenuItem {
+	icon: string;
+	id: string;
+	title: string;
+	link: string;
+	subNavItems: MenuItem[];
+}
+
+interface MenuSubItem {
+	id: string;
+	link: string;
+	title: string;
+}
+
+function navMenuItems(): MenuItem[] {
 	const isProd = isProductionMode();
 	if (isProd) {
 		return [
@@ -88,7 +102,7 @@ export function Sidebar() {
 								<div className="md:w-32">
 									<img
 										src="/assets/app-logos/logo.svg"
-										alt="Remix"
+										alt="Native"
 										className="hidden md:block"
 									/>
 								</div>
@@ -97,7 +111,7 @@ export function Sidebar() {
 						{isCollapsed && (
 							<Link to="/" className="font-bold text-lg">
 								<div className="md:w-32">
-									<img src="/assets/app-logos/logo-mobile.svg" alt="Remix" />
+									<img src="/assets/app-logos/logo-mobile.svg" alt="Native" />
 								</div>
 							</Link>
 						)}
@@ -107,43 +121,8 @@ export function Sidebar() {
 					<nav className="flex-1 p-4">
 						{navItems.map((item) => (
 							<div key={item.id}>
-								{/* Parent Nav Item */}
-								<Link to={item.subNavItems.length ? {} : item.link}>
-									<button
-										type="button"
-										className={classNames({
-											"flex items-center w-full px-2 py-1 gap-2 rounded cursor-pointer mb-2": true,
-											"bg-primary": currentPath === item.link,
-											"hover:bg-accent": currentPath !== item.link,
-										})}
-									>
-										<img src={item.icon} alt="" className="flex h-8 w-8 object-fit" />
-										{!isCollapsed && (
-											<div className="flex w-full justify-between">
-												<span className="text-sm">{item.title}</span>
-											</div>
-										)}
-									</button>
-								</Link>
-
-								{/* Submenu Items */}
-								{!isCollapsed && item.subNavItems.length > 0 && (
-									<div className="pl-10 ml-4 border-l-2">
-										{item.subNavItems.map((subItem) => (
-											<Link
-												key={subItem.id}
-												to={subItem.link}
-												className={classNames({
-													"flex items-center p-2 hover:bg-accent rounded cursor-pointer mb-2 text-sm": true,
-													"bg-primary": currentPath === subItem.link,
-													"hover:bg-accent": currentPath !== subItem.link,
-												})}
-											>
-												<span>{subItem.title}</span>
-											</Link>
-										))}
-									</div>
-								)}
+								{ParentItem(item, currentPath, isCollapsed)}
+								{!isCollapsed && SubItems(item.subNavItems, currentPath)}
 							</div>
 						))}
 					</nav>
@@ -158,6 +137,51 @@ export function Sidebar() {
 					onClick={toggleMobileMenu}
 				/>
 			)}
+		</div>
+	);
+}
+
+const itemCls = "flex items-center px-2 py-1 rounded mb-2";
+
+function ParentItem(item: MenuItem, currentPath: string, collapsed: boolean) {
+	const component = (
+		<div
+			className={classNames(itemCls, {
+				"bg-primary": currentPath === item.link,
+				"hover:bg-accent": currentPath !== item.link,
+				"cursor-default": item.link === "",
+			})}
+		>
+			<img src={item.icon} alt="" className="flex h-8 w-8 object-fit" />
+			{!collapsed && (
+				<div className="flex w-full justify-between">
+					<span className="text-sm">{item.title}</span>
+				</div>
+			)}
+		</div>
+	);
+	if (!item.link) return component;
+
+	return <Link to={item.link}>{component}</Link>;
+}
+
+function SubItems(subItems: MenuSubItem[], currentPath: string) {
+	if (!subItems.length) return "";
+
+	return (
+		<div className="pl-10 ml-4 border-l-2">
+			{subItems.map((subItem) => (
+				<Link
+					key={subItem.id}
+					to={subItem.link}
+					className={classNames(itemCls, "text-sm", {
+						"bg-primary": currentPath === subItem.link,
+						"hover:bg-accent": currentPath !== subItem.link,
+					})}
+				>
+					<span>{subItem.title}</span>
+				</Link>
+			))}
 		</div>
 	);
 }

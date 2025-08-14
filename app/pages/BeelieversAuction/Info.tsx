@@ -59,7 +59,7 @@ const Instructions = ({ showInfo, onToggle }: { showInfo: boolean; onToggle: () 
 		<div className="backdrop-blur-sm  shadow-lg mb-6">
 			<button
 				onClick={onToggle}
-				className="cursor-pointer rounded-2xl flex items-center justify-between w-full p-4 text-left border text-primary hover:text-primary/80 text-xl"
+				className="rounded-2xl flex items-center justify-between w-full p-4 text-left border text-primary hover:text-primary/80 text-xl"
 			>
 				<span className="font-bold">How It Works?</span>
 				{showInfo ? <ChevronsUp /> : <ChevronsDown />}
