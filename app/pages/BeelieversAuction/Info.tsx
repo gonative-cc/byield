@@ -4,6 +4,7 @@ import { Card, CardContent } from "~/components/ui/card";
 import { Countdown } from "~/components/ui/countdown";
 import { AuctionAccountType } from "./types";
 import { TwitterShareButton } from "~/components/TwitterShareButton";
+import moment from "moment";
 
 interface InfoProps {
 	type?: AuctionAccountType;
@@ -15,6 +16,14 @@ interface InfoProps {
 export function Info({ type, auction_end_ms }: InfoProps) {
 	const eligibilityMessage = getEligibilityMessage(type);
 	const [showInfo, setShowInfo] = React.useState(false);
+
+	const endTime = moment
+		.utc(moment.duration(moment(auction_end_ms).diff(moment())).asMilliseconds())
+		.format("HH:mm:ss");
+
+	const tweet = `Just placed my bid in the @goNativeCC BTCFi Beelievers NFT auction!
+
+Securing my spot in the top 5810 at beelieversNFT.gonative.cc`;
 
 	return (
 		<Card className="w-full md:w-[72%]">
@@ -32,20 +41,15 @@ export function Info({ type, auction_end_ms }: InfoProps) {
 					/>
 				</div>
 				<div className="flex flex-col gap-2 md:gap-4 py-0 md:py-4 w-full">
-					<p>
-						Auction ends in: <Countdown targetTime={auction_end_ms} className="ml-1" />
-					</p>
+					<div className="flex justify-between items-center">
+						{endTime && <p className="text-sm text-foreground/80">Auction ends in {endTime}</p>}
+						<TwitterShareButton shareContent={tweet} className="max-w-fit" />
+					</div>
 					<p>{eligibilityMessage}</p>
 					<p>
 						You bid your true value; winners pay the lowest winning bid. Any amount above the
 						clearing price is refunded.
 					</p>
-					<TwitterShareButton
-						shareContent={`Just placed my bid in the @goNativeCC BTCFi Beelievers NFT auction!
-
-Securing my spot in the top 5810 at beelieversNFT.gonative.cc`}
-						className="max-w-fit"
-					/>
 					<Instructions showInfo={showInfo} onToggle={() => setShowInfo(!showInfo)} />
 				</div>
 			</CardContent>

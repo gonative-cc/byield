@@ -1,28 +1,13 @@
 import { Info } from "./Info";
 import { AuctionTable } from "./AuctionTable";
 import { AuctionTotals } from "./AuctionTotals";
-import type { AuctionAccountType } from "./types";
 import { BeelieversBid } from "./BeelieversBid";
 import { Partners } from "~/components/Partners";
+import type { LeaderboardResponse, EligibilityData } from "./types";
 
 interface BeelieversAuctionProps {
-	leaderBoardData: {
-		isError: boolean;
-		leaders: {
-			rank: number;
-			bidder: string;
-			amount: string;
-		}[];
-		unique_bidders: number;
-		total_bids: number;
-		highest_bid: number;
-		entry_bid: number;
-		auction_end_ms: number;
-	};
-	eligibilityData?: {
-		type?: AuctionAccountType;
-		isError?: boolean;
-	};
+	leaderBoardData: LeaderboardResponse;
+	eligibilityData?: EligibilityData;
 	isCheckingEligibility?: boolean;
 }
 

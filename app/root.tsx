@@ -11,7 +11,7 @@ import { isProductionMode, printAppEnv } from "./lib/appenv";
 import { useEffect } from "react";
 import { Footer } from "~/components/Footer";
 import { SideBarProvider } from "./providers/SiderBarProvider";
-import { Sidebar } from "~/components/SideBar";
+import { SideBar } from "~/components/SideBar";
 
 const queryClient = new QueryClient();
 
@@ -53,14 +53,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<GoogleAnalytics />
 				<Links />
 			</head>
-			<body className="flex w-full">
+			<body>
 				<SideBarProvider>
-					<Sidebar />
-					<div className="flex flex-col gap-2 w-full">
-						<NativeApp>
-							<NavBar />
-							{children}
-						</NativeApp>
+					<div className="flex w-full">
+						<SideBar />
+						<div className="flex flex-col gap-2 w-full">
+							<NativeApp>
+								<NavBar />
+								{children}
+							</NativeApp>
+						</div>
 					</div>
 				</SideBarProvider>
 			</body>

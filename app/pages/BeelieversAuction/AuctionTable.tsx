@@ -5,35 +5,54 @@ import { Table } from "~/components/ui/table";
 import { trimAddress } from "~/components/Wallet/walletHelper";
 import { useContext } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
+import { getBadgesForBidder } from "~/lib/badgeSystem";
+import { Badge } from "~/components/Badge";
+import type { Bidder } from "./types";
 
 const MAX_LEADERBOARD_ROWS = 21;
 
-export interface Bid {
-	rank: number;
-	bidder: string;
-	amount: string;
-	note?: string;
+interface AuctionTableProps {
+	data: Bidder[];
 }
 
-const createColumns = (): Column<Bid>[] => [
+const createColumns = (): Column<Bidder>[] => [
 	{
 		Header: "Rank",
 		accessor: "rank",
-		Cell: ({ value }: CellProps<Bid>) => <div className="flex items-center gap-2">#{value}</div>,
+		Cell: ({ value }: CellProps<Bidder>) => <div className="flex items-center gap-2">#{value}</div>,
 	},
 	{
 		Header: "Bidder",
 		accessor: "bidder",
-		Cell: ({ row }: CellProps<Bid>) => (
+		Cell: ({ row }: CellProps<Bidder>) => (
 			<div className="flex space-x-2">
 				<span>{trimAddress(row.original.bidder)}</span>
 			</div>
 		),
 	},
 	{
+		Header: "Badges",
+		Cell: ({ row }: CellProps<Bidder>) => {
+			const badgeNames = row.original.badges || [];
+			const badges = badgeNames.map(getBadgesForBidder).filter(Boolean);
+
+			return (
+				<div className="flex space-x-1 justify-center">
+					{badges.length > 0 ? (
+						badges.map((badge, index) => (
+							<Badge key={index} src={badge!.src} title={badge!.name} />
+						))
+					) : (
+						<span className="text-gray-400">-</span>
+					)}
+				</div>
+			);
+		},
+	},
+	{
 		Header: "Bid Amount",
 		accessor: "amount",
-		Cell: ({ row }: CellProps<Bid>) => (
+		Cell: ({ row }: CellProps<Bidder>) => (
 			<div className="flex space-x-2">
 				<SUIIcon prefix="" className="h-5 w-5" />
 				<span>{row.original.amount} SUI</span>
@@ -43,13 +62,9 @@ const createColumns = (): Column<Bid>[] => [
 	{
 		Header: "Note",
 		accessor: "note",
-		Cell: ({ row }: CellProps<Bid>) => <span>{row.original.note || "-"}</span>,
+		Cell: ({ row }: CellProps<Bidder>) => <span>{row.original.note || "-"}</span>,
 	},
 ];
-
-interface AuctionTableProps {
-	data: Bid[];
-}
 
 export function AuctionTable({ data }: AuctionTableProps) {
 	const { suiAddr } = useContext(WalletContext);
@@ -57,7 +72,7 @@ export function AuctionTable({ data }: AuctionTableProps) {
 	const userBid = data.find((bid) => bid.bidder === suiAddr);
 	const userPosition = userBid?.rank;
 
-	const getDisplayData = (): Bid[] => {
+	const getDisplayData = (): Bidder[] => {
 		const top21 = data.slice(0, MAX_LEADERBOARD_ROWS);
 
 		if (userPosition && userPosition > MAX_LEADERBOARD_ROWS && userBid) {
@@ -70,7 +85,7 @@ export function AuctionTable({ data }: AuctionTableProps) {
 	const displayData = getDisplayData();
 	const columns = createColumns();
 
-	const getRowProps = (row: { original: Bid }) => {
+	const getRowProps = (row: { original: Bidder }) => {
 		const isUserRow = row.original.bidder === suiAddr;
 		return {
 			className: isUserRow ? "bg-primary/10 border-l-4 border-primary" : "",
