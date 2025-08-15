@@ -24,16 +24,7 @@ export function BeelieversAuction({
 			<Info {...eligibilityData} auction_end_ms={auction_end_ms} />
 			<BeelieversBid leaderBoardData={leaders} />
 			<div className="flex flex-col-reverse md:flex-row gap-4 w-full">
-				<AuctionTable
-					data={leaders}
-					leaderboardData={{
-						unique_bidders,
-						total_bids,
-						highest_bid: Math.max(...leaders.map((l) => parseFloat(l.amount))),
-						entry_bid,
-						auction_end_ms,
-					}}
-				/>
+				<AuctionTable data={leaders} />
 			</div>
 			<Partners />
 		</div>

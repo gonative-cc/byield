@@ -7,22 +7,15 @@ import { useContext } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { getBadgesForBidder } from "~/lib/badgeSystem";
 import { Badge } from "~/components/Badge";
-import type { Bidder, LeaderboardData } from "./types";
+import type { Bidder } from "./types";
 
 const MAX_LEADERBOARD_ROWS = 21;
 
-// Re-export Bidder type for backward compatibility
-export type { Bidder };
-
 interface AuctionTableProps {
 	data: Bidder[];
-	leaderboardData?: LeaderboardData;
 }
 
-const createColumns = (
-	allBidders: Bidder[],
-	leaderboardData: LeaderboardData | undefined,
-): Column<Bidder>[] => [
+const createColumns = (): Column<Bidder>[] => [
 	{
 		Header: "Rank",
 		accessor: "rank",
@@ -40,22 +33,14 @@ const createColumns = (
 	{
 		Header: "Badges",
 		Cell: ({ row }: CellProps<Bidder>) => {
-			if (!leaderboardData) {
-				return <span className="text-gray-400">-</span>;
-			}
+			const badgeNames = row.original.badges || [];
+			const badges = badgeNames.map(getBadgesForBidder).filter(Boolean);
 
-			const badges = getBadgesForBidder(row.original, allBidders, leaderboardData);
 			return (
 				<div className="flex space-x-1 justify-center">
 					{badges.length > 0 ? (
 						badges.map((badge, index) => (
-							<Badge
-								key={index}
-								src={badge.src}
-								alt={badge.name}
-								title={badge.name}
-								className="w-6 h-6"
-							/>
+							<Badge key={index} src={badge!.src} title={badge!.name} />
 						))
 					) : (
 						<span className="text-gray-400">-</span>
@@ -81,7 +66,7 @@ const createColumns = (
 	},
 ];
 
-export function AuctionTable({ data, leaderboardData }: AuctionTableProps) {
+export function AuctionTable({ data }: AuctionTableProps) {
 	const { suiAddr } = useContext(WalletContext);
 
 	const userBid = data.find((bid) => bid.bidder === suiAddr);
@@ -98,7 +83,7 @@ export function AuctionTable({ data, leaderboardData }: AuctionTableProps) {
 	};
 
 	const displayData = getDisplayData();
-	const columns = createColumns(data, leaderboardData);
+	const columns = createColumns();
 
 	const getRowProps = (row: { original: Bidder }) => {
 		const isUserRow = row.original.bidder === suiAddr;

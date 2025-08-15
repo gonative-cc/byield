@@ -8,6 +8,7 @@ export interface Bidder {
 	rank: number;
 	bidder: string;
 	amount: string;
+	badges: string[];
 	note?: string;
 }
 
