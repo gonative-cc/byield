@@ -92,7 +92,8 @@ export function Sidebar() {
 			{/* Sidebar */}
 			<div
 				className={classNames({
-					"md:translate-x-0 fixed md:static top-0 border-r left-0 h-full text-white transition-all duration-300 ease-in-out z-50 bg-slate-950 md:bg-background": true,
+					"md:translate-x-0 fixed md:static top-0 border-r left-0 h-full text-white transition-all duration-300 ease-in-out z-50 bg-slate-950 md:bg-background":
+						true,
 					"translate-x-0 mt-6 md:mt-0": isMobileOpen,
 					"-translate-x-full": !isMobileOpen,
 					"w-16": isCollapsed,
