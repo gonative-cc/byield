@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
 @plugin 'tailwindcss-animate';
+/* TODO: enable daisUI
+   @plugin "daisyui"; */
 
 @custom-variant dark (&:is(.dark *));
 
