@@ -11,7 +11,7 @@ import { isProductionMode, printAppEnv } from "./lib/appenv";
 import { useEffect } from "react";
 import { Footer } from "~/components/Footer";
 import { SideBarProvider } from "./providers/SiderBarProvider";
-import { SideBar } from "./components/AppSideBar";
+import { SideBar } from "~/components/SideBar";
 
 const queryClient = new QueryClient();
 

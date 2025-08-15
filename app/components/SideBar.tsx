@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router";
 import { SideBarContext } from "~/providers/SiderBarProvider";
 import { classNames } from "~/util/tailwind";
@@ -80,20 +80,38 @@ function navMenuItems(): MenuItem[] {
 	];
 }
 
-export function Sidebar() {
+export function SideBar() {
 	const location = useLocation();
 	const currentPath = location.pathname;
+	const sidebarRef = useRef<HTMLDivElement>(null);
 
 	const { isCollapsed, isMobileOpen, toggleMobileMenu } = useContext(SideBarContext);
 	const navItems = navMenuItems();
+
+	useEffect(() => {
+		// handle auto dismiss of sidebar in mobile view
+		const handleClickOutside = (event: MouseEvent) => {
+			if (isMobileOpen && sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
+				toggleMobileMenu();
+			}
+		};
+
+		if (isMobileOpen) {
+			document.addEventListener("mousedown", handleClickOutside);
+		}
+
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+		};
+	}, [isMobileOpen, toggleMobileMenu]);
 
 	return (
 		<div className="flex">
 			{/* Sidebar */}
 			<div
+				ref={sidebarRef}
 				className={classNames({
-					"md:translate-x-0 fixed md:static top-0 border-r left-0 h-full text-white transition-all duration-300 ease-in-out z-50 bg-slate-950 md:bg-background":
-						true,
+					"md:translate-x-0 fixed md:static top-0 border-r left-0 h-full text-white transition-all duration-300 ease-in-out z-50 bg-slate-950 md:bg-background": true,
 					"translate-x-0 mt-6 md:mt-0": isMobileOpen,
 					"-translate-x-full": !isMobileOpen,
 					"w-16": isCollapsed,
@@ -140,7 +158,7 @@ export function Sidebar() {
 			{isMobileOpen && (
 				<button
 					type="button"
-					className="fixed inset-0 bg-black bg-opacity-50 md:hidden"
+					className="fixed inset-0 bg-opacity-50 md:hidden"
 					onClick={toggleMobileMenu}
 				/>
 			)}
