@@ -9,44 +9,63 @@ import moment from "moment";
 interface InfoProps {
 	type?: AuctionAccountType;
 	isError?: boolean;
-	// TODO: add auction starts in!
+	auction_start_ms: number;
 	auction_end_ms: number;
 }
 
-export function Info({ type, auction_end_ms }: InfoProps) {
+export function Info({ type, auction_start_ms, auction_end_ms }: InfoProps) {
 	const eligibilityMessage = getEligibilityMessage(type);
 	const [showInfo, setShowInfo] = React.useState(false);
 
-	const endTime = moment
-		.utc(moment.duration(moment(auction_end_ms).diff(moment())).asMilliseconds())
+	const now = moment();
+	const hasStarted = now.isAfter(moment(auction_start_ms));
+	const targetTime = hasStarted ? auction_end_ms : auction_start_ms;
+	const timeLeft = moment
+		.utc(moment.duration(moment(targetTime).diff(now)).asMilliseconds())
 		.format("HH:mm:ss");
+	const timeLabel = hasStarted ? "ends" : "starts";
 
 	const tweet = `Just placed my bid in the @goNativeCC BTCFi Beelievers NFT auction!
 
 Securing my spot in the top 5810 at beelieversNFT.gonative.cc`;
 
 	return (
-		<Card className="w-full md:w-[72%]">
-			<CardContent className="p-4 rounded-lg text-white flex flex-col md:flex-row gap-4 md:gap-8 bg-azure-25">
-				<div className="flex-shrink-0">
-					<img
-						src="/assets/bee/bee-with-hammer.svg"
-						alt="bee-with-hammer"
-						className="hidden md:block"
-					/>
-					<img
-						src="/assets/bee/bee-with-face-only.svg"
-						alt="bee-with-face-only"
-						className="md:hidden block"
-					/>
-				</div>
-				<div className="flex flex-col gap-2 md:gap-4 py-0 md:py-4 w-full">
-					<div className="flex justify-between items-center">
-						{endTime && <p className="text-sm text-foreground/80">Auction ends in {endTime}</p>}
-						<TwitterShareButton shareContent={tweet} className="max-w-fit" />
+		<Card className="w-full lg:w-[85%] xl:w-[75%] shadow-2xl border-primary/20 hover:border-primary/40 transition-all duration-300">
+			<CardContent className="p-4 lg:p-8 rounded-lg text-white flex flex-col lg:flex-row gap-6 lg:gap-8 bg-gradient-to-br from-azure-25 via-azure-20 to-azure-15">
+				<div className="flex-shrink-0 flex justify-center lg:justify-start">
+					<div className="animate-float">
+						<img
+							src="/assets/bee/bee-with-hammer.svg"
+							alt="bee-with-hammer"
+							className="hidden lg:block w-auto h-auto"
+						/>
+						<img
+							src="/assets/bee/bee-with-face-only.svg"
+							alt="bee-with-face-only"
+							className="lg:hidden block w-auto h-auto"
+						/>
 					</div>
-					<p>{eligibilityMessage}</p>
-					<p>
+				</div>
+				<div className="flex flex-col gap-4 lg:gap-6 py-0 w-full">
+					<div className="flex flex-row justify-between items-center gap-4">
+						{timeLeft && (
+							<div className="flex items-center gap-2 px-4 py-2 bg-primary/20 rounded-full border border-primary/30 animate-pulse-glow">
+								<span className="text-2xl">⏰</span>
+								<p className="text-sm font-semibold text-primary">
+									Auction {timeLabel} in <Countdown targetTime={targetTime} />
+								</p>
+							</div>
+						)}
+						<TwitterShareButton shareContent={tweet} />
+					</div>
+
+					{eligibilityMessage && (
+						<div className="p-4 bg-primary/10 rounded-lg border border-primary/20 animate-in slide-in-from-left-2 duration-500">
+							<p className="text-sm lg:text-base leading-relaxed">{eligibilityMessage}</p>
+						</div>
+					)}
+
+					<p className="text-sm lg:text-base leading-relaxed text-foreground/90">
 						You bid your true value; winners pay the lowest winning bid. Any amount above the
 						clearing price is refunded.
 					</p>
@@ -59,57 +78,95 @@ Securing my spot in the top 5810 at beelieversNFT.gonative.cc`;
 
 const Instructions = ({ showInfo, onToggle }: { showInfo: boolean; onToggle: () => void }) => {
 	return (
-		<div className="backdrop-blur-sm  shadow-lg mb-6">
+		<div className="backdrop-blur-sm shadow-lg border border-primary/20 rounded-2xl overflow-hidden">
 			<button
 				onClick={onToggle}
-				className="rounded-2xl flex items-center justify-between w-full p-4 text-left border text-primary hover:text-primary/80 text-xl"
+				className="flex items-center justify-between w-full p-4 lg:p-6 text-left bg-gradient-to-r from-primary/10 to-primary/5 hover:from-primary/20 hover:to-primary/10 text-primary hover:text-orange-400 text-lg lg:text-xl transition-all duration-300 group"
 			>
-				<span className="font-bold">How It Works?</span>
-				{showInfo ? <ChevronsUp /> : <ChevronsDown />}
+				<div className="flex items-center gap-3">
+					<span className="text-2xl">❓</span>
+					<span className="font-bold">How It Works?</span>
+				</div>
+				<div
+					className={`transform transition-transform duration-300 ${showInfo ? "rotate-180" : ""} group-hover:scale-110`}
+				>
+					{showInfo ? <ChevronsUp size={24} /> : <ChevronsDown size={24} />}
+				</div>
 			</button>
-			{showInfo && <InstructionDetails />}
+			<div
+				className={`transition-all duration-500 ease-in-out ${showInfo ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"} overflow-hidden`}
+			>
+				{showInfo && <InstructionDetails />}
+			</div>
 		</div>
 	);
 };
 
 function InstructionDetails() {
-	const listStyle = "list-disc list-outside ml-6";
-	const headerStyle = "py-4 text-primary font-semibold";
+	const listStyle = "list-disc list-outside ml-6 space-y-2";
+	const headerStyle = "py-4 text-primary font-semibold text-lg flex items-center gap-2";
 	return (
-		<div className="px-4 pt-2 text-foreground leading-7">
-			<h3 className="py-4 text-primary font-semibold">💰 Auction Format: Fair & Transparent</h3>
-			<p>We&apos;re letting the community set the price through a secondary-price auction.</p>
-			<ul className={listStyle}>
-				<li>
-					Place your bid – You can raise your bid anytime before the auction ends to improve your
-					chances.
-				</li>
-				<li>Top 5,810 bidders win – Only the highest 5,810 bids will have chance to mint NFT.</li>
-				<li>
-					Pay the clearing price – All winners pay the same final price, which is the generalized
-					&ldquo;second price&rdquo; - highest bid that didn&apos;t make it to the winning list.
-				</li>
-				<li>
-					Get refunds automatically – If you bid higher than the clearing price, the difference is
-					refunded.
-				</li>
-			</ul>
+		<div className="px-4 lg:px-6 pb-6 text-foreground leading-7 animate-in slide-in-from-top-2 duration-500">
+			<div className="space-y-6">
+				<div className="mt-4 bg-gradient-to-r from-primary/5 to-transparent p-4 rounded-lg border-l-4 border-primary">
+					<h3 className={headerStyle}>
+						<span className="text-2xl">💰</span>
+						Auction Format: Fair & Transparent
+					</h3>
+					<p className="text-sm lg:text-base mb-4 text-foreground/90">
+						We&apos;re letting the community set the price through a secondary-price auction.
+					</p>
+					<ul className={listStyle}>
+						<li className="text-sm lg:text-base">
+							<strong>Place your bid</strong> – You can raise your bid anytime before the
+							auction ends to improve your chances.
+						</li>
+						<li className="text-sm lg:text-base">
+							<strong>Top 5,810 bidders win</strong> – Only the highest 5,810 bids will have
+							chance to mint NFT.
+						</li>
+						<li className="text-sm lg:text-base">
+							<strong>Pay the clearing price</strong> – All winners pay the same final price,
+							which is the generalized &ldquo;second price&rdquo; - highest bid that didn&apos;t
+							make it to the winning list.
+						</li>
+						<li className="text-sm lg:text-base">
+							<strong>Get refunds automatically</strong> – If you bid higher than the clearing
+							price, the difference is refunded.
+						</li>
+					</ul>
+				</div>
 
-			<h3 className={headerStyle}>📊 Simple example</h3>
-			<p>
-				Top 5,810 bids range from 12 SUI to 6.2 SUI. Everyone in the top 5,810 pays 6.2 SUI, and extra
-				amounts are refunded.
-			</p>
+				<div className="bg-gradient-to-r from-orange-500/5 to-transparent p-4 rounded-lg border-l-4 border-orange-500">
+					<h3 className={headerStyle}>
+						<span className="text-2xl">📊</span>
+						Simple Example
+					</h3>
+					<p className="text-sm lg:text-base text-foreground/90">
+						Top 5,810 bids range from 12 SUI to 6.2 SUI. Everyone in the top 5,810 pays 6.2 SUI,
+						and extra amounts are refunded.
+					</p>
+				</div>
 
-			<h3 className={headerStyle}>🫵 Key Points</h3>
-			<ul className={listStyle}>
-				<li>You can increase your bid any time until the auction closes.</li>
-				<li>Being in the top 5,810 at the close guarantees you a chance to mint NFT.</li>
-				<li>
-					User deposits money on chain to make a bid, everything else is off chain. This way, we can
-					do all UI features more user friendly.
-				</li>
-			</ul>
+				<div className="bg-gradient-to-r from-yellow-500/5 to-transparent p-4 rounded-lg border-l-4 border-yellow-500">
+					<h3 className={headerStyle}>
+						<span className="text-2xl">🫵</span>
+						Key Points
+					</h3>
+					<ul className={listStyle}>
+						<li className="text-sm lg:text-base">
+							You can increase your bid any time until the auction closes.
+						</li>
+						<li className="text-sm lg:text-base">
+							Being in the top 5,810 at the close guarantees you a chance to mint NFT.
+						</li>
+						<li className="text-sm lg:text-base">
+							User deposits money on chain to make a bid, everything else is off chain. This
+							way, we can do all UI features more user friendly.
+						</li>
+					</ul>
+				</div>
+			</div>
 		</div>
 	);
 }

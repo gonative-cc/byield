@@ -12,7 +12,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 		return (
 			<div
 				className={cn(
-					"relative flex items-center bg-dark-blue rounded-2xl border-2 border-white-10 focus-within:ring-1 focus-within:ring-ring px-2",
+					"relative flex items-center bg-azure-25 rounded-2xl border-2 border-white-10 focus-within:ring-1 focus-within:ring-ring px-2",
 					containerClassName,
 				)}
 			>

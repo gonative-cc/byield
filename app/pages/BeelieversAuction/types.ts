@@ -27,6 +27,7 @@ export interface LeaderboardResponse {
 	total_bids: number;
 	highest_bid: number;
 	entry_bid: number;
+	auction_start_ms: number;
 	auction_end_ms: number;
 }
 
