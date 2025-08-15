@@ -11,19 +11,44 @@ export function Partners() {
 					Trusted by leading organizations in the ecosystem
 				</p>
 			</div>
-			<div className="relative overflow-hidden rounded-xl p-6 shadow-inner">
-				<div className="flex gap-6 animate-scroll-rtl">
-					{[...partnersConfig.partners, ...partnersConfig.partners].map((partner, index) => (
-						<div
-							key={`${partner.name}-${index}`}
-							className="group flex items-center justify-center p-4 bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-105 w-24 h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 flex-shrink-0 border border-gray-100"
-						>
-							<img
-								src={partner.logo}
-								alt={`${partner.name} logo`}
-								className="max-w-full max-h-full object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
-								loading="lazy"
-							/>
+			<div className="flex flex-col items-center gap-4">
+				{/* Row 1: 1 logo */}
+				<div className="flex justify-center gap-4">
+					{partnersConfig.partners.slice(0, 1).map((partner) => (
+						<div key={partner.name} className="group flex items-center justify-center p-4 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-105 w-20 h-20 md:w-24 md:h-24 border border-gray-100">
+							<img src={partner.logo} alt={`${partner.name} logo`} className="max-w-full max-h-full object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300" loading="lazy" />
+						</div>
+					))}
+				</div>
+				{/* Row 2: 2 logos */}
+				<div className="flex justify-center gap-4">
+					{partnersConfig.partners.slice(1, 3).map((partner) => (
+						<div key={partner.name} className="group flex items-center justify-center p-4 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-105 w-20 h-20 md:w-24 md:h-24 border border-gray-100">
+							<img src={partner.logo} alt={`${partner.name} logo`} className="max-w-full max-h-full object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300" loading="lazy" />
+						</div>
+					))}
+				</div>
+				{/* Row 3: 3 logos */}
+				<div className="flex justify-center gap-4">
+					{partnersConfig.partners.slice(3, 6).map((partner) => (
+						<div key={partner.name} className="group flex items-center justify-center p-4 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-105 w-20 h-20 md:w-24 md:h-24 border border-gray-100">
+							<img src={partner.logo} alt={`${partner.name} logo`} className="max-w-full max-h-full object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300" loading="lazy" />
+						</div>
+					))}
+				</div>
+				{/* Row 4: 4 logos */}
+				<div className="flex justify-center gap-4">
+					{partnersConfig.partners.slice(6, 10).map((partner) => (
+						<div key={partner.name} className="group flex items-center justify-center p-4 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-105 w-20 h-20 md:w-24 md:h-24 border border-gray-100">
+							<img src={partner.logo} alt={`${partner.name} logo`} className="max-w-full max-h-full object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300" loading="lazy" />
+						</div>
+					))}
+				</div>
+				{/* Row 5: 5 logos */}
+				<div className="flex justify-center gap-4">
+					{partnersConfig.partners.slice(10, 15).map((partner) => (
+						<div key={partner.name} className="group flex items-center justify-center p-4 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-105 w-20 h-20 md:w-24 md:h-24 border border-gray-100">
+							<img src={partner.logo} alt={`${partner.name} logo`} className="max-w-full max-h-full object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300" loading="lazy" />
 						</div>
 					))}
 				</div>
