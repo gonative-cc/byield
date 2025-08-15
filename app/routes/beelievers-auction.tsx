@@ -51,12 +51,12 @@ export default function BeelieversAuctionPage() {
 	const eligibilityData = suiAddr ? fetcher.data : undefined;
 
 	return (
-		<div className="flex justify-center p-4">
-			<BeelieversAuction
-				leaderBoardData={leaderBoardData}
-				eligibilityData={eligibilityData}
-				isCheckingEligibility={fetcher.state === "submitting"}
-			/>
+		<div className="bg-gradient-to-br from-background via-azure-20 to-azure-25 p-4 sm:p-6 lg:p-8">
+			<div className="flex justify-center">
+				<div className="w-full max-w-7xl animate-in fade-in-0 duration-700">
+					<BeelieversAuction leaderBoardData={leaderBoardData} eligibilityData={eligibilityData} />
+				</div>
+			</div>
 		</div>
 	);
 }

@@ -1,6 +1,5 @@
 import type { CellProps, Column } from "react-table";
 import { SUIIcon } from "~/components/icons";
-import { Card, CardContent } from "~/components/ui/card";
 import { Table } from "~/components/ui/table";
 import { trimAddress } from "~/components/Wallet/walletHelper";
 import { useContext } from "react";
@@ -17,52 +16,67 @@ interface AuctionTableProps {
 
 const createColumns = (): Column<Bidder>[] => [
 	{
-		Header: "Rank",
+		Header: "🏆 Rank",
 		accessor: "rank",
-		Cell: ({ value }: CellProps<Bidder>) => <div className="flex items-center gap-2">#{value}</div>,
+		Cell: ({ value }: CellProps<Bidder>) => (
+			<div className="flex items-center gap-2 font-semibold">#{value}</div>
+		),
 	},
 	{
-		Header: "Bidder",
+		Header: "👤 Bidder",
 		accessor: "bidder",
 		Cell: ({ row }: CellProps<Bidder>) => (
-			<div className="flex space-x-2">
-				<span>{trimAddress(row.original.bidder)}</span>
+			<div className="flex items-center space-x-2">
+				<div className="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-orange-400 flex items-center justify-center text-xs font-bold text-black">
+					{row.original.bidder.slice(2, 4).toUpperCase()}
+				</div>
+				<span className="font-mono text-sm">{trimAddress(row.original.bidder)}</span>
 			</div>
 		),
 	},
 	{
-		Header: "Badges",
+		Header: "🏅 Badges",
 		Cell: ({ row }: CellProps<Bidder>) => {
 			const badgeNames = row.original.badges || [];
 			const badges = badgeNames.map(getBadgesForBidder).filter(Boolean);
 
 			return (
-				<div className="flex space-x-1 justify-center">
+				<div className="flex space-x-2 justify-center">
 					{badges.length > 0 ? (
 						badges.map((badge, index) => (
-							<Badge key={index} src={badge!.src} title={badge!.name} />
+							<div
+								key={index}
+								className="relative p-1 bg-white/90 backdrop-blur-sm rounded-lg border border-gray-200 shadow-md hover:shadow-lg hover:scale-110 transition-all duration-200 hover:bg-white"
+							>
+								<Badge src={badge!.src} title={badge!.name} />
+							</div>
 						))
 					) : (
-						<span className="text-gray-400">-</span>
+						<span className="text-muted-foreground text-sm">-</span>
 					)}
 				</div>
 			);
 		},
 	},
 	{
-		Header: "Bid Amount",
+		Header: "💰 Bid Amount",
 		accessor: "amount",
 		Cell: ({ row }: CellProps<Bidder>) => (
-			<div className="flex space-x-2">
-				<SUIIcon prefix="" className="h-5 w-5" />
-				<span>{row.original.amount} SUI</span>
+			<div className="flex items-center space-x-2 font-semibold">
+				<SUIIcon prefix="" className="h-5 w-5 text-primary" />
+				<span className="text-primary">{row.original.amount}</span>
+				<span className="text-muted-foreground text-sm">SUI</span>
 			</div>
 		),
 	},
 	{
-		Header: "Note",
+		Header: "📝 Note",
 		accessor: "note",
-		Cell: ({ row }: CellProps<Bidder>) => <span>{row.original.note || "-"}</span>,
+		Cell: ({ row }: CellProps<Bidder>) => (
+			<span className="text-sm text-muted-foreground max-w-32 truncate block">
+				{row.original.note || "-"}
+			</span>
+		),
 	},
 ];
 
@@ -88,18 +102,35 @@ export function AuctionTable({ data }: AuctionTableProps) {
 	const getRowProps = (row: { original: Bidder }) => {
 		const isUserRow = row.original.bidder === suiAddr;
 		return {
-			className: isUserRow ? "bg-primary/10 border-l-4 border-primary" : "",
+			className: isUserRow
+				? "bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 border-l-4 border-primary shadow-lg scale-[1.02] relative z-10"
+				: "hover:bg-primary/5",
 		};
 	};
 
 	return (
-		<Card className="w-full h-fit">
-			<CardContent className="p-5 rounded-lg text-white flex flex-col gap-2 bg-azure-20">
-				<div className="flex justify-between items-center">
-					<span className="text-xl text-primary">Leaderboard</span>
+		<div className="w-full space-y-4">
+			{/* Header Section */}
+			<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-2">
+				<div className="flex items-center gap-3">
+					<div className="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-orange-400 flex items-center justify-center">
+						<span className="text-xl">🏆</span>
+					</div>
+					<div>
+						<h2 className="text-2xl font-bold text-primary">Leaderboard</h2>
+						<p className="text-sm text-muted-foreground">Top {MAX_LEADERBOARD_ROWS} bidders</p>
+					</div>
 				</div>
-				<Table columns={columns} data={displayData} getRowProps={getRowProps} />
-			</CardContent>
-		</Card>
+
+				{userBid && (
+					<div className="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full border border-primary/20">
+						<span className="text-sm text-muted-foreground">Your rank:</span>
+						<span className="font-bold text-primary">#{userPosition}</span>
+					</div>
+				)}
+			</div>
+
+			<Table columns={columns} data={displayData} getRowProps={getRowProps} />
+		</div>
 	);
 }

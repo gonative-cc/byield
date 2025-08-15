@@ -56,6 +56,7 @@ const MOCK_LEADER_BOARD_DATA: Omit<LeaderboardResponse, "isError"> = {
 	total_bids: 1250,
 	highest_bid: 100,
 	entry_bid: 2,
+	auction_start_ms: Date.now() + 24 * 60 * 60 * 1000,
 	auction_end_ms: Date.now() + 24 * 60 * 60 * 1000,
 };
 

@@ -11,7 +11,7 @@ export function Partners() {
 					Trusted by leading organizations in the ecosystem
 				</p>
 			</div>
-			<div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-gray-50 to-white p-6 shadow-inner">
+			<div className="relative overflow-hidden rounded-xl p-6 shadow-inner">
 				<div className="flex gap-6 animate-scroll-rtl">
 					{[...partnersConfig.partners, ...partnersConfig.partners].map((partner, index) => (
 						<div

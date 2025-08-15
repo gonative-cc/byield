@@ -11,7 +11,7 @@ export interface NumericInputProps extends NumericFormatProps {
 const NumericInput = React.forwardRef<HTMLInputElement, NumericInputProps>(
 	({ className, type, leftAdornments, rightAdornments, ...props }, ref) => {
 		return (
-			<div className="relative flex items-center bg-dark-blue rounded-2xl border-2 border-white-10 focus-within:ring-1 focus-within:ring-ring px-2">
+			<div className="relative flex items-center rounded-2xl border-2 border-white-10 focus-within:ring-1 focus-within:ring-ring px-2 bg-azure-25">
 				{leftAdornments}
 				<NumericFormat
 					type={type}
