@@ -1,12 +1,14 @@
 import { BeelieversAuction } from "~/pages/BeelieversAuction/BeelieversAuction";
 import { useLoaderData, useFetcher } from "react-router";
 import { useContext, useEffect, useRef } from "react";
-import { getLeaderBoardData } from "~/server/BeelieversAuction/leaderboard.server";
+import Controller from "~/server/BeelieversAuction/controller.server";
+import type { LoaderDataResp } from "~/server/BeelieversAuction/types";
 import { checkEligibility } from "~/pages/BeelieversAuction/whitelist.server";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 
-export async function loader() {
-	return await getLeaderBoardData();
+export async function loader(): Promise<LoaderDataResp> {
+	const ctrl = new Controller();
+	return await ctrl.loadPageData();
 }
 
 export async function action({ request }: { request: Request }) {
@@ -27,8 +29,20 @@ export async function action({ request }: { request: Request }) {
 	};
 }
 
+// TODO: inspect why this page loads many times
 export default function BeelieversAuctionPage() {
-	const leaderBoardData = useLoaderData<typeof loader>();
+	const pageData = useLoaderData<typeof loader>();
+	console.log(">>>> PAGE DATA:", pageData);
+	// TODO: remove and use data above
+	const leaderBoardData = {
+		leaders: [],
+		unique_bidders: 600,
+		total_bids: 1250,
+		highest_bid: 100,
+		entry_bid: 2,
+		auction_start_ms: Date.now() + 24 * 60 * 60 * 1000,
+		auction_end_ms: Date.now() + 48 * 60 * 60 * 1000,
+	};
 	const fetcher = useFetcher<typeof action>();
 	const { suiAddr } = useContext(WalletContext);
 	const lastCheckedAddress = useRef<string | null>(null);
