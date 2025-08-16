@@ -6,8 +6,8 @@ import { FormNumericInput } from "~/components/form/FormNumericInput";
 import { Button } from "~/components/ui/button";
 import { FormInput } from "~/components/form/FormInput";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
-import type { Bid } from "./AuctionTable";
 import { SuiModal } from "~/components/Wallet/SuiWallet/SuiModal";
+import type { Bidder } from "./types";
 
 function validateBidAmount(val: string, hasUserBidBefore: boolean) {
 	const bidAmount = Number(val);
@@ -26,7 +26,7 @@ interface BeelieversBidForm {
 }
 
 interface BeelieversBidProps {
-	leaderBoardData?: Bid[];
+	leaderBoardData?: Bidder[];
 }
 
 export function BeelieversBid({ leaderBoardData = [] }: BeelieversBidProps) {
