@@ -8,6 +8,7 @@ import { FormInput } from "~/components/form/FormInput";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { SuiModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import type { Bidder } from "./types";
+import { AuctionState } from "./types";
 
 function validateBidAmount(val: string, hasUserBidBefore: boolean) {
 	const bidAmount = Number(val);
@@ -27,9 +28,10 @@ interface BeelieversBidForm {
 
 interface BeelieversBidProps {
 	leaderBoardData?: Bidder[];
+	auctionState?: AuctionState;
 }
 
-export function BeelieversBid({ leaderBoardData = [] }: BeelieversBidProps) {
+export function BeelieversBid({ leaderBoardData = [], auctionState }: BeelieversBidProps) {
 	const { suiAddr } = useContext(WalletContext);
 	const hasUserBidBefore = useMemo(
 		() => (suiAddr ? leaderBoardData.some((bid) => bid.bidder === suiAddr) : false),
@@ -52,6 +54,7 @@ export function BeelieversBid({ leaderBoardData = [] }: BeelieversBidProps) {
 	const { handleSubmit } = bidForm;
 
 	if (suiAddr == null) return <SuiModal />;
+	if (auctionState !== AuctionState.STARTED) return null;
 
 	return (
 		<FormProvider {...bidForm}>

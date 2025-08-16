@@ -5,17 +5,22 @@ import { Countdown } from "~/components/ui/countdown";
 import { AuctionAccountType } from "./types";
 import { TwitterShareButton } from "~/components/TwitterShareButton";
 import moment from "moment";
+import { AuctionState } from "./types";
+import { cn } from "~/util/tailwind";
 
 interface InfoProps {
 	type?: AuctionAccountType;
 	isError?: boolean;
 	auction_start_ms: number;
 	auction_end_ms: number;
+	auctionState: AuctionState;
 }
 
-export function Info({ type, auction_start_ms, auction_end_ms }: InfoProps) {
+export function Info({ type, auction_start_ms, auction_end_ms, auctionState }: InfoProps) {
 	const eligibilityMessage = getEligibilityMessage(type);
 	const [showInfo, setShowInfo] = React.useState(false);
+
+	const hasAuctionEnded = auctionState === AuctionState.ENDED;
 
 	const now = moment();
 	const hasStarted = now.isAfter(moment(auction_start_ms));
@@ -48,12 +53,16 @@ Securing my spot in the top 5810 at beelieversNFT.gonative.cc`;
 				</div>
 				<div className="flex flex-col gap-4 lg:gap-6 py-0 w-full">
 					<div className="flex flex-row justify-between items-center gap-4">
-						{timeLeft && (
+						{(timeLeft || hasAuctionEnded) && (
 							<div className="flex items-center gap-2 px-4 py-2 bg-primary/20 rounded-full border border-primary/30 animate-pulse-glow">
 								<span className="text-2xl">⏰</span>
-								<p className="text-sm font-semibold text-primary">
-									Auction {timeLabel} in <Countdown targetTime={targetTime} />
-								</p>
+								{hasAuctionEnded ? (
+									<p className="text-sm font-semibold text-primary">Auction ended</p>
+								) : (
+									<p className="text-sm font-semibold text-primary">
+										Auction {timeLabel} in <Countdown targetTime={targetTime} />
+									</p>
+								)}
 							</div>
 						)}
 						<TwitterShareButton shareContent={tweet} />
@@ -84,8 +93,8 @@ const Instructions = ({ showInfo, onToggle }: { showInfo: boolean; onToggle: () 
 				className="flex items-center justify-between w-full p-4 lg:p-6 text-left bg-gradient-to-r from-primary/10 to-primary/5 hover:from-primary/20 hover:to-primary/10 text-primary hover:text-orange-400 text-lg lg:text-xl transition-all duration-300 group"
 			>
 				<div className="flex items-center gap-3">
-					<span className="text-2xl">❓</span>
-					<span className="font-bold">How It Works?</span>
+					<span className="text-2xl">🐝</span>
+					<span className="font-bold">BTCFi Beelievers NFT Auction – How It Works?</span>
 				</div>
 				<div className={`transform transition-transform duration-300 group-hover:scale-110`}>
 					{showInfo ? <ChevronsUp size={24} /> : <ChevronsDown size={24} />}
@@ -105,15 +114,19 @@ function InstructionDetails() {
 	const headerStyle = "py-4 text-primary font-semibold text-lg flex items-center gap-2";
 	return (
 		<div className="px-4 lg:px-6 pb-6 text-foreground leading-7 animate-in slide-in-from-top-2 duration-500">
-			<div className="space-y-6">
+			<div className="space-y-6 pt-4">
+				<h3 className={cn(headerStyle, "py-0 gap-0 mb-0 pb-2")}>
+					<span className="text-2xl">💰</span>
+					Auction Format: Fair & Transparent
+				</h3>
+				<p className="text-sm lg:text-base mb-4 text-foreground/90">
+					We’re letting the community set the price through a secondary-price auction.
+				</p>
 				<div className="mt-4 bg-gradient-to-r from-primary/5 to-transparent p-4 rounded-lg border-l-4 border-primary">
 					<h3 className={headerStyle}>
-						<span className="text-2xl">💰</span>
-						Auction Format: Fair & Transparent
+						<span className="text-2xl">❓</span>
+						How it works:
 					</h3>
-					<p className="text-sm lg:text-base mb-4 text-foreground/90">
-						We&apos;re letting the community set the price through a secondary-price auction.
-					</p>
 					<ul className={listStyle}>
 						<li className="text-sm lg:text-base">
 							<strong>Place your bid</strong> – You can raise your bid anytime before the
