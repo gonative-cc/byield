@@ -1,16 +1,15 @@
 interface BadgeProps {
 	src: string;
 	title?: string;
-	className?: string;
 }
 
-export function Badge({ src, title, className = "w-5 h-5" }: BadgeProps) {
+export function Badge({ src, title }: BadgeProps) {
 	return (
 		<div className="relative group">
 			<img
 				src={src}
 				alt={title}
-				className={`${className} hover:scale-110 transition-transform cursor-help`}
+				className={`w-8 h-8 hover:scale-110 transition-transform cursor-help`}
 			/>
 		</div>
 	);

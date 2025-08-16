@@ -6,6 +6,7 @@ import { Partners } from "~/components/Partners";
 import type { LeaderboardResponse, EligibilityData } from "./types";
 import { TweetEmbed } from "~/components/TweetEmbed";
 import { AuctionState } from "./types";
+import { BadgesModal } from "~/components/BadgesModal";
 
 function getAuctionState(startMs: number, endMs: number): AuctionState {
 	const nowMs = new Date().getTime();
@@ -29,9 +30,12 @@ export function BeelieversAuction({
 	return (
 		<div className="flex flex-col items-center gap-6 sm:gap-8 lg:gap-10 w-full relative">
 			{/* Hero Title with Animation */}
-			<p className="md:text-3xl text-2xl text-center font-semibold max-w-120">
-				<span className="text-2xl text-primary md:text-3xl">🐝 BTCFi Beelievers</span> Auction
-			</p>
+			<div className="flex flex-col items-center gap-4">
+				<p className="md:text-3xl text-2xl text-center font-semibold max-w-120">
+					<span className="text-2xl text-primary md:text-3xl">🐝 BTCFi Beelievers</span> Auction
+				</p>
+				<BadgesModal />
+			</div>
 			{/* Auction Stats with Staggered Animation */}
 			{auctionState !== AuctionState.WILL_START && (
 				<div className="animate-in slide-in-from-bottom-4 duration-1000 delay-300 w-full flex justify-center">
