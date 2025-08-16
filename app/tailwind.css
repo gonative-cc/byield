@@ -220,6 +220,10 @@ button {
   cursor: pointer;
 }
 
+a.link {
+  @apply font-medium text-blue-300 hover:underline;
+}
+
 /* Mobile-first responsive utilities */
 @media (max-width: 640px) {
   .mobile-padding {

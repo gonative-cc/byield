@@ -6,13 +6,12 @@ import { Partners } from "~/components/Partners";
 import type { LeaderboardResponse, EligibilityData } from "./types";
 import { TweetEmbed } from "~/components/TweetEmbed";
 import { AuctionState } from "./types";
-import moment from "moment";
 import { BadgesModal } from "~/components/BadgesModal";
 
 function getAuctionState(startMs: number, endMs: number): AuctionState {
-	const now = moment();
-	if (now.isBefore(moment(startMs))) return AuctionState.WILL_START;
-	if (now.isBefore(moment(endMs))) return AuctionState.STARTED;
+	const nowMs = new Date().getTime();
+	if (nowMs < startMs) return AuctionState.WILL_START;
+	if (nowMs < endMs) return AuctionState.STARTED;
 	return AuctionState.ENDED;
 }
 
