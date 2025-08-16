@@ -8,7 +8,7 @@ import { useXverseConnect } from "./Wallet/XverseWallet/useWallet";
 import { SuiModal } from "./Wallet/SuiWallet/SuiModal";
 import { Skeleton } from "~/components/ui/skeleton";
 import { useLocation } from "react-router";
-import wallet from "~/config/wallet.json";
+import { routes } from "~/config/walletVisibility";
 
 function LoadingSkeleton() {
 	return (
@@ -31,9 +31,8 @@ export function SelectWallet({ isProductionMode }: SelectWalletProps) {
 	const currentPath = location.pathname;
 
 	// hide wallet based on routes
-	const shouldShowBitcoinWallet =
-		wallet?.routes?.[currentPath as keyof typeof wallet.routes]?.bitcoin ?? true;
-	const shouldShowSUIWallet = wallet?.routes?.[currentPath as keyof typeof wallet.routes]?.sui ?? true;
+	const shouldShowBitcoinWallet = routes?.[currentPath]?.bitcoin ?? true;
+	const shouldShowSUIWallet = routes?.[currentPath]?.sui ?? true;
 
 	if (isLoading) return <LoadingSkeleton />;
 
