@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 
-interface TwitterTweetEmbedProps {
+interface TweetEmbedProps {
 	src: string;
 }
 
-export function TwitterTweetEmbed({ src }: TwitterTweetEmbedProps) {
+export function TweetEmbed({ src }: TweetEmbedProps) {
 	useEffect(() => {
 		// This function loads the twitter widgets script
 		const loadTwitterScript = () => {

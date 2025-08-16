@@ -87,9 +87,7 @@ const Instructions = ({ showInfo, onToggle }: { showInfo: boolean; onToggle: () 
 					<span className="text-2xl">❓</span>
 					<span className="font-bold">How It Works?</span>
 				</div>
-				<div
-					className={`transform transition-transform duration-300 ${showInfo ? "rotate-180" : ""} group-hover:scale-110`}
-				>
+				<div className={`transform transition-transform duration-300 group-hover:scale-110`}>
 					{showInfo ? <ChevronsUp size={24} /> : <ChevronsDown size={24} />}
 				</div>
 			</button>

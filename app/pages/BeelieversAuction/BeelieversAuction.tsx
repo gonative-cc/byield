@@ -4,7 +4,7 @@ import { AuctionTotals } from "./AuctionTotals";
 import { BeelieversBid } from "./BeelieversBid";
 import { Partners } from "~/components/Partners";
 import type { LeaderboardResponse, EligibilityData } from "./types";
-import { TwitterTweetEmbed } from "~/components/TwitterTweetEmbed";
+import { TweetEmbed } from "~/components/TweetEmbed";
 
 interface BeelieversAuctionProps {
 	leaderBoardData: LeaderboardResponse;
@@ -49,7 +49,7 @@ export function BeelieversAuction({
 				</div>
 			</div>
 			{/* Twitter post */}
-			<TwitterTweetEmbed src={twitterPost} />
+			<TweetEmbed src={twitterPost} />
 
 			{/* Partners Section with Animation */}
 			<div className="animate-in fade-in-0 duration-1000 delay-700 w-full">
