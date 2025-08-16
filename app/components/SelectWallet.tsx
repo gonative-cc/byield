@@ -7,6 +7,8 @@ import { Wallets } from "~/components/Wallet";
 import { useXverseConnect } from "./Wallet/XverseWallet/useWallet";
 import { SuiModal } from "./Wallet/SuiWallet/SuiModal";
 import { Skeleton } from "~/components/ui/skeleton";
+import { useLocation } from "react-router";
+import { routes } from "~/config/walletVisibility";
 
 function LoadingSkeleton() {
 	return (
@@ -25,22 +27,28 @@ interface SelectWalletProps {
 export function SelectWallet({ isProductionMode }: SelectWalletProps) {
 	const { isLoading, isWalletConnected } = useContext(WalletContext);
 	const { connectWallet } = useXverseConnect();
+	const location = useLocation();
+	const currentPath = location.pathname;
+
+	// hide wallet based on routes
+	const shouldShowBitcoinWallet = routes?.[currentPath]?.bitcoin ?? true;
+	const shouldShowSUIWallet = routes?.[currentPath]?.sui ?? true;
 
 	if (isLoading) return <LoadingSkeleton />;
 
 	return (
 		<>
 			{/* Show connect buttons for wallets that aren't connected */}
-			{!isWalletConnected(Wallets.Xverse) && !isProductionMode && (
+			{shouldShowBitcoinWallet && !isWalletConnected(Wallets.Xverse) && !isProductionMode && (
 				<Button type="button" onClick={connectWallet}>
 					Connect Bitcoin Wallet
 				</Button>
 			)}
-			{!isWalletConnected(Wallets.SuiWallet) && <SuiModal />}
+			{shouldShowSUIWallet && !isWalletConnected(Wallets.SuiWallet) && <SuiModal />}
 
 			{/* Show connected wallets */}
-			{isWalletConnected(Wallets.Xverse) && <XverseWallet />}
-			{isWalletConnected(Wallets.SuiWallet) && <SuiWallet />}
+			{shouldShowBitcoinWallet && isWalletConnected(Wallets.Xverse) && <XverseWallet />}
+			{shouldShowSUIWallet && isWalletConnected(Wallets.SuiWallet) && <SuiWallet />}
 		</>
 	);
 }
