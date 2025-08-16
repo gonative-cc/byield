@@ -1,20 +1,35 @@
 import { getLeaderBoardData } from "./leaderboard.server";
-import type { LoaderDataResp } from "./types";
+import type { LoaderDataResp, AuctionDetails } from "./types";
+import { defaultAuctionDetails } from "./defaults";
 
 export default class Controller {
-	loadPageData(): LoaderDataResp {
-		const now = Date.now();
+	kv: KVNamespace;
+	kvKeyDetails = "details";
+	kvKeyLeaderboard = "lead";
+
+	constructor(kv: KVNamespace) {
+		this.kv = kv;
+	}
+
+	async loadPageData(): Promise<LoaderDataResp> {
 		return {
 			error: undefined,
 			leaderboard: getLeaderBoardData(),
-			details: {
-				uniqueBidders: 600,
-				totalBids: 1250,
-				highestBidMist: 30e9,
-				entryBidMist: 2e9,
-				startsAt: now + 24 * 60 * 60 * 1000,
-				endsAt: now + 24 * 60 * 60 * 1000,
-			},
+			details: await this.getAuctionDetails(),
 		};
+	}
+
+	async getAuctionDetails(): Promise<AuctionDetails> {
+		const detailsStr = await this.kv.get(this.kvKeyDetails);
+		let details;
+		if (detailsStr !== null) {
+			console.log("DEATILS IN KV");
+			details = JSON.parse(detailsStr) as AuctionDetails;
+		} else {
+			console.log("DEATILS NOT LOADED");
+			details = defaultAuctionDetails();
+			await this.kv.put(this.kvKeyDetails, JSON.stringify(details));
+		}
+		return details;
 	}
 }

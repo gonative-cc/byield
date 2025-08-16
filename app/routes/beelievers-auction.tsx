@@ -8,7 +8,7 @@ import { WalletContext } from "~/providers/ByieldWalletProvider";
 import type { Route } from "./+types/beelievers-auction";
 
 export async function loader({ context }: Route.LoaderArgs): Promise<LoaderDataResp> {
-	const ctrl = new Controller();
+	const ctrl = new Controller(context.cloudflare.env.BeelieversNFT);
 	return await ctrl.loadPageData();
 }
 
@@ -33,7 +33,6 @@ export async function action({ request }: { request: Request }) {
 // TODO: inspect why this page loads many times
 export default function BeelieversAuctionPage() {
 	const pageData = useLoaderData<typeof loader>();
-	console.log(">>>> PAGE DATA:", pageData);
 	// TODO: remove and use data above
 	const leaderBoardData = {
 		leaders: [],
