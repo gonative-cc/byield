@@ -135,7 +135,7 @@ function InstructionDetails() {
 					</li>
 					<li className="text-sm lg:text-base">
 						<strong>Fair clearing price</strong> – All winners pay <b>the same final price</b>,
-						which is the generalized &ldquo;Nth price&rdquo;. This is a form of &nbsp;
+						which is the generalized &ldquo;N+1 price&rdquo;. This is a form of &nbsp;
 						<a href="https://en.wikipedia.org/wiki/Vickrey_auction" className="link">
 							Vickrey auction
 						</a>{" "}
