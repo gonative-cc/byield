@@ -5,5 +5,11 @@
 		"module": "nbtc_swap",
 		"buyNBTCFunction": "buy_nbtc",
 		"sellNBTCFunction": "sell_nbtc"
+	},
+	"auctionBidApi": {
+		"packageId": "0xb7e30b29c622f9d595b5d8e262d6bbab9fe8ad10de220062df2246842cf5ad4d",
+		"module": "auction",
+		"bidEndpoint": "bid",
+		"auctionId": "0x43c64bbd8cb484aabd389549f05c2b22d0d1695fff649c40ffccb1ed72859dfa"
 	}
 }
