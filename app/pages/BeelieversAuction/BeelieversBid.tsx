@@ -1,6 +1,6 @@
 import { FormProvider, useForm } from "react-hook-form";
-import { useContext, useMemo } from "react";
-import { SUI } from "~/lib/denoms";
+import { useCallback, useContext, useEffect, useMemo } from "react";
+import { parseSUI, SUI } from "~/lib/denoms";
 import { Card, CardContent } from "~/components/ui/card";
 import { FormNumericInput } from "~/components/form/FormNumericInput";
 import { Button } from "~/components/ui/button";
@@ -9,6 +9,8 @@ import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { SuiModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import type { Bidder } from "~/server/BeelieversAuction/types";
 import { AuctionState } from "./types";
+import { useSuiClient } from "@mysten/dapp-kit";
+import { useBid } from "./useBid";
 
 function validateBidAmount(val: string, hasUserBidBefore: boolean) {
 	const bidAmount = Number(val);
@@ -33,6 +35,16 @@ interface BeelieversBidProps {
 
 export function BeelieversBid({ leaderBoardData = [], auctionState }: BeelieversBidProps) {
 	const { suiAddr } = useContext(WalletContext);
+	const {
+		handleTransaction,
+		isPending,
+		isSuccess,
+		isError,
+		data,
+		resetMutation,
+		balance,
+		isSuiWalletConnected,
+	} = useBid();
 	const hasUserBidBefore = useMemo(
 		() => (suiAddr ? leaderBoardData.some((bid) => bid.bidder === suiAddr) : false),
 		[leaderBoardData, suiAddr],
@@ -46,22 +58,46 @@ export function BeelieversBid({ leaderBoardData = [], auctionState }: Beelievers
 	const bidForm = useForm<BeelieversBidForm>({
 		mode: "all",
 		reValidateMode: "onChange",
+		disabled: isPending || isSuccess || isError,
 		defaultValues: {
-			bid: "",
+			bid: "", // from SUI to MIST
 			note: "",
 		},
 	});
-	const { handleSubmit } = bidForm;
+	const { handleSubmit, watch, trigger, reset, setValue } = bidForm;
 
 	if (suiAddr == null) return <SuiModal />;
 	if (auctionState !== AuctionState.STARTED) return null;
+
+	const suiBid = watch("bid");
+
+	const mistBidAmount: bigint = parseSUI(suiBid?.length > 0 && suiBid !== "." ? suiBid : "0");
+
+	// Why do we need this
+	// const resetForm = useCallback(() => {
+	// 	resetMutation();
+	// 	reset({
+	// 		bid: "",
+	// 	});
+	// }, [reset, resetMutation]);
+
+	// useEffect(() => {
+	// 	if (suiBid) {
+	// 		trigger();
+	// 	}
+	// }, [isSuiWalletConnected, suiBid, trigger]);
+
+	// TOOD:
+	// * show your current bid
+	// * show your current position
 
 	return (
 		<FormProvider {...bidForm}>
 			<form
 				onSubmit={handleSubmit((formData) => {
 					// TODO: handle the bid form data
-					console.log("Depositing with Sui Address:", formData);
+					handleTransaction(mistBidAmount);
+					// TODO: show result of tx
 				})}
 				className="flex justify-center w-full"
 			>
