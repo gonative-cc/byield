@@ -16,6 +16,7 @@ function getAuctionState(startMs: number, endMs: number): AuctionState {
 }
 
 interface BeelieversAuctionProps {
+	// TODO: once updating to the new data object (see route file) use different the LoaderData type here.
 	leaderBoardData: LeaderboardResponse;
 	eligibilityData?: EligibilityData;
 }

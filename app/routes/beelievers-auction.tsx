@@ -7,8 +7,11 @@ import { checkEligibility } from "~/pages/BeelieversAuction/whitelist.server";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import type { Route } from "./+types/beelievers-auction";
 
-export async function loader({ context }: Route.LoaderArgs): Promise<LoaderDataResp> {
+// if we need to load something directly from the client (browser):
+// https://reactrouter.com/start/framework/data-loading#using-both-loaders
+export async function loader({ context, params }: Route.LoaderArgs): Promise<LoaderDataResp> {
 	const ctrl = new Controller(context.cloudflare.env.BeelieversNFT);
+	// TODO: add user as an argument to the loader
 	return await ctrl.loadPageData();
 }
 
@@ -32,6 +35,7 @@ export async function action({ request }: { request: Request }) {
 
 // TODO: inspect why this page loads many times
 export default function BeelieversAuctionPage() {
+	// TODO: handle page.user
 	const pageData = useLoaderData<typeof loader>();
 	// TODO: remove and use data above
 	const leaderBoardData = {

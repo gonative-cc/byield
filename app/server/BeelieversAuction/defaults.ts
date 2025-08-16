@@ -1,4 +1,4 @@
-import type { AuctionDetails } from "./types";
+import type { AuctionDetails, User } from "./types";
 
 export function defaultAuctionDetails(): AuctionDetails {
 	const startsAt = new Date("2025-08-19T12:00").getDate();
@@ -9,5 +9,14 @@ export function defaultAuctionDetails(): AuctionDetails {
 		entryBidMist: 2e9,
 		startsAt,
 		endsAt: startsAt + 24 * 3600_000,
+	};
+}
+
+export function defaultUser(): User {
+	return {
+		rank: null,
+		amount: 0,
+		badges: [],
+		note: "",
 	};
 }

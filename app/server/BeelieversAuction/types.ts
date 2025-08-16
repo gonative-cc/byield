@@ -13,17 +13,22 @@ export interface AuctionDetails {
 	totalBids: number;
 }
 
-export interface Bidder {
-	rank: number;
-	bidder: string;
-	amount: string;
+export interface User {
+	rank: number | null;
+	// amount bid in MIST
+	amount: number;
 	badges: string[];
-	note?: string;
+	note: string;
+}
+
+export interface Bidder extends User {
+	bidder: string;
 }
 
 export interface LoaderData {
 	details: AuctionDetails;
 	leaderboard: Bidder[];
+	user?: User;
 }
 
 // TODO move to controller
