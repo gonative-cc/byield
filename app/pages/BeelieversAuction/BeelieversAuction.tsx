@@ -4,6 +4,7 @@ import { AuctionTotals } from "./AuctionTotals";
 import { BeelieversBid } from "./BeelieversBid";
 import { Partners } from "~/components/Partners";
 import type { LeaderboardResponse, EligibilityData } from "./types";
+import { TweetEmbed } from "~/components/TweetEmbed";
 
 interface BeelieversAuctionProps {
 	leaderBoardData: LeaderboardResponse;
@@ -14,13 +15,14 @@ export function BeelieversAuction({
 	leaderBoardData: { leaders, unique_bidders, total_bids, entry_bid, auction_start_ms, auction_end_ms },
 	eligibilityData,
 }: BeelieversAuctionProps) {
+	const twitterPost = "https://twitter.com/goNativeCC/status/1956370231191818263";
+
 	return (
 		<div className="flex flex-col items-center gap-6 sm:gap-8 lg:gap-10 w-full relative">
 			{/* Hero Title with Animation */}
 			<p className="md:text-3xl text-2xl text-center font-semibold max-w-120">
 				<span className="text-2xl text-primary md:text-3xl">🐝 BTCFi Beelievers</span> Auction
 			</p>
-
 			{/* Auction Stats with Staggered Animation */}
 			<div className="animate-in slide-in-from-bottom-4 duration-1000 delay-300 w-full flex justify-center">
 				<AuctionTotals uniqueBidders={unique_bidders} totalBids={total_bids} entryBid={entry_bid} />
@@ -46,6 +48,8 @@ export function BeelieversAuction({
 					<AuctionTable data={leaders} />
 				</div>
 			</div>
+			{/* Twitter post */}
+			<TweetEmbed src={twitterPost} />
 
 			{/* Partners Section with Animation */}
 			<div className="animate-in fade-in-0 duration-1000 delay-700 w-full">
