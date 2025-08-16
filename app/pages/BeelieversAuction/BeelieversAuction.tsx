@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Info } from "./Info";
 import { AuctionTable } from "./AuctionTable";
 import { AuctionTotals } from "./AuctionTotals";
@@ -9,7 +8,6 @@ import { TweetEmbed } from "~/components/TweetEmbed";
 import { AuctionState } from "./types";
 import moment from "moment";
 import { BadgesModal } from "~/components/BadgesModal";
-import { Button } from "~/components/ui/button";
 
 function getAuctionState(startMs: number, endMs: number): AuctionState {
 	const now = moment();
@@ -37,13 +35,7 @@ export function BeelieversAuction({
 				<p className="md:text-3xl text-2xl text-center font-semibold max-w-120">
 					<span className="text-2xl text-primary md:text-3xl">🐝 BTCFi Beelievers</span> Auction
 				</p>
-				<Button
-					onClick={() => setShowBadgesModal(true)}
-					variant="outline"
-					className="border-primary/30 hover:border-primary hover:bg-primary/10 transition-all duration-200"
-				>
-					🏆 View All Badges
-				</Button>
+				<BadgesModal />
 			</div>
 			{/* Auction Stats with Staggered Animation */}
 			{auctionState !== AuctionState.WILL_START && (
@@ -86,9 +78,6 @@ export function BeelieversAuction({
 			<div className="animate-in fade-in-0 duration-1000 delay-700 w-full">
 				<Partners />
 			</div>
-
-			{/* Badges Modal */}
-			<BadgesModal />
 		</div>
 	);
 }

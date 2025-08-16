@@ -1,5 +1,7 @@
+import { DialogTrigger } from "@radix-ui/react-dialog";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "~/components/ui/dialog";
+import { Button } from "./ui/button";
 
 interface BadgeInfo {
 	name: string;
@@ -107,16 +109,20 @@ const BADGES: BadgeInfo[] = [
 	},
 ];
 
-interface BadgesModalProps {
-	isOpen: boolean;
-	onClose: () => void;
-}
-
-export function BadgesModal({ isOpen, onClose }: BadgesModalProps) {
+export function BadgesModal() {
 	const [selectedBadge, setSelectedBadge] = useState<BadgeInfo | null>(null);
 
 	return (
-		<Dialog open={isOpen} onOpenChange={onClose}>
+		<Dialog>
+			<DialogTrigger asChild>
+				<Button
+					type="button"
+					variant="outline"
+					className="border-primary/30 hover:border-primary hover:bg-primary/10 transition-all duration-200"
+				>
+					🏆 View All Badges
+				</Button>
+			</DialogTrigger>
 			<DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto w-[95vw] sm:w-full">
 				<DialogHeader>
 					<DialogTitle className="text-2xl font-bold text-primary">🏆 Auction Badges</DialogTitle>
