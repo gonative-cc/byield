@@ -5,17 +5,21 @@ import { Countdown } from "~/components/ui/countdown";
 import { AuctionAccountType } from "./types";
 import { TwitterShareButton } from "~/components/TwitterShareButton";
 import moment from "moment";
+import { AuctionState } from "./types";
 
 interface InfoProps {
 	type?: AuctionAccountType;
 	isError?: boolean;
 	auction_start_ms: number;
 	auction_end_ms: number;
+	auctionState: AuctionState;
 }
 
-export function Info({ type, auction_start_ms, auction_end_ms }: InfoProps) {
+export function Info({ type, auction_start_ms, auction_end_ms, auctionState }: InfoProps) {
 	const eligibilityMessage = getEligibilityMessage(type);
 	const [showInfo, setShowInfo] = React.useState(false);
+
+	const hasAuctionEnded = auctionState === AuctionState.ENDED;
 
 	const now = moment();
 	const hasStarted = now.isAfter(moment(auction_start_ms));
@@ -48,12 +52,16 @@ Securing my spot in the top 5810 at beelieversNFT.gonative.cc`;
 				</div>
 				<div className="flex flex-col gap-4 lg:gap-6 py-0 w-full">
 					<div className="flex flex-row justify-between items-center gap-4">
-						{timeLeft && (
+						{(timeLeft || hasAuctionEnded) && (
 							<div className="flex items-center gap-2 px-4 py-2 bg-primary/20 rounded-full border border-primary/30 animate-pulse-glow">
 								<span className="text-2xl">⏰</span>
-								<p className="text-sm font-semibold text-primary">
-									Auction {timeLabel} in <Countdown targetTime={targetTime} />
-								</p>
+								{hasAuctionEnded ? (
+									<p className="text-sm font-semibold text-primary">Auction ended</p>
+								) : (
+									<p className="text-sm font-semibold text-primary">
+										Auction {timeLabel} in <Countdown targetTime={targetTime} />
+									</p>
+								)}
 							</div>
 						)}
 						<TwitterShareButton shareContent={tweet} />
