@@ -4,7 +4,6 @@ import { Card, CardContent } from "~/components/ui/card";
 import { Countdown } from "~/components/ui/countdown";
 import { AuctionAccountType } from "./types";
 import { TwitterShareButton } from "~/components/TwitterShareButton";
-import moment from "moment";
 import { AuctionState } from "./types";
 import { cn } from "~/util/tailwind";
 
@@ -20,15 +19,14 @@ export function Info({ type, auction_start_ms, auction_end_ms, auctionState }: I
 	const eligibilityMessage = getEligibilityMessage(type);
 	const [showInfo, setShowInfo] = React.useState(false);
 
-	const hasAuctionEnded = auctionState === AuctionState.ENDED;
-
-	const now = moment();
-	const hasStarted = now.isAfter(moment(auction_start_ms));
-	const targetTime = hasStarted ? auction_end_ms : auction_start_ms;
-	const timeLeft = moment
-		.utc(moment.duration(moment(targetTime).diff(now)).asMilliseconds())
-		.format("HH:mm:ss");
-	const timeLabel = hasStarted ? "ends" : "starts";
+	let timeLabel, targetTime;
+	if (auctionState === AuctionState.WILL_START) {
+		timeLabel = "starts";
+		targetTime = auction_start_ms;
+	} else {
+		timeLabel = "ends";
+		targetTime = auction_end_ms;
+	}
 
 	const tweet = `Just placed my bid in the @goNativeCC BTCFi Beelievers NFT auction!
 
@@ -53,18 +51,17 @@ Securing my spot in the top 5810 at beelieversNFT.gonative.cc`;
 				</div>
 				<div className="flex flex-col gap-4 lg:gap-6 py-0 w-full">
 					<div className="flex flex-row justify-between items-center gap-4">
-						{(timeLeft || hasAuctionEnded) && (
-							<div className="flex items-center gap-2 px-4 py-2 bg-primary/20 rounded-full border border-primary/30 animate-pulse-glow">
-								<span className="text-2xl">⏰</span>
-								{hasAuctionEnded ? (
-									<p className="text-sm font-semibold text-primary">Auction ended</p>
-								) : (
-									<p className="text-sm font-semibold text-primary">
-										Auction {timeLabel} in <Countdown targetTime={targetTime} />
-									</p>
-								)}
-							</div>
-						)}
+						<div className="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full border border-primary/20 font-semibold text-primary">
+							<span className="text-2xl">⏰</span>
+							{auctionState === AuctionState.ENDED ? (
+								<span className="text">Auction ended</span>
+							) : (
+								<>
+									<span className="text-sm"> Auction {timeLabel} in </span>
+									<Countdown targetTime={targetTime} />
+								</>
+							)}
+						</div>
 						<TwitterShareButton shareContent={tweet} />
 					</div>
 
@@ -120,63 +117,61 @@ function InstructionDetails() {
 					Auction Format: Fair & Transparent
 				</h3>
 				<p className="text-sm lg:text-base mb-4 text-foreground/90">
-					We’re letting the community set the price through a secondary-price auction.
+					We’re letting the community set the price through a price auction.
 				</p>
-				<div className="mt-4 bg-gradient-to-r from-primary/5 to-transparent p-4 rounded-lg border-l-4 border-primary">
-					<h3 className={headerStyle}>
-						<span className="text-2xl">❓</span>
-						How it works:
-					</h3>
-					<ul className={listStyle}>
-						<li className="text-sm lg:text-base">
-							<strong>Place your bid</strong> – You can raise your bid anytime before the
-							auction ends to improve your chances.
-						</li>
-						<li className="text-sm lg:text-base">
-							<strong>Top 5,810 bidders win</strong> – Only the highest 5,810 bids will have
-							chance to mint NFT.
-						</li>
-						<li className="text-sm lg:text-base">
-							<strong>Pay the clearing price</strong> – All winners pay the same final price,
-							which is the generalized &ldquo;second price&rdquo; - highest bid that didn&apos;t
-							make it to the winning list.
-						</li>
-						<li className="text-sm lg:text-base">
-							<strong>Get refunds automatically</strong> – If you bid higher than the clearing
-							price, the difference is refunded.
-						</li>
-					</ul>
-				</div>
 
-				<div className="bg-gradient-to-r from-orange-500/5 to-transparent p-4 rounded-lg border-l-4 border-orange-500">
-					<h3 className={headerStyle}>
-						<span className="text-2xl">📊</span>
-						Simple Example
-					</h3>
-					<p className="text-sm lg:text-base text-foreground/90">
-						Top 5,810 bids range from 12 SUI to 6.2 SUI. Everyone in the top 5,810 pays 6.2 SUI,
-						and extra amounts are refunded.
-					</p>
-				</div>
+				<h3 className={headerStyle}>
+					<span className="text-2xl">❓</span>
+					How it works:
+				</h3>
+				<ul className={listStyle}>
+					<li className="text-sm lg:text-base">
+						<strong>Place your bid</strong> – You can raise your bid anytime before the auction
+						ends to improve your chances.
+					</li>
+					<li className="text-sm lg:text-base">
+						<strong>Top 5,810 bidders win</strong> – Only the highest 5,810 bids will have chance
+						to mint NFT.
+					</li>
+					<li className="text-sm lg:text-base">
+						<strong>Fair clearing price</strong> – All winners pay <b>the same final price</b>,
+						which is the generalized &ldquo;Nth price&rdquo;. This is a form of &nbsp;
+						<a href="https://en.wikipedia.org/wiki/Vickrey_auction" className="link">
+							Vickrey auction
+						</a>{" "}
+						- where everyone pays highest bid that didn&apos;t make it to the winning list.
+					</li>
+					<li className="text-sm lg:text-base">
+						<strong>Get refunds automatically</strong> – If you bid higher than the clearing
+						price, the difference is refunded.
+					</li>
+				</ul>
 
-				<div className="bg-gradient-to-r from-yellow-500/5 to-transparent p-4 rounded-lg border-l-4 border-yellow-500">
-					<h3 className={headerStyle}>
-						<span className="text-2xl">🫵</span>
-						Key Points
-					</h3>
-					<ul className={listStyle}>
-						<li className="text-sm lg:text-base">
-							You can increase your bid any time until the auction closes.
-						</li>
-						<li className="text-sm lg:text-base">
-							Being in the top 5,810 at the close guarantees you a chance to mint NFT.
-						</li>
-						<li className="text-sm lg:text-base">
-							User deposits money on chain to make a bid, everything else is off chain. This
-							way, we can do all UI features more user friendly.
-						</li>
-					</ul>
-				</div>
+				<h3 className={headerStyle}>
+					<span className="text-2xl">📊</span>
+					Simple Example
+				</h3>
+				<p className="text-sm lg:text-base text-foreground/90">
+					Top 5,810 bids range from 12 SUI to 6.2 SUI. Everyone in the top 5,810 pays 6.2 SUI, and
+					extra amounts are refunded.
+				</p>
+
+				<h3 className={headerStyle}>
+					<span className="text-2xl">🫵</span>
+					Key Points
+				</h3>
+				<ul className={listStyle}>
+					<li className="text-sm lg:text-base">
+						You can increase your bid any time until the auction closes.
+					</li>
+					<li className="text-sm lg:text-base">
+						Being in the top 5,810 at the close guarantees you a chance to mint NFT.
+					</li>
+					<li className="text-sm lg:text-base">
+						User deposits money on chain to make a bid, everything else is off chain. This way, we
+						can do all UI features more user friendly.
+					</li>
+				</ul>
 			</div>
 		</div>
 	);

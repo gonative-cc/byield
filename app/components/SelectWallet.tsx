@@ -30,9 +30,8 @@ export function SelectWallet({ isProductionMode }: SelectWalletProps) {
 	const location = useLocation();
 	const currentPath = location.pathname;
 
-	// hide wallet based on routes
-	const shouldShowBitcoinWallet = routes?.[currentPath]?.bitcoin ?? true;
-	const shouldShowSUIWallet = routes?.[currentPath]?.sui ?? true;
+	const shouldShowBitcoinWallet = routes[currentPath]?.bitcoin ?? true;
+	const shouldShowSUIWallet = routes[currentPath]?.sui ?? true;
 
 	if (isLoading) return <LoadingSkeleton />;
 
