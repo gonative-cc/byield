@@ -7,7 +7,7 @@ import { Button } from "~/components/ui/button";
 import { FormInput } from "~/components/form/FormInput";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { SuiModal } from "~/components/Wallet/SuiWallet/SuiModal";
-import type { Bidder } from "./types";
+import type { Bidder } from "~/server/BeelieversAuction/types";
 import { AuctionState } from "./types";
 
 function validateBidAmount(val: string, hasUserBidBefore: boolean) {

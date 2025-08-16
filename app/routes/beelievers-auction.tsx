@@ -5,8 +5,9 @@ import Controller from "~/server/BeelieversAuction/controller.server";
 import type { LoaderDataResp } from "~/server/BeelieversAuction/types";
 import { checkEligibility } from "~/pages/BeelieversAuction/whitelist.server";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
+import type { Route } from "./+types/beelievers-auction";
 
-export async function loader(): Promise<LoaderDataResp> {
+export async function loader({ context }: Route.LoaderArgs): Promise<LoaderDataResp> {
 	const ctrl = new Controller();
 	return await ctrl.loadPageData();
 }

@@ -1,4 +1,4 @@
-export interface Badge {
+export interface BadgeRecord {
 	name: string;
 	filename: string;
 	src: string;
@@ -21,7 +21,7 @@ export const BADGE_NAME_TO_FILENAME: Record<string, string> = {
 	last_position: "Last_bid_in_Leaderboard.svg",
 };
 
-export function getBadgesForBidder(badgeName: string): Badge | null {
+export function toBadgeRecord(badgeName: string): BadgeRecord | null {
 	const filename = BADGE_NAME_TO_FILENAME[badgeName];
 	if (!filename) return null;
 

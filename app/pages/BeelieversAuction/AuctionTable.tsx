@@ -4,9 +4,9 @@ import { Table } from "~/components/ui/table";
 import { trimAddress } from "~/components/Wallet/walletHelper";
 import { useContext } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
-import { getBadgesForBidder } from "~/lib/badgeSystem";
+import { toBadgeRecord, type BadgeRecord } from "~/lib/badgeSystem";
 import { Badge } from "~/components/Badge";
-import type { Bidder } from "./types";
+import type { Bidder } from "~/server/BeelieversAuction/types";
 
 const MAX_LEADERBOARD_ROWS = 21;
 
@@ -38,12 +38,16 @@ const createColumns = (): Column<Bidder>[] => [
 		Header: "🏅 Badges",
 		Cell: ({ row }: CellProps<Bidder>) => {
 			const badgeNames = row.original.badges || [];
-			const badges = badgeNames.map(getBadgesForBidder).filter(Boolean);
+			const badges = [] as BadgeRecord[];
+			for (const b of badgeNames) {
+				const bn = toBadgeRecord(b);
+				if (bn !== null) badges.push(bn);
+			}
 
 			return (
 				<div className="flex space-x-2 justify-center">
 					{badges.length > 0 ? (
-						badges.map((badge, index) => (
+						badges?.map((badge, index) => (
 							<div
 								key={index}
 								className="relative p-1 bg-white/90 backdrop-blur-sm rounded-lg border border-gray-200 shadow-md hover:shadow-lg hover:scale-110 transition-all duration-200 hover:bg-white"

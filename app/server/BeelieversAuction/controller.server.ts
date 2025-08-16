@@ -7,12 +7,14 @@ export default class Controller {
 		return {
 			error: undefined,
 			leaderboard: getLeaderBoardData(),
-			uniqueBidders: 600,
-			totalBids: 1250,
-			highestBidMist: 30e9,
-			entryBidMist: 2e9,
-			startsAt: now + 24 * 60 * 60 * 1000,
-			endsAt: now + 24 * 60 * 60 * 1000,
+			details: {
+				uniqueBidders: 600,
+				totalBids: 1250,
+				highestBidMist: 30e9,
+				entryBidMist: 2e9,
+				startsAt: now + 24 * 60 * 60 * 1000,
+				endsAt: now + 24 * 60 * 60 * 1000,
+			},
 		};
 	}
 }

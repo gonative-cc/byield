@@ -19,7 +19,7 @@
 		"lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
 		"format": "prettier --write .",
 		"start": "wrangler dev",
-		"typecheck": "react-router typegen && tsc",
+		"typecheck": "react-router typegen && tsc -b",
 		"db:migrate": "wrangler d1 migrations apply byield-dev",
 		"db:migrate:local": "wrangler d1 migrations apply byield-dev --local",
 		"test": "vitest"
