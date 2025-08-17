@@ -204,7 +204,7 @@ const EligibleStatusBadge = ({ type }: { type?: AuctionAccountType }) => {
 		}
 	};
 
-	const config = getStatusConfig();
+	const config = statusMesg();
 	if (!config) return null;
 
 	return (
