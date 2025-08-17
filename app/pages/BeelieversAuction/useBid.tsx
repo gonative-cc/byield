@@ -82,7 +82,7 @@ export const useBid = () => {
 					transaction,
 				},
 				{
-					onSettled: refetchSUIBalance;
+					onSettled: refetchSUIBalance,
 				},
 			);
 		},
