@@ -1,5 +1,3 @@
-import type { Bidder } from "~/server/BeelieversAuction/types";
-
 export enum AuctionAccountType {
 	PARTNER_WHITELIST = "PARTNER_WHITELIST",
 	TESTNET_WHITELIST = "TESTNET_WHITELIST_ADDRESS",
