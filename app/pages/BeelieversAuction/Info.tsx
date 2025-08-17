@@ -64,6 +64,7 @@ Securing my spot in the top 5810 at beelieversNFT.gonative.cc`;
 						</div>
 						<TwitterShareButton shareContent={tweet} />
 					</div>
+					<EligibleStatusBadge type={type} />
 
 					{eligibilityMessage && (
 						<div className="p-4 bg-primary/10 rounded-lg border border-primary/20 animate-in slide-in-from-left-2 duration-500">
@@ -176,6 +177,50 @@ function InstructionDetails() {
 		</div>
 	);
 }
+
+const EligibleStatusBadge = ({ type }: { type?: AuctionAccountType }) => {
+	if (!type || type === AuctionAccountType.DEFAULT) return null;
+
+	const statusMesg = () => {
+		switch (type) {
+			case AuctionAccountType.TESTNET_WHITELIST:
+				return {
+					text: "Congrats! You have Testnet WL tier",
+					gradient: "from-blue-500/20 to-cyan-500/20",
+					border: "border-blue-400/40",
+					textColor: "text-blue-300",
+					outerGradient: "from-blue-500/10 via-cyan-500/5 to-transparent",
+				};
+			case AuctionAccountType.PARTNER_WHITELIST:
+				return {
+					text: "Congrats! You are verified Partner WL",
+					gradient: "from-purple-500/20 to-pink-500/20",
+					border: "border-purple-400/40",
+					textColor: "text-purple-300",
+					outerGradient: "from-purple-500/10 via-pink-500/5 to-transparent",
+				};
+			default:
+				return null;
+		}
+	};
+
+	const config = statusMesg();
+	if (!config) return null;
+
+	return (
+		<div
+			className={`p-1 bg-gradient-to-r ${config.outerGradient} rounded-full animate-in slide-in-from-right-2 duration-700 animate-flash`}
+		>
+			<div
+				className={`flex items-center gap-2 px-4 py-2 bg-gradient-to-r ${config.gradient} rounded-full border ${config.border}`}
+			>
+				<span className="text-lg">🤝</span>
+				<p className={`text-sm font-semibold ${config.textColor}`}>{config.text}</p>
+				<span className="text-lg animate-bounce">✨</span>
+			</div>
+		</div>
+	);
+};
 
 function getEligibilityMessage(type?: AuctionAccountType) {
 	switch (type) {
