@@ -16,14 +16,13 @@ const BUY_NBTC_GAS = parseSUI("0.01");
 
 interface SUIRightAdornmentProps {
 	maxSUIAmount: string;
-	isValidMaxSUIAmount: boolean;
 	onMaxClick: (val: string) => void;
 }
 
-function SUIRightAdornment({ isValidMaxSUIAmount, maxSUIAmount, onMaxClick }: SUIRightAdornmentProps) {
+function SUIRightAdornment({ maxSUIAmount, onMaxClick }: SUIRightAdornmentProps) {
 	return (
 		<div className="flex flex-col items-center gap-2 py-2">
-			{isValidMaxSUIAmount && (
+			{maxSUIAmount && (
 				<div className="flex items-center gap-2">
 					<p className="text-xs whitespace-nowrap">Balance: {maxSUIAmount.substring(0, 4)} SUI</p>
 					<Button
@@ -57,7 +56,7 @@ export function BuyNBTCTabContent() {
 		isSuccess,
 		isError,
 		data,
-		balance,
+		suiBalance,
 		isSuiWalletConnected,
 	} = useNBTC({ variant: "BUY" });
 
@@ -84,17 +83,15 @@ export function BuyNBTCTabContent() {
 		}
 	}, [isSuiWalletConnected, suiAmount, trigger]);
 
-	const totalBalance = BigInt(balance?.totalBalance || "0");
-	const suiAmountAfterFee = totalBalance - BUY_NBTC_GAS;
-	const isValidMaxSUIAmount = suiAmountAfterFee > 0;
-	const maxSUIAmount = formatSUI(suiAmountAfterFee);
+	const suiAmountAfterFee = suiBalance - BUY_NBTC_GAS;
+	const maxSUIAmount = suiAmountAfterFee > 0 ? formatSUI(suiAmountAfterFee) : "";
 
 	const suiAmountInputRules = {
 		validate: {
 			isWalletConnected: () => isSuiWalletConnected || "Please connect SUI wallet",
 			enoughBalance: (value: string) => {
-				if (balance?.totalBalance) {
-					if (parseSUI(value) + BUY_NBTC_GAS <= BigInt(balance.totalBalance)) {
+				if (suiBalance) {
+					if (parseSUI(value) + BUY_NBTC_GAS <= suiBalance) {
 						return true;
 					}
 					return `Entered SUI is too big. Leave at-least ${formatSUI(BUY_NBTC_GAS)} SUI to cover the gas fee.`;
@@ -115,7 +112,7 @@ export function BuyNBTCTabContent() {
 					placeholder="Enter SUI amount"
 					className={classNames({
 						"h-16": true,
-						"pt-8": isValidMaxSUIAmount,
+						"pt-8": suiAmountAfterFee > 0,
 					})}
 					inputMode="decimal"
 					decimalScale={SUI}
@@ -125,7 +122,6 @@ export function BuyNBTCTabContent() {
 						<SUIRightAdornment
 							onMaxClick={(val: string) => setValue("suiAmount", val)}
 							maxSUIAmount={maxSUIAmount}
-							isValidMaxSUIAmount={isValidMaxSUIAmount}
 						/>
 					}
 					rules={suiAmountInputRules}

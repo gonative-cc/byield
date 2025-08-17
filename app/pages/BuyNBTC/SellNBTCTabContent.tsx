@@ -15,15 +15,14 @@ import { PRICE_PER_NBTC_IN_SUI } from "~/lib/nbtc";
 interface NBTCRightAdornmentProps {
 	maxNBTCAmount: bigint;
 	onMaxClick: (val: string) => void;
-	isValidMaxNBTCAmount: boolean;
 }
 
-function NBTCRightAdornment({ maxNBTCAmount, isValidMaxNBTCAmount, onMaxClick }: NBTCRightAdornmentProps) {
+function NBTCRightAdornment({ maxNBTCAmount, onMaxClick }: NBTCRightAdornmentProps) {
 	const totalNBTCBalance = formatNBTC(maxNBTCAmount);
 
 	return (
 		<div className="flex flex-col items-center gap-2 py-2">
-			{isValidMaxNBTCAmount && (
+			{maxNBTCAmount > 0 && (
 				<div className="flex items-center gap-2">
 					<p className="text-xs whitespace-nowrap">Balance: {totalNBTCBalance} nBTC</p>
 					<Button
@@ -56,7 +55,7 @@ export function SellNBTCTabContent() {
 		isPending,
 		isSuccess,
 		isError,
-		nBTCBalance,
+		nbtcBalance,
 		data,
 		isSuiWalletConnected,
 	} = useNBTC({ variant: "SELL" });
@@ -85,17 +84,15 @@ export function SellNBTCTabContent() {
 		validate: {
 			isWalletConnected: () => isSuiWalletConnected || "Please connect SUI wallet",
 			enoughBalance: (value: string) => {
-				if (nBTCBalance?.totalBalance) {
-					if (parseNBTC(value) <= BigInt(nBTCBalance.totalBalance)) {
+				if (nbtcBalance !== null) {
+					if (parseNBTC(value) <= nbtcBalance) {
 						return true;
 					}
-					return `You don't have enough nBTC balance.`;
+					return "You don't have enough nBTC balance.";
 				}
 			},
 		},
 	};
-
-	const isValidMaxNBTCAmount = nBTCBalance?.totalBalance ? BigInt(nBTCBalance.totalBalance) > 0 : false;
 
 	return (
 		<FormProvider {...sellNBTCForm}>
@@ -113,13 +110,12 @@ export function SellNBTCTabContent() {
 					placeholder="Enter nBTC amount"
 					className={classNames({
 						"h-16": true,
-						"pt-8": isValidMaxNBTCAmount,
+						"pt-8": nbtcBalance > 0,
 					})}
 					rightAdornments={
 						<NBTCRightAdornment
 							onMaxClick={(val: string) => setValue("nBTCAmount", val)}
-							maxNBTCAmount={BigInt(nBTCBalance?.totalBalance || "0")}
-							isValidMaxNBTCAmount={isValidMaxNBTCAmount}
+							maxNBTCAmount={nbtcBalance}
 						/>
 					}
 					rules={nBTCAmountInputRules}
