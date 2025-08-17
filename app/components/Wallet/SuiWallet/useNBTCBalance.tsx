@@ -19,6 +19,7 @@ export const useNBTCBalance = () => {
 		});
 	};
 
+	// TODO: let's refactor this code. We should NOT use useQuery and add coin as an argument.
 	const {
 		data: balance,
 		isLoading,

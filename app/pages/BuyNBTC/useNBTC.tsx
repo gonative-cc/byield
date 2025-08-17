@@ -78,11 +78,25 @@ const createNBTCTxn = async (
 	return txn;
 };
 
+// TODO: need to update this type, has too many options
+interface UseNBTCReturn {
+	handleTransaction: (amount: bigint) => Promise<void>;
+	isPending: boolean;
+	isSuccess: boolean;
+	isError: boolean;
+	/* eslint-disable @typescript-eslint/no-explicit-any */
+	data: any;
+	resetMutation: () => void;
+	balance: CoinBalance | null | undefined;
+	nBTCBalance: CoinBalance | null | undefined;
+	isSuiWalletConnected: boolean;
+}
+
 interface NBTCProps {
 	variant: "BUY" | "SELL";
 }
 
-export const useNBTC = ({ variant }: NBTCProps) => {
+export const useNBTC = ({ variant }: NBTCProps): UseNBTCReturn => {
 	const shouldBuy = variant === "BUY";
 	const account = useCurrentAccount();
 	const client = useSuiClient();
