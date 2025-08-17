@@ -1,3 +1,5 @@
+import type { Bidder } from "~/server/BeelieversAuction/types";
+
 export enum AuctionAccountType {
 	PARTNER_WHITELIST = "PARTNER_WHITELIST",
 	TESTNET_WHITELIST = "TESTNET_WHITELIST_ADDRESS",
@@ -16,7 +18,7 @@ export enum AuctionState {
 }
 
 export interface LeaderboardResponse {
-	leaders: any[];
+	leaders: Bidder[];
 	unique_bidders: number;
 	total_bids: number;
 	highest_bid: number;

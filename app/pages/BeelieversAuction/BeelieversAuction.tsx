@@ -3,11 +3,13 @@ import { AuctionTable } from "./AuctionTable";
 import { AuctionTotals } from "./AuctionTotals";
 import { BeelieversBid } from "./BeelieversBid";
 import { Partners } from "~/components/Partners";
-import type { EligibilityData } from "./types";
 import { TweetEmbed } from "~/components/TweetEmbed";
 import { AuctionState } from "./types";
 import { BadgesModal } from "~/components/BadgesModal";
 import type { AuctionDetails, Bidder } from "~/server/BeelieversAuction/types";
+import { useFetcher } from "react-router";
+import { useContext, useEffect, useRef } from "react";
+import { WalletContext } from "~/providers/ByieldWalletProvider";
 
 function getAuctionState(startMs: number, endMs: number): AuctionState {
 	const nowMs = new Date().getTime();
@@ -19,14 +21,32 @@ function getAuctionState(startMs: number, endMs: number): AuctionState {
 interface BeelieversAuctionProps {
 	auctionDetails: AuctionDetails;
 	leaderBoard: Bidder[];
-	eligibilityData?: EligibilityData;
 }
 
 export function BeelieversAuction({
-	eligibilityData,
 	auctionDetails: { uniqueBidders, totalBids, entryBidMist, startsAt, endsAt },
-	leaderBoard
+	leaderBoard,
 }: BeelieversAuctionProps) {
+	const queryUserEligibility = useFetcher();
+	const { suiAddr } = useContext(WalletContext);
+	const lastCheckedAddress = useRef<string | null>(null);
+
+	// Check eligibility when wallet connects or address changes, reset when disconnected
+	useEffect(() => {
+		if (suiAddr && suiAddr !== lastCheckedAddress.current && queryUserEligibility.state === "idle") {
+			// Wallet connected or address changed - check eligibility
+			lastCheckedAddress.current = suiAddr;
+			const formData = new FormData();
+			formData.append("suiAddress", suiAddr);
+			queryUserEligibility.submit(formData, { method: "POST" });
+		} else if (!suiAddr && lastCheckedAddress.current) {
+			// Wallet disconnected - reset state
+			lastCheckedAddress.current = null;
+		}
+	}, [suiAddr, queryUserEligibility.state, queryUserEligibility]);
+
+	// Reset eligibility data when wallet is disconnected
+	const eligibilityData = suiAddr ? queryUserEligibility.data : undefined;
 	const twitterPost = "https://twitter.com/goNativeCC/status/1956370231191818263";
 	const auctionState = getAuctionState(startsAt, endsAt);
 
