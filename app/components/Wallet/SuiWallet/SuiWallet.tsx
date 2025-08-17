@@ -11,7 +11,7 @@ import { useCallback, useContext, useMemo } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
 import { trimAddress } from "../walletHelper";
-import { useSuiBalance } from "./useSuiBalance";
+import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { NumericFormat } from "react-number-format";
 import { EllipsisVertical } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
@@ -86,7 +86,7 @@ function Accounts() {
 function SuiWalletMobileView() {
 	const { mutate: disconnect } = useDisconnectWallet();
 	const { handleWalletConnect } = useContext(WalletContext);
-	const { balance } = useSuiBalance();
+	const { balance } = useCoinBalance();
 
 	return (
 		<div className="flex w-full gap-1 items-center md:hidden">
@@ -100,14 +100,12 @@ function SuiWalletMobileView() {
 					<div className="grid gap-4">
 						<p>
 							Balance:{" "}
-							{balance?.totalBalance && (
-								<NumericFormat
-									displayType="text"
-									value={formatSUI(balance?.totalBalance)}
-									suffix=" SUI"
-									className="shrink-0 text-primary"
-								/>
-							)}
+							<NumericFormat
+								displayType="text"
+								value={formatSUI(balance)}
+								suffix=" SUI"
+								className="shrink-0 text-primary"
+							/>
 						</p>
 						<Button
 							onClick={() => {
@@ -127,7 +125,7 @@ function SuiWalletMobileView() {
 export function SuiWallet() {
 	const { mutate: disconnect } = useDisconnectWallet();
 	const { handleWalletConnect } = useContext(WalletContext);
-	const { balance } = useSuiBalance();
+	const { balance } = useCoinBalance();
 
 	return (
 		<>
@@ -135,14 +133,12 @@ export function SuiWallet() {
 			<div className="hidden w-full gap-2 items-center md:flex">
 				<NetWorkOptions />
 				<Accounts />
-				{balance?.totalBalance && (
-					<NumericFormat
-						displayType="text"
-						value={formatSUI(balance?.totalBalance)}
-						suffix=" SUI"
-						className="shrink-0"
-					/>
-				)}
+				<NumericFormat
+					displayType="text"
+					value={formatSUI(balance)}
+					suffix=" SUI"
+					className="shrink-0"
+				/>
 				<Button
 					onClick={() => {
 						disconnect();

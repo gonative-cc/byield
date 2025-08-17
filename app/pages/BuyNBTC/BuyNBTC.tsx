@@ -12,6 +12,7 @@ import { Tabs } from "~/components/ui/tabs";
 import { ArrowUpRight } from "lucide-react";
 
 export function BuyNBTC() {
+	// TODO: it doesn't get automatically refresehed
 	const { balance: nBTCBalance } = useCoinBalance(NBTC_COIN_TYPE);
 	const { isWalletConnected, suiAddr } = useContext(WalletContext);
 	const isSuiWalletConnected = isWalletConnected(Wallets.SuiWallet);
