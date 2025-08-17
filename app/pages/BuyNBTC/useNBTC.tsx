@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+
 import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
 import type { SuiClient, CoinBalance, PaginatedCoins } from "@mysten/sui/client";
 import { coinWithBalance, Transaction } from "@mysten/sui/transactions";
@@ -129,6 +131,7 @@ export const useNBTC = ({ variant }: NBTCProps) => {
 				nbtcOTC,
 				toast,
 				shouldBuy,
+				// @ts-ignore
 				client,
 				nBTCBalance,
 			);
@@ -139,6 +142,7 @@ export const useNBTC = ({ variant }: NBTCProps) => {
 			}
 			signAndExecuteTransaction(
 				{
+					// @ts-ignore
 					transaction,
 				},
 				{

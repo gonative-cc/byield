@@ -47,27 +47,27 @@ export default function BeelieversAuctionPage() {
 		auction_start_ms: Date.now() + 24 * 60 * 60 * 1000,
 		auction_end_ms: Date.now() + 48 * 60 * 60 * 1000,
 	};
-	// TODO: let's try to move it to BeelieversAuction component
-	const fetcher = useFetcher<typeof action>();
+	// TODO: let's try to move it (and eiligibilityData) to BeelieversAuction component
+	const queryUserEligibility = useFetcher<typeof action>();
 	const { suiAddr } = useContext(WalletContext);
 	const lastCheckedAddress = useRef<string | null>(null);
 
 	// Check eligibility when wallet connects or address changes, reset when disconnected
 	useEffect(() => {
-		if (suiAddr && suiAddr !== lastCheckedAddress.current && fetcher.state === "idle") {
+		if (suiAddr && suiAddr !== lastCheckedAddress.current && queryUserEligibility.state === "idle") {
 			// Wallet connected or address changed - check eligibility
 			lastCheckedAddress.current = suiAddr;
 			const formData = new FormData();
 			formData.append("suiAddress", suiAddr);
-			fetcher.submit(formData, { method: "POST" });
+			queryUserEligibility.submit(formData, { method: "POST" });
 		} else if (!suiAddr && lastCheckedAddress.current) {
 			// Wallet disconnected - reset state
 			lastCheckedAddress.current = null;
 		}
-	}, [suiAddr, fetcher.state, fetcher]);
+	}, [suiAddr, queryUserEligibility.state, queryUserEligibility]);
 
 	// Reset eligibility data when wallet is disconnected
-	const eligibilityData = suiAddr ? fetcher.data : undefined;
+	const eligibilityData = suiAddr ? queryUserEligibility.data : undefined;
 
 	return (
 		<div className="bg-gradient-to-br from-background via-azure-20 to-azure-25 p-4 sm:p-6 lg:p-8">
