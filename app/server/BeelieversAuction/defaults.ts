@@ -20,3 +20,12 @@ export function defaultUser(): User {
 		note: "",
 	};
 }
+
+export function defaultTestUser(): User {
+	return {
+		rank: 9, // rank starts from 1
+		amount: 5_1 * 1e8, // 2.1 SUI
+		badges: ["top_10", "top_21", "top_100", "bid_over_5", "every_21st"],
+		note: "I'm Beellish!",
+	};
+}
