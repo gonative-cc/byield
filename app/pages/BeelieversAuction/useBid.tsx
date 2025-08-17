@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
 import { useCallback, useContext } from "react";
 import { Wallets } from "~/components/Wallet";
-import { useSuiBalance } from "~/components/Wallet/SuiWallet/useSuiBalance";
+import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { toast } from "~/hooks/use-toast";
 import { useNetworkVariables } from "~/networkConfig";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
@@ -29,12 +30,25 @@ const createBidTxn = async (
 	return txn;
 };
 
-export const useBid = () => {
+interface UseBidReturn {
+	handleTransaction: (amount: bigint) => Promise<void>;
+	// check if TX is pending
+	isPending: boolean;
+	isSuccess: boolean;
+	isError: boolean;
+	// TX result
+	/* eslint-disable @typescript-eslint/no-explicit-any */
+	data: any;
+	resetMutation: () => void;
+	isSuiWalletConnected: boolean;
+}
+
+export const useBid = (): UseBidReturn => {
 	const account = useCurrentAccount();
 	const client = useSuiClient();
 	const { isWalletConnected } = useContext(WalletContext);
 	const isSuiWalletConnected = isWalletConnected(Wallets.SuiWallet);
-	const { balance, refetchSUIBalance } = useSuiBalance();
+	const suiBalanceRes = useCoinBalance();
 	const { auctionBidApi } = useNetworkVariables();
 	const {
 		mutate: signAndExecuteTransaction,
@@ -75,14 +89,15 @@ export const useBid = () => {
 			}
 			signAndExecuteTransaction(
 				{
+					// @ts-ignore
 					transaction,
 				},
 				{
-					onSettled: refetchSUIBalance,
+					onSettled: suiBalanceRes.refetch(),
 				},
 			);
 		},
-		[account, auctionBidApi, signAndExecuteTransaction, refetchSUIBalance],
+		[account, auctionBidApi, signAndExecuteTransaction, suiBalanceRes],
 	);
 
 	return {
@@ -92,7 +107,6 @@ export const useBid = () => {
 		isError,
 		data,
 		resetMutation,
-		balance,
 		isSuiWalletConnected,
 	};
 };
