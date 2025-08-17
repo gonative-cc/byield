@@ -84,12 +84,10 @@ export function SellNBTCTabContent() {
 		validate: {
 			isWalletConnected: () => isSuiWalletConnected || "Please connect SUI wallet",
 			enoughBalance: (value: string) => {
-				if (nbtcBalance !== null) {
-					if (parseNBTC(value) <= nbtcBalance) {
-						return true;
-					}
-					return "You don't have enough nBTC balance.";
+				if (parseNBTC(value) <= nbtcBalance) {
+					return true;
 				}
+				return "You don't have enough nBTC balance.";
 			},
 		},
 	};
