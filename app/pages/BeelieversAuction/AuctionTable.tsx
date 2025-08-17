@@ -35,6 +35,26 @@ const createColumns = (): Column<Bidder>[] => [
 		),
 	},
 	{
+		Header: "💰 Bid Amount",
+		accessor: "amount",
+		Cell: ({ row }: CellProps<Bidder>) => (
+			<div className="flex items-center space-x-2 font-semibold">
+				<SUIIcon prefix="" className="h-5 w-5 text-primary" />
+				<span className="text-primary">{row.original.amount}</span>
+				<span className="text-muted-foreground text-sm">SUI</span>
+			</div>
+		),
+	},
+	{
+		Header: "📝 Note",
+		accessor: "note",
+		Cell: ({ row }: CellProps<Bidder>) => (
+			<span className="text-sm text-muted-foreground max-w-32 truncate block">
+				{row.original.note || "-"}
+			</span>
+		),
+	},
+	{
 		Header: "🏅 Badges",
 		Cell: ({ row }: CellProps<Bidder>) => {
 			const badgeNames = row.original.badges || [];
@@ -61,26 +81,6 @@ const createColumns = (): Column<Bidder>[] => [
 				</div>
 			);
 		},
-	},
-	{
-		Header: "💰 Bid Amount",
-		accessor: "amount",
-		Cell: ({ row }: CellProps<Bidder>) => (
-			<div className="flex items-center space-x-2 font-semibold">
-				<SUIIcon prefix="" className="h-5 w-5 text-primary" />
-				<span className="text-primary">{row.original.amount}</span>
-				<span className="text-muted-foreground text-sm">SUI</span>
-			</div>
-		),
-	},
-	{
-		Header: "📝 Note",
-		accessor: "note",
-		Cell: ({ row }: CellProps<Bidder>) => (
-			<span className="text-sm text-muted-foreground max-w-32 truncate block">
-				{row.original.note || "-"}
-			</span>
-		),
 	},
 ];
 

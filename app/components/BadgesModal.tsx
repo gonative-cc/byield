@@ -115,11 +115,7 @@ export function BadgesModal() {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<Button
-					type="button"
-					variant="outline"
-					className="border-primary/30 hover:border-primary hover:bg-primary/10 transition-all duration-200"
-				>
+				<Button type="button" variant="outline">
 					🏆 View All Badges
 				</Button>
 			</DialogTrigger>
