@@ -10,6 +10,6 @@
 		"skipLibCheck": true,
 		"strict": true,
 		"noEmit": true,
-		"types": ["./worker-configuration.d.ts", "./global.d.ts"]
+		"types": ["./worker-configuration.d.ts"]
 	}
 }
