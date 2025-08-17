@@ -1,15 +1,5 @@
 import { useEffect } from "react";
 
-declare global {
-	interface Window {
-		twttr?: {
-			widgets: {
-				load(): void;
-			};
-		};
-	}
-}
-
 interface TweetEmbedProps {
 	src: string;
 }

@@ -1,7 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { createRoutesStub } from "react-router";
 import { describe, it, expect } from "vitest";
-import "@testing-library/jest-dom";
 import { BitcoinBalance } from "../BitcoinBalance";
 
 describe("Bitcoin balance tests:", () => {
