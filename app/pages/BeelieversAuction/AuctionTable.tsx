@@ -125,15 +125,7 @@ export function AuctionTable({ data }: AuctionTableProps) {
 						<p className="text-sm text-muted-foreground">Top {MAX_LEADERBOARD_ROWS} bidders</p>
 					</div>
 				</div>
-
-				{userBid && (
-					<div className="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full border border-primary/20">
-						<span className="text-sm text-muted-foreground">Your rank:</span>
-						<span className="font-bold text-primary">#{userPosition}</span>
-					</div>
-				)}
 			</div>
-
 			<Table columns={columns} data={displayData} getRowProps={getRowProps} />
 		</div>
 	);
