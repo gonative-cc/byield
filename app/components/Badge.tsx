@@ -9,7 +9,7 @@ export function Badge({ src, title }: BadgeProps) {
 			<img
 				src={src}
 				alt={title}
-				className={`w-8 h-8 hover:scale-110 transition-transform cursor-help`}
+				className={`bg-gray-700 w-8 h-8 hover:scale-110 transition-transform cursor-help`}
 			/>
 		</div>
 	);

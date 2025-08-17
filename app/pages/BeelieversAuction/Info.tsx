@@ -5,7 +5,6 @@ import { Countdown } from "~/components/ui/countdown";
 import { AuctionAccountType } from "~/server/BeelieversAuction/types";
 import { TwitterShareButton } from "~/components/TwitterShareButton";
 import { AuctionState } from "./types";
-import { cn } from "~/util/tailwind";
 
 interface InfoProps {
 	userAccountType?: AuctionAccountType;
@@ -69,8 +68,9 @@ Securing my spot in the top 5810 at beelieversNFT.gonative.cc`;
 					{eligibilityMessage && <p>{eligibilityMessage}</p>}
 
 					<p>
-						You bid your true value; winners pay the lowest winning bid. Any amount above the
-						clearing price is refunded.
+						You can bid what you think is a fair value. Top 5810 bidders will win the auction.
+						Winners will pay the lowest winning bid. Any amount above the clearing price is
+						refunded.
 					</p>
 					<Instructions showInfo={showInfo} onToggle={() => setShowInfo(!showInfo)} />
 				</div>

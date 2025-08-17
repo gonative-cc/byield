@@ -46,7 +46,7 @@ const createColumns = (): Column<Bidder>[] => [
 		),
 	},
 	{
-		Header: "📝 Note",
+		Header: "📝 User Message",
 		accessor: "note",
 		Cell: ({ row }: CellProps<Bidder>) => (
 			<span className="text-sm text-muted-foreground max-w-32 truncate block">
@@ -70,7 +70,7 @@ const createColumns = (): Column<Bidder>[] => [
 						badges?.map((badge, index) => (
 							<div
 								key={index}
-								className="relative p-1 bg-white/90 backdrop-blur-sm rounded-lg border border-gray-200 shadow-md hover:shadow-lg hover:scale-110 transition-all duration-200 hover:bg-white"
+								className="relative bg-white/90 backdrop-blur-sm rounded-lg h-8 w-8 shadow-md hover:shadow-lg hover:scale-110 transition-all duration-200 hover:bg-white"
 							>
 								<Badge src={badge!.src} title={badge!.name} />
 							</div>

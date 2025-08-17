@@ -157,7 +157,7 @@ export function BeelieversBid({ leaderBoardData = [], auctionState }: Beelievers
 								<div className="space-y-2">
 									<div className="text-sm font-medium text-foreground/80 flex items-center gap-2">
 										<span className="text-lg">📝</span>
-										Note (Optional)
+										Message to Beelievers (optional)
 									</div>
 									<FormInput
 										name="note"
