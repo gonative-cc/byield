@@ -90,7 +90,7 @@ export function BuyNBTCTabContent() {
 		validate: {
 			isWalletConnected: () => isSuiWalletConnected || "Please connect SUI wallet",
 			enoughBalance: (value: string) => {
-				if (suiBalance) {
+				if (suiBalance > 0n) {
 					if (parseSUI(value) + BUY_NBTC_GAS <= suiBalance) {
 						return true;
 					}
