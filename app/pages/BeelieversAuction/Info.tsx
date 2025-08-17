@@ -181,7 +181,7 @@ function InstructionDetails() {
 const EligibleStatusBadge = ({ type }: { type?: AuctionAccountType }) => {
 	if (!type || type === AuctionAccountType.DEFAULT) return null;
 
-	const getStatusConfig = () => {
+	const statusMesg = () => {
 		switch (type) {
 			case AuctionAccountType.TESTNET_WHITELIST:
 				return {
