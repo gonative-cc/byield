@@ -2,7 +2,8 @@ import { useContext } from "react";
 import { Card, CardContent } from "~/components/ui/card";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
-import { useNBTCBalance } from "~/components/Wallet/SuiWallet/useNBTCBalance";
+import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
+import { NBTC_COIN_TYPE } from "~/lib/nbtc";
 import { NBTCBalance } from "~/components/NBTCBalance";
 import { Instructions } from "./Instructions";
 import { BuyNBTCTabContent } from "./BuyNBTCTabContent";
@@ -11,7 +12,8 @@ import { Tabs } from "~/components/ui/tabs";
 import { ArrowUpRight } from "lucide-react";
 
 export function BuyNBTC() {
-	const { balance: nBTCBalance } = useNBTCBalance();
+	// TODO: it doesn't get automatically refresehed
+	const { balance: nBTCBalance } = useCoinBalance(NBTC_COIN_TYPE);
 	const { isWalletConnected, suiAddr } = useContext(WalletContext);
 	const isSuiWalletConnected = isWalletConnected(Wallets.SuiWallet);
 	const transactionHistoryLink = `https://suiscan.xyz/testnet/account/${suiAddr}/tx-blocks`;
@@ -24,9 +26,7 @@ export function BuyNBTC() {
 			</p>
 			<Card>
 				<CardContent className="p-6 rounded-lg text-white flex flex-col gap-4 bg-azure-10">
-					{isSuiWalletConnected && nBTCBalance && (
-						<NBTCBalance balance={BigInt(nBTCBalance.totalBalance)} />
-					)}
+					{isSuiWalletConnected && <NBTCBalance balance={nBTCBalance} />}
 					<Instructions />
 					<Tabs
 						tabs={[

@@ -1,20 +1,19 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 
 import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
-import type { SuiClient, CoinBalance, PaginatedCoins } from "@mysten/sui/client";
+import type { SuiClient, PaginatedCoins } from "@mysten/sui/client";
 import { coinWithBalance, Transaction } from "@mysten/sui/transactions";
 import type { TransactionResult } from "@mysten/sui/transactions";
 import { useCallback, useContext } from "react";
 import { toast } from "~/hooks/use-toast";
 import type { ToastFunction } from "~/hooks/use-toast";
 import { formatSUI } from "~/lib/denoms";
+import { NBTC_COIN_TYPE } from "~/lib/nbtc";
+import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { GA_EVENT_NAME, GA_CATEGORY, useGoogleAnalytics } from "~/lib/googleAnalytics";
 import { useNetworkVariables } from "~/networkConfig";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
-import { useNBTCBalance } from "~/components/Wallet/SuiWallet/useNBTCBalance";
-import { useSuiBalance } from "~/components/Wallet/SuiWallet/useSuiBalance";
 import { Wallets } from "~/components/Wallet";
-import { NBTC_COIN_TYPE } from "~/lib/nbtc";
 
 type Targets = {
 	packageId: string;
@@ -39,7 +38,7 @@ const createNBTCTxn = async (
 	toast: ToastFunction,
 	shouldBuy: boolean,
 	client: SuiClient,
-	nBTCBalance?: CoinBalance | null,
+	nbtcBalance: bigint,
 ): Promise<Transaction | null> => {
 	const txn = new Transaction();
 	txn.setSender(senderAddress);
@@ -59,7 +58,7 @@ const createNBTCTxn = async (
 		// if no we will transfer
 		txn.transferObjects([resultCoin], senderAddress);
 	} else {
-		if (nBTCBalance?.totalBalance && BigInt(nBTCBalance.totalBalance) < amount) {
+		if (nbtcBalance < amount) {
 			console.error("Not enough nBTC balance available.");
 			toast({
 				title: "Sell nBTC",
@@ -78,17 +77,21 @@ const createNBTCTxn = async (
 	return txn;
 };
 
-// TODO: need to update this type, has too many options
 interface UseNBTCReturn {
 	handleTransaction: (amount: bigint) => Promise<void>;
+	// check if TX is pending
 	isPending: boolean;
 	isSuccess: boolean;
 	isError: boolean;
+	// TX result
 	/* eslint-disable @typescript-eslint/no-explicit-any */
 	data: any;
 	resetMutation: () => void;
-	balance: CoinBalance | null | undefined;
-	nBTCBalance: CoinBalance | null | undefined;
+	// TODO: maybe we should return the Resp object here (including loading state)?
+	// Or when loading or error, maybe we should set null? But then user maybe be confused if he doesn't
+	// see the error.
+	suiBalance: bigint;
+	nbtcBalance: bigint;
 	isSuiWalletConnected: boolean;
 }
 
@@ -96,15 +99,18 @@ interface NBTCProps {
 	variant: "BUY" | "SELL";
 }
 
-export const useNBTC = ({ variant }: NBTCProps): UseNBTCReturn => {
+// TODO: need to update this function. It is doing too many things!
+// Ideally it is only handling a transaction, and balance tracking should be done separately,
+// in another component, higher level up.
+export const useBuySellNBTC = ({ variant }: NBTCProps): UseNBTCReturn => {
 	const shouldBuy = variant === "BUY";
 	const account = useCurrentAccount();
 	const client = useSuiClient();
 	const { isWalletConnected } = useContext(WalletContext);
 	const { trackEvent } = useGoogleAnalytics();
 	const isSuiWalletConnected = isWalletConnected(Wallets.SuiWallet);
-	const { balance: nBTCBalance, refetchBalance: refetchNBTCBalance } = useNBTCBalance();
-	const { balance, refetchSUIBalance } = useSuiBalance();
+	const nbtcBalanceRes = useCoinBalance(NBTC_COIN_TYPE);
+	const suiBalanceRes = useCoinBalance();
 	const { nbtcOTC } = useNetworkVariables();
 
 	const {
@@ -147,7 +153,7 @@ export const useNBTC = ({ variant }: NBTCProps): UseNBTCReturn => {
 				shouldBuy,
 				// @ts-ignore
 				client,
-				nBTCBalance,
+				nbtcBalanceRes.balance,
 			);
 			const label = variant === "BUY" ? `user tried to buy ${formatSUI(amount)} SUI` : "";
 			if (!transaction) {
@@ -175,8 +181,8 @@ export const useNBTC = ({ variant }: NBTCProps): UseNBTCReturn => {
 							});
 					},
 					onSettled: () => {
-						refetchSUIBalance();
-						refetchNBTCBalance();
+						suiBalanceRes.refetch();
+						nbtcBalanceRes.refetch();
 					},
 				},
 			);
@@ -187,11 +193,10 @@ export const useNBTC = ({ variant }: NBTCProps): UseNBTCReturn => {
 			nbtcOTC,
 			shouldBuy,
 			client,
-			nBTCBalance,
 			signAndExecuteTransaction,
 			trackEvent,
-			refetchSUIBalance,
-			refetchNBTCBalance,
+			suiBalanceRes,
+			nbtcBalanceRes,
 		],
 	);
 
@@ -202,8 +207,8 @@ export const useNBTC = ({ variant }: NBTCProps): UseNBTCReturn => {
 		isError,
 		data,
 		resetMutation,
-		balance,
-		nBTCBalance,
+		suiBalance: suiBalanceRes.balance,
+		nbtcBalance: nbtcBalanceRes.balance,
 		isSuiWalletConnected,
 	};
 };

@@ -8,7 +8,7 @@
 	"compatibility_date": "2025-07-25",
 	"main": "./workers/app.ts",
 	"observability": {
-		"enabled": true
+		"enabled": true,
 	},
 	"compatibility_flags": ["nodejs_compat"],
 	"upload_source_maps": true,
@@ -16,7 +16,7 @@
 	// Static Assets
 	// https://developers.cloudflare.com/workers/static-assets/binding/
 	"assets": {
-		"directory": "./public"
+		"directory": "./public",
 	},
 
 	/**
@@ -35,9 +35,9 @@
 	"kv_namespaces": [
 		{
 			"binding": "BeelieversNFT",
-			"id": "181c1046829d47d2a3791087dba7e0bf"
-		}
-	]
+			"id": "181c1046829d47d2a3791087dba7e0bf",
+		},
+	],
 	// "d1_databases": [
 	// 	{
 	// 		"binding": "DB",
