@@ -1,5 +1,5 @@
 import { FormProvider, useForm } from "react-hook-form";
-import { useCallback, useContext, useEffect, useMemo } from "react";
+import { useContext, useMemo } from "react";
 import { parseSUI, SUI } from "~/lib/denoms";
 import { Card, CardContent } from "~/components/ui/card";
 import { FormNumericInput } from "~/components/form/FormNumericInput";
@@ -73,21 +73,7 @@ export function BeelieversBid({ leaderBoardData = [], auctionState }: Beelievers
 
 	const mistBidAmount = parseSUI(suiBid?.length > 0 && suiBid !== "." ? suiBid : "0");
 
-	// Why do we need this
-	// const resetForm = useCallback(() => {
-	// 	resetMutation();
-	// 	reset({
-	// 		bid: "",
-	// 	});
-	// }, [reset, resetMutation]);
-
-	// useEffect(() => {
-	// 	if (suiBid) {
-	// 		trigger();
-	// 	}
-	// }, [isSuiWalletConnected, suiBid, trigger]);
-
-	// TOOD:
+	// TODO:
 	// * show your current bid
 	// * show your current position
 
@@ -95,7 +81,6 @@ export function BeelieversBid({ leaderBoardData = [], auctionState }: Beelievers
 		<FormProvider {...bidForm}>
 			<form
 				onSubmit={handleSubmit((formData) => {
-					// TODO: handle the bid form data
 					handleTransaction(mistBidAmount);
 					// TODO: show result of tx
 				})}
