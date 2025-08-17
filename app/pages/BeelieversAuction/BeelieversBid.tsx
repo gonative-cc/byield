@@ -35,16 +35,7 @@ interface BeelieversBidProps {
 
 export function BeelieversBid({ leaderBoardData = [], auctionState }: BeelieversBidProps) {
 	const { suiAddr } = useContext(WalletContext);
-	const {
-		handleTransaction,
-		isPending,
-		isSuccess,
-		isError,
-		data,
-		resetMutation,
-		balance,
-		isSuiWalletConnected,
-	} = useBid();
+	const { handleTransaction, isPending, isSuccess, isError } = useBid();
 	const hasUserBidBefore = useMemo(
 		() => (suiAddr ? leaderBoardData.some((bid) => bid.bidder === suiAddr) : false),
 		[leaderBoardData, suiAddr],
@@ -64,7 +55,7 @@ export function BeelieversBid({ leaderBoardData = [], auctionState }: Beelievers
 			note: "",
 		},
 	});
-	const { handleSubmit, watch, trigger, reset, setValue } = bidForm;
+	const { handleSubmit, watch } = bidForm;
 
 	if (suiAddr == null) return <SuiModal />;
 	if (auctionState !== AuctionState.STARTED) return null;
@@ -80,7 +71,7 @@ export function BeelieversBid({ leaderBoardData = [], auctionState }: Beelievers
 	return (
 		<FormProvider {...bidForm}>
 			<form
-				onSubmit={handleSubmit((formData) => {
+				onSubmit={handleSubmit((_formData) => {
 					handleTransaction(mistBidAmount);
 					// TODO: show result of tx
 				})}
