@@ -60,7 +60,7 @@ export function BeelieversBid({ leaderBoardData = [], auctionState }: Beelievers
 		reValidateMode: "onChange",
 		disabled: isPending || isSuccess || isError,
 		defaultValues: {
-			bid: "", // from SUI to MIST
+			bid: "", // value is in SUI, but later we need to convert to MIST.
 			note: "",
 		},
 	});
@@ -71,7 +71,7 @@ export function BeelieversBid({ leaderBoardData = [], auctionState }: Beelievers
 
 	const suiBid = watch("bid");
 
-	const mistBidAmount: bigint = parseSUI(suiBid?.length > 0 && suiBid !== "." ? suiBid : "0");
+	const mistBidAmount = parseSUI(suiBid?.length > 0 && suiBid !== "." ? suiBid : "0");
 
 	// Why do we need this
 	// const resetForm = useCallback(() => {
