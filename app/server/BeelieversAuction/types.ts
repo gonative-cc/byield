@@ -14,8 +14,8 @@ export interface AuctionDetails {
 }
 
 export interface User {
-	rank: number | null;
-	// amount bid in MIST
+	rank: number | null; // null => outside of the winning list
+	// amount bid in MIST. 0 => no bid placed
 	amount: number;
 	badges: string[];
 	note: string;
