@@ -1,6 +1,6 @@
 import { FormProvider, useForm } from "react-hook-form";
 import { useContext, useMemo } from "react";
-import { SUI } from "~/lib/denoms";
+import { parseSUI, SUI } from "~/lib/denoms";
 import { Card, CardContent } from "~/components/ui/card";
 import { FormNumericInput } from "~/components/form/FormNumericInput";
 import { Button } from "~/components/ui/button";
@@ -9,6 +9,7 @@ import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { SuiModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import type { Bidder } from "~/server/BeelieversAuction/types";
 import { AuctionState } from "./types";
+import { useBid } from "./useBid";
 
 function validateBidAmount(val: string, hasUserBidBefore: boolean) {
 	const bidAmount = Number(val);
@@ -33,6 +34,7 @@ interface BeelieversBidProps {
 
 export function BeelieversBid({ leaderBoardData = [], auctionState }: BeelieversBidProps) {
 	const { suiAddr } = useContext(WalletContext);
+	const { handleTransaction, isPending, isSuccess, isError } = useBid();
 	const hasUserBidBefore = useMemo(
 		() => (suiAddr ? leaderBoardData.some((bid) => bid.bidder === suiAddr) : false),
 		[leaderBoardData, suiAddr],
@@ -46,22 +48,31 @@ export function BeelieversBid({ leaderBoardData = [], auctionState }: Beelievers
 	const bidForm = useForm<BeelieversBidForm>({
 		mode: "all",
 		reValidateMode: "onChange",
+		disabled: isPending || isSuccess || isError,
 		defaultValues: {
-			bid: "",
+			bid: "", // value is in SUI, but later we need to convert to MIST.
 			note: "",
 		},
 	});
-	const { handleSubmit } = bidForm;
+	const { handleSubmit, watch } = bidForm;
 
 	if (suiAddr == null) return <SuiModal />;
 	if (auctionState !== AuctionState.STARTED) return null;
 
+	const suiBid = watch("bid");
+
+	const mistBidAmount = parseSUI(suiBid?.length > 0 && suiBid !== "." ? suiBid : "0");
+
+	// TODO:
+	// * show your current bid
+	// * show your current position
+
 	return (
 		<FormProvider {...bidForm}>
 			<form
-				onSubmit={handleSubmit((formData) => {
-					// TODO: handle the bid form data
-					console.log("Depositing with Sui Address:", formData);
+				onSubmit={handleSubmit((_formData) => {
+					handleTransaction(mistBidAmount);
+					// TODO: show result of tx
 				})}
 				className="flex justify-center w-full"
 			>

@@ -5,5 +5,11 @@
 		"module": "",
 		"buyNBTCFunction": "",
 		"sellNBTCFunction": ""
+	},
+	"auctionBidApi": {
+		"packageId": "",
+		"module": "",
+		"bidEndpoint": "",
+		"auctionId": ""
 	}
 }
