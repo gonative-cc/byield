@@ -1,7 +1,7 @@
 import type { AuctionDetails, User } from "./types";
 
 export function defaultAuctionDetails(): AuctionDetails {
-	const startsAt = new Date("2025-08-19T12:00").getDate();
+	const startsAt = +new Date("2025-08-19T12:00");
 	return {
 		uniqueBidders: 600,
 		totalBids: 1250,

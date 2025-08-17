@@ -47,6 +47,7 @@ export default function BeelieversAuctionPage() {
 		auction_start_ms: Date.now() + 24 * 60 * 60 * 1000,
 		auction_end_ms: Date.now() + 48 * 60 * 60 * 1000,
 	};
+	// TODO: let's try to move it to BeelieversAuction component
 	const fetcher = useFetcher<typeof action>();
 	const { suiAddr } = useContext(WalletContext);
 	const lastCheckedAddress = useRef<string | null>(null);
