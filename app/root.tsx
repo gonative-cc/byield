@@ -12,6 +12,7 @@ import { useEffect } from "react";
 import { Footer } from "~/components/Footer";
 import { SideBarProvider } from "./providers/SiderBarProvider";
 import { SideBar } from "~/components/SideBar";
+import { ErrorBoundary } from "~/components/ErrorBoundary";
 
 const queryClient = new QueryClient();
 
@@ -101,3 +102,5 @@ function NativeApp({ children }: { children: React.ReactNode }) {
 export default function App() {
 	return <Outlet />;
 }
+
+export { ErrorBoundary };

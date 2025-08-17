@@ -26,8 +26,8 @@
 	},
 	"dependencies": {
 		"@ethersproject/units": "^5.8.0",
-		"@mysten/dapp-kit": "^0.16.14",
-		"@mysten/sui": "^1.35.0",
+		"@mysten/dapp-kit": "^0.17.3",
+		"@mysten/sui": "^1.37.2",
 		"@radix-ui/react-dialog": "^1.1.14",
 		"@radix-ui/react-popover": "^1.1.14",
 		"@radix-ui/react-select": "^2.2.5",
