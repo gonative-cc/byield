@@ -3,10 +3,11 @@ import { AuctionTable } from "./AuctionTable";
 import { AuctionTotals } from "./AuctionTotals";
 import { BeelieversBid } from "./BeelieversBid";
 import { Partners } from "~/components/Partners";
-import type { LeaderboardResponse, EligibilityData } from "./types";
+import type { EligibilityData } from "./types";
 import { TweetEmbed } from "~/components/TweetEmbed";
 import { AuctionState } from "./types";
 import { BadgesModal } from "~/components/BadgesModal";
+import type { AuctionDetails, Bidder } from "~/server/BeelieversAuction/types";
 
 function getAuctionState(startMs: number, endMs: number): AuctionState {
 	const nowMs = new Date().getTime();
@@ -16,17 +17,18 @@ function getAuctionState(startMs: number, endMs: number): AuctionState {
 }
 
 interface BeelieversAuctionProps {
-	// TODO: once updating to the new data object (see route file) use different the LoaderData type here.
-	leaderBoardData: LeaderboardResponse;
+	auctionDetails: AuctionDetails;
+	leaderBoard: Bidder[];
 	eligibilityData?: EligibilityData;
 }
 
 export function BeelieversAuction({
-	leaderBoardData: { leaders, unique_bidders, total_bids, entry_bid, auction_start_ms, auction_end_ms },
 	eligibilityData,
+	auctionDetails: { uniqueBidders, totalBids, entryBidMist, startsAt, endsAt },
+	leaderBoard
 }: BeelieversAuctionProps) {
 	const twitterPost = "https://twitter.com/goNativeCC/status/1956370231191818263";
-	const auctionState = getAuctionState(auction_start_ms, auction_end_ms);
+	const auctionState = getAuctionState(startsAt, endsAt);
 
 	return (
 		<div className="flex flex-col items-center gap-6 sm:gap-8 lg:gap-10 w-full relative">
@@ -41,9 +43,9 @@ export function BeelieversAuction({
 			{auctionState !== AuctionState.WILL_START && (
 				<div className="animate-in slide-in-from-bottom-4 duration-1000 delay-300 w-full flex justify-center">
 					<AuctionTotals
-						uniqueBidders={unique_bidders}
-						totalBids={total_bids}
-						entryBid={entry_bid}
+						uniqueBidders={uniqueBidders}
+						totalBids={totalBids}
+						entryBidMist={entryBidMist}
 					/>
 				</div>
 			)}
@@ -52,22 +54,22 @@ export function BeelieversAuction({
 			<div className="animate-in slide-in-from-left-4 duration-1000 delay-400 w-full flex justify-center">
 				<Info
 					{...eligibilityData}
-					auction_start_ms={auction_start_ms}
-					auction_end_ms={auction_end_ms}
+					auction_start_ms={startsAt}
+					auction_end_ms={endsAt}
 					auctionState={auctionState}
 				/>
 			</div>
 
 			{/* Bid Section with Animation */}
 			<div className="animate-in slide-in-from-right-4 duration-1000 delay-500 w-full flex justify-center">
-				<BeelieversBid leaderBoardData={leaders} auctionState={auctionState} />
+				<BeelieversBid leaderBoardData={leaderBoard} auctionState={auctionState} />
 			</div>
 
 			{/* Leaderboard Table with Animation */}
 			{auctionState !== AuctionState.WILL_START && (
 				<div className="animate-in slide-in-from-bottom-4 duration-1000 delay-600 w-full">
 					<div className="flex flex-col-reverse lg:flex-row gap-6 w-full">
-						<AuctionTable data={leaders} />
+						<AuctionTable data={leaderBoard} />
 					</div>
 				</div>
 			)}

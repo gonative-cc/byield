@@ -14,3 +14,13 @@ export enum AuctionState {
 	STARTED = "STARTED",
 	ENDED = "ENDED",
 }
+
+export interface LeaderboardResponse {
+	leaders: any[];
+	unique_bidders: number;
+	total_bids: number;
+	highest_bid: number;
+	entry_bid: number;
+	auction_start_ms: number;
+	auction_end_ms: number;
+}
