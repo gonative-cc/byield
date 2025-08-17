@@ -20,12 +20,12 @@ function getAuctionState(startMs: number, endMs: number): AuctionState {
 
 interface BeelieversAuctionProps {
 	auctionDetails: AuctionDetails;
-	leaderBoard: Bidder[];
+	leaderboard: Bidder[];
 }
 
 export function BeelieversAuction({
 	auctionDetails: { uniqueBidders, totalBids, entryBidMist, startsAt, endsAt },
-	leaderBoard,
+	leaderboard,
 }: BeelieversAuctionProps) {
 	const queryUserEligibility = useFetcher();
 	const { suiAddr } = useContext(WalletContext);
@@ -82,14 +82,14 @@ export function BeelieversAuction({
 
 			{/* Bid Section with Animation */}
 			<div className="animate-in slide-in-from-right-4 duration-1000 delay-500 w-full flex justify-center">
-				<BeelieversBid leaderBoardData={leaderBoard} auctionState={auctionState} />
+				<BeelieversBid leaderBoardData={leaderboard} auctionState={auctionState} />
 			</div>
 
 			{/* Leaderboard Table with Animation */}
 			{auctionState !== AuctionState.WILL_START && (
 				<div className="animate-in slide-in-from-bottom-4 duration-1000 delay-600 w-full">
 					<div className="flex flex-col-reverse lg:flex-row gap-6 w-full">
-						<AuctionTable data={leaderBoard} />
+						<AuctionTable data={leaderboard} />
 					</div>
 				</div>
 			)}

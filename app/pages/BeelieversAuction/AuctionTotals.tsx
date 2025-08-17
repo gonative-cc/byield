@@ -10,6 +10,13 @@ interface AuctionTotalsProps {
 }
 
 export function AuctionTotals({ uniqueBidders, totalBids, entryBidMist }: AuctionTotalsProps) {
+	// Validate entryBidMist is within safe limits
+	if (entryBidMist >= Number.MAX_SAFE_INTEGER / 4) {
+		throw new Error(
+			`entryBidMist (${entryBidMist}) exceeds maximum safe value (${Number.MAX_SAFE_INTEGER / 4})`,
+		);
+	}
+
 	const createCard = (title: string, body: React.ReactNode | string) => (
 		<Card
 			className={`flex-1 group hover:scale-105 transition-all duration-300 animate-in slide-in-from-bottom-2 delay-50`}
@@ -30,7 +37,7 @@ export function AuctionTotals({ uniqueBidders, totalBids, entryBidMist }: Auctio
 			{createCard(uniqueBidders.toLocaleString(), "Unique Bidders")}
 			{createCard(totalBids.toLocaleString(), "Total Bids")}
 			{createCard(
-				formatSUI(String(entryBidMist)) + " SUI",
+				formatSUI(BigInt(entryBidMist)) + " SUI",
 				<Tooltip tooltip="Current minimum bid to enter the winning list">
 					<div className="text-muted-foreground flex items-center justify-center gap-1 group-hover:text-foreground/80 transition-colors">
 						Minimum Bid
