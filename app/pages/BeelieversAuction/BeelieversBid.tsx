@@ -9,7 +9,6 @@ import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { SuiModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import type { Bidder } from "~/server/BeelieversAuction/types";
 import { AuctionState } from "./types";
-import { useSuiClient } from "@mysten/dapp-kit";
 import { useBid } from "./useBid";
 
 function validateBidAmount(val: string, hasUserBidBefore: boolean) {

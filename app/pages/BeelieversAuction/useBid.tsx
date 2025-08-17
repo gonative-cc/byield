@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
 import { useCallback, useContext } from "react";
@@ -89,11 +88,10 @@ export const useBid = (): UseBidReturn => {
 			}
 			signAndExecuteTransaction(
 				{
-					// @ts-ignore
 					transaction,
 				},
 				{
-					onSettled: suiBalanceRes.refetch(),
+					onSettled: () => suiBalanceRes.refetch(),
 				},
 			);
 		},
