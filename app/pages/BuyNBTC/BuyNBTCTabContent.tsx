@@ -10,7 +10,7 @@ import { TransactionStatus } from "./TransactionStatus";
 import { YouReceive } from "./YouReceive";
 import { classNames } from "~/util/tailwind";
 import { SUIIcon } from "~/components/icons";
-import { useNBTC } from "./useNBTC";
+import { useBuySellNBTC } from "./useNBTC";
 
 const BUY_NBTC_GAS = parseSUI("0.01");
 
@@ -58,7 +58,7 @@ export function BuyNBTCTabContent() {
 		data,
 		suiBalance,
 		isSuiWalletConnected,
-	} = useNBTC({ variant: "BUY" });
+	} = useBuySellNBTC({ variant: "BUY" });
 
 	const buyNBTCForm = useForm<BuyNBTCForm>({
 		mode: "all",

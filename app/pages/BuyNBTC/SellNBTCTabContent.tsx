@@ -5,7 +5,7 @@ import { SuiModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import { Modal } from "~/components/ui/dialog";
 import { TransactionStatus } from "./TransactionStatus";
 import { NBTCIcon, SUIIcon } from "~/components/icons";
-import { useNBTC } from "./useNBTC";
+import { useBuySellNBTC } from "./useNBTC";
 import { formatNBTC, NBTC, parseNBTC } from "~/lib/denoms";
 import { FormProvider, useForm } from "react-hook-form";
 import { FormNumericInput } from "~/components/form/FormNumericInput";
@@ -58,7 +58,7 @@ export function SellNBTCTabContent() {
 		nbtcBalance,
 		data,
 		isSuiWalletConnected,
-	} = useNBTC({ variant: "SELL" });
+	} = useBuySellNBTC({ variant: "SELL" });
 
 	const sellNBTCForm = useForm<SellNBTCForm>({
 		mode: "all",

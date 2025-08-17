@@ -99,8 +99,10 @@ interface NBTCProps {
 	variant: "BUY" | "SELL";
 }
 
-// TODO: refactor this function. It is doing too many things. Handle transaction should be done separately.
-export const useNBTC = ({ variant }: NBTCProps): UseNBTCReturn => {
+// TODO: need to update this function. It is doing too many things!
+// Ideally it is only handling a transaction, and balance tracking should be done separately,
+// in another component, higher level up.
+export const useBuySellNBTC = ({ variant }: NBTCProps): UseNBTCReturn => {
 	const shouldBuy = variant === "BUY";
 	const account = useCurrentAccount();
 	const client = useSuiClient();
