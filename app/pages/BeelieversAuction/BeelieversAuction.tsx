@@ -5,7 +5,6 @@ import { BeelieversBid } from "./BeelieversBid";
 import { Partners } from "~/components/Partners";
 import { TweetEmbed } from "~/components/TweetEmbed";
 import { AuctionState } from "./types";
-import { BadgesModal } from "~/components/BadgesModal";
 import type { AuctionDetails, Bidder } from "~/server/BeelieversAuction/types";
 import { useFetcher } from "react-router";
 import { useContext, useEffect, useRef } from "react";
