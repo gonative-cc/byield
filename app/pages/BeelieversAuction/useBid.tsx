@@ -91,6 +91,19 @@ export const useBid = (): UseBidReturn => {
 					transaction,
 				},
 				{
+					onSuccess: () => {
+						toast({
+							title,
+							description: "Bid successful",
+						});
+					},
+					onError: () => {
+						toast({
+							title,
+							description: "Bid failed. Please try again later.",
+							variant: "destructive",
+						});
+					},
 					onSettled: () => suiBalanceRes.refetch(),
 				},
 			);
