@@ -14,6 +14,19 @@ export default class Controller {
 		this.kv = kv;
 	}
 
+	static async verifySignature(
+		userAddr: string,
+		tx_bytes: Uint8Array,
+		signature: string,
+	): string {
+		await verifyTransactionSignature(tx_bytes, signature, {
+			address: userAddr,
+		});
+
+		const txDigest = TransactionDataBuilder.getDigestFromBytes(tx_bytes);
+
+		return txDigest;
+	}
 	async loadPageData(userAddr?: string): Promise<LoaderDataResp> {
 		// TODO: add user data if a use is connected
 		const user = userAddr !== undefined ? await this.getUserData(userAddr) : undefined;
@@ -42,13 +55,8 @@ export default class Controller {
 		// verify if the given address signed TX? If yes, then we sole authentication
 
 		// throw error if signature in valid from userAddr
-		await verifyTransactionSignature(tx_bytes, signature, {
-			address: userAddr,
-		});
 
-		const txDigest = TransactionDataBuilder.getDigestFromBytes(tx_bytes);
-
-		console.log(txDigest, userAddr);
+		console.log(Controller.verifySignature(userAddr, tx_bytes, signature), userAddr);
 	}
 
 	async getUserData(userAddr: string): Promise<User> {
