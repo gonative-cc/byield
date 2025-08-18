@@ -14,19 +14,6 @@ export default class Controller {
 		this.kv = kv;
 	}
 
-	static async verifySignature(
-		userAddr: string,
-		tx_bytes: Uint8Array,
-		signature: string,
-	): Promise<string> {
-		await verifyTransactionSignature(tx_bytes, signature, {
-			address: userAddr,
-		});
-
-		const txDigest = TransactionDataBuilder.getDigestFromBytes(tx_bytes);
-
-		return txDigest;
-	}
 	async loadPageData(userAddr?: string): Promise<LoaderDataResp> {
 		// TODO: add user data if a use is connected
 		const user = userAddr !== undefined ? await this.getUserData(userAddr) : undefined;
@@ -56,7 +43,7 @@ export default class Controller {
 
 		// throw error if signature in valid from userAddr
 
-		console.log(Controller.verifySignature(userAddr, tx_bytes, signature), userAddr);
+		console.log(verifySignature(userAddr, tx_bytes, signature), userAddr);
 	}
 
 	async getUserData(userAddr: string): Promise<User> {
@@ -67,4 +54,16 @@ export default class Controller {
 		}
 		return JSON.parse(userJson) as User;
 	}
+}
+
+export async function verifySignature(
+	userAddr: string,
+	tx_bytes: Uint8Array,
+	signature: string,
+): Promise<string> {
+	await verifyTransactionSignature(tx_bytes, signature, {
+		address: userAddr,
+	});
+
+	return TransactionDataBuilder.getDigestFromBytes(tx_bytes);
 }

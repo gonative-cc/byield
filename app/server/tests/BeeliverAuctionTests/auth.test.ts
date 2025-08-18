@@ -2,7 +2,7 @@ import { describe } from "vitest";
 import { expect, test } from "vitest";
 import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
 import { Transaction } from "@mysten/sui/transactions";
-import Controller from "~/server/BeelieversAuction/controller.server";
+import { verifySignature } from "~/server/BeelieversAuction/controller.server";
 import { toBase58 } from "@mysten/utils";
 
 describe("authentication testcases", () => {
@@ -34,9 +34,9 @@ describe("authentication testcases", () => {
 
 		const { signature } = await keypair.signTransaction(txBytes);
 
-		expect(
-			Controller.verifySignature(keypair.toSuiAddress(), txBytes, signature),
-		).resolves.toStrictEqual(await tx.getDigest());
+		expect(verifySignature(keypair.toSuiAddress(), txBytes, signature)).resolves.toStrictEqual(
+			await tx.getDigest(),
+		);
 	});
 
 	test("signature verification failed cases", async () => {
@@ -68,7 +68,7 @@ describe("authentication testcases", () => {
 		const { signature } = await keypair.signTransaction(txBytes);
 
 		await expect(
-			Controller.verifySignature(new Ed25519Keypair().toSuiAddress(), txBytes, signature),
+			verifySignature(new Ed25519Keypair().toSuiAddress(), txBytes, signature),
 		).rejects.toThrow("Public key bytes do not match the provided address");
 	});
 });
