@@ -9,27 +9,15 @@ import type { Route } from "./+types/beelievers-auction";
 export async function loader({ params, context, request }: Route.LoaderArgs): Promise<LoaderDataResp> {
 	const ctrl = new Controller(context.cloudflare.env.BeelieversNFT);
 	const url = new URL(request.url);
-	const suiAddress = url.searchParams.get("suiAddress") || undefined;
+	const suiAddress = url.searchParams.get("suiAddress") ?? undefined;
 	console.log(">>>>> LOADER handler - params:", params, "suiAddress:", suiAddress);
 	return await ctrl.loadPageData(suiAddress);
 }
 
 // This is a server action to post data to server (data mutations)
 export async function action({ request, context }: Route.ActionArgs) {
-	/* eslint-disable @typescript-eslint/no-explicit-any */
-	const reqData = (await request.json()) as any;
 	const ctrl = new Controller(context.cloudflare.env.BeelieversNFT);
-
-	switch (reqData.method) {
-		case "queryUser":
-			return ctrl.getUserData(reqData.params?.[0]);
-		case "postBidTx": {
-			const { suiTxId, bidderAddr, amount, msg } = reqData.params as any;
-			return ctrl.postBidTx(suiTxId, bidderAddr, amount, msg);
-		}
-		default:
-			throw new Error(`Unknown method: ${reqData.method}`);
-	}
+	return ctrl.handleJsonRPC(request);
 }
 
 export default function BeelieversAuctionPage() {
