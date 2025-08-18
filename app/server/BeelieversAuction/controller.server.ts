@@ -27,13 +27,16 @@ export default class Controller {
 
 	async handleJsonRPC(r: Request) {
 		const reqData = await r.json<Req>();
-		/* eslint-disable @typescript-eslint/no-explicit-any */
 		switch (reqData.method) {
 			case "queryUser":
 				return this.getUserData(reqData.params[0] as string);
 			case "postBidTx": {
-				const { suiTxId, bidderAddr, amount, msg } = reqData.params as any;
+				const [suiTxId, bidderAddr, amount, msg] = reqData.params;
 				return this.postBidTx(suiTxId, bidderAddr, amount, msg);
+			}
+			case "pageData": {
+				const [suiAddr] = reqData.params;
+				return this.loadPageData(suiAddr);
 			}
 			default:
 				return new Response("User not found", { status: 404 });
