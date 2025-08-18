@@ -39,7 +39,7 @@ export default class Controller {
 				return this.loadPageData(suiAddr);
 			}
 			default:
-				return new Response("User not found", { status: 404 });
+				return new Response("Unknown method", { status: 404 });
 		}
 	}
 
