@@ -26,7 +26,7 @@ function testAuctionDetails(): AuctionDetails {
 		highestBidMist: 30e9,
 		entryBidMist: 2e9,
 		startsAt,
-		endsAt: startsAt + 24 * 3600_000,
+		endsAt: startsAt + 199 * 3600_000,
 	};
 }
 

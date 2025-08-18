@@ -1,4 +1,6 @@
 import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
+import { bcs } from "@mysten/sui/bcs";
+import type { SuiClient, SuiExecutionResult } from "@mysten/sui/client";
 import { Transaction } from "@mysten/sui/transactions";
 import { useCallback, useContext } from "react";
 import { Wallets } from "~/components/Wallet";
@@ -14,7 +16,36 @@ type Targets = {
 	auctionId: string;
 };
 
+function decodeOption(encode: Uint8Array): bigint | null {
+	const option = bcs.option(bcs.u64());
+	const result = option.parse(encode);
+	if (result) return BigInt(result);
+	else return null;
+}
+const getCurrentBidAmount = async (
+	client: SuiClient,
+	userAddr: string,
+	{ packageId, module, auctionId }: Targets,
+): Promise<bigint | null> => {
+	const txn = new Transaction();
+	txn.moveCall({
+		target: `${packageId}::${module}::query_total_bid`,
+		arguments: [txn.object(auctionId), txn.pure.address(userAddr)],
+	});
+
+	const res = await client.devInspectTransactionBlock({
+		transactionBlock: txn,
+		sender: userAddr,
+	});
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-expect-error
+	const returnValue = res.results[0].returnValues[0][0];
+
+	return decodeOption(new Uint8Array(returnValue));
+};
+
 const createBidTxn = async (
+	client: SuiClient,
 	senderAddress: string,
 	amount: bigint,
 	{ packageId, module, bidEndpoint, auctionId }: Targets,
@@ -81,7 +112,23 @@ export const useBid = (): UseBidReturn => {
 				});
 				return;
 			}
-			const transaction = await createBidTxn(account.address, amount, auctionBidApi);
+
+			const totalBid = await getCurrentBidAmount(client, account.address, auctionBidApi);
+
+			console.log(totalBid);
+			if (totalBid) {
+				if (amount <= totalBid) {
+					toast({
+						title,
+						description: `Bid failed. Please bid higher than total bid you have ${totalBid || 0}`,
+						variant: "destructive",
+					});
+					return;
+				}
+				amount = amount - totalBid;
+			}
+
+			const transaction = await createBidTxn(client, account.address, amount, auctionBidApi);
 			if (!transaction) {
 				console.error("Failed to create the transaction");
 				return;
@@ -108,7 +155,7 @@ export const useBid = (): UseBidReturn => {
 				},
 			);
 		},
-		[account, auctionBidApi, signAndExecuteTransaction, suiBalanceRes],
+		[client, account, auctionBidApi, signAndExecuteTransaction, suiBalanceRes],
 	);
 
 	return {

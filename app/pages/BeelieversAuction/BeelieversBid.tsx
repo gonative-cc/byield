@@ -51,7 +51,7 @@ function MyPosition({ userBid, hasUserBidBefore }: MyPositionProps) {
 
 function validateBidAmount(val: string, hasUserBidBefore: boolean) {
 	const bidAmount = Number(val);
-	if (!hasUserBidBefore && bidAmount < 1) {
+	if (!hasUserBidBefore && bidAmount < 0.1) {
 		return "First-time bidders must bid at least 1 SUI";
 	}
 	if (bidAmount <= 0) {
