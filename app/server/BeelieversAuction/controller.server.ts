@@ -29,7 +29,7 @@ export default class Controller {
 		const reqData = await r.json<Req>();
 		switch (reqData.method) {
 			case "queryUser":
-				return this.getUserData(reqData.params[0] as string);
+				return this.getUserData(reqData.params[0]);
 			case "postBidTx": {
 				const [suiTxId, bidderAddr, amount, msg] = reqData.params;
 				return this.postBidTx(suiTxId, bidderAddr, amount, msg);
