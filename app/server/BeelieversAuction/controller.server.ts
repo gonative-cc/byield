@@ -1,6 +1,8 @@
 import { getLeaderBoardData } from "./leaderboard.server";
 import type { LoaderDataResp, AuctionDetails, User } from "./types";
 import { defaultAuctionDetails, defaultUser } from "./defaults";
+import { verifyTransactionSignature } from "@mysten/sui/verify";
+import { TransactionDataBuilder } from "@mysten/sui/transactions";
 
 export default class Controller {
 	kv: KVNamespace;
@@ -34,11 +36,19 @@ export default class Controller {
 		return details;
 	}
 
-	async postBidTx(suiTxId: string, bidderAddr: string, amount: number, msg: string) {
+	async postBidTx(userAddr: string, tx_bytes: Uint8Array, signature: string) {
 		// TODO authentication
 		// TODO: Vu - could you check up if we pass the full signed TX, and user address, can we
 		// verify if the given address signed TX? If yes, then we sole authentication
-		console.log("handling bid tx", suiTxId, bidderAddr, amount, msg);
+
+		// throw error if signature in valid from userAddr
+		await verifyTransactionSignature(tx_bytes, signature, {
+			address: userAddr,
+		});
+
+		const txDigest = TransactionDataBuilder.getDigestFromBytes(tx_bytes);
+
+		console.log(txDigest, userAddr);
 	}
 
 	async getUserData(userAddr: string): Promise<User> {
