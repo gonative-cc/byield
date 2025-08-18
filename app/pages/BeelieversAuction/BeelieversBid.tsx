@@ -10,6 +10,7 @@ import { SuiModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import type { Bidder } from "~/server/BeelieversAuction/types";
 import { AuctionState } from "./types";
 import { useBid } from "./useBid";
+import { useFetcher } from "react-router";
 
 interface MyPositionProps {
 	userBid: Bidder;
@@ -69,7 +70,8 @@ interface BeelieversBidProps {
 
 export function BeelieversBid({ leaderBoardData = [], auctionState }: BeelieversBidProps) {
 	const { suiAddr } = useContext(WalletContext);
-	const { handleTransaction, isPending, isSuccess, isError } = useBid();
+	const { handleTransaction, isPending, isSuccess, isError, data } = useBid();
+	const fetcher = useFetcher();
 	const userBid = useMemo(
 		() => (suiAddr ? leaderBoardData.find((bid) => bid.bidder === suiAddr) : null),
 		[leaderBoardData, suiAddr],
@@ -97,10 +99,26 @@ export function BeelieversBid({ leaderBoardData = [], auctionState }: Beelievers
 	return (
 		<FormProvider {...bidForm}>
 			<form
-				onSubmit={handleSubmit((_formData) => {
-					handleTransaction(mistBidAmount);
-					// TODO: Ravindra: create action to call controller postBidTx
-					// TODO: Vu: show result of tx
+				onSubmit={handleSubmit(async ({ bid, note }) => {
+					try {
+						await handleTransaction(mistBidAmount);
+						if (data?.digest && suiAddr) {
+							fetcher.submit(
+								{
+									method: "postBidTx",
+									params: {
+										suiTxId: data.digest,
+										bidderAddr: suiAddr,
+										amount: Number(bid),
+										msg: note || "",
+									},
+								},
+								{ method: "POST", encType: "application/json" },
+							);
+						}
+					} catch (error) {
+						console.error("Transaction failed:", error);
+					}
 				})}
 				className="flex justify-center w-full"
 			>
@@ -168,7 +186,10 @@ export function BeelieversBid({ leaderBoardData = [], auctionState }: Beelievers
 									/>
 								</div>
 
-								<Button className="h-14 lg:h-16 text-lg font-semibold bg-gradient-to-r from-primary to-orange-400 hover:from-orange-400 hover:to-primary transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl">
+								<Button
+									disabled={isPending || isSuccess}
+									className="h-14 lg:h-16 text-lg font-semibold bg-gradient-to-r from-primary to-orange-400 hover:from-orange-400 hover:to-primary transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+								>
 									<span className="flex items-center gap-2">
 										<span className="text-xl">🚀</span>
 										{hasUserBidBefore ? "Update Bid" : "Place Bid"}
