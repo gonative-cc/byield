@@ -1,5 +1,6 @@
 import { getLeaderBoardData } from "./leaderboard.server";
 import type { LoaderDataResp, AuctionDetails, User } from "./types";
+import type { Req } from "./jsonrpc";
 import { defaultAuctionDetails, defaultUser } from "./defaults";
 
 export default class Controller {
@@ -22,6 +23,29 @@ export default class Controller {
 			details: await this.getAuctionDetails(),
 			user,
 		};
+	}
+
+	async handleJsonRPC(r: Request) {
+		let reqData: Req;
+		try {
+			reqData = await r.json<Req>();
+		} catch (err) {
+			return new Response("Malformed JSON in request body", { status: 400 });
+		}
+		switch (reqData.method) {
+			case "queryUser":
+				return this.getUserData(reqData.params[0]);
+			case "postBidTx": {
+				const [suiTxId, bidderAddr, amount, msg] = reqData.params;
+				return this.postBidTx(suiTxId, bidderAddr, amount, msg);
+			}
+			case "pageData": {
+				const [suiAddr] = reqData.params;
+				return this.loadPageData(suiAddr);
+			}
+			default:
+				return new Response("Unknown method", { status: 404 });
+		}
 	}
 
 	async getAuctionDetails(): Promise<AuctionDetails> {
