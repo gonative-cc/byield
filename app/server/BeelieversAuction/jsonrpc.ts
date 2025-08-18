@@ -15,7 +15,7 @@ export type Req =
 	| {
 			method: "pageData";
 			// suiTxId, bidder, amount, msg
-			params: [string?];
+			params: [string];
 	  };
 
 export function makeReq(fetcher: FetcherWithComponents<any>, req: Req) {
