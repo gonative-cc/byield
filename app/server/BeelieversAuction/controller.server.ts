@@ -26,7 +26,12 @@ export default class Controller {
 	}
 
 	async handleJsonRPC(r: Request) {
-		const reqData = await r.json<Req>();
+		let reqData: Req;
+		try {
+			reqData = await r.json<Req>();
+		} catch (err) {
+			return new Response("Malformed JSON in request body", { status: 400 });
+		}
 		switch (reqData.method) {
 			case "queryUser":
 				return this.getUserData(reqData.params[0]);
