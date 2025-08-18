@@ -7,6 +7,7 @@ import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { toBadgeRecord, type BadgeRecord } from "~/lib/badgeSystem";
 import { Badge } from "~/components/Badge";
 import type { Bidder } from "~/server/BeelieversAuction/types";
+import { BadgesModal } from "~/components/BadgesModal";
 
 const MAX_LEADERBOARD_ROWS = 21;
 
@@ -55,7 +56,13 @@ const createColumns = (): Column<Bidder>[] => [
 		),
 	},
 	{
-		Header: "🏅 Badges",
+		Header: () => (
+			<div className="flex items-center justify-between gap-2 w-full">
+				<span className="font-semibold">🏅Badges</span>
+				<BadgesModal />
+			</div>
+		),
+		accessor: "badges",
 		Cell: ({ row }: CellProps<Bidder>) => {
 			const badgeNames = row.original.badges || [];
 			const badges = [] as BadgeRecord[];
