@@ -115,11 +115,7 @@ export function BadgesModal() {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<Button
-					type="button"
-					variant="outline"
-					className="border-primary/30 hover:border-primary hover:bg-primary/10 transition-all duration-200"
-				>
+				<Button type="button" variant="outline">
 					🏆 View All Badges
 				</Button>
 			</DialogTrigger>
@@ -136,7 +132,7 @@ export function BadgesModal() {
 								<button
 									key={badge.filename}
 									onClick={() => setSelectedBadge(badge)}
-									className={`flex flex-col items-center p-2 rounded-lg border transition-all duration-200 group ${
+									className={`bg-gray-700 flex flex-col items-center p-2 rounded-lg border transition-all duration-200 group ${
 										selectedBadge?.filename === badge.filename
 											? "border-primary bg-primary/10"
 											: "border-primary/20 hover:border-primary/50 hover:bg-primary/5"
@@ -162,7 +158,7 @@ export function BadgesModal() {
 								<img
 									src={selectedBadge.src}
 									alt={selectedBadge.name}
-									className="text-white w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 object-contain"
+									className="bg-gray-700 text-white w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 object-contain"
 								/>
 								<h3 className="text-lg sm:text-xl font-bold text-primary text-center">
 									{selectedBadge.name}

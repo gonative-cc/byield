@@ -11,6 +11,41 @@ import type { Bidder } from "~/server/BeelieversAuction/types";
 import { AuctionState } from "./types";
 import { useBid } from "./useBid";
 
+interface MyPositionProps {
+	userBid: Bidder;
+	hasUserBidBefore: boolean;
+}
+
+function MyPosition({ userBid, hasUserBidBefore }: MyPositionProps) {
+	return (
+		<Card className="border-primary/30 bg-gradient-to-r from-primary/10 to-primary/5 animate-in slide-in-from-top-2 duration-500">
+			<CardContent className="p-4 lg:p-6">
+				<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+					<div className="flex items-center gap-3">
+						<div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+							<span className="text-xl">🎯</span>
+						</div>
+						<div>
+							<h3 className="font-semibold text-primary">Your Current Bid</h3>
+							<p className="text-sm text-muted-foreground">
+								{hasUserBidBefore ? `Rank ${userBid.rank}` : "No bid placed"}
+							</p>
+						</div>
+					</div>
+					{hasUserBidBefore && (
+						<div className="text-right">
+							<p className="text-2xl font-bold text-primary">{userBid.amount} SUI</p>
+							{userBid?.note && (
+								<p className="text-sm text-muted-foreground">{userBid.note}&quot;</p>
+							)}
+						</div>
+					)}
+				</div>
+			</CardContent>
+		</Card>
+	);
+}
+
 function validateBidAmount(val: string, hasUserBidBefore: boolean) {
 	const bidAmount = Number(val);
 	if (!hasUserBidBefore && bidAmount < 1) {
@@ -35,15 +70,11 @@ interface BeelieversBidProps {
 export function BeelieversBid({ leaderBoardData = [], auctionState }: BeelieversBidProps) {
 	const { suiAddr } = useContext(WalletContext);
 	const { handleTransaction, isPending, isSuccess, isError } = useBid();
-	const hasUserBidBefore = useMemo(
-		() => (suiAddr ? leaderBoardData.some((bid) => bid.bidder === suiAddr) : false),
-		[leaderBoardData, suiAddr],
-	);
-
 	const userBid = useMemo(
 		() => (suiAddr ? leaderBoardData.find((bid) => bid.bidder === suiAddr) : null),
 		[leaderBoardData, suiAddr],
 	);
+	const hasUserBidBefore = (userBid && userBid.amount !== 0) || false;
 
 	const bidForm = useForm<BeelieversBidForm>({
 		mode: "all",
@@ -75,35 +106,7 @@ export function BeelieversBid({ leaderBoardData = [], auctionState }: Beelievers
 			>
 				<div className="w-full lg:w-2/3 xl:w-1/2 space-y-6">
 					{/* Current Bid Status */}
-					{userBid && (
-						<Card className="border-primary/30 bg-gradient-to-r from-primary/10 to-primary/5 animate-in slide-in-from-top-2 duration-500">
-							<CardContent className="p-4 lg:p-6">
-								<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-									<div className="flex items-center gap-3">
-										<div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
-											<span className="text-xl">🎯</span>
-										</div>
-										<div>
-											<h3 className="font-semibold text-primary">Your Current Bid</h3>
-											<p className="text-sm text-muted-foreground">
-												Rank #{userBid.rank}
-											</p>
-										</div>
-									</div>
-									<div className="text-right">
-										<p className="text-2xl font-bold text-primary">
-											{userBid.amount} SUI
-										</p>
-										{userBid.note && (
-											<p className="text-sm text-muted-foreground">
-												{userBid.note}&quot;
-											</p>
-										)}
-									</div>
-								</div>
-							</CardContent>
-						</Card>
-					)}
+					{userBid && <MyPosition userBid={userBid} hasUserBidBefore={hasUserBidBefore} />}
 
 					{/* Bid Form */}
 					<Card className="shadow-2xl border-primary/20 hover:border-primary/40 transition-all duration-300 animate-in slide-in-from-bottom-2 duration-700">
@@ -154,7 +157,7 @@ export function BeelieversBid({ leaderBoardData = [], auctionState }: Beelievers
 								<div className="space-y-2">
 									<div className="text-sm font-medium text-foreground/80 flex items-center gap-2">
 										<span className="text-lg">📝</span>
-										Note (Optional)
+										Message to Beelievers (optional)
 									</div>
 									<FormInput
 										name="note"
