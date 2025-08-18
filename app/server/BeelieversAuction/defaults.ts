@@ -1,7 +1,25 @@
 import { AuctionAccountType, type AuctionDetails, type User } from "./types";
 
+import { isProductionMode } from "~/lib/appenv";
+
 export function defaultAuctionDetails(): AuctionDetails {
-	const startsAt = +new Date("2025-08-19T12:00");
+	console.log(">>> IN TESTING", isProductionMode());
+	if (!isProductionMode()) {
+		return testAuctionDetails();
+	}
+	const startsAt = +new Date("2025-08-19T14:00");
+	return {
+		uniqueBidders: 0,
+		totalBids: 0,
+		highestBidMist: 0,
+		entryBidMist: 1e9, // 1 SUI
+		startsAt,
+		endsAt: startsAt + 24 * 3600_000,
+	};
+}
+
+function testAuctionDetails(): AuctionDetails {
+	const startsAt = +new Date("2025-08-17T12:00");
 	return {
 		uniqueBidders: 600,
 		totalBids: 1250,
@@ -13,6 +31,9 @@ export function defaultAuctionDetails(): AuctionDetails {
 }
 
 export function defaultUser(): User {
+	if (!isProductionMode()) {
+		return defaultTestUser();
+	}
 	return {
 		rank: null,
 		amount: 0,
@@ -22,7 +43,7 @@ export function defaultUser(): User {
 	};
 }
 
-export function defaultTestUser(): User {
+function defaultTestUser(): User {
 	return {
 		rank: 9, // rank starts from 1
 		amount: 5_1 * 1e8, // 2.1 SUI
