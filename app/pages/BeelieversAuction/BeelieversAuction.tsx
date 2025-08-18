@@ -11,6 +11,8 @@ import { useFetcher } from "react-router";
 import { useContext, useEffect, useRef } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 
+import { AuctionAccountType } from "~/server/BeelieversAuction/types";
+
 function getAuctionState(startMs: number, endMs: number): AuctionState {
 	const nowMs = new Date().getTime();
 	if (nowMs < startMs) return AuctionState.WILL_START;
@@ -38,7 +40,6 @@ export function BeelieversAuction({
 	auctionDetails: { uniqueBidders, totalBids, entryBidMist, startsAt, endsAt },
 	leaderboard,
 }: BeelieversAuctionProps) {
-	// const queryUserEligibility = useFetcher();
 	const { suiAddr } = useContext(WalletContext);
 	// const lastCheckedAddress = useRef<string | null>(null);
 
@@ -69,7 +70,8 @@ export function BeelieversAuction({
 	// Reset eligibility data when wallet is disconnected
 	// TODO: query user using the action
 	// suiAddr ? queryUserEligibility.data : undefined;
-	const eligibilityData = undefined;
+	// TODO: this should come from user
+	const userAccountType = AuctionAccountType.PARTNER_WHITELIST;
 	const twitterPost = "https://twitter.com/goNativeCC/status/1956370231191818263";
 	const auctionState = getAuctionState(startsAt, endsAt);
 
@@ -96,7 +98,7 @@ export function BeelieversAuction({
 			{/* Info Section with Animation */}
 			<div className="animate-in slide-in-from-left-4 duration-1000 delay-400 w-full flex justify-center">
 				<Info
-					{...eligibilityData}
+					userAccountType={userAccountType}
 					auction_start_ms={startsAt}
 					auction_end_ms={endsAt}
 					auctionState={auctionState}
