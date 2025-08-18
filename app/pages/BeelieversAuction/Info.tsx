@@ -8,15 +8,15 @@ import { AuctionState } from "./types";
 import { cn } from "~/util/tailwind";
 
 interface InfoProps {
-	type?: AuctionAccountType;
+	userAccountType?: AuctionAccountType;
 	isError?: boolean;
 	auction_start_ms: number;
 	auction_end_ms: number;
 	auctionState: AuctionState;
 }
 
-export function Info({ type, auction_start_ms, auction_end_ms, auctionState }: InfoProps) {
-	const eligibilityMessage = getEligibilityMessage(type);
+export function Info({ userAccountType, auction_start_ms, auction_end_ms, auctionState }: InfoProps) {
+	const eligibilityMessage = getEligibilityMessage(userAccountType);
 	const [showInfo, setShowInfo] = React.useState(false);
 
 	let timeLabel, targetTime;
@@ -49,9 +49,9 @@ Securing my spot in the top 5810 at beelieversNFT.gonative.cc`;
 						/>
 					</div>
 				</div>
-				<div className="flex flex-col gap-4 lg:gap-6 py-0 w-full">
+				<div className="flex flex-col gap-4 lg:gap-6 py-0 w-full lg:text-base leading-relaxed">
 					<div className="flex flex-row justify-between items-center gap-4">
-						<div className="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full border border-primary/20 font-semibold text-primary">
+						<div className="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-lg border border-primary/20 font-semibold text-primary">
 							<span className="text-2xl">⏰</span>
 							{auctionState === AuctionState.ENDED ? (
 								<span className="text">Auction ended</span>
@@ -64,15 +64,11 @@ Securing my spot in the top 5810 at beelieversNFT.gonative.cc`;
 						</div>
 						<TwitterShareButton shareContent={tweet} />
 					</div>
-					<EligibleStatusBadge type={type} />
+					<EligibleStatusBadge userAccountType={userAccountType} />
 
-					{eligibilityMessage && (
-						<div className="p-4 bg-primary/10 rounded-lg border border-primary/20 animate-in slide-in-from-left-2 duration-500">
-							<p className="text-sm lg:text-base leading-relaxed">{eligibilityMessage}</p>
-						</div>
-					)}
+					{eligibilityMessage && <p>{eligibilityMessage}</p>}
 
-					<p className="text-sm lg:text-base leading-relaxed text-foreground/90">
+					<p>
 						You bid your true value; winners pay the lowest winning bid. Any amount above the
 						clearing price is refunded.
 					</p>
@@ -85,7 +81,7 @@ Securing my spot in the top 5810 at beelieversNFT.gonative.cc`;
 
 const Instructions = ({ showInfo, onToggle }: { showInfo: boolean; onToggle: () => void }) => {
 	return (
-		<div className="backdrop-blur-sm shadow-lg border border-primary/20 rounded-2xl overflow-hidden">
+		<div className="backdrop-blur-sm shadow-lg border border-primary/20 rounded-lg overflow-hidden">
 			<button
 				onClick={onToggle}
 				className="flex items-center justify-between w-full p-4 lg:p-6 text-left bg-gradient-to-r from-primary/10 to-primary/5 hover:from-primary/20 hover:to-primary/10 text-primary hover:text-orange-400 text-lg lg:text-xl transition-all duration-300 group"
@@ -109,11 +105,11 @@ const Instructions = ({ showInfo, onToggle }: { showInfo: boolean; onToggle: () 
 
 function InstructionDetails() {
 	const listStyle = "list-disc list-outside ml-6 space-y-2";
-	const headerStyle = "py-4 text-primary font-semibold text-lg flex items-center gap-2";
+	const headerStyle = "pt-2 text-primary font-semibold text-lg flex items-center gap-2";
 	return (
 		<div className="px-4 lg:px-6 pb-6 text-foreground leading-7 animate-in slide-in-from-top-2 duration-500">
 			<div className="space-y-6 pt-4">
-				<h3 className={cn(headerStyle, "py-0 gap-0 mb-0 pb-2")}>
+				<h3 className={headerStyle}>
 					<span className="text-2xl">💰</span>
 					Auction Format: Fair & Transparent
 				</h3>
@@ -178,45 +174,26 @@ function InstructionDetails() {
 	);
 }
 
-const EligibleStatusBadge = ({ type }: { type?: AuctionAccountType }) => {
-	// TODO
-	// type = AuctionAccountType.PARTNER_WHITELIST;
+function auctionAccountTypeMsg(userAccountType?: AuctionAccountType) {
+	switch (userAccountType) {
+		case AuctionAccountType.TESTNET_WHITELIST:
+			return "Congrats! You have Testnet WL tier";
+		case AuctionAccountType.PARTNER_WHITELIST:
+			return "Congrats! You are verified Partner WL";
+		default:
+			return null;
+	}
+}
 
-	const statusMesg = () => {
-		switch (type) {
-			case AuctionAccountType.TESTNET_WHITELIST:
-				return {
-					text: "Congrats! You have Testnet WL tier",
-					gradient: "from-blue-500/20 to-cyan-500/20",
-					border: "border-blue-400/40",
-					textColor: "text-blue-300",
-					outerGradient: "from-blue-500/10 via-cyan-500/5 to-transparent",
-				};
-			case AuctionAccountType.PARTNER_WHITELIST:
-				return {
-					text: "Congrats! You are verified Partner WL",
-					gradient: "from-purple-500/20 to-pink-500/20",
-					border: "border-purple-400/40",
-					textColor: "text-purple-300",
-					outerGradient: "from-purple-500/10 via-pink-500/5 to-transparent",
-				};
-			default:
-				return null;
-		}
-	};
-
-	const config = statusMesg();
-	if (!config) return null;
+const EligibleStatusBadge = ({ userAccountType }: { userAccountType?: AuctionAccountType }) => {
+	const msg = auctionAccountTypeMsg(userAccountType);
+	if (!msg) return null;
 
 	return (
-		<div
-			className={`p-1 bg-gradient-to-r ${config.outerGradient} rounded-full animate-in slide-in-from-right-2 duration-700 animate-flash`}
-		>
-			<div
-				className={`flex items-center gap-2 px-4 py-2 bg-gradient-to-r ${config.gradient} rounded-full border ${config.border}`}
-			>
+		<div className="p-1 bg-gradient-to-r from-purple-500/10 via-pink-500/5 to-transparent rounded-lg animate-in slide-in-from-right-2 duration-700 animate-flash">
+			<div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-lg border border-purple-400/40">
 				<span className="text-lg">🤝</span>
-				<p className={`text-sm font-semibold ${config.textColor}`}>{config.text}</p>
+				<p className="text-sm font-semibold text-purple-300">{msg}</p>
 				<span className="text-lg animate-bounce">✨</span>
 			</div>
 		</div>

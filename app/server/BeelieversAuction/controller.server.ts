@@ -38,6 +38,7 @@ export default class Controller {
 		// TODO authentication
 		// TODO: Vu - could you check up if we pass the full signed TX, and user address, can we
 		// verify if the given address signed TX? If yes, then we sole authentication
+		//  TODO: check whitelist (later)
 		console.log("handling bid tx", suiTxId, bidderAddr, amount, msg);
 	}
 
