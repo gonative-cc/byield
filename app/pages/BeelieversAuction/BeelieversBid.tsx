@@ -8,6 +8,7 @@ import { FormInput } from "~/components/form/FormInput";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { SuiModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import type { Bidder } from "~/server/BeelieversAuction/types";
+import { makeReq } from "~/server/BeelieversAuction/jsonrpc";
 import { AuctionState } from "./types";
 import { useBid } from "./useBid";
 import { useFetcher } from "react-router";
@@ -103,18 +104,10 @@ export function BeelieversBid({ leaderBoardData = [], auctionState }: Beelievers
 					try {
 						await handleTransaction(mistBidAmount);
 						if (data?.digest && suiAddr) {
-							fetcher.submit(
-								{
-									method: "postBidTx",
-									params: {
-										suiTxId: data.digest,
-										bidderAddr: suiAddr,
-										amount: Number(bid),
-										msg: note || "",
-									},
-								},
-								{ method: "POST", encType: "application/json" },
-							);
+							makeReq(fetcher, {
+								method: "postBidTx",
+								params: [data.digest, suiAddr, Number(bid), note || ""],
+							});
 						}
 					} catch (error) {
 						console.error("Transaction failed:", error);

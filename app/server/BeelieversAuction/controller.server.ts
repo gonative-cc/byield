@@ -1,5 +1,6 @@
 import { getLeaderBoardData } from "./leaderboard.server";
 import type { LoaderDataResp, AuctionDetails, User } from "./types";
+import type { Req } from "./jsonrpc";
 import { defaultAuctionDetails, defaultUser } from "./defaults";
 
 export default class Controller {
@@ -22,6 +23,21 @@ export default class Controller {
 			details: await this.getAuctionDetails(),
 			user,
 		};
+	}
+
+	async handleJsonRPC(r: Request) {
+		const reqData = await r.json<Req>();
+		/* eslint-disable @typescript-eslint/no-explicit-any */
+		switch (reqData.method) {
+			case "queryUser":
+				return this.getUserData(reqData.params[0] as string);
+			case "postBidTx": {
+				const { suiTxId, bidderAddr, amount, msg } = reqData.params as any;
+				return this.postBidTx(suiTxId, bidderAddr, amount, msg);
+			}
+			default:
+				return new Response("User not found", { status: 404 });
+		}
 	}
 
 	async getAuctionDetails(): Promise<AuctionDetails> {
