@@ -18,7 +18,7 @@ export default class Controller {
 		userAddr: string,
 		tx_bytes: Uint8Array,
 		signature: string,
-	): string {
+	): Promise<string> {
 		await verifyTransactionSignature(tx_bytes, signature, {
 			address: userAddr,
 		});
