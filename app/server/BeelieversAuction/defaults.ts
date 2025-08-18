@@ -19,7 +19,7 @@ export function defaultAuctionDetails(): AuctionDetails {
 }
 
 function testAuctionDetails(): AuctionDetails {
-	const startsAt = +new Date("2025-08-17T12:00");
+	const startsAt = +new Date("2025-08-18T12:00");
 	return {
 		uniqueBidders: 600,
 		totalBids: 1250,
