@@ -72,7 +72,9 @@ interface BeelieversBidProps {
 
 export function BeelieversBid({ leaderBoardData = [], auctionState }: BeelieversBidProps) {
 	const { suiAddr } = useContext(WalletContext);
-	const { handleTransaction, isPending, isSuccess, isError, data } = useBid();
+	const { handleTransaction, isPending, isSuccess, isError, data, txData } = useBid();
+	// TODO: we can get the data here, but we should not use it here!
+	console.log(">>>>> txData in component", txData);
 	const fetcher = useFetcher();
 	const userBid = useMemo(
 		() => (suiAddr ? leaderBoardData.find((bid) => bid.bidder === suiAddr) : undefined),

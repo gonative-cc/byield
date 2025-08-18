@@ -1,6 +1,7 @@
 import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
+import type { SuiTransactionBlockResponse } from "@mysten/sui/client";
 import { Transaction } from "@mysten/sui/transactions";
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useState } from "react";
 import { Wallets } from "~/components/Wallet";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { toast } from "~/hooks/use-toast";
@@ -40,6 +41,12 @@ interface UseBidReturn {
 	data: any;
 	resetMutation: () => void;
 	isSuiWalletConnected: boolean;
+	txData: TxData | null;
+}
+
+interface TxData {
+	txBlock: string;
+	sig: string;
 }
 
 export const useBid = (): UseBidReturn => {
@@ -49,6 +56,7 @@ export const useBid = (): UseBidReturn => {
 	const isSuiWalletConnected = isWalletConnected(Wallets.SuiWallet);
 	const suiBalanceRes = useCoinBalance();
 	const { auctionBidApi } = useNetworkVariables();
+	const [txData, setTxData] = useState<TxData | null>(null);
 	const {
 		mutate: signAndExecuteTransaction,
 		reset: resetMutation,
@@ -57,8 +65,10 @@ export const useBid = (): UseBidReturn => {
 		isError,
 		data,
 	} = useSignAndExecuteTransaction({
-		execute: async ({ bytes, signature }) =>
-			await client.executeTransactionBlock({
+		execute: async ({ bytes, signature }) => {
+			setTxData({ txBlock: bytes, sig: signature });
+			console.log(">>>>> txBytes in execute", bytes, "\nsignature", signature);
+			return await client.executeTransactionBlock({
 				transactionBlock: bytes,
 				signature,
 				options: {
@@ -66,7 +76,8 @@ export const useBid = (): UseBidReturn => {
 					showEffects: true,
 					showRawEffects: true,
 				},
-			}),
+			});
+		},
 	});
 
 	const handleTransaction = useCallback(
@@ -91,7 +102,18 @@ export const useBid = (): UseBidReturn => {
 					transaction,
 				},
 				{
-					onSuccess: () => {
+					// https://sdk.mystenlabs.com/typedoc/interfaces/_mysten_sui.client.SuiTransactionBlockResponse.html
+					onSuccess: (txData: SuiTransactionBlockResponse, variables) => {
+						console.log(
+							">>>> txSuccess, digest:",
+							txData.digest,
+							"\n rawTx:",
+							txData.rawTransaction,
+							"\n tx:",
+							variables.transaction,
+							"\n account",
+							variables.account,
+						);
 						toast({
 							title,
 							description: "Bid successful",
@@ -119,5 +141,6 @@ export const useBid = (): UseBidReturn => {
 		data,
 		resetMutation,
 		isSuiWalletConnected,
+		txData,
 	};
 };
