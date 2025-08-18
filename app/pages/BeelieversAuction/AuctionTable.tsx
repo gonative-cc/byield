@@ -7,6 +7,7 @@ import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { toBadgeRecord, type BadgeRecord } from "~/lib/badgeSystem";
 import { Badge } from "~/components/Badge";
 import type { Bidder } from "~/server/BeelieversAuction/types";
+import { BadgesModal } from "~/components/BadgesModal";
 
 const MAX_LEADERBOARD_ROWS = 21;
 
@@ -35,7 +36,33 @@ const createColumns = (): Column<Bidder>[] => [
 		),
 	},
 	{
-		Header: "🏅 Badges",
+		Header: "💰 Bid Amount",
+		accessor: "amount",
+		Cell: ({ row }: CellProps<Bidder>) => (
+			<div className="flex items-center space-x-2 font-semibold">
+				<SUIIcon prefix="" className="h-5 w-5 text-primary" />
+				<span className="text-primary">{row.original.amount}</span>
+				<span className="text-muted-foreground text-sm">SUI</span>
+			</div>
+		),
+	},
+	{
+		Header: "📝 User Message",
+		accessor: "note",
+		Cell: ({ row }: CellProps<Bidder>) => (
+			<span className="text-sm text-muted-foreground max-w-32 truncate block">
+				{row.original.note || "-"}
+			</span>
+		),
+	},
+	{
+		Header: () => (
+			<div className="flex items-center justify-between gap-2 w-full">
+				<span className="font-semibold">🏅Badges</span>
+				<BadgesModal />
+			</div>
+		),
+		accessor: "badges",
 		Cell: ({ row }: CellProps<Bidder>) => {
 			const badgeNames = row.original.badges || [];
 			const badges = [] as BadgeRecord[];
@@ -50,7 +77,7 @@ const createColumns = (): Column<Bidder>[] => [
 						badges?.map((badge, index) => (
 							<div
 								key={index}
-								className="relative p-1 bg-white/90 backdrop-blur-sm rounded-lg border border-gray-200 shadow-md hover:shadow-lg hover:scale-110 transition-all duration-200 hover:bg-white"
+								className="relative bg-white/90 backdrop-blur-sm rounded-lg h-8 w-8 shadow-md hover:shadow-lg hover:scale-110 transition-all duration-200 hover:bg-white"
 							>
 								<Badge src={badge!.src} title={badge!.name} />
 							</div>
@@ -61,26 +88,6 @@ const createColumns = (): Column<Bidder>[] => [
 				</div>
 			);
 		},
-	},
-	{
-		Header: "💰 Bid Amount",
-		accessor: "amount",
-		Cell: ({ row }: CellProps<Bidder>) => (
-			<div className="flex items-center space-x-2 font-semibold">
-				<SUIIcon prefix="" className="h-5 w-5 text-primary" />
-				<span className="text-primary">{row.original.amount}</span>
-				<span className="text-muted-foreground text-sm">SUI</span>
-			</div>
-		),
-	},
-	{
-		Header: "📝 Note",
-		accessor: "note",
-		Cell: ({ row }: CellProps<Bidder>) => (
-			<span className="text-sm text-muted-foreground max-w-32 truncate block">
-				{row.original.note || "-"}
-			</span>
-		),
 	},
 ];
 
@@ -125,15 +132,7 @@ export function AuctionTable({ data }: AuctionTableProps) {
 						<p className="text-sm text-muted-foreground">Top {MAX_LEADERBOARD_ROWS} bidders</p>
 					</div>
 				</div>
-
-				{userBid && (
-					<div className="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full border border-primary/20">
-						<span className="text-sm text-muted-foreground">Your rank:</span>
-						<span className="font-bold text-primary">#{userPosition}</span>
-					</div>
-				)}
 			</div>
-
 			<Table columns={columns} data={displayData} getRowProps={getRowProps} />
 		</div>
 	);

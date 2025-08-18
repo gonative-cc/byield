@@ -5,7 +5,6 @@ import { BeelieversBid } from "./BeelieversBid";
 import { Partners } from "~/components/Partners";
 import { TweetEmbed } from "~/components/TweetEmbed";
 import { AuctionState } from "./types";
-import { BadgesModal } from "~/components/BadgesModal";
 import type { AuctionDetails, Bidder } from "~/server/BeelieversAuction/types";
 import { useFetcher } from "react-router";
 import { useContext, useEffect, useRef } from "react";
@@ -82,7 +81,6 @@ export function BeelieversAuction({
 				<p className="md:text-3xl text-2xl text-center font-semibold max-w-120">
 					<span className="text-2xl text-primary md:text-3xl">🐝 BTCFi Beelievers</span> Auction
 				</p>
-				<BadgesModal />
 			</div>
 			{/* Auction Stats with Staggered Animation */}
 			{auctionState !== AuctionState.WILL_START && (
