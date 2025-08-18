@@ -18,6 +18,17 @@ function getAuctionState(startMs: number, endMs: number): AuctionState {
 	return AuctionState.ENDED;
 }
 
+// import type { Route } from "./+types/";
+
+export async function clientLoader(/*{ params }: Route.ClientLoaderArgs */) {
+	// const res = await fetch(`/api/products/${params.pid}`);
+	// const product = await res.json();
+	// TODO: find how we can use loader here
+	// https://reactrouter.com/start/framework/data-loading#client-data-loading
+	// const ctrl = new Controller(context.cloudflare.env.BeelieversNFT);
+	// return await ctrl.getUserData(suiAddr);
+}
+
 interface BeelieversAuctionProps {
 	auctionDetails: AuctionDetails;
 	leaderboard: Bidder[];
@@ -27,26 +38,38 @@ export function BeelieversAuction({
 	auctionDetails: { uniqueBidders, totalBids, entryBidMist, startsAt, endsAt },
 	leaderboard,
 }: BeelieversAuctionProps) {
-	const queryUserEligibility = useFetcher();
+	// const queryUserEligibility = useFetcher();
 	const { suiAddr } = useContext(WalletContext);
-	const lastCheckedAddress = useRef<string | null>(null);
+	// const lastCheckedAddress = useRef<string | null>(null);
+
+	const fetcher = useFetcher();
+
+	useEffect(() => {
+		// example api
+		// fetcher.submit({ method: "queryUser", params: [suiAddr] }, { method: "get" });
+	}, [suiAddr, fetcher]);
+
+	// TODO:
+	// use client loader to load user data on suiAddr change
 
 	// Check eligibility when wallet connects or address changes, reset when disconnected
-	useEffect(() => {
-		if (suiAddr && suiAddr !== lastCheckedAddress.current && queryUserEligibility.state === "idle") {
-			// Wallet connected or address changed - check eligibility
-			lastCheckedAddress.current = suiAddr;
-			const formData = new FormData();
-			formData.append("suiAddress", suiAddr);
-			queryUserEligibility.submit(formData, { method: "POST" });
-		} else if (!suiAddr && lastCheckedAddress.current) {
-			// Wallet disconnected - reset state
-			lastCheckedAddress.current = null;
-		}
-	}, [suiAddr, queryUserEligibility.state, queryUserEligibility]);
+	// useEffect(() => {
+	// 	if (suiAddr && suiAddr !== lastCheckedAddress.current && queryUserEligibility.state === "idle") {
+	// 		// Wallet connected or address changed - check eligibility
+	// 		lastCheckedAddress.current = suiAddr;
+	// 		const formData = new FormData();
+	// 		formData.append("suiAddress", suiAddr);
+	// 		queryUserEligibility.submit(formData, { method: "POST" });
+	// 	} else if (!suiAddr && lastCheckedAddress.current) {
+	// 		// Wallet disconnected - reset state
+	// 		lastCheckedAddress.current = null;
+	// 	}
+	// }, [suiAddr, queryUserEligibility.state, queryUserEligibility]);
 
 	// Reset eligibility data when wallet is disconnected
-	const eligibilityData = suiAddr ? queryUserEligibility.data : undefined;
+	// TODO: query user using the action
+	// suiAddr ? queryUserEligibility.data : undefined;
+	const eligibilityData = undefined;
 	const twitterPost = "https://twitter.com/goNativeCC/status/1956370231191818263";
 	const auctionState = getAuctionState(startsAt, endsAt);
 

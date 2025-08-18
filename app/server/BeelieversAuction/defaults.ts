@@ -1,4 +1,4 @@
-import type { AuctionDetails, User } from "./types";
+import { AuctionAccountType, type AuctionDetails, type User } from "./types";
 
 export function defaultAuctionDetails(): AuctionDetails {
 	const startsAt = +new Date("2025-08-19T12:00");
@@ -18,6 +18,7 @@ export function defaultUser(): User {
 		amount: 0,
 		badges: [],
 		note: "",
+		wlStatus: AuctionAccountType.DEFAULT,
 	};
 }
 
@@ -27,5 +28,6 @@ export function defaultTestUser(): User {
 		amount: 5_1 * 1e8, // 2.1 SUI
 		badges: ["top_10", "top_21", "top_100", "bid_over_5", "every_21st"],
 		note: "I'm Beellish!",
+		wlStatus: AuctionAccountType.PARTNER_WHITELIST,
 	};
 }

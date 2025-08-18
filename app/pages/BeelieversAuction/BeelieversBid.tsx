@@ -63,16 +63,13 @@ export function BeelieversBid({ leaderBoardData = [], auctionState }: Beelievers
 
 	const mistBidAmount = parseSUI(suiBid?.length > 0 && suiBid !== "." ? suiBid : "0");
 
-	// TODO:
-	// * show your current bid
-	// * show your current position
-
 	return (
 		<FormProvider {...bidForm}>
 			<form
 				onSubmit={handleSubmit((_formData) => {
 					handleTransaction(mistBidAmount);
-					// TODO: show result of tx
+					// TODO: Ravindra: create action to call controller postBidTx
+					// TODO: Vu: show result of tx
 				})}
 				className="flex justify-center w-full"
 			>

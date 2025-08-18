@@ -2,7 +2,7 @@ import React from "react";
 import { ChevronsDown, ChevronsUp } from "lucide-react";
 import { Card, CardContent } from "~/components/ui/card";
 import { Countdown } from "~/components/ui/countdown";
-import { AuctionAccountType } from "./types";
+import { AuctionAccountType } from "~/server/BeelieversAuction/types";
 import { TwitterShareButton } from "~/components/TwitterShareButton";
 import { AuctionState } from "./types";
 import { cn } from "~/util/tailwind";
@@ -179,7 +179,8 @@ function InstructionDetails() {
 }
 
 const EligibleStatusBadge = ({ type }: { type?: AuctionAccountType }) => {
-	if (!type || type === AuctionAccountType.DEFAULT) return null;
+	// TODO
+	// type = AuctionAccountType.PARTNER_WHITELIST;
 
 	const statusMesg = () => {
 		switch (type) {

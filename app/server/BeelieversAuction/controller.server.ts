@@ -34,12 +34,11 @@ export default class Controller {
 		return details;
 	}
 
-	async checkEligibility() {
-		// TODO
-	}
-
-	async postBidTx() {
-		// TODO
+	async postBidTx(suiTxId: string, bidderAddr: string, amount: number, msg: string) {
+		// TODO authentication
+		// TODO: Vu - could you check up if we pass the full signed TX, and user address, can we
+		// verify if the given address signed TX? If yes, then we sole authentication
+		console.log("handling bid tx", suiTxId, bidderAddr, amount, msg);
 	}
 
 	async getUserData(userAddr: string): Promise<User> {

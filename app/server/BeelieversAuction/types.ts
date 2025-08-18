@@ -13,7 +13,13 @@ export interface AuctionDetails {
 	totalBids: number;
 }
 
-export interface User {
+export enum AuctionAccountType {
+	DEFAULT = 0,
+	PARTNER_WHITELIST = 1,
+	TESTNET_WHITELIST = 2,
+}
+
+interface User_ {
 	rank: number | null; // null => outside of the winning list
 	// amount bid in MIST. 0 => no bid placed
 	amount: number;
@@ -21,7 +27,11 @@ export interface User {
 	note: string;
 }
 
-export interface Bidder extends User {
+export interface User extends User_ {
+	wlStatus: AuctionAccountType;
+}
+
+export interface Bidder extends User_ {
 	bidder: string;
 }
 
