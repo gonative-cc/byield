@@ -9,8 +9,8 @@ export type Req =
 	  }
 	| {
 			method: "postBidTx";
-			// suiTxId, bidder, amount, msg
-			params: [string, string, number, string];
+			// address, base64 tx bytes, signature, user message
+			params: [string, string, string, string];
 	  }
 	| {
 			method: "pageData";

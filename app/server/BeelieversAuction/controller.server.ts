@@ -4,6 +4,9 @@ import type { Req } from "./jsonrpc";
 import { defaultAuctionDetails, defaultUser } from "./defaults";
 import { isValidSuiAddress } from "@mysten/sui/utils";
 
+import { fromBase64 } from "@mysten/utils";
+import { verifySignature } from "./auth";
+
 export default class Controller {
 	kv: KVNamespace;
 	kvKeyDetails = "details";
@@ -37,8 +40,8 @@ export default class Controller {
 			case "queryUser":
 				return this.getUserData(reqData.params[0]);
 			case "postBidTx": {
-				const [suiTxId, bidderAddr, amount, msg] = reqData.params;
-				return this.postBidTx(suiTxId, bidderAddr, amount, msg);
+				const [userAddr, txBytes, signature, userMessage] = reqData.params;
+				return this.postBidTx(userAddr, fromBase64(txBytes), signature, userMessage);
 			}
 			case "pageData": {
 				const [suiAddr] = reqData.params;
@@ -59,12 +62,14 @@ export default class Controller {
 		return details;
 	}
 
-	async postBidTx(suiTxId: string, bidderAddr: string, amount: number, msg: string) {
+	async postBidTx(userAddr: string, txBytes: Uint8Array, signature: string, userMessage: string) {
 		// TODO authentication
 		// TODO: Vu - could you check up if we pass the full signed TX, and user address, can we
 		// verify if the given address signed TX? If yes, then we sole authentication
-		//  TODO: check whitelist (later)
-		console.log("handling bid tx", suiTxId, bidderAddr, amount, msg);
+
+		// throw error if signature in valid from userAddr
+
+		const txDigest = await verifySignature(userAddr, txBytes, signature);
 	}
 
 	async getUserData(userAddr: string): Promise<User | undefined> {
