@@ -37,6 +37,7 @@ export function BeelieversAuction({
 		if (suiAddr && suiAddr !== lastCheckedAddress.current && fetcher.state === "idle") {
 			// Wallet connected or address changed - check eligibility
 			lastCheckedAddress.current = suiAddr;
+			// TODO: assign user here
 			makeReq(fetcher, { method: "queryUser", params: [suiAddr] });
 		} else if (!suiAddr && lastCheckedAddress.current) {
 			// Wallet disconnected - reset state
@@ -77,10 +78,11 @@ export function BeelieversAuction({
 				/>
 			</div>
 
-			{/* Bid Section with Animation */}
-			<div className="animate-in slide-in-from-right-4 duration-1000 delay-500 w-full flex justify-center">
-				<BeelieversBid leaderBoardData={leaderboard} auctionState={auctionState} />
-			</div>
+			{auctionState == AuctionState.STARTED && (
+				<div className="animate-in slide-in-from-right-4 duration-1000 delay-500 w-full flex justify-center">
+					<BeelieversBid userBid={user} />
+				</div>
+			)}
 
 			{/* Leaderboard Table with Animation */}
 			{auctionState !== AuctionState.WILL_START && (

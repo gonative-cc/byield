@@ -18,6 +18,7 @@ export type Req =
 			params: [string];
 	  };
 
-export function makeReq(fetcher: FetcherWithComponents<any>, req: Req) {
+// TODO: this function should return result
+export async function makeReq(fetcher: FetcherWithComponents<any>, req: Req) {
 	return fetcher.submit(req, { method: "POST", encType: "application/json" });
 }

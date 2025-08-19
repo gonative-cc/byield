@@ -7,6 +7,8 @@ export const SUI = 9; // SUI -> mist decimals
 export const NBTC = 8; // NBTC decimals
 export const USDC = 6;
 
+// throws error when amount decimals are bigger then `decimals` or when amount is not a proper
+// numeric string
 export function parse(amount: string, decimals: number): bigint {
 	const a = parseUnits(amount, decimals);
 	return a.toBigInt();
