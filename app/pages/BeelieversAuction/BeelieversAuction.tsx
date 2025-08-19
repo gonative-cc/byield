@@ -21,29 +21,27 @@ function getAuctionState(startMs: number, endMs: number): AuctionState {
 interface BeelieversAuctionProps {
 	auctionDetails: AuctionDetails;
 	leaderboard: Bidder[];
-	user?: User;
 }
 
 export function BeelieversAuction({
 	auctionDetails: { uniqueBidders, totalBids, entryBidMist, startsAt, endsAt },
 	leaderboard,
-	user,
 }: BeelieversAuctionProps) {
-	const fetcher = useFetcher();
 	const account = useCurrentAccount();
+	const userFetcher = useFetcher<User>();
+	const user: User | undefined = userFetcher?.data;
 
 	/* eslint-disable react-hooks/exhaustive-deps */
 	useEffect(() => {
 		if (account !== null) {
 			console.log(">>>> Beelievers page: query user", account?.address);
 			// TODO: assign user here
-			makeReq(fetcher, { method: "queryUser", params: [account.address] });
+			makeReq(userFetcher, { method: "queryUser", params: [account.address] });
 		}
 	}, [account?.address || null]);
 
 	const twitterPost = "https://twitter.com/goNativeCC/status/1956370231191818263";
 	const auctionState = getAuctionState(startsAt, endsAt);
-	const userAccountType = user?.wlStatus;
 
 	return (
 		<div className="flex flex-col items-center gap-6 sm:gap-8 lg:gap-10 w-full relative">
