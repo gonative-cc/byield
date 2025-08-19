@@ -67,9 +67,9 @@ export default class Controller {
 		console.log("handling bid tx", suiTxId, bidderAddr, amount, msg);
 	}
 
-	async getUserData(userAddr: string): Promise<User | null> {
+	async getUserData(userAddr: string): Promise<User | undefined> {
 		if (!isValidSuiAddress(userAddr)) {
-			return null;
+			return undefined;
 		}
 		const userJson = await this.kv.get(this.kvKeyUserPrefix + userAddr);
 		if (userJson === null) {
