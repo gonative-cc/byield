@@ -21,33 +21,31 @@ function getAuctionState(startMs: number, endMs: number): AuctionState {
 interface BeelieversAuctionProps {
 	auctionDetails: AuctionDetails;
 	leaderboard: Bidder[];
-	user?: User;
 }
 
 export function BeelieversAuction({
 	auctionDetails: { uniqueBidders, totalBids, entryBidMist, startsAt, endsAt },
 	leaderboard,
-	user,
 }: BeelieversAuctionProps) {
 	const { suiAddr } = useContext(WalletContext);
 	const lastCheckedAddress = useRef<string | null>(null);
-	const fetcher = useFetcher();
+	const userFetcher = useFetcher<User>();
+	const user: User | undefined = userFetcher?.data;
+	const userAccountType = user?.wlStatus;
 
 	useEffect(() => {
-		if (suiAddr && suiAddr !== lastCheckedAddress.current && fetcher.state === "idle") {
+		if (suiAddr && suiAddr !== lastCheckedAddress.current && userFetcher.state === "idle") {
 			// Wallet connected or address changed - check eligibility
 			lastCheckedAddress.current = suiAddr;
-			// TODO: assign user here
-			makeReq(fetcher, { method: "queryUser", params: [suiAddr] });
+			makeReq<User>(userFetcher, { method: "queryUser", params: [suiAddr] });
 		} else if (!suiAddr && lastCheckedAddress.current) {
 			// Wallet disconnected - reset state
 			lastCheckedAddress.current = null;
 		}
-	}, [fetcher, fetcher.state, suiAddr]);
+	}, [userFetcher, userFetcher.state, suiAddr]);
 
 	const twitterPost = "https://twitter.com/goNativeCC/status/1956370231191818263";
 	const auctionState = getAuctionState(startsAt, endsAt);
-	const userAccountType = user?.wlStatus;
 
 	return (
 		<div className="flex flex-col items-center gap-6 sm:gap-8 lg:gap-10 w-full relative">
