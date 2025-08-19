@@ -2,9 +2,9 @@ import { getLeaderBoardData } from "./leaderboard.server";
 import type { LoaderDataResp, AuctionDetails, User } from "./types";
 import type { Req } from "./jsonrpc";
 import { defaultAuctionDetails, defaultUser } from "./defaults";
-import { verifyTransactionSignature } from "@mysten/sui/verify";
-import { TransactionDataBuilder } from "@mysten/sui/transactions";
+
 import { fromBase64 } from "@mysten/utils";
+import { verifySignature } from "./auth";
 
 export default class Controller {
 	kv: KVNamespace;
@@ -79,16 +79,4 @@ export default class Controller {
 		}
 		return JSON.parse(userJson) as User;
 	}
-}
-
-export async function verifySignature(
-	userAddr: string,
-	tx_bytes: Uint8Array,
-	signature: string,
-): Promise<string> {
-	await verifyTransactionSignature(tx_bytes, signature, {
-		address: userAddr,
-	});
-
-	return TransactionDataBuilder.getDigestFromBytes(tx_bytes);
 }

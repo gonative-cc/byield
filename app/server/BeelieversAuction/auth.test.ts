@@ -2,7 +2,7 @@ import { describe } from "vitest";
 import { expect, test } from "vitest";
 import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
 import { Transaction } from "@mysten/sui/transactions";
-import { verifySignature } from "~/server/BeelieversAuction/controller.server";
+import { verifySignature } from "~/server/BeelieversAuction/auth";
 import { toBase58 } from "@mysten/utils";
 
 describe("authentication testcases", () => {
