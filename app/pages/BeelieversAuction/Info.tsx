@@ -2,19 +2,20 @@ import React from "react";
 import { ChevronsDown, ChevronsUp } from "lucide-react";
 import { Card, CardContent } from "~/components/ui/card";
 import { Countdown } from "~/components/ui/countdown";
-import { AuctionAccountType } from "~/server/BeelieversAuction/types";
+import { AuctionAccountType, type User } from "~/server/BeelieversAuction/types";
 import { TwitterShareButton } from "~/components/TwitterShareButton";
 import { AuctionState } from "./types";
 
 interface InfoProps {
-	userAccountType?: AuctionAccountType;
 	isError?: boolean;
 	auction_start_ms: number;
 	auction_end_ms: number;
 	auctionState: AuctionState;
+	user?: User;
 }
 
-export function Info({ userAccountType, auction_start_ms, auction_end_ms, auctionState }: InfoProps) {
+export function Info({ user, auction_start_ms, auction_end_ms, auctionState }: InfoProps) {
+	const userAccountType = user?.wlStatus;
 	const eligibilityMessage = getEligibilityMessage(userAccountType);
 	const [showInfo, setShowInfo] = React.useState(false);
 

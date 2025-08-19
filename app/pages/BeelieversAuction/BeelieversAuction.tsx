@@ -45,7 +45,6 @@ export function BeelieversAuction({
 		}
 	}, [fetcher, fetcher.state, suiAddr]);
 
-	const userAccountType = user?.wlStatus;
 	const twitterPost = "https://twitter.com/goNativeCC/status/1956370231191818263";
 	const auctionState = getAuctionState(startsAt, endsAt);
 
@@ -71,16 +70,16 @@ export function BeelieversAuction({
 			{/* Info Section with Animation */}
 			<div className="animate-in slide-in-from-left-4 duration-1000 delay-400 w-full flex justify-center">
 				<Info
-					userAccountType={userAccountType}
 					auction_start_ms={startsAt}
 					auction_end_ms={endsAt}
 					auctionState={auctionState}
+					user={user}
 				/>
 			</div>
 
 			{auctionState == AuctionState.STARTED && (
 				<div className="animate-in slide-in-from-right-4 duration-1000 delay-500 w-full flex justify-center">
-					<BeelieversBid userBid={user} />
+					<BeelieversBid user={user} />
 				</div>
 			)}
 
