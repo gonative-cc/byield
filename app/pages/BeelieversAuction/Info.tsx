@@ -7,15 +7,14 @@ import { TwitterShareButton } from "~/components/TwitterShareButton";
 import { AuctionState } from "./types";
 
 interface InfoProps {
+	userAccountType?: AuctionAccountType;
 	isError?: boolean;
 	auction_start_ms: number;
 	auction_end_ms: number;
 	auctionState: AuctionState;
-	user?: User;
 }
 
-export function Info({ user, auction_start_ms, auction_end_ms, auctionState }: InfoProps) {
-	const userAccountType = user?.wlStatus;
+export function Info({ userAccountType, auction_start_ms, auction_end_ms, auctionState }: InfoProps) {
 	const eligibilityMessage = getEligibilityMessage(userAccountType);
 	const [showInfo, setShowInfo] = React.useState(false);
 
