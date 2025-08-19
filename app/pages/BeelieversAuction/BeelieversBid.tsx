@@ -129,9 +129,7 @@ export function BeelieversBid({ user }: BeelieversBidProps) {
 		<FormProvider {...bidForm}>
 			<form onSubmit={onSubmit} className="flex justify-center w-full">
 				<div className="w-full lg:w-2/3 xl:w-1/2 space-y-6">
-					{/* Current Bid Status */}
 					{user && <MyPosition user={user} hasUserBidBefore={hasUserBidBefore} />}
-
 					<Card className="shadow-2xl border-primary/20 hover:border-primary/40 transition-all duration-300 animate-in slide-in-from-bottom-2 duration-700">
 						<CardContent className="p-6 lg:p-8 rounded-lg text-white flex flex-col w-full gap-6 bg-gradient-to-br from-azure-10 via-azure-15 to-azure-20">
 							<div className="flex items-center justify-between">

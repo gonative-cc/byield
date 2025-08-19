@@ -26,7 +26,7 @@ export async function loader({ params, context, request }: Route.LoaderArgs): Pr
 
 // This is a server action to post data to server (data mutations)
 export async function action({ request, context }: Route.ActionArgs) {
-	console.log(">>> In Action");
+	console.log(">>>>> ACTION - url:", request.url);
 	const ctrl = new Controller(context.cloudflare.env.BeelieversNFT);
 	return ctrl.handleJsonRPC(request);
 }

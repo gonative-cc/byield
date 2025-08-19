@@ -34,8 +34,10 @@ export default class Controller {
 		try {
 			reqData = await r.json<Req>();
 		} catch (_err) {
+			console.log("error parsing reqData: ", _err);
 			return new Response("Malformed JSON in request body", { status: 400 });
 		}
+		console.log(">>> handleJsonRPC", reqData);
 		switch (reqData.method) {
 			case "queryUser":
 				return this.getUserData(reqData.params[0]);

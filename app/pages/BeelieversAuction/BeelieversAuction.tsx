@@ -8,7 +8,7 @@ import { AuctionState } from "./types";
 import type { AuctionDetails, Bidder, User } from "~/server/BeelieversAuction/types";
 import { makeReq } from "~/server/BeelieversAuction/jsonrpc";
 import { useFetcher } from "react-router";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 
 function getAuctionState(startMs: number, endMs: number): AuctionState {
@@ -29,7 +29,8 @@ export function BeelieversAuction({
 }: BeelieversAuctionProps) {
 	const account = useCurrentAccount();
 	const userFetcher = useFetcher<User>();
-	const user: User | undefined = userFetcher?.data;
+	const user = userFetcher?.data;
+	const userAccountType = user?.wlStatus;
 
 	/* eslint-disable react-hooks/exhaustive-deps */
 	useEffect(() => {
