@@ -14,10 +14,52 @@ import { toast } from "~/hooks/use-toast";
 import { useNetworkVariables } from "~/networkConfig";
 import { useCurrentAccount, useSignAndExecuteTransaction } from "@mysten/dapp-kit";
 import { LoaderCircle } from "lucide-react";
+import { SUIIcon } from "~/components/icons";
 
 interface MyPositionProps {
 	user: User;
 	hasUserBidBefore: boolean;
+}
+
+interface NewTotalBidAmountProps {
+	currentBidInMist: number;
+	highestBidInMist: number;
+	additionalBidInSUI: string;
+}
+
+function NewTotalBidAmount({
+	currentBidInMist,
+	additionalBidInSUI,
+	highestBidInMist,
+}: NewTotalBidAmountProps) {
+	let newTotal = BigInt(currentBidInMist);
+	let moreBidNeeded = BigInt(0);
+
+	try {
+		if (additionalBidInSUI) {
+			const additionalAmount = parseSUI(additionalBidInSUI);
+			newTotal = BigInt(currentBidInMist) + additionalAmount;
+		}
+		const remaining = BigInt(highestBidInMist) - newTotal;
+		moreBidNeeded = remaining > 0 ? remaining : BigInt(0);
+	} catch {
+		// Invalid input, keep current values
+	}
+
+	return (
+		<div className="p-3 bg-primary/10 rounded-lg border border-primary/20">
+			<div className="flex justify-between items-center mb-2">
+				<span className="text-sm text-muted-foreground">New total bid amount:</span>
+				<div className="text-lg font-semibold text-primary">{formatSUI(String(newTotal))} SUI</div>
+			</div>
+			{moreBidNeeded > 0 && (
+				<div className="flex justify-between items-center">
+					<span className="text-sm text-muted-foreground">More needed to beat highest bid:</span>
+					<div className="text-lg font-semibold text-primary">{formatSUI(moreBidNeeded)} SUI</div>
+				</div>
+			)}
+		</div>
+	);
 }
 
 function MyPosition({ user, hasUserBidBefore }: MyPositionProps) {
@@ -41,7 +83,7 @@ function MyPosition({ user, hasUserBidBefore }: MyPositionProps) {
 							<p className="text-2xl font-bold text-primary">
 								{formatSUI(String(user.amount))} SUI
 							</p>
-							{user?.note && <p className="text-sm text-muted-foreground">{user.note}&quot;</p>}
+							{user?.note && <p className="text-sm text-muted-foreground">{user.note}</p>}
 						</div>
 					)}
 				</div>
@@ -124,6 +166,9 @@ export function BeelieversBid({ user }: BeelieversBidProps) {
 	});
 
 	const hasUserBidBefore = (user && user.amount !== 0) || false;
+	const bidInputInSUI = bidForm.watch("bid");
+	// TODO: get the highest bid
+	const highestBidInMist = 10 * 1e9;
 
 	return (
 		<FormProvider {...bidForm}>
@@ -169,14 +214,29 @@ export function BeelieversBid({ user }: BeelieversBidProps) {
 												: "Minimum: 1 SUI for the first bid"
 										}
 										className="h-14 lg:h-16 text-lg border-primary/30 focus:border-primary hover:border-primary/50 transition-colors"
-										allowNegative={false}
+										inputMode="decimal"
 										decimalScale={SUI}
+										allowNegative={false}
 										createEmptySpace
+										rightAdornments={
+											<SUIIcon
+												prefix={"SUI"}
+												className="flex justify-end mr-1"
+												containerClassName="w-full justify-end"
+											/>
+										}
 										rules={{
 											validate: (val: string) =>
 												validateBidAmount(val, hasUserBidBefore),
 										}}
 									/>
+									{hasUserBidBefore && (
+										<NewTotalBidAmount
+											currentBidInMist={user?.amount || 0}
+											additionalBidInSUI={bidInputInSUI}
+											highestBidInMist={highestBidInMist}
+										/>
+									)}
 								</div>
 								<div className="space-y-2">
 									<div className="text-sm font-medium text-foreground/80 flex items-center gap-2">
