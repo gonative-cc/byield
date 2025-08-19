@@ -29,7 +29,7 @@ export default class Controller {
 		let reqData: Req;
 		try {
 			reqData = await r.json<Req>();
-		} catch (err) {
+		} catch (_err) {
 			return new Response("Malformed JSON in request body", { status: 400 });
 		}
 		switch (reqData.method) {

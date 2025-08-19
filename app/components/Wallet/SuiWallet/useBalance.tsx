@@ -2,7 +2,7 @@ import { useSuiClient, useCurrentAccount } from "@mysten/dapp-kit";
 import { useState, useEffect, useCallback } from "react";
 import { type CoinBalance } from "@mysten/sui/client";
 
-interface UseCoinBalanceResult {
+export interface UseCoinBalanceResult {
 	balance: bigint;
 	isLoading: boolean;
 	error: Error | null;
