@@ -39,6 +39,8 @@ export default class Controller {
 		switch (reqData.method) {
 			case "queryUser":
 				return this.getUserData(reqData.params[0]);
+			case "queryAuctionDetails":
+				return await this.getAuctionDetails();
 			case "postBidTx": {
 				const [userAddr, txBytes, signature, userMessage] = reqData.params;
 				return this.postBidTx(userAddr, fromBase64(txBytes), signature, userMessage);

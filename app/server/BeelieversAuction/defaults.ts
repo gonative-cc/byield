@@ -7,19 +7,19 @@ export function defaultAuctionDetails(): AuctionDetails {
 	if (!isProductionMode()) {
 		return testAuctionDetails();
 	}
-	const startsAt = +new Date("2025-08-19T14:00");
+	const startsAt = +new Date("2025-08-19T15:00");
 	return {
 		uniqueBidders: 0,
 		totalBids: 0,
 		highestBidMist: 0,
 		entryBidMist: 1e9, // 1 SUI
 		startsAt,
-		endsAt: startsAt + 24 * 3600_000,
+		endsAt: startsAt + 48 * 3600_000,
 	};
 }
 
 function testAuctionDetails(): AuctionDetails {
-	const startsAt = +new Date("2025-08-18T12:00");
+	const startsAt = +new Date("2025-08-19T08:00");
 	return {
 		uniqueBidders: 600,
 		totalBids: 1250,

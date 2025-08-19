@@ -8,6 +8,10 @@ export type Req =
 			params: [string];
 	  }
 	| {
+			method: "queryAuctionDetails";
+			params: [];
+	  }
+	| {
 			method: "postBidTx";
 			// address, base64 tx bytes, signature, user message
 			params: [string, string, string, string];
