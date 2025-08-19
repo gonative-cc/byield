@@ -2,6 +2,7 @@ import { getLeaderBoardData } from "./leaderboard.server";
 import type { LoaderDataResp, AuctionDetails, User } from "./types";
 import type { Req } from "./jsonrpc";
 import { defaultAuctionDetails, defaultUser } from "./defaults";
+import { isValidSuiAddress } from "@mysten/sui/utils";
 
 export default class Controller {
 	kv: KVNamespace;
@@ -67,7 +68,9 @@ export default class Controller {
 	}
 
 	async getUserData(userAddr: string): Promise<User | null> {
-		// TODO: Stan: validate Sui address
+		if (!isValidSuiAddress(userAddr)) {
+			return null;
+		}
 		const userJson = await this.kv.get(this.kvKeyUserPrefix + userAddr);
 		if (userJson === null) {
 			return defaultUser();
