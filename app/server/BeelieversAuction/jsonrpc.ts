@@ -2,6 +2,11 @@ import type { FetcherWithComponents } from "react-router";
 
 export type Req =
 	| {
+			method: "login";
+			// address, signature, message
+			params: [string, string, string];
+	  }
+	| {
 			method: "queryUser";
 			params: [string];
 	  }
