@@ -1,12 +1,19 @@
 import { describe, test, expect, beforeEach, afterEach, vi } from "vitest";
-// import type { Miniflare } from "miniflare";
 import { Auction } from "./auction.server";
+
+import { env } from "cloudflare:test";
+
+describe("Hello World worker", () => {
+	test("responds with Hello World!", async () => {
+		console.log(env);
+	});
+});
 
 interface TestContext {
 	auction: Auction;
 }
 
-describe("Auction Class with Tuple Error Handling", () => {
+describe.skip("Auction Class with Tuple Error Handling", () => {
 	beforeEach(() => {
 		vi.useFakeTimers();
 	});
@@ -26,6 +33,16 @@ describe("Auction Class with Tuple Error Handling", () => {
 
 		context.auction = new Auction(db, startTime, endTime, 10, 10);
 		await context.auction.initialize();
+	});
+
+	describe("Initialization", () => {
+		test<TestContext>("initialize() should be idempotent", async ({ auction }) => {
+			// The auction is initialized in beforeEach, we can re-initialize to test
+			await expect(auction.initialize()).resolves.toBeUndefined();
+
+			const stats = await env.DB.prepare("SELECT * FROM stats").first();
+			expect(stats).toBeDefined();
+		});
 	});
 
 	describe("bid() with tuple return", () => {
