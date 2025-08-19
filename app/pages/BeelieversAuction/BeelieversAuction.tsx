@@ -8,8 +8,8 @@ import { AuctionState } from "./types";
 import type { AuctionDetails, Bidder, User } from "~/server/BeelieversAuction/types";
 import { makeReq } from "~/server/BeelieversAuction/jsonrpc";
 import { useFetcher } from "react-router";
-import { useContext, useEffect, useRef } from "react";
-import { WalletContext } from "~/providers/ByieldWalletProvider";
+import { useEffect, useRef } from "react";
+import { useCurrentAccount } from "@mysten/dapp-kit";
 
 function getAuctionState(startMs: number, endMs: number): AuctionState {
 	const nowMs = new Date().getTime();
@@ -29,21 +29,17 @@ export function BeelieversAuction({
 	leaderboard,
 	user,
 }: BeelieversAuctionProps) {
-	const { suiAddr } = useContext(WalletContext);
-	const lastCheckedAddress = useRef<string | null>(null);
 	const fetcher = useFetcher();
+	const account = useCurrentAccount();
 
+	/* eslint-disable react-hooks/exhaustive-deps */
 	useEffect(() => {
-		if (suiAddr && suiAddr !== lastCheckedAddress.current && fetcher.state === "idle") {
-			// Wallet connected or address changed - check eligibility
-			lastCheckedAddress.current = suiAddr;
+		if (account !== null) {
+			console.log(">>>> Beelievers page: query user", account?.address);
 			// TODO: assign user here
-			makeReq(fetcher, { method: "queryUser", params: [suiAddr] });
-		} else if (!suiAddr && lastCheckedAddress.current) {
-			// Wallet disconnected - reset state
-			lastCheckedAddress.current = null;
+			makeReq(fetcher, { method: "queryUser", params: [account.address] });
 		}
-	}, [fetcher, fetcher.state, suiAddr]);
+	}, [account?.address || null]);
 
 	const twitterPost = "https://twitter.com/goNativeCC/status/1956370231191818263";
 	const auctionState = getAuctionState(startsAt, endsAt);

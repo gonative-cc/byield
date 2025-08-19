@@ -10,12 +10,23 @@ export async function loader({ params, context, request }: Route.LoaderArgs): Pr
 	const ctrl = new Controller(context.cloudflare.env.BeelieversNFT);
 	const url = new URL(request.url);
 	const suiAddress = url.searchParams.get("suiAddress") ?? undefined;
-	console.log(">>>>> LOADER handler - params:", params, "suiAddress:", suiAddress);
+	const body = await request.bytes();
+	console.log(
+		">>>>> LOADER handler - params:",
+		params,
+		"suiAddress:",
+		suiAddress,
+		"\nbody",
+		body,
+		"\nbody used",
+		request.bodyUsed,
+	);
 	return await ctrl.loadPageData(suiAddress);
 }
 
 // This is a server action to post data to server (data mutations)
 export async function action({ request, context }: Route.ActionArgs) {
+	console.log(">>> In Action");
 	const ctrl = new Controller(context.cloudflare.env.BeelieversNFT);
 	return ctrl.handleJsonRPC(request);
 }
