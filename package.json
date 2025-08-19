@@ -12,6 +12,7 @@
 		"build:dev": "react-router build --mode dev",
 		"deploy": "pnpm run build --mode dev && wrangler deploy",
 		"deploy:prod": "pnpm run build && wrangler deploy -c ./wrangler-prod.jsonc",
+		"deploy:prod": "pnpm run build && wrangler deploy -e prod ",
 		"deploy:prod:ver": "pnpm run build && wrangler versions upload -c ./wrangler-prod.jsonc",
 		"preview": "vite preview",
 		"preview:wrangler": "wrangler dev",
@@ -94,7 +95,7 @@
 		"vite-node": "^3.2.4",
 		"vite-tsconfig-paths": "^5.1.4",
 		"vitest": "^3.2.4",
-		"wrangler": "^4.29.0"
+		"wrangler": "^4.31.0"
 	},
 	"engines": {
 		"node": ">=22.0.0"
