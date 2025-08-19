@@ -6,6 +6,9 @@ import { isValidSuiAddress } from "@mysten/sui/utils";
 import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
 import { validateBidTransaction, type BidDetails } from "./auth.server";
 
+import { fromBase64 } from "@mysten/utils";
+import { verifySignature } from "./auth";
+
 export default class Controller {
 	kv: KVNamespace;
 	kvKeyDetails = "details";
@@ -39,20 +42,8 @@ export default class Controller {
 			case "queryUser":
 				return this.getUserData(reqData.params[0]);
 			case "postBidTx": {
-				const [suiTxId, bidderAddr, amount, msg] = reqData.params;
-				const bidDetails = await this.postBidTx(suiTxId, bidderAddr, amount, msg);
-
-				if (bidDetails) {
-					console.log("Successfully validated and processed bid:", bidDetails);
-					return new Response(JSON.stringify(bidDetails), {
-						headers: { "Content-Type": "application/json" },
-						status: 200,
-					});
-				} else {
-					return new Response("Failed to validate transaction or find bid event", {
-						status: 422,
-					});
-				}
+				const [userAddr, txBytes, signature, userMessage] = reqData.params;
+				return this.postBidTx(userAddr, fromBase64(txBytes), signature, userMessage);
 			}
 			case "pageData": {
 				const [suiAddr] = reqData.params;
@@ -73,25 +64,21 @@ export default class Controller {
 		return details;
 	}
 
-	async postBidTx(
-		suiTxId: string,
-		bidderAddr: string,
-		amount: number,
-		msg: string
-	): Promise<BidDetails | null> {
-		console.log("handling bid tx", suiTxId, bidderAddr, amount, msg);
-		// TODO: The RPC client is hardcoded to testnet. This should be configurable and moved to constructor
-		const suiClient = new SuiClient({ url: getFullnodeUrl("testnet") });
-		const bidDetails = await validateBidTransaction(suiClient, suiTxId, bidderAddr);
+	async postBidTx(userAddr: string, txBytes: Uint8Array, signature: string, userMessage: string): Promise<BidDetails | null> {
+		// TODO authentication
+		// TODO: Vu - could you check up if we pass the full signed TX, and user address, can we
+		// verify if the given address signed TX? If yes, then we sole authentication
+
+		// throw error if signature in valid from userAddr
+
+		const txDigest = await verifySignature(userAddr, txBytes, signature);
+    // TODO: The RPC client is hardcoded to testnet. This should be configurable and moved to constructor
+    const suiClient = new SuiClient({ url: getFullnodeUrl("testnet") });
+		const bidDetails = await validateBidTransaction(suiClient, txDigest, userAddr);
 		if (!bidDetails) {
 			return null;
 		}
 		return bidDetails;
-
-		// TODO authentication
-		// TODO: Vu - could you check up if we pass the full signed TX, and user address, can we
-		// verify if the given address signed TX? If yes, then we sole authentication
-		//  TODO: check whitelist (later)
 	}
 
 	async getUserData(userAddr: string): Promise<User | undefined> {

@@ -21,31 +21,29 @@ function getAuctionState(startMs: number, endMs: number): AuctionState {
 interface BeelieversAuctionProps {
 	auctionDetails: AuctionDetails;
 	leaderboard: Bidder[];
-	user?: User;
 }
 
 export function BeelieversAuction({
 	auctionDetails: { uniqueBidders, totalBids, entryBidMist, startsAt, endsAt },
 	leaderboard,
-	user,
 }: BeelieversAuctionProps) {
 	const { suiAddr } = useContext(WalletContext);
 	const lastCheckedAddress = useRef<string | null>(null);
-	const fetcher = useFetcher();
+	const userFetcher = useFetcher<User>();
+	const user: User | undefined = userFetcher?.data;
+	const userAccountType = user?.wlStatus;
 
 	useEffect(() => {
-		if (suiAddr && suiAddr !== lastCheckedAddress.current && fetcher.state === "idle") {
+		if (suiAddr && suiAddr !== lastCheckedAddress.current && userFetcher.state === "idle") {
 			// Wallet connected or address changed - check eligibility
 			lastCheckedAddress.current = suiAddr;
-			// TODO: assign user here
-			makeReq(fetcher, { method: "queryUser", params: [suiAddr] });
+			makeReq<User>(userFetcher, { method: "queryUser", params: [suiAddr] });
 		} else if (!suiAddr && lastCheckedAddress.current) {
 			// Wallet disconnected - reset state
 			lastCheckedAddress.current = null;
 		}
-	}, [fetcher, fetcher.state, suiAddr]);
+	}, [userFetcher, userFetcher.state, suiAddr]);
 
-	const userAccountType = user?.wlStatus;
 	const twitterPost = "https://twitter.com/goNativeCC/status/1956370231191818263";
 	const auctionState = getAuctionState(startsAt, endsAt);
 
@@ -71,16 +69,16 @@ export function BeelieversAuction({
 			{/* Info Section with Animation */}
 			<div className="animate-in slide-in-from-left-4 duration-1000 delay-400 w-full flex justify-center">
 				<Info
-					userAccountType={userAccountType}
 					auction_start_ms={startsAt}
 					auction_end_ms={endsAt}
 					auctionState={auctionState}
+					userAccountType={userAccountType}
 				/>
 			</div>
 
 			{auctionState == AuctionState.STARTED && (
 				<div className="animate-in slide-in-from-right-4 duration-1000 delay-500 w-full flex justify-center">
-					<BeelieversBid userBid={user} />
+					<BeelieversBid user={user} />
 				</div>
 			)}
 
