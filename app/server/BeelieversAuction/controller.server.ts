@@ -68,7 +68,7 @@ export default class Controller {
 
 		// throw error if signature in valid from userAddr
 
-		console.log(await verifySignature(userAddr, txBytes, signature), userAddr);
+		const txDigest = await verifySignature(userAddr, txBytes, signature);
 	}
 
 	async getUserData(userAddr: string): Promise<User> {
