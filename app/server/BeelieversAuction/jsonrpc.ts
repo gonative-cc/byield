@@ -10,7 +10,7 @@ export type Req =
 	| {
 			method: "postBidTx";
 			// suiTxId, bidder, amount, msg
-			params: [string, string, number, string];
+			params: [string, string, string, string];
 	  }
 	| {
 			method: "pageData";

@@ -4,6 +4,7 @@ import type { Req } from "./jsonrpc";
 import { defaultAuctionDetails, defaultUser } from "./defaults";
 import { verifyTransactionSignature } from "@mysten/sui/verify";
 import { TransactionDataBuilder } from "@mysten/sui/transactions";
+import { fromBase64 } from "@mysten/utils";
 
 export default class Controller {
 	kv: KVNamespace;
@@ -38,8 +39,8 @@ export default class Controller {
 			case "queryUser":
 				return this.getUserData(reqData.params[0]);
 			case "postBidTx": {
-				const [suiTxId, bidderAddr, amount, msg] = reqData.params;
-				return this.postBidTx(suiTxId, bidderAddr, amount, msg);
+				const [userAddr, txBytes, signature, userMessage] = reqData.params;
+				return this.postBidTx(userAddr, fromBase64(txBytes), signature, userMessage);
 			}
 			case "pageData": {
 				const [suiAddr] = reqData.params;
@@ -60,14 +61,14 @@ export default class Controller {
 		return details;
 	}
 
-	async postBidTx(userAddr: string, tx_bytes: Uint8Array, signature: string) {
+	async postBidTx(userAddr: string, txBytes: Uint8Array, signature: string, userMessage: string) {
 		// TODO authentication
 		// TODO: Vu - could you check up if we pass the full signed TX, and user address, can we
 		// verify if the given address signed TX? If yes, then we sole authentication
 
 		// throw error if signature in valid from userAddr
 
-		console.log(verifySignature(userAddr, tx_bytes, signature), userAddr);
+		console.log(await verifySignature(userAddr, txBytes, signature), userAddr);
 	}
 
 	async getUserData(userAddr: string): Promise<User> {

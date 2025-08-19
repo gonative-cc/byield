@@ -114,7 +114,7 @@ export function BeelieversBid({ userBid }: BeelieversBidProps) {
 
 					makeReq(fetcher, {
 						method: "postBidTx",
-						params: ["todo: tx digest", account.address, Number(bid), note || ""],
+						params: [account.address, result.bytes, result.signature, note],
 					});
 				},
 				onError: (result) => {
