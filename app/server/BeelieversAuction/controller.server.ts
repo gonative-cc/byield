@@ -2,6 +2,7 @@ import { getLeaderBoardData } from "./leaderboard.server";
 import type { LoaderDataResp, AuctionDetails, User } from "./types";
 import type { Req } from "./jsonrpc";
 import { defaultAuctionDetails, defaultUser } from "./defaults";
+import { isValidSuiAddress } from "@mysten/sui/utils";
 
 import { fromBase64 } from "@mysten/utils";
 import { verifySignature } from "./auth";
@@ -71,8 +72,10 @@ export default class Controller {
 		const txDigest = await verifySignature(userAddr, txBytes, signature);
 	}
 
-	async getUserData(userAddr: string): Promise<User | null> {
-		// TODO: Stan: validate Sui address
+	async getUserData(userAddr: string): Promise<User | undefined> {
+		if (!isValidSuiAddress(userAddr)) {
+			return undefined;
+		}
 		const userJson = await this.kv.get(this.kvKeyUserPrefix + userAddr);
 		if (userJson === null) {
 			return defaultUser();
