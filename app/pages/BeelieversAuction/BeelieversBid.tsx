@@ -115,6 +115,18 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 						method: "postBidTx",
 						params: [account.address, result.bytes, result.signature, note],
 					});
+
+					// refetch user
+					makeReq(fetcher, {
+						method: "queryUser",
+						params: [account.address],
+					});
+
+					// refetch leaderboard
+					makeReq(fetcher, {
+						method: "pageData",
+						params: [account.address],
+					});
 				},
 				onError: (result) => {
 					console.error("tx failed: ", result);
