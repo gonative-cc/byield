@@ -2,7 +2,7 @@ import React from "react";
 import { ChevronsDown, ChevronsUp } from "lucide-react";
 import { Card, CardContent } from "~/components/ui/card";
 import { Countdown } from "~/components/ui/countdown";
-import { AuctionAccountType } from "~/server/BeelieversAuction/types";
+import { AuctionAccountType, type User } from "~/server/BeelieversAuction/types";
 import { TwitterShareButton } from "~/components/TwitterShareButton";
 import { AuctionState } from "./types";
 

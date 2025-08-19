@@ -1,5 +1,5 @@
 import { FormProvider, useForm } from "react-hook-form";
-import { parseSUI, SUI } from "~/lib/denoms";
+import { formatSUI, parseSUI, SUI } from "~/lib/denoms";
 import { Card, CardContent } from "~/components/ui/card";
 import { FormNumericInput } from "~/components/form/FormNumericInput";
 import { Button } from "~/components/ui/button";
@@ -8,26 +8,19 @@ import { SuiModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import type { User } from "~/server/BeelieversAuction/types";
 import { makeReq } from "~/server/BeelieversAuction/jsonrpc";
 import { useFetcher } from "react-router";
-
 import { Transaction } from "@mysten/sui/transactions";
-// import { useCallback, useContext } from "react";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { toast } from "~/hooks/use-toast";
 import { useNetworkVariables } from "~/networkConfig";
 import { useCurrentAccount, useSignAndExecuteTransaction } from "@mysten/dapp-kit";
-
 import { LoaderCircle } from "lucide-react";
 
-// import type { WalletAccount } from "@mysten/wallet-standard";
-// import type { SuiSignAndExecuteTransactionMethod } from "@mysten/wallet-standard";
-
 interface MyPositionProps {
-	userBid?: User;
+	user: User;
 	hasUserBidBefore: boolean;
 }
 
-function MyPosition({ userBid, hasUserBidBefore }: MyPositionProps) {
-	if (!userBid) return;
+function MyPosition({ user, hasUserBidBefore }: MyPositionProps) {
 	return (
 		<Card className="border-primary/30 bg-gradient-to-r from-primary/10 to-primary/5 animate-in slide-in-from-top-2 duration-500">
 			<CardContent className="p-4 lg:p-6">
@@ -39,16 +32,16 @@ function MyPosition({ userBid, hasUserBidBefore }: MyPositionProps) {
 						<div>
 							<h3 className="font-semibold text-primary">Your Current Bid</h3>
 							<p className="text-sm text-muted-foreground">
-								{hasUserBidBefore ? `Rank ${userBid.rank}` : "No bid placed"}
+								{hasUserBidBefore ? `Rank #${user.rank}` : "No bid placed"}
 							</p>
 						</div>
 					</div>
 					{hasUserBidBefore && (
 						<div className="text-right">
-							<p className="text-2xl font-bold text-primary">{userBid.amount} SUI</p>
-							{userBid?.note && (
-								<p className="text-sm text-muted-foreground">{userBid.note}&quot;</p>
-							)}
+							<p className="text-2xl font-bold text-primary">
+								{formatSUI(String(user.amount))} SUI
+							</p>
+							{user?.note && <p className="text-sm text-muted-foreground">{user.note}&quot;</p>}
 						</div>
 					)}
 				</div>
@@ -63,10 +56,10 @@ interface BeelieversBidForm {
 }
 
 interface BeelieversBidProps {
-	userBid?: User;
+	user?: User;
 }
 
-export function BeelieversBid({ userBid }: BeelieversBidProps) {
+export function BeelieversBid({ user }: BeelieversBidProps) {
 	const { auctionBidApi } = useNetworkVariables();
 	const account = useCurrentAccount();
 	const suiBalanceRes = useCoinBalance();
@@ -130,13 +123,14 @@ export function BeelieversBid({ userBid }: BeelieversBidProps) {
 		);
 	});
 
-	const hasUserBidBefore = (userBid && userBid.amount !== 0) || false;
+	const hasUserBidBefore = (user && user.amount !== 0) || false;
 
 	return (
 		<FormProvider {...bidForm}>
 			<form onSubmit={onSubmit} className="flex justify-center w-full">
 				<div className="w-full lg:w-2/3 xl:w-1/2 space-y-6">
-					<MyPosition userBid={userBid} hasUserBidBefore={hasUserBidBefore} />
+					{/* Current Bid Status */}
+					{user && <MyPosition user={user} hasUserBidBefore={hasUserBidBefore} />}
 
 					<Card className="shadow-2xl border-primary/20 hover:border-primary/40 transition-all duration-300 animate-in slide-in-from-bottom-2 duration-700">
 						<CardContent className="p-6 lg:p-8 rounded-lg text-white flex flex-col w-full gap-6 bg-gradient-to-br from-azure-10 via-azure-15 to-azure-20">
