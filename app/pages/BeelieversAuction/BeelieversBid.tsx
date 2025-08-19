@@ -43,7 +43,7 @@ function NewTotalBidAmount({
 		const remaining = BigInt(highestBidInMist) - newTotal;
 		moreBidNeeded = remaining > 0 ? remaining : BigInt(0);
 	} catch {
-		// Invalid input, keep current values
+		// any error
 	}
 
 	return (
