@@ -1,25 +1,26 @@
 import { FormProvider, useForm } from "react-hook-form";
-import { useContext, useMemo } from "react";
-import { parseSUI, SUI } from "~/lib/denoms";
+import { formatSUI, parseSUI, SUI } from "~/lib/denoms";
 import { Card, CardContent } from "~/components/ui/card";
 import { FormNumericInput } from "~/components/form/FormNumericInput";
 import { Button } from "~/components/ui/button";
 import { FormInput } from "~/components/form/FormInput";
-import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { SuiModal } from "~/components/Wallet/SuiWallet/SuiModal";
-import type { Bidder } from "~/server/BeelieversAuction/types";
+import type { User } from "~/server/BeelieversAuction/types";
 import { makeReq } from "~/server/BeelieversAuction/jsonrpc";
-import { AuctionState } from "./types";
-import { useBid } from "./useBid";
 import { useFetcher } from "react-router";
+import { Transaction } from "@mysten/sui/transactions";
+import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
+import { toast } from "~/hooks/use-toast";
+import { useNetworkVariables } from "~/networkConfig";
+import { useCurrentAccount, useSignAndExecuteTransaction } from "@mysten/dapp-kit";
+import { LoaderCircle } from "lucide-react";
 
 interface MyPositionProps {
-	userBid?: Bidder;
+	user: User;
 	hasUserBidBefore: boolean;
 }
 
-function MyPosition({ userBid, hasUserBidBefore }: MyPositionProps) {
-	if (!userBid) return;
+function MyPosition({ user, hasUserBidBefore }: MyPositionProps) {
 	return (
 		<Card className="border-primary/30 bg-gradient-to-r from-primary/10 to-primary/5 animate-in slide-in-from-top-2 duration-500">
 			<CardContent className="p-4 lg:p-6">
@@ -31,16 +32,16 @@ function MyPosition({ userBid, hasUserBidBefore }: MyPositionProps) {
 						<div>
 							<h3 className="font-semibold text-primary">Your Current Bid</h3>
 							<p className="text-sm text-muted-foreground">
-								{hasUserBidBefore ? `Rank ${userBid.rank}` : "No bid placed"}
+								{hasUserBidBefore ? `Rank #${user.rank}` : "No bid placed"}
 							</p>
 						</div>
 					</div>
 					{hasUserBidBefore && (
 						<div className="text-right">
-							<p className="text-2xl font-bold text-primary">{userBid.amount} SUI</p>
-							{userBid?.note && (
-								<p className="text-sm text-muted-foreground">{userBid.note}&quot;</p>
-							)}
+							<p className="text-2xl font-bold text-primary">
+								{formatSUI(String(user.amount))} SUI
+							</p>
+							{user?.note && <p className="text-sm text-muted-foreground">{user.note}&quot;</p>}
 						</div>
 					)}
 				</div>
@@ -49,71 +50,87 @@ function MyPosition({ userBid, hasUserBidBefore }: MyPositionProps) {
 	);
 }
 
-function validateBidAmount(val: string, hasUserBidBefore: boolean) {
-	const bidAmount = Number(val);
-	if (!hasUserBidBefore && bidAmount < 1) {
-		return "First-time bidders must bid at least 1 SUI";
-	}
-	if (bidAmount <= 0) {
-		return "Additional bid amount must be greater than 0";
-	}
-	return true;
-}
-
 interface BeelieversBidForm {
 	bid: string;
 	note: string;
 }
 
 interface BeelieversBidProps {
-	leaderBoardData?: Bidder[];
-	auctionState?: AuctionState;
+	user?: User;
 }
 
-export function BeelieversBid({ leaderBoardData = [], auctionState }: BeelieversBidProps) {
-	const { suiAddr } = useContext(WalletContext);
-	const { handleTransaction, isPending, isSuccess, isError, data } = useBid();
+export function BeelieversBid({ user }: BeelieversBidProps) {
+	const { auctionBidApi } = useNetworkVariables();
+	const account = useCurrentAccount();
+	const suiBalanceRes = useCoinBalance();
+	const { mutate: signAndExecTx, isPending, data: txData } = useSignAndExecuteTransaction();
 	const fetcher = useFetcher();
-	const userBid = useMemo(
-		() => (suiAddr ? leaderBoardData.find((bid) => bid.bidder === suiAddr) : undefined),
-		[leaderBoardData, suiAddr],
-	);
-	const hasUserBidBefore = (userBid && userBid.amount !== 0) || false;
+
+	// TODO: remove WalletContext usage, use useCurrentAccount() or useSuiClient() instead!
+	// const { suiAddr } = useContext(WalletContext);
 
 	const bidForm = useForm<BeelieversBidForm>({
 		mode: "all",
 		reValidateMode: "onChange",
-		disabled: isPending || isSuccess || isError,
+		disabled: isPending,
 		defaultValues: {
-			bid: "", // value is in SUI, but later we need to convert to MIST.
+			bid: "",
 			note: "",
 		},
 	});
-	const { handleSubmit, watch } = bidForm;
 
-	if (suiAddr == null) return <SuiModal />;
-	if (auctionState !== AuctionState.STARTED) return null;
+	if (account === null) return <SuiModal />;
 
-	const suiBid = watch("bid");
-	const mistBidAmount = parseSUI(suiBid?.length > 0 && suiBid !== "." ? suiBid : "0");
-	const onSubmit = handleSubmit(async ({ bid, note }) => {
-		try {
-			await handleTransaction(mistBidAmount);
-			if (data?.digest && suiAddr)
-				makeReq(fetcher, {
-					method: "postBidTx",
-					params: [data.digest, suiAddr, Number(bid), note || ""],
-				});
-		} catch (error) {
-			console.error("Transaction failed:", error);
-		}
+	const onSubmit = bidForm.handleSubmit(async ({ bid, note }) => {
+		const mistAmount = parseSUI(bid);
+		const transaction = await createBidTxn(account.address, mistAmount, auctionBidApi);
+		const title = "Bid NFT";
+		signAndExecTx(
+			{ transaction },
+			{
+				onSuccess: (result, _variables) => {
+					console.log(
+						">>>> onsuccess, tx data:",
+						result.bytes,
+						"\ndigest",
+						result.digest,
+						"\nsignature",
+						result.signature,
+					);
+					toast({ title, description: "Bid successful" });
+					// Probably we firstly need to wait for tx, before submitting to the server
+					// const { effects } = await suiClient.waitForTransaction({
+					// 	digest: digest,
+					// 	options: {showEffects: true},
+					// });
+					// log --> effects?.created?.[0]?.reference?.objectId!);
+
+					makeReq(fetcher, {
+						method: "postBidTx",
+						params: [account.address, result.bytes, result.signature, note],
+					});
+				},
+				onError: (result) => {
+					console.error("tx failed: ", result);
+					toast({
+						title,
+						description: "Bid failed. Please try again later.\n" + result.message,
+						variant: "destructive",
+					});
+				},
+				onSettled: () => suiBalanceRes.refetch(),
+			},
+		);
 	});
+
+	const hasUserBidBefore = (user && user.amount !== 0) || false;
 
 	return (
 		<FormProvider {...bidForm}>
 			<form onSubmit={onSubmit} className="flex justify-center w-full">
 				<div className="w-full lg:w-2/3 xl:w-1/2 space-y-6">
-					<MyPosition userBid={userBid} hasUserBidBefore={hasUserBidBefore} />
+					{/* Current Bid Status */}
+					{user && <MyPosition user={user} hasUserBidBefore={hasUserBidBefore} />}
 
 					<Card className="shadow-2xl border-primary/20 hover:border-primary/40 transition-all duration-300 animate-in slide-in-from-bottom-2 duration-700">
 						<CardContent className="p-6 lg:p-8 rounded-lg text-white flex flex-col w-full gap-6 bg-gradient-to-br from-azure-10 via-azure-15 to-azure-20">
@@ -156,14 +173,11 @@ export function BeelieversBid({ leaderBoardData = [], auctionState }: Beelievers
 										decimalScale={SUI}
 										createEmptySpace
 										rules={{
-											validate: {
-												minVal: (val: string) =>
-													validateBidAmount(val, hasUserBidBefore),
-											},
+											validate: (val: string) =>
+												validateBidAmount(val, hasUserBidBefore),
 										}}
 									/>
 								</div>
-
 								<div className="space-y-2">
 									<div className="text-sm font-medium text-foreground/80 flex items-center gap-2">
 										<span className="text-lg">📝</span>
@@ -177,16 +191,8 @@ export function BeelieversBid({ leaderBoardData = [], auctionState }: Beelievers
 										maxLength={30}
 									/>
 								</div>
-
-								<Button
-									disabled={isPending || isSuccess}
-									className="h-14 lg:h-16 text-lg font-semibold bg-gradient-to-r from-primary to-orange-400 hover:from-orange-400 hover:to-primary transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-								>
-									<span className="flex items-center gap-2">
-										<span className="text-xl">🚀</span>
-										{hasUserBidBefore ? "Update Bid" : "Place Bid"}
-									</span>
-								</Button>
+								{submitButton(isPending, hasUserBidBefore)}
+								{txData && <span className="break-all">Your TX ID: {txData.digest}</span>}
 							</div>
 						</CardContent>
 					</Card>
@@ -194,4 +200,63 @@ export function BeelieversBid({ leaderBoardData = [], auctionState }: Beelievers
 			</form>
 		</FormProvider>
 	);
+}
+
+function submitButton(isPending: boolean, hasUserBidBefore: boolean) {
+	return (
+		<Button
+			disabled={isPending}
+			className="h-14 lg:h-16 text-lg font-semibold bg-gradient-to-r from-primary to-orange-400 hover:from-orange-400 hover:to-primary transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+		>
+			<span className="flex items-center gap-2">
+				{isPending ? (
+					<LoaderCircle className="animate-spin w-64 h-64" />
+				) : (
+					<>
+						<span className="text-xl">🚀</span> {hasUserBidBefore ? "Bid more" : "Place Bid"}
+					</>
+				)}
+			</span>
+		</Button>
+	);
+}
+
+type BidCallTargets = {
+	packageId: string;
+	module: string;
+	bidEndpoint: string;
+	auctionId: string;
+};
+
+const createBidTxn = async (
+	senderAddress: string,
+	amountMist: bigint,
+	{ packageId, module, bidEndpoint, auctionId }: BidCallTargets,
+): Promise<Transaction> => {
+	const txn = new Transaction();
+	txn.setSender(senderAddress);
+	const [coin] = txn.splitCoins(txn.gas, [txn.pure.u64(amountMist)]);
+	txn.moveCall({
+		target: `${packageId}::${module}::${bidEndpoint}`,
+		arguments: [txn.object(auctionId), coin, txn.object.clock()],
+	});
+	return txn;
+};
+
+function validateBidAmount(val: string, hasUserBidBefore: boolean) {
+	let mistAmount = 0n;
+	try {
+		mistAmount = parseSUI(val);
+	} catch (__error) {
+		return "wrong SUI number";
+	}
+	if (mistAmount < 1e6) {
+		return "minimum amount: 0.001";
+	}
+	// TODO: testing - change to 1e9
+	if (!hasUserBidBefore && mistAmount < 1e7) {
+		return "First-time bidders must bid at least 1 SUI";
+	}
+
+	return true;
 }

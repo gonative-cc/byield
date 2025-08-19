@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import type { WritableStreamDefaultWriter } from "stream/web";
 
 function calcLeft(target: number) {
 	const diff = target - new Date().getTime();
@@ -18,20 +19,24 @@ export interface CountdownProps {
 }
 
 export const Countdown: React.FC<CountdownProps> = ({ targetTime, onTimeUp, className }) => {
-	const [secLeft, setSecLeft] = useState<number>(calcLeft(targetTime));
+	const [secLeft, setSecLeft] = useState<number | null>(null);
 
 	useEffect(() => {
-		const timer = setInterval(() => {
+		let stop = false;
+		const updateTime = () => {
+			if (stop) return;
 			const s = calcLeft(targetTime);
 			setSecLeft(s);
-			if (s <= 0) {
-				clearInterval(timer);
-				onTimeUp?.();
-			}
-		}, 1000);
-
-		return () => clearInterval(timer);
+			if (s <= 0) onTimeUp?.();
+			else setTimeout(updateTime, 1000);
+		};
+		updateTime();
+		return () => {
+			stop = true;
+		};
 	}, [targetTime, onTimeUp]);
+
+	if (secLeft === null) return;
 
 	const hours = Math.floor(secLeft / 3600);
 	const minutes = Math.floor((secLeft % 3600) / 60);

@@ -8,9 +8,13 @@ export type Req =
 			params: [string];
 	  }
 	| {
+			method: "queryAuctionDetails";
+			params: [];
+	  }
+	| {
 			method: "postBidTx";
-			// suiTxId, bidder, amount, msg
-			params: [string, string, number, string];
+			// address, base64 tx bytes, signature, user message
+			params: [string, string, string, string];
 	  }
 	| {
 			method: "pageData";
@@ -18,6 +22,7 @@ export type Req =
 			params: [string];
 	  };
 
-export function makeReq(fetcher: FetcherWithComponents<any>, req: Req) {
+// TODO: this function should return result
+export async function makeReq(fetcher: FetcherWithComponents<any>, req: Req) {
 	return fetcher.submit(req, { method: "POST", encType: "application/json" });
 }

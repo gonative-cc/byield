@@ -5,7 +5,6 @@ import { trimAddress } from "~/components/Wallet/walletHelper";
 import { useContext } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { toBadgeRecord, type BadgeRecord } from "~/lib/badgeSystem";
-import { Badge } from "~/components/Badge";
 import type { Bidder } from "~/server/BeelieversAuction/types";
 import { BadgesModal } from "~/components/BadgesModal";
 
@@ -75,12 +74,12 @@ const createColumns = (): Column<Bidder>[] => [
 				<div className="flex space-x-2 justify-center">
 					{badges.length > 0 ? (
 						badges?.map((badge, index) => (
-							<div
+							<img
 								key={index}
-								className="relative bg-white/90 backdrop-blur-sm rounded-lg h-8 w-8 shadow-md hover:shadow-lg hover:scale-110 transition-all duration-200 hover:bg-white"
-							>
-								<Badge src={badge!.src} title={badge!.name} />
-							</div>
+								src={badge.src}
+								alt={badge!.name}
+								className={`bg-gray-400 w-8 h-8 hover:scale-110 transition-transform cursor-help`}
+							/>
 						))
 					) : (
 						<span className="text-muted-foreground text-sm">-</span>

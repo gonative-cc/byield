@@ -49,7 +49,21 @@ test("parse x format", () => {
 		expect(denoms.formatAmount(tc.expected, tc.dec), i.toString()).toBe(tc.input);
 	});
 
+	expect(denoms.parse("-1", 0)).toBe(-1n);
+	expect(denoms.parse("-0", 0)).toBe(0n);
+	expect(denoms.parse("-.0", 0)).toBe(0n);
+
+	expect(denoms.parse("0.", 1)).toBe(0n);
+	expect(denoms.parse(".0", 1)).toBe(0n);
+	expect(denoms.parse("0", 1)).toBe(0n);
+	expect(() => denoms.parse(".", 0)).toThrowError();
+
 	expect(() => denoms.parse("0.1", 0)).toThrowError();
-	expect(denoms.parse("0.001", 3)).toBe(1n);
 	expect(() => denoms.parse("0.001", 2)).toThrowError();
+	expect(denoms.parse("0.001", 3)).toBe(1n);
+
+	expect(() => denoms.parse("x", 0)).toThrowError();
+	expect(() => denoms.parse("xf", 0)).toThrowError();
+	expect(() => denoms.parse("0xf", 0)).toThrowError();
+	expect(() => denoms.parse("0xf", 0)).toThrowError();
 });
