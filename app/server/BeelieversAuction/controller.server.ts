@@ -64,7 +64,12 @@ export default class Controller {
 		return details;
 	}
 
-	async postBidTx(userAddr: string, txBytes: Uint8Array, signature: string, userMessage: string): Promise<BidDetails | null> {
+	async postBidTx(
+		userAddr: string,
+		txBytes: Uint8Array,
+		signature: string,
+		userMessage: string
+	): Promise<BidDetails | null> {
 		// TODO authentication
 		// TODO: Vu - could you check up if we pass the full signed TX, and user address, can we
 		// verify if the given address signed TX? If yes, then we sole authentication
@@ -72,8 +77,8 @@ export default class Controller {
 		// throw error if signature in valid from userAddr
 
 		const txDigest = await verifySignature(userAddr, txBytes, signature);
-    // TODO: The RPC client is hardcoded to testnet. This should be configurable and moved to constructor
-    const suiClient = new SuiClient({ url: getFullnodeUrl("testnet") });
+		// TODO: The RPC client is hardcoded to testnet. This should be configurable and moved to constructor
+		const suiClient = new SuiClient({ url: getFullnodeUrl("testnet") });
 		const bidDetails = await validateBidTransaction(suiClient, txDigest, userAddr);
 		if (!bidDetails) {
 			return null;
