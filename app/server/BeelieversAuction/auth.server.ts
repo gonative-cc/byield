@@ -35,7 +35,7 @@ function processTransactionData(
 	data: TxData | undefined,
 	suiTxId: string,
 	bidderAddr: string,
-	source: "Primary" | "Fallback"
+	source: "Primary" | "Fallback",
 ): BidDetails | null {
 	if (!data) {
 		console.error(`[${source}] Response did not contain a result object for tx: ${suiTxId}`);
@@ -45,7 +45,7 @@ function processTransactionData(
 	if (data?.effects?.status?.status !== "success") {
 		console.error(
 			`[${source}] Transaction ${suiTxId} was not successful. Status:`,
-			data?.effects?.status
+			data?.effects?.status,
 		);
 		return null;
 	}
@@ -55,7 +55,7 @@ function processTransactionData(
 
 	if (!bidEvent) {
 		console.error(
-			`[${source}] Could not find BidEvent from package ${TRUSTED_PACKAGE_ID} in tx ${suiTxId}`
+			`[${source}] Could not find BidEvent from package ${TRUSTED_PACKAGE_ID} in tx ${suiTxId}`,
 		);
 		return null;
 	}
@@ -68,7 +68,7 @@ function processTransactionData(
 
 	if (sender !== bidderAddr) {
 		console.warn(
-			`[${source}] Event sender ${sender} does not match provided bidder address ${bidderAddr} for tx ${suiTxId}.`
+			`[${source}] Event sender ${sender} does not match provided bidder address ${bidderAddr} for tx ${suiTxId}.`,
 		);
 		return null;
 	}
@@ -83,7 +83,7 @@ function processTransactionData(
 
 async function queryIndexerFallback(
 	suiTxId: string,
-	bidderAddr: string
+	bidderAddr: string,
 ): Promise<BidDetails | null> {
 	try {
 		console.log(`[Fallback] Querying public Suivision indexer for tx: ${suiTxId}`);
@@ -103,7 +103,7 @@ async function queryIndexerFallback(
 
 		if (!response.ok) {
 			console.error(
-				`[Fallback] Suivision API returned an error: ${response.status} ${response.statusText}`
+				`[Fallback] Suivision API returned an error: ${response.status} ${response.statusText}`,
 			);
 			return null;
 		}
@@ -119,7 +119,7 @@ async function queryIndexerFallback(
 export async function validateBidTransaction(
 	suiClient: SuiClient,
 	suiTxId: string,
-	bidderAddr: string
+	bidderAddr: string,
 ): Promise<BidDetails | null> {
 	try {
 		console.log(`[Primary] Querying Sui RPC for tx: ${suiTxId}`);

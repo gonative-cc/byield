@@ -68,7 +68,7 @@ export default class Controller {
 		userAddr: string,
 		txBytes: Uint8Array,
 		signature: string,
-		userMessage: string
+		userMessage: string,
 	): Promise<BidDetails | null> {
 		// TODO authentication
 		// TODO: Vu - could you check up if we pass the full signed TX, and user address, can we
