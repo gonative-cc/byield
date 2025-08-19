@@ -21,6 +21,8 @@ export async function action({ request, context }: Route.ActionArgs) {
 }
 
 export default function BeelieversAuctionPage() {
+	// TODO: this page get reloaded when we already have account data, so let's try to pass the account
+	// as an argument to the loader somehow. Could be through the URL query.
 	const pageData = useLoaderData<typeof loader>();
 	if (!pageData || pageData?.error) {
 		throw Error("Couldn't load the auction data");

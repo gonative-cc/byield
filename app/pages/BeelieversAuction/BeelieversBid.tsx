@@ -95,7 +95,7 @@ export function BeelieversBid({ userBid }: BeelieversBidProps) {
 		signAndExecTx(
 			{ transaction },
 			{
-				onSuccess: (result) => {
+				onSuccess: (result, _variables) => {
 					console.log(
 						">>>> onsuccess, tx data:",
 						result.bytes,
@@ -250,7 +250,6 @@ const createBidTxn = async (
 };
 
 function validateBidAmount(val: string, hasUserBidBefore: boolean) {
-	console.log("validating", val);
 	let mistAmount = 0n;
 	try {
 		mistAmount = parseSUI(val);
@@ -260,9 +259,8 @@ function validateBidAmount(val: string, hasUserBidBefore: boolean) {
 	if (mistAmount < 1e6) {
 		return "minimum amount: 0.001";
 	}
-	//
+	// TODO: testing - change to 1e9
 	if (!hasUserBidBefore && mistAmount < 1e7) {
-		// TODO: change to 1e9
 		return "First-time bidders must bid at least 1 SUI";
 	}
 
