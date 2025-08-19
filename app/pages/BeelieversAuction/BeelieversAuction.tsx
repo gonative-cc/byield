@@ -31,6 +31,7 @@ export function BeelieversAuction({
 	const lastCheckedAddress = useRef<string | null>(null);
 	const userFetcher = useFetcher<User>();
 	const user: User | undefined = userFetcher?.data;
+	const userAccountType = user?.wlStatus;
 
 	useEffect(() => {
 		if (suiAddr && suiAddr !== lastCheckedAddress.current && userFetcher.state === "idle") {
@@ -45,7 +46,6 @@ export function BeelieversAuction({
 
 	const twitterPost = "https://twitter.com/goNativeCC/status/1956370231191818263";
 	const auctionState = getAuctionState(startsAt, endsAt);
-	const userAccountType = user?.wlStatus;
 
 	return (
 		<div className="flex flex-col items-center gap-6 sm:gap-8 lg:gap-10 w-full relative">
