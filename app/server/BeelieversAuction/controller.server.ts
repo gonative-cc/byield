@@ -71,8 +71,8 @@ export default class Controller {
 		const txDigest = await verifySignature(userAddr, txBytes, signature);
 	}
 
-	async getUserData(userAddr: string): Promise<User> {
-		// TODO: validate Sui address
+	async getUserData(userAddr: string): Promise<User | null> {
+		// TODO: Stan: validate Sui address
 		const userJson = await this.kv.get(this.kvKeyUserPrefix + userAddr);
 		if (userJson === null) {
 			return defaultUser();
