@@ -3,6 +3,8 @@ import type { LoaderDataResp, AuctionDetails, User } from "./types";
 import type { Req } from "./jsonrpc";
 import { defaultAuctionDetails, defaultUser } from "./defaults";
 import { isValidSuiAddress } from "@mysten/sui/utils";
+import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
+import { validateBidTransaction, type BidDetails } from "./auth.server";
 
 export default class Controller {
 	kv: KVNamespace;
@@ -38,7 +40,19 @@ export default class Controller {
 				return this.getUserData(reqData.params[0]);
 			case "postBidTx": {
 				const [suiTxId, bidderAddr, amount, msg] = reqData.params;
-				return this.postBidTx(suiTxId, bidderAddr, amount, msg);
+				const bidDetails = await this.postBidTx(suiTxId, bidderAddr, amount, msg);
+
+				if (bidDetails) {
+					console.log("Successfully validated and processed bid:", bidDetails);
+					return new Response(JSON.stringify(bidDetails), {
+						headers: { "Content-Type": "application/json" },
+						status: 200,
+					});
+				} else {
+					return new Response("Failed to validate transaction or find bid event", {
+						status: 422,
+					});
+				}
 			}
 			case "pageData": {
 				const [suiAddr] = reqData.params;
@@ -59,12 +73,25 @@ export default class Controller {
 		return details;
 	}
 
-	async postBidTx(suiTxId: string, bidderAddr: string, amount: number, msg: string) {
+	async postBidTx(
+		suiTxId: string,
+		bidderAddr: string,
+		amount: number,
+		msg: string
+	): Promise<BidDetails | null> {
+		console.log("handling bid tx", suiTxId, bidderAddr, amount, msg);
+		// TODO: The RPC client is hardcoded to testnet. This should be configurable and moved to constructor
+		const suiClient = new SuiClient({ url: getFullnodeUrl("testnet") });
+		const bidDetails = await validateBidTransaction(suiClient, suiTxId, bidderAddr);
+		if (!bidDetails) {
+			return null;
+		}
+		return bidDetails;
+
 		// TODO authentication
 		// TODO: Vu - could you check up if we pass the full signed TX, and user address, can we
 		// verify if the given address signed TX? If yes, then we sole authentication
 		//  TODO: check whitelist (later)
-		console.log("handling bid tx", suiTxId, bidderAddr, amount, msg);
 	}
 
 	async getUserData(userAddr: string): Promise<User | undefined> {
