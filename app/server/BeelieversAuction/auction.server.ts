@@ -48,6 +48,7 @@ export class Auction {
 		this.minimumBid = minimumBid;
 	}
 
+	// TODO: remove and read from migrations
 	public async initialize(): Promise<void> {
 		const statements = [
 			this.db.prepare(
