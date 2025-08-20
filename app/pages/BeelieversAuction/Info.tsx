@@ -1,7 +1,9 @@
 import React from "react";
 import { ChevronsDown, ChevronsUp } from "lucide-react";
+
 import { Card, CardContent } from "~/components/ui/card";
 import { Countdown } from "~/components/ui/countdown";
+import { BadgesModal } from "~/components/BadgesModal";
 import { AuctionAccountType } from "~/server/BeelieversAuction/types";
 import { TwitterShareButton } from "~/components/TwitterShareButton";
 import { AuctionState } from "./types";
@@ -64,14 +66,19 @@ Securing my spot in the top 5810 at beelieversNFT.gonative.cc`;
 						<TwitterShareButton shareContent={tweet} />
 					</div>
 					<EligibleStatusBadge userAccountType={userAccountType} />
-
 					{eligibilityMessage && <p>{eligibilityMessage}</p>}
-
 					<p>
 						You can bid what you think is a fair value. Top 5810 bidders will win the auction.
 						Winners will pay the lowest winning bid. Any amount above the clearing price is
 						refunded.
 					</p>
+
+					{auctionState === AuctionState.WILL_START && (
+						<div>
+							<BadgesModal msg="List of badges that you can score when you bid" />
+						</div>
+					)}
+
 					<Instructions showInfo={showInfo} onToggle={() => setShowInfo(!showInfo)} />
 				</div>
 			</CardContent>
@@ -116,11 +123,6 @@ function InstructionDetails() {
 				<p className="text-sm lg:text-base mb-4 text-foreground/90">
 					We’re letting the community set the price through a price auction.
 				</p>
-
-				<h3 className={headerStyle}>
-					<span className="text-2xl">❓</span>
-					How it works:
-				</h3>
 				<ul className={listStyle}>
 					<li className="text-sm lg:text-base">
 						<strong>Place your bid</strong> – You can raise your bid anytime before the auction
@@ -136,11 +138,12 @@ function InstructionDetails() {
 						<a href="https://en.wikipedia.org/wiki/Vickrey_auction" className="link">
 							Vickrey auction
 						</a>{" "}
-						- where everyone pays highest bid that didn&apos;t make it to the winning list.
+						- where everyone pays highest bid that didn&apos;t make it to the winning list. In
+						case of draw in the last postion, it is first in first served.
 					</li>
 					<li className="text-sm lg:text-base">
-						<strong>Get refunds automatically</strong> – If you bid higher than the clearing
-						price, the difference is refunded.
+						<strong>Get refunds </strong> – If you bid higher than the clearing price, you can
+						claim the excess amount. If you don&apos;t win you can claim all the amount you bid.
 					</li>
 				</ul>
 

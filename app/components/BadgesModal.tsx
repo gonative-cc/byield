@@ -169,14 +169,14 @@ const BADGES: BadgeInfo[] = [
 	},
 ];
 
-export function BadgesModal() {
+export function BadgesModal({ msg = "View All Badges" }: { msg: string }) {
 	const [selectedBadge, setSelectedBadge] = useState<BadgeInfo | null>(null);
 
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
 				<Button type="button" variant="outline">
-					🏆 View All Badges
+					🏆 {msg}
 				</Button>
 			</DialogTrigger>
 			<DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto w-[95vw] sm:w-full">
@@ -192,10 +192,10 @@ export function BadgesModal() {
 								<button
 									key={badge.filename}
 									onClick={() => setSelectedBadge(badge)}
-									className={`bg-gray-500 text-white flex flex-col items-center p-2 rounded-lg border transition-all duration-200 group ${
+									className={`bg-orange-500/50 text-white flex flex-col items-center p-2 rounded-lg border transition-all duration-200 group ${
 										selectedBadge?.filename === badge.filename
-											? "border-primary bg-primary/10"
-											: "border-primary/20 hover:border-primary/50 hover:bg-primary/5"
+											? "border-primary bg-orange-500/70"
+											: "border-primary/20 hover:border-primary/50 hover:bg-orange-500/60"
 									}`}
 								>
 									<img
@@ -218,7 +218,7 @@ export function BadgesModal() {
 								<img
 									src={selectedBadge.src}
 									alt={selectedBadge.name}
-									className="bg-gray-500 text-white w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 object-contain"
+									className="bg-orange-500/50 text-white w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 object-contain"
 								/>
 								<h3 className="text-lg sm:text-xl font-bold text-primary text-center">
 									{selectedBadge.name}

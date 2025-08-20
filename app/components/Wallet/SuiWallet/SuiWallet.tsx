@@ -73,7 +73,6 @@ function Accounts() {
 		() => accounts.map((a) => ({ label: trimAddress(a.address), value: a.address })),
 		[accounts],
 	);
-	console.log(accounts);
 
 	return (
 		<SelectInput
