@@ -1,12 +1,12 @@
 import { SuiClient, type SuiTransactionBlockResponse } from "@mysten/sui/client";
 
-export type BidDetails = {
+export type BidTxEvent = {
 	sender: string;
 	auctionId: string;
 	totalBidAmount: string;
 };
 
-type TxData = {
+interface TxData {
 	effects?: {
 		status?: {
 			status?: "success" | "failure";
@@ -22,7 +22,7 @@ type TxData = {
 		| null;
 };
 
-type JsonRpcResponse = {
+interface SuiJsonRpcResponse {
 	jsonrpc: string;
 	id: number;
 	result?: TxData;
@@ -30,19 +30,21 @@ type JsonRpcResponse = {
 
 //TODO: move it to env, or controller constructor
 const TRUSTED_PACKAGE_ID = "0xd5b24b83b168f8656aa7c05af1256e6115de1b80d97be0cddf19297a15535149";
+type TxCheckError = string;
 
+// Returns BidDetails on successful tx verification, or TxCheckError otherwise.
 function processTransactionData(
 	data: TxData | undefined,
 	suiTxId: string,
 	bidderAddr: string,
 	source: "Primary" | "Fallback",
-): BidDetails | null {
+): BidDetails | TxCheckError {
 	if (!data) {
 		console.error(`[${source}] Response did not contain a result object for tx: ${suiTxId}`);
 		return null;
 	}
 
-	if (data?.effects?.status?.status !== "success") {
+	if (data.effects?.status?.status !== "success") {
 		console.error(
 			`[${source}] Transaction ${suiTxId} was not successful. Status:`,
 			data?.effects?.status,
@@ -95,7 +97,7 @@ async function queryIndexerFallback(
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({
 				jsonrpc: "2.0",
-				id: 1,
+				id: suiTxId,
 				method: "sui_getTransactionBlock",
 				params: [suiTxId, { showEffects: true, showEvents: true }],
 			}),
@@ -120,7 +122,7 @@ export async function validateBidTransaction(
 	suiClient: SuiClient,
 	suiTxId: string,
 	bidderAddr: string,
-): Promise<BidDetails | null> {
+): Promise<BidDetails | TxCheckError> {
 	try {
 		console.log(`[Primary] Querying Sui RPC for tx: ${suiTxId}`);
 		const tx: SuiTransactionBlockResponse = await suiClient.getTransactionBlock({
