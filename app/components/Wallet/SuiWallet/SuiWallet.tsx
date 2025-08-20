@@ -16,6 +16,8 @@ import { NumericFormat } from "react-number-format";
 import { EllipsisVertical } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 import { formatSUI } from "~/lib/denoms";
+import { useLocation } from "react-router";
+import { isProductionMode } from "~/lib/appenv";
 
 enum SuiNetwork {
 	TestNet = "testnet",
@@ -28,6 +30,9 @@ const SuiNetworkLabel: Record<SuiNetwork, string> = {
 };
 
 function NetWorkOptions() {
+	const location = useLocation();
+	const pathname = location.pathname;
+
 	const { network, selectNetwork } = useSuiClientContext();
 	const handleChange = useCallback(
 		(value: SuiNetwork) => {
@@ -36,11 +41,17 @@ function NetWorkOptions() {
 		[selectNetwork],
 	);
 
-	// TODO: we only support sui test net for now
-	const suiWalletNetworks: Option[] = useMemo(
-		() => [{ label: SuiNetworkLabel[SuiNetwork.TestNet], value: SuiNetwork.TestNet }],
-		[],
+	// TODO: remove this after auction. enforce network change
+	const isAuctionPathname = pathname === "/beelievers-auction" && isProductionMode();
+	const networks = useMemo(
+		() =>
+			isAuctionPathname
+				? [{ label: SuiNetworkLabel[SuiNetwork.MainNet], value: SuiNetwork.MainNet }]
+				: [{ label: SuiNetworkLabel[SuiNetwork.TestNet], value: SuiNetwork.TestNet }],
+		[isAuctionPathname],
 	);
+
+	const suiWalletNetworks: Option[] = useMemo(() => networks, [networks]);
 
 	return (
 		<SelectInput
@@ -62,6 +73,7 @@ function Accounts() {
 		() => accounts.map((a) => ({ label: trimAddress(a.address), value: a.address })),
 		[accounts],
 	);
+	console.log(accounts);
 
 	return (
 		<SelectInput

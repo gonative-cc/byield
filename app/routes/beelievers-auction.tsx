@@ -3,6 +3,9 @@ import { useLoaderData } from "react-router";
 import Controller from "~/server/BeelieversAuction/controller.server";
 import type { LoaderDataResp } from "~/server/BeelieversAuction/types";
 import type { Route } from "./+types/beelievers-auction";
+import { useDisconnectWallet, useSuiClientContext } from "@mysten/dapp-kit";
+import { useEffect } from "react";
+import { isProductionMode } from "~/lib/appenv";
 
 // if we need to load something directly from the client (browser):
 // https://reactrouter.com/start/framework/data-loading#using-both-loaders
@@ -21,12 +24,24 @@ export async function action({ request, context }: Route.ActionArgs) {
 }
 
 export default function BeelieversAuctionPage() {
+	const { network } = useSuiClientContext();
+	const { mutate: disconnect } = useDisconnectWallet();
+	const isTestnet = network === "testnet";
 	// TODO: this page get reloaded when we already have account data, so let's try to pass the account
 	// as an argument to the loader somehow. Could be through the URL query.
 	const pageData = useLoaderData<typeof loader>();
 	if (!pageData || pageData?.error) {
 		throw Error("Couldn't load the auction data");
 	}
+
+	// TODO: remove this after auction. enforce network change
+	useEffect(() => {
+		if (isProductionMode()) {
+			if (isTestnet) {
+				disconnect();
+			}
+		}
+	}, [disconnect, isTestnet]);
 
 	return (
 		<div className="bg-gradient-to-br from-background via-azure-20 to-azure-25 p-4 sm:p-6 lg:p-8">
