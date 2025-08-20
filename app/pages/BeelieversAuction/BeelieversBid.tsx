@@ -23,14 +23,14 @@ interface MyPositionProps {
 
 interface NewTotalBidAmountProps {
 	currentBidInMist: number;
-	highestBidInMist: number;
+	entryPriceInMist: number;
 	additionalBidInSUI: string;
 }
 
 function NewTotalBidAmount({
 	currentBidInMist,
 	additionalBidInSUI,
-	highestBidInMist,
+	entryPriceInMist,
 }: NewTotalBidAmountProps) {
 	let newTotal = BigInt(currentBidInMist);
 	let moreBidNeeded = BigInt(0);
@@ -40,7 +40,7 @@ function NewTotalBidAmount({
 			const additionalAmount = parseSUI(additionalBidInSUI);
 			newTotal = BigInt(currentBidInMist) + additionalAmount;
 		}
-		const remaining = BigInt(highestBidInMist) - newTotal;
+		const remaining = BigInt(entryPriceInMist) - newTotal;
 		moreBidNeeded = remaining > 0 ? remaining : BigInt(0);
 	} catch {
 		// any error
@@ -168,7 +168,7 @@ export function BeelieversBid({ user }: BeelieversBidProps) {
 	const hasUserBidBefore = (user && user.amount !== 0) || false;
 	const bidInputInSUI = bidForm.watch("bid");
 	// TODO: get the highest bid
-	const highestBidInMist = 10 * 1e9;
+	const entryPriceInMist = 10 * 1e9;
 
 	return (
 		<FormProvider {...bidForm}>
@@ -234,7 +234,7 @@ export function BeelieversBid({ user }: BeelieversBidProps) {
 										<NewTotalBidAmount
 											currentBidInMist={user?.amount || 0}
 											additionalBidInSUI={bidInputInSUI}
-											highestBidInMist={highestBidInMist}
+											entryPriceInMist={entryPriceInMist}
 										/>
 									)}
 								</div>
