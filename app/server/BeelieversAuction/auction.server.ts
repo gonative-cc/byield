@@ -38,7 +38,7 @@ export class Auction {
 		startDate: Date,
 		endDate: Date,
 		auctionSize: number = 5000,
-		minimumBid: number = 2,
+		minimumBid: number = 2e9,
 	) {
 		this.db = db;
 		this.startDate = startDate;
@@ -99,21 +99,18 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 		msg: string = "",
 	): Promise<[BidResult | null, Error | null]> {
 		try {
+			const now = new Date();
+			if (now < this.startDate) {
+				return [null, new Error("Auction has not started yet.")];
+			}
+			if (now > this.endDate) {
+				return [null, new Error("Auction has already ended.")];
+			}
+
 			const initialStatus = await this.queryBidder(bidder);
 			const oldRank = initialStatus?.rank ?? null;
 			const typToUse = initialStatus?.typ ?? 0;
 
-			// --- VALIDATION CHECKS ---
-			const now = new Date();
-			// Using the current real time for this check, as requested by the user context
-			const currentTime = new Date("2025-08-18T18:50:15+02:00");
-
-			if (currentTime < this.startDate) {
-				return [null, new Error("Auction has not started yet.")];
-			}
-			if (currentTime > this.endDate) {
-				return [null, new Error("Auction has already ended.")];
-			}
 			if (!Number.isInteger(amount) || amount <= 0) {
 				return [null, new Error("Bid amount must be a positive integer.")];
 			}
@@ -125,12 +122,12 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 				return [
 					null,
 					new Error(
-						`New effective bid ($${effectiveAmount}) must be greater than current effective bid ($${currentEffectiveBid}).`,
+						`New effective bid (${effectiveAmount}) must be greater than current effective bid (${currentEffectiveBid}).`,
 					),
 				];
 			}
 			if (!initialStatus && amount < this.minimumBid) {
-				return [null, new Error(`Minimum first bid is $${this.minimumBid}.`)];
+				return [null, new Error(`Minimum first bid is ${this.minimumBid}.`)];
 			}
 
 			// --- DATABASE TRANSACTION ---
