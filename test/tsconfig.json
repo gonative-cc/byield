@@ -4,11 +4,7 @@
 		"moduleResolution": "bundler",
 		"types": [
 			"@cloudflare/vitest-pool-workers" // provides `cloudflare:test` types
-			// "../worker-configuration.d.ts" // output of `wrangler types`""
 		]
 	},
-	"include": [
-		"./**/*.ts",
-		"../worker-configuration.d.ts" // output of `wrangler types`
-	]
+	"include": ["./**/*.ts"]
 }

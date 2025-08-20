@@ -1,5 +1,5 @@
 declare module "cloudflare:test" {
 	// ProvidedEnv controls the type of `import("cloudflare:test").env`
-	type ProvidedEnv = Env;
-	// interface ProvidedEnv extends Env {}
+	// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+	interface ProvidedEnv extends Env {}
 }
