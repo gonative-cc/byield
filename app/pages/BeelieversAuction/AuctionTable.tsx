@@ -91,16 +91,17 @@ const createColumns = (): Column<Bidder>[] => [
 ];
 
 export function AuctionTable({ data, user, suiAddr }: AuctionTableProps) {
-	const userPosition = user?.rank;
-
 	const getDisplayData = (): Bidder[] => {
-		const top21 = data.slice(0, MAX_LEADERBOARD_ROWS);
-
-		if (userPosition && userPosition > MAX_LEADERBOARD_ROWS && user && suiAddr) {
+		const top21: Bidder[] = data.slice(0, MAX_LEADERBOARD_ROWS);
+		if (user && suiAddr) {
+			const top20: Bidder[] = data
+				.slice(0, MAX_LEADERBOARD_ROWS)
+				.filter(({ bidder }) => bidder !== suiAddr);
 			const currentBidder: Bidder = { ...user, bidder: suiAddr };
-			return [...top21, currentBidder];
+			// always show user position at the top of the table
+			// total user: 1 + 20
+			return [currentBidder, ...top20];
 		}
-
 		return top21;
 	};
 
