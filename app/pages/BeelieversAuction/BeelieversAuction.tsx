@@ -85,7 +85,7 @@ export function BeelieversAuction({
 			{auctionState !== AuctionState.WILL_START && (
 				<div className="animate-in slide-in-from-bottom-4 duration-1000 delay-600 w-full">
 					<div className="flex flex-col-reverse lg:flex-row gap-6 w-full">
-						<AuctionTable data={leaderboard} user={user} />
+						<AuctionTable data={leaderboard} user={user} suiAddr={suiAddr} />
 					</div>
 				</div>
 			)}
@@ -94,7 +94,7 @@ export function BeelieversAuction({
 
 			{/* Partners Section with Animation */}
 			<div className="animate-in fade-in-0 duration-1000 delay-700 w-full">
-				<img src="/assets/auction/partner/partners.png" alt="partners" />;
+				<img src="/assets/auction/partner/partners.png" alt="partners" />
 			</div>
 		</div>
 	);

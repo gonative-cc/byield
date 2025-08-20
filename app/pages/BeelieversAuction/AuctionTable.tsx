@@ -2,8 +2,6 @@ import type { CellProps, Column } from "react-table";
 import { SUIIcon } from "~/components/icons";
 import { Table } from "~/components/ui/table";
 import { trimAddress } from "~/components/Wallet/walletHelper";
-import { useContext } from "react";
-import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { toBadgeRecord, type BadgeRecord } from "~/lib/badgeSystem";
 import type { Bidder, User } from "~/server/BeelieversAuction/types";
 import { BadgesModal } from "~/components/BadgesModal";
@@ -12,6 +10,7 @@ const MAX_LEADERBOARD_ROWS = 21;
 
 interface AuctionTableProps {
 	data: Bidder[];
+	suiAddr: string | null;
 	user?: User;
 }
 
@@ -91,8 +90,7 @@ const createColumns = (): Column<Bidder>[] => [
 	},
 ];
 
-export function AuctionTable({ data, user }: AuctionTableProps) {
-	const { suiAddr } = useContext(WalletContext);
+export function AuctionTable({ data, user, suiAddr }: AuctionTableProps) {
 	const userPosition = user?.rank;
 
 	const getDisplayData = (): Bidder[] => {
