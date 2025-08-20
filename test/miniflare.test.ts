@@ -5,9 +5,6 @@ import { Miniflare } from "miniflare";
 // https://github.com/cloudflare/workers-sdk/blob/main/packages/miniflare/test/index.spec.ts
 
 describe("worker", () => {
-	/**
-	 * @type {Miniflare}
-	 */
 	let worker: Miniflare;
 
 	beforeEach(async () => {
