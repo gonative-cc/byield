@@ -101,9 +101,6 @@ importers:
       tailwindcss-animate:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@4.1.11)
-      types.ts:
-        specifier: link:server/BeelieversAuction/types.ts
-        version: link:server/BeelieversAuction/types.ts
     devDependencies:
       '@cloudflare/vite-plugin':
         specifier: ^1.10.1
