@@ -23,15 +23,11 @@ interface MyPositionProps {
 
 interface NewTotalBidAmountProps {
 	currentBidInMist: number;
-	entryPriceInMist: number;
+	entryBidMist: number;
 	additionalBidInSUI: string;
 }
 
-function NewTotalBidAmount({
-	currentBidInMist,
-	additionalBidInSUI,
-	entryPriceInMist,
-}: NewTotalBidAmountProps) {
+function NewTotalBidAmount({ currentBidInMist, additionalBidInSUI, entryBidMist }: NewTotalBidAmountProps) {
 	let newTotal = BigInt(currentBidInMist);
 	let moreBidNeeded = BigInt(0);
 
@@ -40,7 +36,7 @@ function NewTotalBidAmount({
 			const additionalAmount = parseSUI(additionalBidInSUI);
 			newTotal = BigInt(currentBidInMist) + additionalAmount;
 		}
-		const remaining = BigInt(entryPriceInMist) - newTotal;
+		const remaining = BigInt(entryBidMist) - newTotal;
 		moreBidNeeded = remaining > 0 ? remaining : BigInt(0);
 	} catch {
 		// any error
@@ -54,7 +50,9 @@ function NewTotalBidAmount({
 			</div>
 			{moreBidNeeded > 0 && (
 				<div className="flex justify-between items-center">
-					<span className="text-sm text-muted-foreground">More needed to beat highest bid:</span>
+					<span className="text-sm text-muted-foreground">
+						Bid above the Entry Price to get into the winning list:
+					</span>
 					<div className="text-lg font-semibold text-primary">{formatSUI(moreBidNeeded)} SUI</div>
 				</div>
 			)}
@@ -99,9 +97,10 @@ interface BeelieversBidForm {
 
 interface BeelieversBidProps {
 	user?: User;
+	entryBidMist: number;
 }
 
-export function BeelieversBid({ user }: BeelieversBidProps) {
+export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 	const { auctionBidApi } = useNetworkVariables();
 	const account = useCurrentAccount();
 	const suiBalanceRes = useCoinBalance();
@@ -167,8 +166,6 @@ export function BeelieversBid({ user }: BeelieversBidProps) {
 
 	const hasUserBidBefore = (user && user.amount !== 0) || false;
 	const bidInputInSUI = bidForm.watch("bid");
-	// TODO: get the highest bid
-	const entryPriceInMist = 10 * 1e9;
 
 	return (
 		<FormProvider {...bidForm}>
@@ -234,7 +231,7 @@ export function BeelieversBid({ user }: BeelieversBidProps) {
 										<NewTotalBidAmount
 											currentBidInMist={user?.amount || 0}
 											additionalBidInSUI={bidInputInSUI}
-											entryPriceInMist={entryPriceInMist}
+											entryBidMist={entryBidMist}
 										/>
 									)}
 								</div>
