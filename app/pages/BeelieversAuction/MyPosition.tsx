@@ -58,7 +58,7 @@ export function MyPosition({ user }: MyPositionProps) {
 										))
 									) : (
 										<span className="text-muted-foreground text-sm">
-											Bid to see the badges
+											You have no badges
 										</span>
 									)}
 								</div>
