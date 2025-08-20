@@ -11,7 +11,8 @@
 		"build": "react-router build",
 		"build:dev": "react-router build --mode dev",
 		"deploy": "pnpm run build --mode dev && wrangler deploy",
-		"deploy:prod": "pnpm run build && wrangler deploy -c ./wrangler-prod.jsonc",
+		"deploy:prod:legacy": "pnpm run build && wrangler deploy -c ./wrangler-prod.jsonc",
+		"deploy:prod": "pnpm run build && wrangler deploy -e prod ",
 		"deploy:prod:ver": "pnpm run build && wrangler versions upload -c ./wrangler-prod.jsonc",
 		"preview": "vite preview",
 		"preview:wrangler": "wrangler dev",
@@ -83,7 +84,7 @@
 		"jiti": "^2.5.1",
 		"jsdom": "^26.1.0",
 		"lint-staged": "^15.5.2",
-		"miniflare": "^4.20250813.1",
+		"miniflare": "^4.20250816.0",
 		"postcss": "^8.5.6",
 		"tailwindcss": "^4.1.11",
 		"typescript": "^5.8.3",
@@ -91,7 +92,7 @@
 		"vite": "^6.3.5",
 		"vite-tsconfig-paths": "^5.1.4",
 		"vitest": "^3.2.4",
-		"wrangler": "^4.29.0"
+		"wrangler": "^4.31.0"
 	},
 	"engines": {
 		"node": ">=22.0.0"

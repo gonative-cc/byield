@@ -78,7 +78,7 @@ export function BeelieversAuction({
 
 			{auctionState == AuctionState.STARTED && (
 				<div className="animate-in slide-in-from-right-4 duration-1000 delay-500 w-full flex justify-center">
-					<BeelieversBid user={user} />
+					<BeelieversBid user={user} entryBidMist={entryBidMist} />
 				</div>
 			)}
 
