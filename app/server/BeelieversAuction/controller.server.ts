@@ -10,8 +10,6 @@ import { fromBase64 } from "@mysten/utils";
 import { verifySignature } from "./auth";
 import { isProductionMode } from "~/lib/appenv";
 
-// TODO
-const maxAddrSize = 66;
 const maxTxIdSize = 44;
 
 export default class Controller {
@@ -95,7 +93,7 @@ export default class Controller {
 
 		try {
 			const txDigest = await verifySignature(userAddr, txBytes, signature);
-			if (txDigest.length > maxAddrSize) {
+			if (txDigest.length > maxTxIdSize) {
 				console.error("txDigest too long!", txDigest);
 				throw new Error("txDigest too long!");
 			}
