@@ -73,6 +73,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 function NativeApp({ children }: { children: React.ReactNode }) {
 	// TODO: remove this after auction. enforce network change
+	// TODO: use wallet API to switch the network
 	const [network, setNetwork] = useState<"testnet" | "mainnet">("testnet");
 	const location = useLocation();
 	const pathname = location.pathname;
