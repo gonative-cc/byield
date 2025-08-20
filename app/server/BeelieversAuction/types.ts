@@ -15,8 +15,8 @@ export interface AuctionDetails {
 
 export enum AuctionAccountType {
 	DEFAULT = 0,
-	PARTNER_WHITELIST = 1,
-	TESTNET_WHITELIST = 2,
+	PARTNER_WHITELIST = 2,
+	TESTNET_WHITELIST = 1,
 }
 
 interface User_ {
@@ -38,7 +38,7 @@ export interface Bidder extends User_ {
 export interface LoaderData {
 	details: AuctionDetails;
 	leaderboard: Bidder[];
-	user?: User;
+	user: User | null;
 }
 
 // TODO move to controller
