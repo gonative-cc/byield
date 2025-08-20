@@ -23,6 +23,7 @@ export function BuyNBTC() {
 	const transactionHistoryLink = `https://suiscan.xyz/testnet/account/${suiAddr}/tx-blocks`;
 
 	// TODO: remove this after auction. enforce network change
+	// TODO: use wallet API to switch the network
 	const isMainnet = network === "mainnet";
 	useEffect(() => {
 		if (isMainnet) {
