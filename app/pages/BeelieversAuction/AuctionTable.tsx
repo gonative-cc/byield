@@ -77,7 +77,7 @@ const createColumns = (): Column<Bidder>[] => [
 							<img
 								key={index}
 								src={badge.src}
-								alt={badge!.name}
+								alt={String(badge!.name)}
 								className={`bg-gray-400 w-8 h-8 hover:scale-110 transition-transform cursor-help`}
 							/>
 						))
