@@ -20,16 +20,14 @@ interface TxData {
 				sender: string;
 		  }[]
 		| null;
-};
+}
 
 interface SuiJsonRpcResponse {
 	jsonrpc: string;
 	id: number;
 	result?: TxData;
-};
+}
 
-//TODO: move it to env, or controller constructor
-const TRUSTED_PACKAGE_ID = "0xd5b24b83b168f8656aa7c05af1256e6115de1b80d97be0cddf19297a15535149";
 type TxCheckError = string;
 
 // Returns BidDetails on successful tx verification, or TxCheckError otherwise.
@@ -38,28 +36,22 @@ function processTransactionData(
 	suiTxId: string,
 	bidderAddr: string,
 	source: "Primary" | "Fallback",
-): BidDetails | TxCheckError {
+	trustedPackageId: string,
+): BidTxEvent | TxCheckError {
 	if (!data) {
-		console.error(`[${source}] Response did not contain a result object for tx: ${suiTxId}`);
-		return null;
+		return `[${source}] Response did not contain a result object for tx: ${suiTxId}`;
 	}
 
 	if (data.effects?.status?.status !== "success") {
-		console.error(
-			`[${source}] Transaction ${suiTxId} was not successful. Status:`,
-			data?.effects?.status,
-		);
-		return null;
+		const statusDetails = JSON.stringify(data.effects?.status, null, 2);
+		return `[${source}] Transaction ${suiTxId} was not successful. Status: ${statusDetails}`;
 	}
 
-	const expectedEventType = `${TRUSTED_PACKAGE_ID}::auction::BidEvent`;
+	const expectedEventType = `${trustedPackageId}::auction::BidEvent`;
 	const bidEvent = data?.events?.find((e) => e.type === expectedEventType);
 
 	if (!bidEvent) {
-		console.error(
-			`[${source}] Could not find BidEvent from package ${TRUSTED_PACKAGE_ID} in tx ${suiTxId}`,
-		);
-		return null;
+		return `[${source}] Could not find BidEvent from package ${trustedPackageId} in tx ${suiTxId}`;
 	}
 
 	const { auction_id, total_bid_amount } = bidEvent.parsedJson as {
@@ -69,10 +61,7 @@ function processTransactionData(
 	const sender = bidEvent.sender;
 
 	if (sender !== bidderAddr) {
-		console.warn(
-			`[${source}] Event sender ${sender} does not match provided bidder address ${bidderAddr} for tx ${suiTxId}.`,
-		);
-		return null;
+		return `[${source}] WARNING: Event sender ${sender} does not match provided bidder address ${bidderAddr} for tx ${suiTxId}.`;
 	}
 
 	console.log(`[${source}] Successfully validated tx ${suiTxId}`);
@@ -86,12 +75,11 @@ function processTransactionData(
 async function queryIndexerFallback(
 	suiTxId: string,
 	bidderAddr: string,
-): Promise<BidDetails | null> {
+	trustedPackageId: string,
+	indexerUrl: string,
+): Promise<BidTxEvent | TxCheckError> {
 	try {
 		console.log(`[Fallback] Querying public Suivision indexer for tx: ${suiTxId}`);
-		// TODO: move it to env, or controller constructor
-		const indexerUrl = "https://sui-testnet-endpoint.blockvision.org/";
-
 		const response = await fetch(indexerUrl, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
@@ -104,17 +92,22 @@ async function queryIndexerFallback(
 		});
 
 		if (!response.ok) {
-			console.error(
-				`[Fallback] Suivision API returned an error: ${response.status} ${response.statusText}`,
-			);
-			return null;
+			const errorText = await response.text();
+			return `[Fallback] Suivision API returned an error: ${response.status} ${response.statusText} - ${errorText}`;
 		}
 
-		const jsonResponse: JsonRpcResponse = await response.json();
-		return processTransactionData(jsonResponse.result, suiTxId, bidderAddr, "Fallback");
+		const jsonResponse: SuiJsonRpcResponse = await response.json();
+		return processTransactionData(
+			jsonResponse.result,
+			suiTxId,
+			bidderAddr,
+			"Fallback",
+			trustedPackageId,
+		);
 	} catch (error) {
-		console.error(`[Fallback] The indexer also failed for tx ${suiTxId}:`, error);
-		return null;
+		return `[Fallback] The indexer also failed for tx ${suiTxId}: ${
+			error instanceof Error ? error.message : String(error)
+		}`;
 	}
 }
 
@@ -122,7 +115,9 @@ export async function validateBidTransaction(
 	suiClient: SuiClient,
 	suiTxId: string,
 	bidderAddr: string,
-): Promise<BidDetails | TxCheckError> {
+	trustedPackageId: string,
+	indexerURL: string,
+): Promise<BidTxEvent | TxCheckError> {
 	try {
 		console.log(`[Primary] Querying Sui RPC for tx: ${suiTxId}`);
 		const tx: SuiTransactionBlockResponse = await suiClient.getTransactionBlock({
@@ -133,10 +128,10 @@ export async function validateBidTransaction(
 			},
 		});
 
-		return processTransactionData(tx, suiTxId, bidderAddr, "Primary");
+		return processTransactionData(tx, suiTxId, bidderAddr, "Primary", trustedPackageId);
 	} catch (error) {
 		console.error(`[Primary] Error querying Sui RPC for tx ${suiTxId}:`, error);
 		console.log("[Primary] RPC failed. Attempting to use fallback indexer...");
-		return queryIndexerFallback(suiTxId, bidderAddr);
+		return queryIndexerFallback(suiTxId, bidderAddr, trustedPackageId, indexerURL);
 	}
 }
