@@ -3,12 +3,8 @@ import { Miniflare } from "miniflare";
 
 import { Auction } from "./auction.server";
 
-interface TestContext {
-	auction: Auction;
-}
-
 describe("Auction Class with Tuple Error Handling", () => {
-	let worker;
+	let worker: Miniflare;
 	let auction: Auction;
 
 	const timeBefore = new Date("2024-08-18T17:00:00");
@@ -142,9 +138,9 @@ describe("Auction Class with Tuple Error Handling", () => {
 				totalBids: 3,
 				uniqueBidders: 3,
 				topTenBids: [
-					{ amount: 700, bidder: "bob" },
-					{ amount: 600, bidder: "alice" },
-					{ amount: 500, bidder: "charl" },
+					{ rank: 1, amount: 700, bidder: "bob" },
+					{ rank: 2, amount: 600, bidder: "alice" },
+					{ rank: 3, amount: 500, bidder: "charl" },
 				],
 			});
 
@@ -165,7 +161,7 @@ describe("Auction Class with Tuple Error Handling", () => {
 			expect(res).toEqual({ oldRank: 2, newRank: 2 });
 
 			// 4. A few more bids
-			expect(auction.auctionSize).toBe(4);
+			expect(auction.size).toBe(4);
 			[res, err] = await auction.bid(users.dylan, 310); // highest that didn't make it -> clearing price
 			expect(res).toEqual({ oldRank: null, newRank: 4 });
 			[res, err] = await auction.bid(users.eve, 320);
@@ -189,12 +185,12 @@ describe("Auction Class with Tuple Error Handling", () => {
 				totalBids: 9,
 				uniqueBidders: 6,
 				topTenBids: [
-					{ amount: 800, bidder: "charl" },
-					{ amount: 750, bidder: "bob" },
-					{ amount: 600, bidder: "alice" },
-					{ amount: 320, bidder: "eve" },
-					{ amount: 310, bidder: "dylan" },
-					{ amount: 300, bidder: "felix" },
+					{ rank: 1, amount: 800, bidder: "charl" },
+					{ rank: 2, amount: 750, bidder: "bob" },
+					{ rank: 3, amount: 600, bidder: "alice" },
+					{ rank: 4, amount: 320, bidder: "eve" },
+					{ rank: 5, amount: 310, bidder: "dylan" },
+					{ rank: 6, amount: 300, bidder: "felix" },
 				],
 			});
 		});

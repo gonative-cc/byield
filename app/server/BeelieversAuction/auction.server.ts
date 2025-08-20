@@ -22,7 +22,7 @@ export interface AuctionTopStats {
 export interface AuctionStats extends AuctionTopStats {
 	totalBids: number;
 	uniqueBidders: number;
-	topTenBids: Omit<LeaderboardEntry, "rank">[];
+	topTenBids: LeaderboardEntry[];
 }
 
 // --- The Auction Class for Cloudflare D1 ---
@@ -30,7 +30,7 @@ export class Auction {
 	db: D1Database;
 	startDate: Date;
 	endDate: Date;
-	auctionSize: number;
+	size: number;
 	minimumBid: number;
 
 	constructor(
@@ -43,7 +43,7 @@ export class Auction {
 		this.db = db;
 		this.startDate = startDate;
 		this.endDate = endDate;
-		this.auctionSize = auctionSize;
+		this.size = auctionSize;
 		this.minimumBid = minimumBid;
 	}
 
@@ -196,7 +196,7 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 		return {
 			totalBids: statsRow.total_bids,
 			uniqueBidders: statsRow.unique_bidders,
-			topTenBids: topBids.map(({ rank, ...rest }) => rest),
+			topTenBids: topBids,
 		};
 	}
 
@@ -205,7 +205,7 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 			.prepare(
 				`SELECT amount FROM bids WHERE amount > 0 ORDER BY amount DESC, timestamp ASC LIMIT 1 OFFSET ?`,
 			)
-			.bind(this.auctionSize)
+			.bind(this.size)
 			.first<{ amount: number }>();
 		return result?.amount ?? this.minimumBid;
 	}
