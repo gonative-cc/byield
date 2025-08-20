@@ -1,32 +1,26 @@
-// --- Type Definitions ---
+import type { Bidder, User } from "./types";
+
 export interface BidResult {
 	newRank: number | null;
 	oldRank: number | null;
 }
-export interface BidderStatus {
-	rank: number;
-	bid: number; // The effective (boosted) bid amount
-	typ: number;
-	msg: string;
-}
+
 export interface LeaderboardDBEntry {
 	bidder: string;
 	amount: number; // Effective amount
 	badges: string;
+	note: string;
 }
-export interface LeaderboardEntry extends Omit<LeaderboardDBEntry, "badges"> {
-	badges: number[];
-}
-export interface AuctionTopStats {
+
+export interface AuctionAggStats {
 	totalBids: number;
 	uniqueBidders: number;
 }
 
-export interface AuctionStats extends AuctionTopStats {
-	topTenBids: LeaderboardEntry[];
+export interface AuctionStats extends AuctionAggStats {
+	topBids: Bidder[];
 }
 
-// --- The Auction Class for Cloudflare D1 ---
 export class Auction {
 	db: D1Database;
 	startDate: Date;
@@ -56,8 +50,8 @@ export class Auction {
 bidder TEXT PRIMARY KEY,
 amount INTEGER NOT NULL,
 timestamp INTEGER NOT NULL,
-typ INTEGER NOT NULL DEFAULT 0,
-msg TEXT,
+wlStatus INTEGER NOT NULL DEFAULT 0,
+note TEXT,
 badges TEXT DEFAULT "[]");
 
 CREATE INDEX IF NOT EXISTS idx_bids_ranking ON bids(amount DESC, timestamp ASC);
@@ -77,15 +71,6 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 	//
 	// ---------------------
 
-	public async setBidderType(bidder: string, typ: number): Promise<void> {
-		await this.db
-			.prepare(
-				`INSERT INTO bids (bidder, amount, timestamp, typ, msg) VALUES (?, 0, ?, ?, '') ON CONFLICT(bidder) DO UPDATE SET typ = excluded.typ`,
-			)
-			.bind(bidder, Date.now(), typ)
-			.run();
-	}
-
 	/**
 	 * Places or updates a bid. Returns a [result, error] tuple instead of throwing.
 	 * @returns A Promise resolving to a tuple: [BidResult | null, Error | null].
@@ -93,7 +78,7 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 	public async bid(
 		bidder: string,
 		amount: number,
-		msg: string = "",
+		note: string = "",
 	): Promise<[BidResult | null, Error | null]> {
 		try {
 			const now = new Date();
@@ -104,16 +89,17 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 				return [null, new Error("Auction has already ended.")];
 			}
 
-			const initialStatus = await this.queryBidder(bidder);
-			const oldRank = initialStatus?.rank ?? null;
-			const typToUse = initialStatus?.typ ?? 0;
+			const prevBid = await this.queryBidder(bidder);
+			const oldRank = prevBid?.rank ?? null;
 
 			if (!Number.isInteger(amount) || amount <= 0) {
 				return [null, new Error("Bid amount must be a positive integer.")];
 			}
 
-			const effectiveAmount = typToUse === 2 ? Math.floor(amount * 1.05) : amount;
-			const currentEffectiveBid = initialStatus?.bid ?? 0;
+			// apply boost
+			const effectiveAmount =
+				(prevBid?.wlStatus ?? 0) > 0 ? Math.floor(amount * 1.05) : amount;
+			const currentEffectiveBid = prevBid?.amount ?? 0;
 
 			if (effectiveAmount <= currentEffectiveBid) {
 				return [
@@ -123,20 +109,21 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 					),
 				];
 			}
-			if (!initialStatus && amount < this.minimumBid) {
+			if (!prevBid && amount < this.minimumBid) {
 				return [null, new Error(`Minimum first bid is ${this.minimumBid}.`)];
 			}
 
 			// --- DATABASE TRANSACTION ---
-			const trimmedMsg = msg.substring(0, 30);
-			const isNewTrueBidder = initialStatus === null || initialStatus.bid === 0;
+			const trimmedNote = note.substring(0, 30);
+			const isNewTrueBidder = prevBid === null || prevBid.amount === 0;
 
+			// TODO: note should be prevoious one if not set
 			const statements = [
 				this.db
 					.prepare(
-						`INSERT INTO bids (bidder, amount, timestamp, typ, msg) VALUES (?, ?, ?, ?, ?) ON CONFLICT(bidder) DO UPDATE SET amount = excluded.amount, timestamp = excluded.timestamp, msg = excluded.msg`,
+						`INSERT INTO bids (bidder, amount, timestamp, note) VALUES (?, ?, ?, ?) ON CONFLICT(bidder) DO UPDATE SET amount = excluded.amount, timestamp = excluded.timestamp, note = excluded.note`,
 					)
-					.bind(bidder, effectiveAmount, now.getTime(), typToUse, trimmedMsg),
+					.bind(bidder, effectiveAmount, now.getTime(), trimmedNote),
 				this.db
 					.prepare(
 						`UPDATE stats SET totalBids = totalBids + 1, uniqueBidders = uniqueBidders + ? WHERE key = 'auction_stats'`,
@@ -158,31 +145,32 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 		}
 	}
 
-	public async queryBidder(bidder: string): Promise<BidderStatus | null> {
+	public async queryBidder(bidder: string): Promise<User | null> {
 		const stmt = this.db.prepare(
-			`WITH ranked_bids AS (SELECT bidder, amount, typ, msg, RANK() OVER (ORDER BY amount DESC, timestamp ASC) as rank FROM bids WHERE amount > 0)
-SELECT rank, amount as bid, typ, msg FROM ranked_bids WHERE bidder = ?`,
+			`WITH ranked_bids AS (SELECT bidder, amount, wlStatus, note, badges, RANK() OVER (ORDER BY amount DESC, timestamp ASC) as rank FROM bids WHERE amount > 0)
+SELECT rank, amount, badges, note FROM ranked_bids WHERE bidder = ?`,
 		);
-		return await stmt.bind(bidder).first<BidderStatus>();
+		return await stmt.bind(bidder).first<User>();
 	}
 
-	public async queryTopLeaderboard(): Promise<LeaderboardEntry[]> {
+	public async queryTopLeaderboard(): Promise<Bidder[]> {
 		const stmt = this.db.prepare(
-			`SELECT bidder, amount, badges FROM bids WHERE amount > 0 ORDER BY amount DESC, timestamp ASC LIMIT 10`,
+			`SELECT bidder, amount, badges, note FROM bids WHERE amount > 0 ORDER BY amount DESC, timestamp ASC LIMIT 10`,
 		);
 		const { results } = await stmt.all<LeaderboardDBEntry>();
-		return results.map(({ bidder, amount, badges }, index) => ({
+		return results.map(({ bidder, amount, badges, note }, index) => ({
 			rank: index + 1,
 			bidder,
 			amount,
+			note,
 			badges: JSON.parse(badges),
 		}));
 	}
 
-	public async getAuctionTopStats(): Promise<AuctionTopStats> {
+	public async getAuctionTopStats(): Promise<AuctionAggStats> {
 		const row = await this.db
 			.prepare(`SELECT totalBids, uniqueBidders FROM stats WHERE key = 'auction_stats'`)
-			.first<AuctionTopStats>();
+			.first<AuctionAggStats>();
 		if (!row) throw new Error("Statistics table not initialized.");
 		return row;
 	}
@@ -192,7 +180,7 @@ SELECT rank, amount as bid, typ, msg FROM ranked_bids WHERE bidder = ?`,
 		const topBids = await this.queryTopLeaderboard();
 		if (!row) throw new Error("Statistics table not initialized.");
 
-		row.topTenBids = topBids;
+		row.topBids = topBids;
 		return row;
 	}
 

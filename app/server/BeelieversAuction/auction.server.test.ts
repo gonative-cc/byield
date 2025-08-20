@@ -93,6 +93,9 @@ describe("Auction Class with Tuple Error Handling", () => {
 			expect(res).toBeDefined();
 			expect(err).toBeNull();
 
+			const bidder = await auction.queryBidder(alice);
+			expect(bidder).toEqual({ amount: firstBid, badges: "[]", note: "", rank: 1 });
+
 			[res, err] = await auction.bid(alice, firstBid);
 			expect(err).toBeInstanceOf(Error);
 			expect(err?.message).toContain("must be greater than current effective bid");
@@ -109,6 +112,8 @@ describe("Auction Class with Tuple Error Handling", () => {
 			expect(result).toBeNull();
 			expect(error).toBeInstanceOf(Error);
 			expect(error?.message).toBe("Auction has not started yet.");
+			const bidder = await auction.queryBidder(alice);
+			expect(bidder).toBeNull();
 		});
 
 		test("error: auction has ended", async () => {
@@ -135,10 +140,16 @@ describe("Auction Class with Tuple Error Handling", () => {
 			expect(stats).toEqual({
 				totalBids: 3,
 				uniqueBidders: 3,
-				topTenBids: [
-					{ rank: 1, amount: 700, bidder: "bob", badges: [] },
-					{ rank: 2, amount: 600, bidder: "alice", badges: [] },
-					{ rank: 3, amount: 500, bidder: "charl", badges: [] },
+				topBids: [
+					{ rank: 1, amount: 700, bidder: "bob", badges: [], note: "" },
+					{
+						rank: 2,
+						amount: 600,
+						bidder: "alice",
+						badges: [],
+						note: "Going for the win!",
+					},
+					{ rank: 3, amount: 500, bidder: "charl", badges: [], note: "" },
 				],
 			});
 
@@ -182,13 +193,19 @@ describe("Auction Class with Tuple Error Handling", () => {
 			expect(stats).toEqual({
 				totalBids: 9,
 				uniqueBidders: 6,
-				topTenBids: [
-					{ rank: 1, amount: 800, bidder: "charl", badges: [] },
-					{ rank: 2, amount: 750, bidder: "bob", badges: [] },
-					{ rank: 3, amount: 600, bidder: "alice", badges: [] },
-					{ rank: 4, amount: 320, bidder: "eve", badges: [] },
-					{ rank: 5, amount: 310, bidder: "dylan", badges: [] },
-					{ rank: 6, amount: 300, bidder: "felix", badges: [] },
+				topBids: [
+					{ rank: 1, amount: 800, bidder: "charl", badges: [], note: "" },
+					{ rank: 2, amount: 750, bidder: "bob", badges: [], note: "" },
+					{
+						rank: 3,
+						amount: 600,
+						bidder: "alice",
+						badges: [],
+						note: "Going for the win!",
+					},
+					{ rank: 4, amount: 320, bidder: "eve", badges: [], note: "" },
+					{ rank: 5, amount: 310, bidder: "dylan", badges: [], note: "" },
+					{ rank: 6, amount: 300, bidder: "felix", badges: [], note: "" },
 				],
 			});
 		});
