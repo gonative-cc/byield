@@ -35,7 +35,7 @@ describe("worker", () => {
 
 		// we can use worker.getKVNamespace("KV2") or bindings.KV2
 		// let kv = await worker.getKVNamespace("KV2");
-		let kv = bindings.KV2 as KVNamespace;
+		const kv = bindings.KV2 as KVNamespace;
 		await kv.put("key", "value");
 		expect(await kv.get("key")).toEqual("value");
 	});
