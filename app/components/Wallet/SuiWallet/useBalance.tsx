@@ -18,6 +18,7 @@ export function useCoinBalance(coinAddr?: string): UseCoinBalanceResult {
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [error, setError] = useState<Error | null>(null);
 
+	// callback restricts re-creation of the function again if dependency has not changed
 	const fetchBalance = useCallback(async () => {
 		if (!account?.address) {
 			setBalance(null);
