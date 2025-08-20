@@ -1,4 +1,4 @@
-import type { Bidder } from "./types";
+import { Badge, type Bidder } from "./types";
 
 // TODO: leader board API integration
 const MOCK_LEADER_BOARD_DATA: Bidder[] = [
@@ -6,7 +6,7 @@ const MOCK_LEADER_BOARD_DATA: Bidder[] = [
 		rank: 1,
 		bidder: "0xe670405731f97182a4e5056b63385ddd6f7929dfa1a64f82c5f0bdd780dc79f4",
 		amount: 100, // Highest bid - will get "highest single bid" badge
-		badges: ["first_place", "highest_bid"],
+		badges: [Badge.first_place, Badge.highest_bid],
 		note: "",
 	},
 	{
