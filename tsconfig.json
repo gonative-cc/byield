@@ -10,10 +10,6 @@
 		"skipLibCheck": true,
 		"strict": true,
 		"noEmit": true,
-		"types": [
-			"./worker-configuration.d.ts",
-			"vitest/globals",
-			"@testing-library/jest-dom"
-		]
+		"types": ["vitest/globals", "@testing-library/jest-dom"]
 	}
 }
