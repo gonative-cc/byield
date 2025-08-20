@@ -3,6 +3,7 @@ import type { LoaderDataResp, AuctionDetails, User } from "./types";
 import type { Req } from "./jsonrpc";
 import { defaultAuctionDetails, defaultUser } from "./defaults";
 import { isValidSuiAddress } from "@mysten/sui/utils";
+import { verifySuiSignature, createSessionToken } from "./auth.server";
 
 import { fromBase64 } from "@mysten/utils";
 import { verifySignature } from "./auth";
@@ -49,6 +50,10 @@ export default class Controller {
 				const [suiAddr] = reqData.params;
 				return this.loadPageData(suiAddr);
 			}
+			case "login": {
+				const [address, signature, message] = reqData.params;
+				return this.handleLogin(address, signature, message);
+			}
 			default:
 				return new Response("Unknown method", { status: 404 });
 		}
@@ -83,5 +88,32 @@ export default class Controller {
 			return defaultUser();
 		}
 		return JSON.parse(userJson) as User;
+	}
+
+	async handleLogin(address: string, signature: string, message: string) {
+		if (!isValidSuiAddress(address)) {
+			const body = JSON.stringify({ error: "Invalid address" });
+			return new Response(body, {
+				status: 400,
+				headers: { "Content-Type": "application/json" },
+			});
+		}
+
+		const isVerified = await verifySuiSignature(address, signature, message);
+
+		if (!isVerified) {
+			const body = JSON.stringify({ error: "Signature verification failed" });
+			return new Response(body, {
+				status: 401,
+				headers: { "Content-Type": "application/json" },
+			});
+		}
+
+		const token = await createSessionToken(address);
+		const body = JSON.stringify({ token });
+		return new Response(body, {
+			status: 200,
+			headers: { "Content-Type": "application/json" },
+		});
 	}
 }
