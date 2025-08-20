@@ -2,8 +2,9 @@ import { describe } from "vitest";
 import { expect, test } from "vitest";
 import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
 import { Transaction } from "@mysten/sui/transactions";
-import { verifySignature } from "~/server/BeelieversAuction/auth";
 import { toBase58 } from "@mysten/utils";
+
+import { verifySignature } from "~/server/BeelieversAuction/auth";
 
 describe("authentication testcases", () => {
 	test("signature verification happy cases", async () => {
@@ -34,9 +35,9 @@ describe("authentication testcases", () => {
 
 		const { signature } = await keypair.signTransaction(txBytes);
 
-		expect(verifySignature(keypair.toSuiAddress(), txBytes, signature)).resolves.toStrictEqual(
-			await tx.getDigest(),
-		);
+		await expect(
+			verifySignature(keypair.toSuiAddress(), txBytes, signature),
+		).resolves.toStrictEqual(await tx.getDigest());
 	});
 
 	test("signature verification failed cases", async () => {
