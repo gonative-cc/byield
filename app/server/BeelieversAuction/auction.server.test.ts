@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeEach, afterEach, vi } from "vitest";
+import { describe, test, expect, beforeEach, afterEach, vi, beforeAll, afterAll } from "vitest";
 import { Miniflare } from "miniflare";
 
 import { Auction } from "./auction.server";
@@ -24,14 +24,7 @@ describe("Auction Class with Tuple Error Handling", () => {
 		felix: "felix",
 	};
 
-	beforeEach(() => {
-		vi.useFakeTimers();
-	});
-	afterEach(() => {
-		vi.useRealTimers();
-	});
-
-	beforeEach(async () => {
+	beforeAll(async () => {
 		worker = new Miniflare({
 			modules: true,
 			script: "",
@@ -42,7 +35,13 @@ describe("Auction Class with Tuple Error Handling", () => {
 			cachePersist: false,
 		});
 		await worker.ready;
+	});
+	afterAll(async () => {
+		worker.dispose();
+	});
 
+	beforeEach(async () => {
+		vi.useFakeTimers();
 		const db = await worker.getD1Database("DB");
 		await db.exec("DROP TABLE IF EXISTS bids; DROP TABLE IF EXISTS stats;");
 
@@ -52,9 +51,8 @@ describe("Auction Class with Tuple Error Handling", () => {
 		auction = new Auction(db, timeStart, timeEnd, auctionSize, minBid);
 		await auction.initialize();
 	});
-
-	afterEach(async () => {
-		worker.dispose();
+	afterEach(() => {
+		vi.useRealTimers();
 	});
 
 	describe("Initialization", () => {

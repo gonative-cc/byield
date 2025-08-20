@@ -20,8 +20,6 @@ export interface AuctionTopStats {
 }
 
 export interface AuctionStats extends AuctionTopStats {
-	totalBids: number;
-	uniqueBidders: number;
 	topTenBids: LeaderboardEntry[];
 }
 
