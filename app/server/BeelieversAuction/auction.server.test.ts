@@ -136,9 +136,9 @@ describe("Auction Class with Tuple Error Handling", () => {
 				totalBids: 3,
 				uniqueBidders: 3,
 				topTenBids: [
-					{ rank: 1, amount: 700, bidder: "bob" },
-					{ rank: 2, amount: 600, bidder: "alice" },
-					{ rank: 3, amount: 500, bidder: "charl" },
+					{ rank: 1, amount: 700, bidder: "bob", badges: [] },
+					{ rank: 2, amount: 600, bidder: "alice", badges: [] },
+					{ rank: 3, amount: 500, bidder: "charl", badges: [] },
 				],
 			});
 
@@ -183,12 +183,12 @@ describe("Auction Class with Tuple Error Handling", () => {
 				totalBids: 9,
 				uniqueBidders: 6,
 				topTenBids: [
-					{ rank: 1, amount: 800, bidder: "charl" },
-					{ rank: 2, amount: 750, bidder: "bob" },
-					{ rank: 3, amount: 600, bidder: "alice" },
-					{ rank: 4, amount: 320, bidder: "eve" },
-					{ rank: 5, amount: 310, bidder: "dylan" },
-					{ rank: 6, amount: 300, bidder: "felix" },
+					{ rank: 1, amount: 800, bidder: "charl", badges: [] },
+					{ rank: 2, amount: 750, bidder: "bob", badges: [] },
+					{ rank: 3, amount: 600, bidder: "alice", badges: [] },
+					{ rank: 4, amount: 320, bidder: "eve", badges: [] },
+					{ rank: 5, amount: 310, bidder: "dylan", badges: [] },
+					{ rank: 6, amount: 300, bidder: "felix", badges: [] },
 				],
 			});
 		});

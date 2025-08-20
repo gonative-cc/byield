@@ -4,6 +4,7 @@ import { isProductionMode } from "~/lib/appenv";
 
 export function defaultAuctionDetails(): AuctionDetails {
 	console.log(">>> IN TESTING", isProductionMode());
+	// TODO: testnet
 	if (!isProductionMode()) {
 		return testAuctionDetails();
 	}
@@ -19,7 +20,7 @@ export function defaultAuctionDetails(): AuctionDetails {
 }
 
 function testAuctionDetails(): AuctionDetails {
-	const startsAt = +new Date("2025-08-19T08:00");
+	const startsAt = +new Date("2025-08-21T08:00");
 	return {
 		uniqueBidders: 600,
 		totalBids: 1250,

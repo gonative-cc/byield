@@ -9,10 +9,13 @@ export interface BidderStatus {
 	typ: number;
 	msg: string;
 }
-export interface LeaderboardEntry {
-	rank: number;
+export interface LeaderboardDBEntry {
 	bidder: string;
 	amount: number; // Effective amount
+	badges: string;
+}
+export interface LeaderboardEntry extends Omit<LeaderboardDBEntry, "badges"> {
+	badges: number[];
 }
 export interface AuctionTopStats {
 	totalBids: number;
@@ -52,7 +55,9 @@ export class Auction {
 bidder TEXT PRIMARY KEY,
 amount INTEGER NOT NULL,
 timestamp INTEGER NOT NULL,
-typ INTEGER NOT NULL DEFAULT 0, msg TEXT);
+typ INTEGER NOT NULL DEFAULT 0,
+msg TEXT,
+badges TEXT DEFAULT "[]");
 
 CREATE INDEX IF NOT EXISTS idx_bids_ranking ON bids(amount DESC, timestamp ASC);
 `,
@@ -161,17 +166,23 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 
 	public async queryBidder(bidder: string): Promise<BidderStatus | null> {
 		const stmt = this.db.prepare(
-			`WITH ranked_bids AS (SELECT bidder, amount, typ, msg, RANK() OVER (ORDER BY amount DESC, timestamp ASC) as rank FROM bids WHERE amount > 0) SELECT rank, amount as bid, typ, msg FROM ranked_bids WHERE bidder = ?`,
+			`WITH ranked_bids AS (SELECT bidder, amount, typ, msg, RANK() OVER (ORDER BY amount DESC, timestamp ASC) as rank FROM bids WHERE amount > 0)
+SELECT rank, amount as bid, typ, msg FROM ranked_bids WHERE bidder = ?`,
 		);
 		return await stmt.bind(bidder).first<BidderStatus>();
 	}
 
 	public async queryTopLeaderboard(): Promise<LeaderboardEntry[]> {
 		const stmt = this.db.prepare(
-			`SELECT bidder, amount FROM bids WHERE amount > 0 ORDER BY amount DESC, timestamp ASC LIMIT 10`,
+			`SELECT bidder, amount, badges FROM bids WHERE amount > 0 ORDER BY amount DESC, timestamp ASC LIMIT 10`,
 		);
-		const { results } = await stmt.all<Omit<LeaderboardEntry, "rank">>();
-		return results.map((row, index) => ({ rank: index + 1, ...row }));
+		const { results } = await stmt.all<LeaderboardDBEntry>();
+		return results.map(({ bidder, amount, badges }, index) => ({
+			rank: index + 1,
+			bidder,
+			amount,
+			badges: JSON.parse(badges),
+		}));
 	}
 
 	public async getAuctionTopStats(): Promise<AuctionTopStats> {
