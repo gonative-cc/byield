@@ -60,24 +60,17 @@ msg TEXT,
 badges TEXT DEFAULT "[]");
 
 CREATE INDEX IF NOT EXISTS idx_bids_ranking ON bids(amount DESC, timestamp ASC);
-`,
-			),
-			// this.db.prepare(
-			// 	`CREATE INDEX IF NOT EXISTS idx_bids_ranking ON bids(amount DESC, timestamp ASC);`,
-			// ),
-			this.db.prepare(
-				`CREATE TABLE IF NOT EXISTS stats (
+
+CREATE TABLE IF NOT EXISTS stats (
 key TEXT PRIMARY KEY DEFAULT 'auction_stats',
-total_bids INTEGER NOT NULL DEFAULT 0,
-unique_bidders INTEGER NOT NULL DEFAULT 0);
+totalBids INTEGER NOT NULL DEFAULT 0,
+uniqueBidders INTEGER NOT NULL DEFAULT 0);
 
 INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 `,
 			),
 		];
 		await this.db.batch(statements);
-
-		//await this.db.exec(`..`);
 	}
 
 	//
@@ -145,7 +138,7 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 					.bind(bidder, effectiveAmount, now.getTime(), typToUse, trimmedMsg),
 				this.db
 					.prepare(
-						`UPDATE stats SET total_bids = total_bids + 1, unique_bidders = unique_bidders + ? WHERE key = 'auction_stats'`,
+						`UPDATE stats SET totalBids = totalBids + 1, uniqueBidders = uniqueBidders + ? WHERE key = 'auction_stats'`,
 					)
 					.bind(isNewTrueBidder ? 1 : 0),
 			];
@@ -186,27 +179,20 @@ SELECT rank, amount as bid, typ, msg FROM ranked_bids WHERE bidder = ?`,
 	}
 
 	public async getAuctionTopStats(): Promise<AuctionTopStats> {
-		const statsRow = await this.db
-			.prepare(`SELECT total_bids, unique_bidders FROM stats WHERE key = 'auction_stats'`)
-			.first<{ total_bids: number; unique_bidders: number }>();
-		if (!statsRow) throw new Error("Statistics table not initialized.");
-		return {
-			totalBids: statsRow.total_bids,
-			uniqueBidders: statsRow.unique_bidders,
-		};
+		const row = await this.db
+			.prepare(`SELECT totalBids, uniqueBidders FROM stats WHERE key = 'auction_stats'`)
+			.first<AuctionTopStats>();
+		if (!row) throw new Error("Statistics table not initialized.");
+		return row;
 	}
 
 	public async getStats(): Promise<AuctionStats> {
-		const statsRow = await this.db
-			.prepare(`SELECT total_bids, unique_bidders FROM stats WHERE key = 'auction_stats'`)
-			.first<{ total_bids: number; unique_bidders: number }>();
+		const row = (await this.getAuctionTopStats()) as AuctionStats;
 		const topBids = await this.queryTopLeaderboard();
-		if (!statsRow) throw new Error("Statistics table not initialized.");
-		return {
-			totalBids: statsRow.total_bids,
-			uniqueBidders: statsRow.unique_bidders,
-			topTenBids: topBids,
-		};
+		if (!row) throw new Error("Statistics table not initialized.");
+
+		row.topTenBids = topBids;
+		return row;
 	}
 
 	public async getClearingPrice(): Promise<number> {
