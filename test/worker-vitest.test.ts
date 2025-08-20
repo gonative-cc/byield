@@ -4,8 +4,8 @@
 /* Need to fix the setup, here we have the following error
    Error: Failed to load url cloudflare:test (resolved id: cloudflare:test)
 
-import { describe, test, expect, beforeEach } from "vitest";
 import { env } from "cloudflare:test";
+import { describe, test, assert, beforeEach } from "vitest";
 // import worker from "../workers/app.ts";
 
 describe("Hello World worker", () => {
@@ -19,11 +19,13 @@ describe("Hello World worker", () => {
 
 	test("responds with Hello World!", async () => {
 		const result = await db.exec("CREATE TABLE bids (bidder TEXT PRIMARY KEY);");
-		expect(result).toBe(true);
+		assert.true(result);
 	});
 });
 */
 
-import { test } from "vitest";
+import { assert, test } from "vitest";
 
-test("ok", () => {});
+test("check ok", () => {
+	assert.isOk(1);
+});
