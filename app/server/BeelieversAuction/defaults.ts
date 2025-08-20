@@ -3,12 +3,10 @@ import { AuctionAccountType, Badge, type AuctionDetails, type User } from "./typ
 import { isProductionMode } from "~/lib/appenv";
 
 export function defaultAuctionDetails(): AuctionDetails {
-	console.log(">>> IN TESTING", isProductionMode());
-	// TODO: testnet
 	if (!isProductionMode()) {
 		return testAuctionDetails();
 	}
-	const startsAt = +new Date("2025-08-19T15:00");
+	const startsAt = +new Date("2025-08-21T13:00:00Z");
 	return {
 		uniqueBidders: 0,
 		totalBids: 0,
@@ -20,12 +18,12 @@ export function defaultAuctionDetails(): AuctionDetails {
 }
 
 function testAuctionDetails(): AuctionDetails {
-	const startsAt = +new Date("2025-08-21T08:00");
+	const startsAt = +new Date("2025-08-20T11:00");
 	return {
 		uniqueBidders: 600,
 		totalBids: 1250,
 		highestBidMist: 30e9,
-		entryBidMist: 2e9,
+		entryBidMist: 1e7, // 0.01 SUI
 		startsAt,
 		endsAt: startsAt + 24 * 3600_000,
 	};

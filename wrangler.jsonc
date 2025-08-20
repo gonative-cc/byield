@@ -69,13 +69,12 @@
 			"route": "byield.gonative.cc",
 			"minify": true,
 			"upload_source_maps": false,
-			// we will need KV for session management only
-			// "kv_namespaces": [
-			// 	{
-			// 		"binding": "BeelieversNFT",
-			// 		"id": "TODO"
-			// 	}
-			// ],
+			"kv_namespaces": [
+				{
+					"binding": "BeelieversNFT",
+					"id": "fbf4b21d53784b3881d4b7e1503df23e",
+				},
+			],
 			"d1_databases": [
 				{
 					"binding": "BeelieversD1",

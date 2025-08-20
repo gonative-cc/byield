@@ -8,12 +8,16 @@ import { validateBidTransaction, type BidTxEvent } from "./auth.server";
 
 import { fromBase64 } from "@mysten/utils";
 import { verifySignature } from "./auth";
+import { isProductionMode } from "~/lib/appenv";
+
+// TODO
+const maxAddrSize = 66;
+const maxTxIdSize = 44;
 
 export default class Controller {
 	kv: KVNamespace;
-	kvKeyDetails = "details";
-	kvKeyLeaderboard = "lead";
-	kvKeyUserPrefix = "u_";
+	kvKeyTx = "details";
+
 	suiClient: SuiClient;
 	trustedPackageId: string;
 	fallbackIndexerUrl: string;
@@ -34,7 +38,6 @@ export default class Controller {
 	}
 
 	async loadPageData(userAddr?: string): Promise<LoaderDataResp> {
-		// TODO: add user data if a use is connected
 		const user = userAddr !== undefined ? await this.getUserData(userAddr) : undefined;
 
 		return {
@@ -66,18 +69,17 @@ export default class Controller {
 				return this.loadPageData(suiAddr);
 			}
 			default:
-				return new Response("Unknown method", { status: 404 });
+				return responseNotFound("Unknown method");
 		}
 	}
 
 	async getAuctionDetails(): Promise<AuctionDetails> {
-		const detailsJson = await this.kv.get(this.kvKeyDetails);
-		if (detailsJson !== null) {
-			return JSON.parse(detailsJson) as AuctionDetails;
-		}
-		const details = defaultAuctionDetails();
-		await this.kv.put(this.kvKeyDetails, JSON.stringify(details));
-		return details;
+		return defaultAuctionDetails();
+
+		// const detailsJson = await this.kv.get(this.kvKeyDetails);
+		// if (detailsJson !== null) {
+		// 	return JSON.parse(detailsJson) as AuctionDetails;
+		// }
 	}
 
 	async postBidTx(
@@ -85,15 +87,18 @@ export default class Controller {
 		txBytes: Uint8Array,
 		signature: string,
 		userMessage: string,
-	): Promise<BidTxEvent | null> {
+	): Promise<BidTxEvent | Response> {
+		// TODO production
+		if (isProductionMode()) {
+			return responseNotImplemented();
+		}
+
 		try {
-			// TODO authentication
-			// TODO: Vu - could you check up if we pass the full signed TX, and user address, can we
-			// verify if the given address signed TX? If yes, then we sole authentication
-
-			// throw error if signature in valid from userAddr
-
 			const txDigest = await verifySignature(userAddr, txBytes, signature);
+			if (txDigest.length > maxAddrSize) {
+				console.error("txDigest too long!", txDigest);
+				throw new Error("txDigest too long!");
+			}
 			const validationResult = await validateBidTransaction(
 				this.suiClient,
 				txDigest,
@@ -112,7 +117,7 @@ export default class Controller {
 					error instanceof Error ? error.message : String(error)
 				}`,
 			);
-			return null;
+			return responseServerError();
 		}
 	}
 
@@ -120,10 +125,28 @@ export default class Controller {
 		if (!isValidSuiAddress(userAddr)) {
 			return undefined;
 		}
-		const userJson = await this.kv.get(this.kvKeyUserPrefix + userAddr);
-		if (userJson === null) {
-			return defaultUser();
-		}
-		return JSON.parse(userJson) as User;
+		return undefined;
+		// TODO load from DB
+		// const userJson = await this.kv.get(this.kvKeyUserPrefix + userAddr);
+		// if (userJson === null) {
+		// 	return defaultUser();
+		// }
+		// return JSON.parse(userJson) as User;
 	}
+}
+
+function responseNotAuthorized(): Response {
+	return new Response("Not Authorized", { status: 501 });
+}
+
+function responseNotFound(msg: string = "Not Found"): Response {
+	return new Response(msg, { status: 404 });
+}
+
+function responseNotImplemented(): Response {
+	return new Response("Not Implemented", { status: 501 });
+}
+
+function responseServerError(msg: string = "Server Error"): Response {
+	return new Response(msg, { status: 500 });
 }
