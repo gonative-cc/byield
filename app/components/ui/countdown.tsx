@@ -18,6 +18,10 @@ export interface CountdownProps {
 	className?: string;
 }
 
+function padNumber(n: number): string {
+	return String(n).padStart(2, "0");
+}
+
 export const Countdown: React.FC<CountdownProps> = ({ targetTime, onTimeUp, className }) => {
 	const [secLeft, setSecLeft] = useState<number | null>(null);
 
@@ -46,7 +50,8 @@ export const Countdown: React.FC<CountdownProps> = ({ targetTime, onTimeUp, clas
 
 	return (
 		<span className={cls} role="timer" aria-live="polite">
-			<span style={styleV(hours)}>{hours}</span>:<span style={styleV(minutes)}>{minutes}</span>:
+			<span style={styleV(hours)}>{hours}</span>:
+			<span style={styleV(minutes)}>{padNumber(minutes)}</span>:
 			<span style={styleV(seconds)}>{seconds}</span>
 		</span>
 	);
