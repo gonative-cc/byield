@@ -16,11 +16,6 @@ import { useCurrentAccount, useSignAndExecuteTransaction } from "@mysten/dapp-ki
 import { LoaderCircle } from "lucide-react";
 import { SUIIcon } from "~/components/icons";
 
-interface MyPositionProps {
-	user: User;
-	hasUserBidBefore: boolean;
-}
-
 interface NewTotalBidAmountProps {
 	currentBidInMist: number;
 	entryBidMist: number;
@@ -57,36 +52,6 @@ function NewTotalBidAmount({ currentBidInMist, additionalBidInSUI, entryBidMist 
 				</div>
 			)}
 		</div>
-	);
-}
-
-function MyPosition({ user, hasUserBidBefore }: MyPositionProps) {
-	return (
-		<Card className="border-primary/30 bg-gradient-to-r from-primary/10 to-primary/5 animate-in slide-in-from-top-2 duration-500">
-			<CardContent className="p-4 lg:p-6">
-				<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-					<div className="flex items-center gap-3">
-						<div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
-							<span className="text-xl">🎯</span>
-						</div>
-						<div>
-							<h3 className="font-semibold text-primary">Your Current Bid</h3>
-							<p className="text-sm text-muted-foreground">
-								{hasUserBidBefore ? `Rank #${user.rank}` : "No bid placed"}
-							</p>
-						</div>
-					</div>
-					{hasUserBidBefore && (
-						<div className="text-right">
-							<p className="text-2xl font-bold text-primary">
-								{formatSUI(String(user.amount))} SUI
-							</p>
-							{user?.note && <p className="text-sm text-muted-foreground">{user.note}</p>}
-						</div>
-					)}
-				</div>
-			</CardContent>
-		</Card>
 	);
 }
 
@@ -171,9 +136,6 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 		<FormProvider {...bidForm}>
 			<form onSubmit={onSubmit} className="flex justify-center w-full">
 				<div className="w-full lg:w-2/3 xl:w-1/2 space-y-6">
-					{/* Current Bid Status */}
-					{user && <MyPosition user={user} hasUserBidBefore={hasUserBidBefore} />}
-
 					<Card className="shadow-2xl border-primary/20 hover:border-primary/40 transition-all duration-300 animate-in slide-in-from-bottom-2 duration-700">
 						<CardContent className="p-6 lg:p-8 rounded-lg text-white flex flex-col w-full gap-6 bg-gradient-to-br from-azure-10 via-azure-15 to-azure-20">
 							<div className="flex items-center justify-between">
