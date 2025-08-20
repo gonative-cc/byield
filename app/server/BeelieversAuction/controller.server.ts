@@ -3,6 +3,8 @@ import type { LoaderDataResp, AuctionDetails, User } from "./types";
 import type { Req } from "./jsonrpc";
 import { defaultAuctionDetails, defaultUser } from "./defaults";
 import { isValidSuiAddress } from "@mysten/sui/utils";
+import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
+import { validateBidTransaction, type BidTxEvent } from "./auth.server";
 
 import { fromBase64 } from "@mysten/utils";
 import { verifySignature } from "./auth";
@@ -12,9 +14,23 @@ export default class Controller {
 	kvKeyDetails = "details";
 	kvKeyLeaderboard = "lead";
 	kvKeyUserPrefix = "u_";
+	suiClient: SuiClient;
+	trustedPackageId: string;
+	fallbackIndexerUrl: string;
 
 	constructor(kv: KVNamespace) {
 		this.kv = kv;
+		// TODO: update those values for mainnet!!!
+		this.suiClient = new SuiClient({ url: getFullnodeUrl("testnet") });
+		this.trustedPackageId =
+			"0xd5b24b83b168f8656aa7c05af1256e6115de1b80d97be0cddf19297a15535149";
+		this.fallbackIndexerUrl = "https://sui-testnet-endpoint.blockvision.org/";
+
+		if (!this.trustedPackageId || !this.fallbackIndexerUrl) {
+			throw new Error(
+				"Missing required environment variables: TRUSTED_PACKAGE_ID and FALLBACK_INDEXER_URL must be set.",
+			);
+		}
 	}
 
 	async loadPageData(userAddr?: string): Promise<LoaderDataResp> {
@@ -64,14 +80,40 @@ export default class Controller {
 		return details;
 	}
 
-	async postBidTx(userAddr: string, txBytes: Uint8Array, signature: string, userMessage: string) {
-		// TODO authentication
-		// TODO: Vu - could you check up if we pass the full signed TX, and user address, can we
-		// verify if the given address signed TX? If yes, then we sole authentication
+	async postBidTx(
+		userAddr: string,
+		txBytes: Uint8Array,
+		signature: string,
+		userMessage: string,
+	): Promise<BidTxEvent | null> {
+		try {
+			// TODO authentication
+			// TODO: Vu - could you check up if we pass the full signed TX, and user address, can we
+			// verify if the given address signed TX? If yes, then we sole authentication
 
-		// throw error if signature in valid from userAddr
+			// throw error if signature in valid from userAddr
 
-		const txDigest = await verifySignature(userAddr, txBytes, signature);
+			const txDigest = await verifySignature(userAddr, txBytes, signature);
+			const validationResult = await validateBidTransaction(
+				this.suiClient,
+				txDigest,
+				userAddr,
+				this.trustedPackageId,
+				this.fallbackIndexerUrl,
+			);
+			if (typeof validationResult === "string") {
+				console.error(`[Controller] On-chain validation failed: ${validationResult}`);
+				throw new Error("On-chain validation failed.");
+			}
+			return validationResult;
+		} catch (error) {
+			console.error(
+				`[Controller] An error occurred during postBidTx: ${
+					error instanceof Error ? error.message : String(error)
+				}`,
+			);
+			return null;
+		}
 	}
 
 	async getUserData(userAddr: string): Promise<User | undefined> {
