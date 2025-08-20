@@ -10,16 +10,19 @@ import { isProductionMode } from "~/lib/appenv";
 // if we need to load something directly from the client (browser):
 // https://reactrouter.com/start/framework/data-loading#using-both-loaders
 export async function loader({ params, context, request }: Route.LoaderArgs): Promise<LoaderDataResp> {
-	const ctrl = new Controller(context.cloudflare.env.BeelieversNFT);
+	const env = context.cloudflare.env;
+	const ctrl = new Controller(env.BeelieversNFT, env.BeelieversD1);
 	const url = new URL(request.url);
-	const suiAddress = url.searchParams.get("suiAddress") ?? undefined;
-	console.log(">>>>> LOADER handler - params:", params, "suiAddress:", suiAddress);
-	return await ctrl.loadPageData(suiAddress);
+	// const suiAddress = url.searchParams.get("suiAddress") ?? undefined;
+	console.log(">>>>> Page Loader handler - params:", params, "url:", url.href);
+	// TODO: add user param
+	return await ctrl.loadPageData();
 }
 
 // This is a server action to post data to server (data mutations)
 export async function action({ request, context }: Route.ActionArgs) {
-	const ctrl = new Controller(context.cloudflare.env.BeelieversNFT);
+	const env = context.cloudflare.env;
+	const ctrl = new Controller(env.BeelieversNFT, env.BeelieversD1);
 	return ctrl.handleJsonRPC(request);
 }
 

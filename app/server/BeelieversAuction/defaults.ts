@@ -14,6 +14,7 @@ export function defaultAuctionDetails(): AuctionDetails {
 		entryBidMist: 1e9, // 1 SUI
 		startsAt,
 		endsAt: startsAt + 48 * 3600_000,
+		auctionSize: 5810,
 	};
 }
 
@@ -26,6 +27,7 @@ function testAuctionDetails(): AuctionDetails {
 		entryBidMist: 1e7, // 0.01 SUI
 		startsAt,
 		endsAt: startsAt + 24 * 3600_000,
+		auctionSize: 5810,
 	};
 }
 

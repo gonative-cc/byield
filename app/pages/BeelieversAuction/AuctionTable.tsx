@@ -90,6 +90,7 @@ const createColumns = (): Column<Bidder>[] => [
 	},
 ];
 
+// TODO: suiAddr is not needed here!
 export function AuctionTable({ data, user, suiAddr }: AuctionTableProps) {
 	const getDisplayData = (): Bidder[] => {
 		const top21: Bidder[] = data.slice(0, MAX_LEADERBOARD_ROWS);

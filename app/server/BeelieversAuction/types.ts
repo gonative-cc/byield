@@ -11,6 +11,8 @@ export interface AuctionDetails {
 	uniqueBidders: number;
 	// total number of bids people made
 	totalBids: number;
+	// number of items in the auction
+	auctionSize: number;
 }
 
 export enum AuctionAccountType {

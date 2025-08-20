@@ -9,6 +9,7 @@ import { validateBidTransaction, type BidTxEvent } from "./auth.server";
 import { fromBase64 } from "@mysten/utils";
 import { verifySignature } from "./auth";
 import { isProductionMode } from "~/lib/appenv";
+import { Auction } from "./auction.server";
 
 const maxTxIdSize = 44;
 
@@ -16,14 +17,23 @@ export default class Controller {
 	kv: KVNamespace;
 	kvKeyTx = "details";
 
-	suiClient: SuiClient;
+	suiNet: "mainnet" | "testnet" | "devnet" | "localnet";
 	trustedPackageId: string;
 	fallbackIndexerUrl: string;
 
-	constructor(kv: KVNamespace) {
+	auction: Auction;
+
+	isProduction: boolean;
+
+	constructor(kv: KVNamespace, d1: D1Database) {
+		// TODO: use it in other functions and defaults
+		this.isProduction = isProductionMode();
 		this.kv = kv;
+		const { startsAt, endsAt, entryBidMist } = defaultAuctionDetails();
+		this.auction = new Auction(d1, new Date(startsAt), new Date(endsAt), 5810, entryBidMist);
+
 		// TODO: update those values for mainnet!!!
-		this.suiClient = new SuiClient({ url: getFullnodeUrl("testnet") });
+		this.suiNet = "testnet";
 		this.trustedPackageId =
 			"0xd5b24b83b168f8656aa7c05af1256e6115de1b80d97be0cddf19297a15535149";
 		this.fallbackIndexerUrl = "https://sui-testnet-endpoint.blockvision.org/";
@@ -36,7 +46,7 @@ export default class Controller {
 	}
 
 	async loadPageData(userAddr?: string): Promise<LoaderDataResp> {
-		const user = userAddr !== undefined ? await this.getUserData(userAddr) : undefined;
+		const user = userAddr !== undefined ? await this.getUserData(userAddr) : null;
 
 		return {
 			error: undefined,
@@ -47,12 +57,16 @@ export default class Controller {
 	}
 
 	async handleJsonRPC(r: Request) {
+		// TODO: add id in JSON RPC
+
 		let reqData: Req;
 		try {
 			reqData = await r.json<Req>();
 		} catch (_err) {
+			console.log(">>>>> deserializing json", _err);
 			return new Response("Malformed JSON in request body", { status: 400 });
 		}
+		console.log("handle RPC", reqData);
 		switch (reqData.method) {
 			case "queryUser":
 				return this.getUserData(reqData.params[0]);
@@ -91,50 +105,62 @@ export default class Controller {
 			return responseNotImplemented();
 		}
 
+		const txDigest = await verifySignature(userAddr, txBytes, signature);
+		if (txDigest === null) return responseNotAuthorized();
+		if (txDigest.length > maxTxIdSize) {
+			console.error("txDigest too long!", txDigest);
+			return responseBadRequest("Bad Tx Digest");
+		}
+
+		// TODO:
+		// check if tx already processed using KV
+
+		// TODO: bid in DB
+
 		try {
-			const txDigest = await verifySignature(userAddr, txBytes, signature);
-			if (txDigest.length > maxTxIdSize) {
-				console.error("txDigest too long!", txDigest);
-				throw new Error("txDigest too long!");
-			}
+			// TODO: move to a separate function
+			const suiClient = new SuiClient({ url: getFullnodeUrl(this.suiNet) });
 			const validationResult = await validateBidTransaction(
-				this.suiClient,
+				suiClient,
 				txDigest,
 				userAddr,
 				this.trustedPackageId,
 				this.fallbackIndexerUrl,
 			);
 			if (typeof validationResult === "string") {
-				console.error(`[Controller] On-chain validation failed: ${validationResult}`);
-				throw new Error("On-chain validation failed.");
+				console.error("[Controller] On-chain validation failed:", validationResult);
+				return responseNotAuthorized();
 			}
 			return validationResult;
 		} catch (error) {
 			console.error(
-				`[Controller] An error occurred during postBidTx: ${
-					error instanceof Error ? error.message : String(error)
-				}`,
+				"[Controller] An error occurred during postBidTx:",
+				error instanceof Error ? error.message : String(error),
 			);
 			return responseServerError();
 		}
 	}
 
-	async getUserData(userAddr: string): Promise<User | undefined> {
+	// TODO check type change unknown -> null
+	async getUserData(userAddr: string): Promise<User | null> {
 		if (!isValidSuiAddress(userAddr)) {
-			return undefined;
+			return null;
 		}
-		return undefined;
-		// TODO load from DB
-		// const userJson = await this.kv.get(this.kvKeyUserPrefix + userAddr);
-		// if (userJson === null) {
-		// 	return defaultUser();
-		// }
-		// return JSON.parse(userJson) as User;
+
+		const u = await this.auction.getBidder(userAddr);
+		if (u === null) {
+			return defaultUser();
+		}
+		return u;
 	}
 }
 
-function responseNotAuthorized(): Response {
-	return new Response("Not Authorized", { status: 501 });
+function responseBadRequest(msg: string = "Bad Request"): Response {
+	return new Response(msg, { status: 400 });
+}
+
+function responseNotAuthorized(msg: string = "Not Authorized"): Response {
+	return new Response(msg, { status: 401 });
 }
 
 function responseNotFound(msg: string = "Not Found"): Response {

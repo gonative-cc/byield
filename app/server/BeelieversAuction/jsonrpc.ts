@@ -1,5 +1,6 @@
 import type { FetcherWithComponents } from "react-router";
 
+// TODO: make response types
 export type Req =
 	| {
 			method: "queryUser";

@@ -1,3 +1,6 @@
+import { useFetcher } from "react-router";
+import { useContext, useEffect, useRef } from "react";
+
 import { Info } from "./Info";
 import { AuctionTable } from "./AuctionTable";
 import { AuctionTotals } from "./AuctionTotals";
@@ -6,8 +9,6 @@ import { TweetEmbed } from "~/components/TweetEmbed";
 import { AuctionState } from "./types";
 import type { AuctionDetails, Bidder, User } from "~/server/BeelieversAuction/types";
 import { makeReq } from "~/server/BeelieversAuction/jsonrpc";
-import { useFetcher } from "react-router";
-import { useContext, useEffect, useRef } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { MyPosition } from "./MyPosition";
 
@@ -33,11 +34,13 @@ export function BeelieversAuction({
 	const user: User | undefined = userFetcher?.data;
 	const userAccountType = user?.wlStatus;
 
+	console.log(">>>> user", user);
+
 	useEffect(() => {
 		if (suiAddr && suiAddr !== lastCheckedAddress.current && userFetcher.state === "idle") {
 			// Wallet connected or address changed - check eligibility
 			lastCheckedAddress.current = suiAddr;
-			makeReq<User>(userFetcher, { method: "queryUser", params: [suiAddr] });
+			makeReq<User | null>(userFetcher, { method: "queryUser", params: [suiAddr] });
 		} else if (!suiAddr && lastCheckedAddress.current) {
 			// Wallet disconnected - reset state
 			lastCheckedAddress.current = null;

@@ -66,6 +66,31 @@ describe("Auction Class with Tuple Error Handling", () => {
 		});
 	});
 
+	test("queryBidder-insertBidder", async () => {
+		let b = await auction.getBidder(alice);
+		expect(b).toBeNull();
+
+		let res = await auction._insertBidder(alice, 0, 100);
+		expect(res.success, res.error).toBeTruthy();
+		b = await auction.getBidder(alice);
+		expect(b).toEqual({ amount: 0, badges: [], note: null, wlStatus: 0, rank: null });
+
+		// check clearing price
+		let cp = await auction.getClearingPrice();
+		expect(cp).toBe(minBid);
+
+		// leaderboard should only consider people who bid > 0
+		let l = await auction.getTopLeaderboard();
+		expect(l).toEqual([]);
+
+		res = await auction._insertBidder(users.bob, minBid * 2, 20);
+		expect(res.success, res.error).toBeTruthy();
+		cp = await auction.getClearingPrice();
+		expect(cp).toBe(minBid);
+		l = await auction.getTopLeaderboard();
+		expect(l).toEqual([{ amount: 200, badges: [], bidder: "bob", note: null, rank: 1 }]);
+	});
+
 	describe("bid", () => {
 		test("successful bid", async () => {
 			let [res, err] = await auction.bid(alice, minBid, "Success!");
@@ -76,6 +101,11 @@ describe("Auction Class with Tuple Error Handling", () => {
 			[res, err] = await auction.bid(alice, 101, "Success!");
 			expect(err).toBeNull();
 			expect(res).toEqual({ oldRank: 1, newRank: 1 });
+
+			const l = await auction.getTopLeaderboard();
+			expect(l).toEqual([
+				{ amount: 101, badges: [], bidder: "alice", note: "Success!", rank: 1 },
+			]);
 		});
 
 		test("error: first bid too low", async () => {
@@ -84,6 +114,8 @@ describe("Auction Class with Tuple Error Handling", () => {
 			expect(res).toBeNull();
 			expect(err).toBeInstanceOf(Error);
 			expect(err?.message).toContain("Minimum first bid is 100");
+			const b = await auction.getBidder(alice);
+			expect(b).toBeNull();
 		});
 
 		test("error: subsequent bid too low", async () => {
@@ -93,9 +125,6 @@ describe("Auction Class with Tuple Error Handling", () => {
 			expect(res).toBeDefined();
 			expect(err).toBeNull();
 
-			const bidder = await auction.queryBidder(alice);
-			expect(bidder).toEqual({ amount: firstBid, badges: "[]", note: "", rank: 1 });
-
 			[res, err] = await auction.bid(alice, firstBid);
 			expect(err).toBeInstanceOf(Error);
 			expect(err?.message).toContain("must be greater than current effective bid");
@@ -103,6 +132,16 @@ describe("Auction Class with Tuple Error Handling", () => {
 			[res, err] = await auction.bid(alice, firstBid - 1);
 			expect(err).toBeInstanceOf(Error);
 			expect(err?.message).toContain("must be greater than current effective bid");
+
+			// data shouldn't change
+			const bidder = await auction.getBidder(alice);
+			expect(bidder).toEqual({
+				amount: firstBid,
+				badges: [],
+				note: "",
+				rank: 1,
+				wlStatus: 0,
+			});
 		});
 
 		test("error: auction has not started", async () => {
@@ -112,7 +151,7 @@ describe("Auction Class with Tuple Error Handling", () => {
 			expect(result).toBeNull();
 			expect(error).toBeInstanceOf(Error);
 			expect(error?.message).toBe("Auction has not started yet.");
-			const bidder = await auction.queryBidder(alice);
+			const bidder = await auction.getBidder(alice);
 			expect(bidder).toBeNull();
 		});
 
