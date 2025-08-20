@@ -14,6 +14,9 @@ describe("worker", () => {
 		worker = new Miniflare({
 			modules: true,
 			script: "",
+			bindings: {
+				FOO: "Hello Bindings",
+			},
 			kvNamespaces: ["KV2"],
 			d1Databases: ["DB"],
 			kvPersist: false,
@@ -26,7 +29,7 @@ describe("worker", () => {
 		await worker.dispose();
 	});
 
-	test("hello world", async () => {
+	test("test kv", async () => {
 		const bindings = await worker.getBindings();
 		expect(bindings.FOO).toEqual("Hello Bindings");
 
@@ -37,7 +40,7 @@ describe("worker", () => {
 		expect(await kv.get("key")).toEqual("value");
 	});
 
-	test.skip("test-db", async () => {
+	test("test-db", async () => {
 		// const bindings = worker.getBindings();
 		// const db = bindings.DB as D1Database;
 		const db = await worker.getD1Database("DB");
@@ -51,6 +54,6 @@ describe("worker", () => {
 			.prepare("SELECT * FROM bids WHERE bidder = ?")
 			.bind("Robert")
 			.first<{ bidder: string }>();
-		expect(b).not.toEqual({ bidder: "Robert" });
+		expect(b).toEqual({ bidder: "Robert" });
 	});
 });
