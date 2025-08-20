@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { Card, CardContent } from "~/components/ui/card";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
@@ -10,13 +10,25 @@ import { BuyNBTCTabContent } from "./BuyNBTCTabContent";
 import { SellNBTCTabContent } from "./SellNBTCTabContent";
 import { Tabs } from "~/components/ui/tabs";
 import { ArrowUpRight } from "lucide-react";
+import { useDisconnectWallet, useSuiClientContext } from "@mysten/dapp-kit";
 
 export function BuyNBTC() {
+	const { network } = useSuiClientContext();
+	const { mutate: disconnect } = useDisconnectWallet();
+
 	// TODO: it doesn't get automatically refresehed
 	const { balance: nBTCBalance } = useCoinBalance(NBTC_COIN_TYPE);
 	const { isWalletConnected, suiAddr } = useContext(WalletContext);
 	const isSuiWalletConnected = isWalletConnected(Wallets.SuiWallet);
 	const transactionHistoryLink = `https://suiscan.xyz/testnet/account/${suiAddr}/tx-blocks`;
+
+	// TODO: remove this after auction. enforce network change
+	const isMainnet = network === "mainnet";
+	useEffect(() => {
+		if (isMainnet) {
+			disconnect();
+		}
+	}, [disconnect, isMainnet]);
 
 	return (
 		<div className="flex flex-col items-center gap-8 px-2 pt-2">

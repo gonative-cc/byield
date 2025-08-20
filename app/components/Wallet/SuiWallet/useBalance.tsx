@@ -1,5 +1,5 @@
 import { useSuiClient, useCurrentAccount } from "@mysten/dapp-kit";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { type CoinBalance } from "@mysten/sui/client";
 
 export interface UseCoinBalanceResult {
@@ -18,7 +18,7 @@ export function useCoinBalance(coinAddr?: string): UseCoinBalanceResult {
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [error, setError] = useState<Error | null>(null);
 
-	const fetchBalance = async () => {
+	const fetchBalance = useCallback(async () => {
 		if (!account?.address) {
 			setBalance(null);
 			setIsLoading(false);
@@ -44,12 +44,13 @@ export function useCoinBalance(coinAddr?: string): UseCoinBalanceResult {
 		} finally {
 			setIsLoading(false);
 		}
-	};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [account?.address || null, coinAddr, suiClient]);
 
-	/* eslint-disable react-hooks/exhaustive-deps */
 	useEffect(() => {
 		fetchBalance();
-	}, [account?.address || null]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [account?.address || null, fetchBalance]);
 
 	return {
 		balance: balance === null ? 0n : BigInt(balance.totalBalance),

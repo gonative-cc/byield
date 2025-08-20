@@ -1,4 +1,4 @@
-import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
+import { Links, Meta, Outlet, Scripts, ScrollRestoration, useLocation } from "react-router";
 import type { LinksFunction } from "react-router";
 import tailwindStyle from "./tailwind.css?url";
 import { NavBar } from "~/components/NavBar";
@@ -8,7 +8,7 @@ import { SuiClientProvider, WalletProvider as SuiWalletProvider } from "@mysten/
 import { Toaster } from "~/components/ui/toaster";
 import { ByieldWalletProvider } from "./providers/ByieldWalletProvider";
 import { isProductionMode, printAppEnv } from "./lib/appenv";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Footer } from "~/components/Footer";
 import { SideBarProvider } from "./providers/SiderBarProvider";
 import { SideBar } from "~/components/SideBar";
@@ -72,6 +72,21 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 function NativeApp({ children }: { children: React.ReactNode }) {
+	// TODO: remove this after auction. enforce network change
+	const [network, setNetwork] = useState<"testnet" | "mainnet">("testnet");
+	const location = useLocation();
+	const pathname = location.pathname;
+
+	useEffect(() => {
+		if (isProductionMode()) {
+			if (pathname === "/beelievers-auction") {
+				setNetwork("mainnet");
+			} else if (pathname === "/") {
+				setNetwork("testnet");
+			}
+		}
+	}, [pathname]);
+
 	useEffect(() => {
 		if (!isProductionMode()) {
 			printAppEnv();
@@ -82,7 +97,7 @@ function NativeApp({ children }: { children: React.ReactNode }) {
 		<>
 			<div className="flex flex-col min-h-screen gap-4">
 				<QueryClientProvider client={queryClient}>
-					<SuiClientProvider networks={networkConfig} defaultNetwork="testnet">
+					<SuiClientProvider networks={networkConfig} network={network}>
 						<SuiWalletProvider autoConnect>
 							<ByieldWalletProvider>
 								<main className="flex-1">{children}</main>
