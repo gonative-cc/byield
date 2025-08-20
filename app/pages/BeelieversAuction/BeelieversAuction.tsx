@@ -2,7 +2,6 @@ import { Info } from "./Info";
 import { AuctionTable } from "./AuctionTable";
 import { AuctionTotals } from "./AuctionTotals";
 import { BeelieversBid } from "./BeelieversBid";
-import { Partners } from "~/components/Partners";
 import { TweetEmbed } from "~/components/TweetEmbed";
 import { AuctionState } from "./types";
 import type { AuctionDetails, Bidder, User } from "~/server/BeelieversAuction/types";
@@ -86,7 +85,7 @@ export function BeelieversAuction({
 			{auctionState !== AuctionState.WILL_START && (
 				<div className="animate-in slide-in-from-bottom-4 duration-1000 delay-600 w-full">
 					<div className="flex flex-col-reverse lg:flex-row gap-6 w-full">
-						<AuctionTable data={leaderboard} />
+						<AuctionTable data={leaderboard} user={user} />
 					</div>
 				</div>
 			)}
@@ -95,7 +94,7 @@ export function BeelieversAuction({
 
 			{/* Partners Section with Animation */}
 			<div className="animate-in fade-in-0 duration-1000 delay-700 w-full">
-				<Partners />
+				<img src="/assets/auction/partner/partners.png" alt="partners" />;
 			</div>
 		</div>
 	);

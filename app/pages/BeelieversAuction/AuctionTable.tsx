@@ -5,13 +5,14 @@ import { trimAddress } from "~/components/Wallet/walletHelper";
 import { useContext } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { toBadgeRecord, type BadgeRecord } from "~/lib/badgeSystem";
-import type { Bidder } from "~/server/BeelieversAuction/types";
+import type { Bidder, User } from "~/server/BeelieversAuction/types";
 import { BadgesModal } from "~/components/BadgesModal";
 
 const MAX_LEADERBOARD_ROWS = 21;
 
 interface AuctionTableProps {
 	data: Bidder[];
+	user?: User;
 }
 
 const createColumns = (): Column<Bidder>[] => [
@@ -90,17 +91,16 @@ const createColumns = (): Column<Bidder>[] => [
 	},
 ];
 
-export function AuctionTable({ data }: AuctionTableProps) {
+export function AuctionTable({ data, user }: AuctionTableProps) {
 	const { suiAddr } = useContext(WalletContext);
-
-	const userBid = data.find((bid) => bid.bidder === suiAddr);
-	const userPosition = userBid?.rank;
+	const userPosition = user?.rank;
 
 	const getDisplayData = (): Bidder[] => {
 		const top21 = data.slice(0, MAX_LEADERBOARD_ROWS);
 
-		if (userPosition && userPosition > MAX_LEADERBOARD_ROWS && userBid) {
-			return [...top21, userBid];
+		if (userPosition && userPosition > MAX_LEADERBOARD_ROWS && user && suiAddr) {
+			const currentBidder: Bidder = { ...user, bidder: suiAddr };
+			return [...top21, currentBidder];
 		}
 
 		return top21;
