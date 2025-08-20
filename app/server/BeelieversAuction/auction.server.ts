@@ -213,7 +213,15 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 		return result?.amount ?? this.minimumBid;
 	}
 
-	// TODO: test and add winners
+	async getWinners(): Promise<string[]> {
+		const result = await this.db
+			.prepare(
+				`SELECT bidder FROM bids WHERE amount > 0 ORDER BY amount DESC, timestamp ASC LIMIT ?`,
+			)
+			.bind(this.size)
+			.raw<string>();
+		return result.flat();
+	}
 
 	//
 	// Private methods

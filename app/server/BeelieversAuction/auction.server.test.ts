@@ -106,6 +106,9 @@ describe("Auction Class with Tuple Error Handling", () => {
 			expect(l).toEqual([
 				{ amount: 101, badges: [], bidder: "alice", note: "Success!", rank: 1 },
 			]);
+
+			const w = await auction.getWinners();
+			expect(w).toEqual([alice]);
 		});
 
 		test("error: first bid too low", async () => {
@@ -247,6 +250,8 @@ describe("Auction Class with Tuple Error Handling", () => {
 					{ rank: 6, amount: 300, bidder: "felix", badges: [], note: "" },
 				],
 			});
+			const w = await auction.getWinners();
+			expect(w).toEqual([users.charl, users.bob, users.alice, users.eve]);
 		});
 	});
 });
