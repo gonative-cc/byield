@@ -2,16 +2,16 @@ import type { CellProps, Column } from "react-table";
 import { SUIIcon } from "~/components/icons";
 import { Table } from "~/components/ui/table";
 import { trimAddress } from "~/components/Wallet/walletHelper";
-import { useContext } from "react";
-import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { toBadgeRecord, type BadgeRecord } from "~/lib/badgeSystem";
-import type { Bidder } from "~/server/BeelieversAuction/types";
+import type { Bidder, User } from "~/server/BeelieversAuction/types";
 import { BadgesModal } from "~/components/BadgesModal";
 
 const MAX_LEADERBOARD_ROWS = 21;
 
 interface AuctionTableProps {
 	data: Bidder[];
+	suiAddr: string | null;
+	user?: User;
 }
 
 const createColumns = (): Column<Bidder>[] => [
@@ -77,7 +77,7 @@ const createColumns = (): Column<Bidder>[] => [
 							<img
 								key={index}
 								src={badge.src}
-								alt={badge!.name}
+								alt={String(badge!.name)}
 								className={`bg-gray-400 w-8 h-8 hover:scale-110 transition-transform cursor-help`}
 							/>
 						))
@@ -90,17 +90,15 @@ const createColumns = (): Column<Bidder>[] => [
 	},
 ];
 
-export function AuctionTable({ data }: AuctionTableProps) {
-	const { suiAddr } = useContext(WalletContext);
-
-	const userBid = data.find((bid) => bid.bidder === suiAddr);
-	const userPosition = userBid?.rank;
+export function AuctionTable({ data, user, suiAddr }: AuctionTableProps) {
+	const userPosition = user?.rank;
 
 	const getDisplayData = (): Bidder[] => {
 		const top21 = data.slice(0, MAX_LEADERBOARD_ROWS);
 
-		if (userPosition && userPosition > MAX_LEADERBOARD_ROWS && userBid) {
-			return [...top21, userBid];
+		if (userPosition && userPosition > MAX_LEADERBOARD_ROWS && user && suiAddr) {
+			const currentBidder: Bidder = { ...user, bidder: suiAddr };
+			return [...top21, currentBidder];
 		}
 
 		return top21;

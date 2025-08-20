@@ -107,6 +107,66 @@ const BADGES: BadgeInfo[] = [
 		src: "/assets/auction/badges/first_1000_bids.svg",
 		description: "Among first 1000 bidders",
 	},
+	{
+		name: "Climb up 210 position",
+		filename: "anyone_climbs_more_than_210_positions_up.svg",
+		src: "/assets/auction/badges/anyone_climbs_more_than_210_positions_up.svg",
+		description: "Climb more than 210 position",
+	},
+	{
+		name: "Climb 10 spots",
+		filename: "if_anyone_climbs_10_spots_in_a_single_bid.svg",
+		src: "/assets/auction/badges/if_anyone_climbs_10_spots_in_a_single_bid.svg",
+		description: "Climb 10 spots",
+	},
+	{
+		name: "Comeback top 10",
+		filename: "If_some_one_comesback_to_top_10_after_falling_off_10.svg",
+		src: "/assets/auction/badges/If_some_one_comesback_to_top_10_after_falling_off_10.svg",
+		description: "Comeback top 10 position after falling off 10 position",
+	},
+	{
+		name: "Last bid",
+		filename: "Last_bid_in_Leaderboard.svg",
+		src: "/assets/auction/badges/Last_bid_in_Leaderboard.svg",
+		description: "Last bid in leaderboard",
+	},
+	{
+		name: "Every 10th position",
+		filename: "Logo_Ika_red_every_10th_position.svg",
+		src: "/assets/auction/badges/Logo_Ika_red_every_10th_position.svg",
+		description: "Ika every 10th position",
+	},
+	{
+		name: "Made 2nd position",
+		filename: "Made_2nd_bid.svg",
+		src: "/assets/auction/badges/Made_2nd_bid.svg",
+		description: "Made 2nd position",
+	},
+	{
+		name: "Made 3rd bid",
+		filename: "made_3rd_bid.svg",
+		src: "/assets/auction/badges/made_3rd_bid.svg",
+		description: "Made 3rd bid",
+	},
+	{
+		name: "Made 4th bid",
+		filename: "Made_4th_bid.svg",
+		src: "/assets/auction/badges/Made_4th_bid.svg",
+		description: "Made 4th bid",
+	},
+	{
+		name: "nBTC every 21st bidder",
+		filename: "nbtc_every_21st_bidder.svg",
+		src: "/assets/auction/badges/nbtc_every_21st_bidder.svg",
+		description: "nBTC every 21st bidder",
+	},
+	{
+		name: "Dethrone",
+		filename: "Who_dethrones_someone_and_gets_number_1_spot.svg",
+		src: "/assets/auction/badges/Who_dethrones_someone_and_gets_number_1_spot.svg",
+		description: "Dethrones someone and gets number 1 spot",
+	},
 ];
 
 export function BadgesModal() {
@@ -132,7 +192,7 @@ export function BadgesModal() {
 								<button
 									key={badge.filename}
 									onClick={() => setSelectedBadge(badge)}
-									className={`bg-gray-700 flex flex-col items-center p-2 rounded-lg border transition-all duration-200 group ${
+									className={`bg-gray-500 text-white flex flex-col items-center p-2 rounded-lg border transition-all duration-200 group ${
 										selectedBadge?.filename === badge.filename
 											? "border-primary bg-primary/10"
 											: "border-primary/20 hover:border-primary/50 hover:bg-primary/5"
@@ -158,7 +218,7 @@ export function BadgesModal() {
 								<img
 									src={selectedBadge.src}
 									alt={selectedBadge.name}
-									className="bg-gray-700 text-white w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 object-contain"
+									className="bg-gray-500 text-white w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 object-contain"
 								/>
 								<h3 className="text-lg sm:text-xl font-bold text-primary text-center">
 									{selectedBadge.name}

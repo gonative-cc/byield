@@ -2,7 +2,6 @@ import { Info } from "./Info";
 import { AuctionTable } from "./AuctionTable";
 import { AuctionTotals } from "./AuctionTotals";
 import { BeelieversBid } from "./BeelieversBid";
-import { Partners } from "~/components/Partners";
 import { TweetEmbed } from "~/components/TweetEmbed";
 import { AuctionState } from "./types";
 import type { AuctionDetails, Bidder, User } from "~/server/BeelieversAuction/types";
@@ -21,33 +20,31 @@ function getAuctionState(startMs: number, endMs: number): AuctionState {
 interface BeelieversAuctionProps {
 	auctionDetails: AuctionDetails;
 	leaderboard: Bidder[];
-	user?: User;
 }
 
 export function BeelieversAuction({
 	auctionDetails: { uniqueBidders, totalBids, entryBidMist, startsAt, endsAt },
 	leaderboard,
-	user,
 }: BeelieversAuctionProps) {
 	const { suiAddr } = useContext(WalletContext);
 	const lastCheckedAddress = useRef<string | null>(null);
-	const fetcher = useFetcher();
+	const userFetcher = useFetcher<User>();
+	const user: User | undefined = userFetcher?.data;
+	const userAccountType = user?.wlStatus;
 
 	useEffect(() => {
-		if (suiAddr && suiAddr !== lastCheckedAddress.current && fetcher.state === "idle") {
+		if (suiAddr && suiAddr !== lastCheckedAddress.current && userFetcher.state === "idle") {
 			// Wallet connected or address changed - check eligibility
 			lastCheckedAddress.current = suiAddr;
-			// TODO: assign user here
-			makeReq(fetcher, { method: "queryUser", params: [suiAddr] });
+			makeReq<User>(userFetcher, { method: "queryUser", params: [suiAddr] });
 		} else if (!suiAddr && lastCheckedAddress.current) {
 			// Wallet disconnected - reset state
 			lastCheckedAddress.current = null;
 		}
-	}, [fetcher, fetcher.state, suiAddr]);
+	}, [userFetcher, userFetcher.state, suiAddr]);
 
 	const twitterPost = "https://twitter.com/goNativeCC/status/1956370231191818263";
 	const auctionState = getAuctionState(startsAt, endsAt);
-	const userAccountType = user?.wlStatus;
 
 	return (
 		<div className="flex flex-col items-center gap-6 sm:gap-8 lg:gap-10 w-full relative">
@@ -80,7 +77,7 @@ export function BeelieversAuction({
 
 			{auctionState == AuctionState.STARTED && (
 				<div className="animate-in slide-in-from-right-4 duration-1000 delay-500 w-full flex justify-center">
-					<BeelieversBid user={user} />
+					<BeelieversBid user={user} entryBidMist={entryBidMist} />
 				</div>
 			)}
 
@@ -88,7 +85,7 @@ export function BeelieversAuction({
 			{auctionState !== AuctionState.WILL_START && (
 				<div className="animate-in slide-in-from-bottom-4 duration-1000 delay-600 w-full">
 					<div className="flex flex-col-reverse lg:flex-row gap-6 w-full">
-						<AuctionTable data={leaderboard} />
+						<AuctionTable data={leaderboard} user={user} suiAddr={suiAddr} />
 					</div>
 				</div>
 			)}
@@ -97,7 +94,7 @@ export function BeelieversAuction({
 
 			{/* Partners Section with Animation */}
 			<div className="animate-in fade-in-0 duration-1000 delay-700 w-full">
-				<Partners />
+				<img src="/assets/auction/partner/partners.png" alt="partners" />
 			</div>
 		</div>
 	);

@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import type { FetcherWithComponents } from "react-router";
 
 export type Req =
@@ -22,7 +20,10 @@ export type Req =
 			params: [string];
 	  };
 
-// TODO: this function should return result
-export async function makeReq(fetcher: FetcherWithComponents<any>, req: Req) {
-	return fetcher.submit(req, { method: "POST", encType: "application/json" });
+export async function makeReq<T>(
+	fetcher: FetcherWithComponents<T>,
+	req: Req,
+): Promise<T | undefined> {
+	await fetcher.submit(req, { method: "POST", encType: "application/json" });
+	return fetcher.data;
 }
