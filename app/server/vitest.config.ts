@@ -5,6 +5,9 @@ export default defineConfig({
 	test: {
 		globals: true, // Enable global test APIs (describe, it, expect, etc.)
 		environment: "node",
+		chaiConfig: {
+			truncateThreshold: 1200,
+		},
 	},
 	resolve: {
 		alias: {
