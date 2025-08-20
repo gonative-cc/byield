@@ -42,15 +42,17 @@ describe("worker", () => {
 		// const db = bindings.DB as D1Database;
 		const db = await worker.getD1Database("DB");
 		await db.exec("DROP TABLE IF EXISTS bids;");
-		await db.exec(`
+		let resultE = await db.exec(`
 CREATE TABLE bids (bidder TEXT PRIMARY KEY);
 CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT);
 `);
+		expect(resultE.count).toBe(2);
+
 		const stmt = db.prepare("INSERT INTO bids (bidder) VALUES (?)");
 		const result = await stmt.bind("Robert").run();
 		expect(result.success).toBe(true);
 
-		const resultE = await db.exec("INSERT INTO users (name) VALUES ('bob')");
+		resultE = await db.exec("INSERT INTO users (name) VALUES ('bob')");
 		expect(resultE.count).toBe(1);
 
 		const b = await db

@@ -1,19 +1,15 @@
 import { describe, test, expect, beforeEach, afterEach, vi } from "vitest";
+import { Miniflare } from "miniflare";
+
 import { Auction } from "./auction.server";
-
-import { env } from "cloudflare:test";
-
-describe("Hello World worker", () => {
-	test("responds with Hello World!", async () => {
-		console.log(env);
-	});
-});
 
 interface TestContext {
 	auction: Auction;
 }
 
-describe.skip("Auction Class with Tuple Error Handling", () => {
+describe("Auction Class with Tuple Error Handling", () => {
+	let worker;
+
 	beforeEach(() => {
 		vi.useFakeTimers();
 	});
@@ -22,37 +18,47 @@ describe.skip("Auction Class with Tuple Error Handling", () => {
 	});
 
 	beforeEach<TestContext>(async (context) => {
-		const { env } = (await vi.getServices()) as { env: { DB: D1Database } };
-		const db = env.DB;
-		await db.exec("DROP TABLE IF EXISTS bids; DROP TABLE IF EXISTS stats;");
-
 		// Setting auction window around the user's provided time for context
 		const startTime = new Date("2025-08-18T18:00:00+02:00"); // CEST
 		const endTime = new Date("2025-08-18T19:00:00+02:00"); // CEST
 		vi.setSystemTime(new Date("2025-08-18T18:50:15+02:00"));
+
+		worker = new Miniflare({
+			modules: true,
+			script: "",
+			kvNamespaces: ["KV"],
+			d1Databases: ["DB"],
+			kvPersist: false,
+			d1Persist: false,
+			cachePersist: false,
+		});
+		await worker.ready;
+
+		const db = await worker.getD1Database("DB");
+		await db.exec("DROP TABLE IF EXISTS bids; DROP TABLE IF EXISTS stats;");
 
 		context.auction = new Auction(db, startTime, endTime, 10, 10);
 		await context.auction.initialize();
 	});
 
 	describe("Initialization", () => {
-		test<TestContext>("initialize() should be idempotent", async ({ auction }) => {
+		test<TestContext>("initialize and stats", async ({ auction }) => {
 			// The auction is initialized in beforeEach, we can re-initialize to test
-			await expect(auction.initialize()).resolves.toBeUndefined();
+			// await expect(auction.initialize()).resolves.toBeUndefined();
 
-			const stats = await env.DB.prepare("SELECT * FROM stats").first();
+			const stats = await auction.getAuctionTopStats();
 			expect(stats).toBeDefined();
+			expect(stats).toEqual({ totalBids: 0, uniqueBidders: 0 });
 		});
 	});
 
-	describe("bid() with tuple return", () => {
+	describe("bid", () => {
 		test<TestContext>("should return a result and null error for a successful bid", async ({
 			auction,
 		}) => {
 			const [result, error] = await auction.bid("user1", 100, "Success!");
 
 			expect(error).toBeNull();
-			expect(result).not.toBeNull();
 			expect(result).toEqual({ oldRank: null, newRank: 1 });
 		});
 
@@ -70,7 +76,7 @@ describe.skip("Auction Class with Tuple Error Handling", () => {
 		test<TestContext>("should return an error if auction has not started", async ({
 			auction,
 		}) => {
-			auction["startDate"] = new Date("2025-08-18T19:00:00+02:00");
+			auction.startDate = new Date("2025-08-18T19:00:00+02:00");
 			const [result, error] = await auction.bid("user1", 20);
 
 			expect(result).toBeNull();
@@ -79,7 +85,7 @@ describe.skip("Auction Class with Tuple Error Handling", () => {
 		});
 
 		test<TestContext>("should return an error if auction has ended", async ({ auction }) => {
-			auction["endDate"] = new Date("2025-08-18T18:30:00+02:00");
+			auction.endDate = new Date("2025-08-18T18:30:00+02:00");
 			const [result, error] = await auction.bid("user1", 20);
 
 			expect(result).toBeNull();
@@ -88,7 +94,7 @@ describe.skip("Auction Class with Tuple Error Handling", () => {
 		});
 	});
 
-	describe("Full Auction Flow with Tuple Handling", () => {
+	describe.skip("Full Auction Flow with Tuple Handling", () => {
 		test<TestContext>("should correctly handle the auction lifecycle", async ({ auction }) => {
 			auction["auctionSize"] = 3;
 

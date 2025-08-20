@@ -14,7 +14,12 @@ export interface LeaderboardEntry {
 	bidder: string;
 	amount: number; // Effective amount
 }
-export interface AuctionStats {
+export interface AuctionTopStats {
+	totalBids: number;
+	uniqueBidders: number;
+}
+
+export interface AuctionStats extends AuctionTopStats {
 	totalBids: number;
 	uniqueBidders: number;
 	topTenBids: Omit<LeaderboardEntry, "rank">[];
@@ -22,11 +27,11 @@ export interface AuctionStats {
 
 // --- The Auction Class for Cloudflare D1 ---
 export class Auction {
-	private db: D1Database;
-	public readonly startDate: Date;
-	public readonly endDate: Date;
-	public readonly auctionSize: number;
-	public readonly minimumBid: number;
+	db: D1Database;
+	startDate: Date;
+	endDate: Date;
+	auctionSize: number;
+	minimumBid: number;
 
 	constructor(
 		db: D1Database,
@@ -49,21 +54,31 @@ export class Auction {
 bidder TEXT PRIMARY KEY,
 amount INTEGER NOT NULL,
 timestamp INTEGER NOT NULL,
-typ INTEGER NOT NULL DEFAULT 0, msg TEXT);`,
+typ INTEGER NOT NULL DEFAULT 0, msg TEXT);
+
+CREATE INDEX IF NOT EXISTS idx_bids_ranking ON bids(amount DESC, timestamp ASC);
+`,
 			),
-			this.db.prepare(
-				`CREATE INDEX IF NOT EXISTS idx_bids_ranking ON bids(amount DESC, timestamp ASC);`,
-			),
+			// this.db.prepare(
+			// 	`CREATE INDEX IF NOT EXISTS idx_bids_ranking ON bids(amount DESC, timestamp ASC);`,
+			// ),
 			this.db.prepare(
 				`CREATE TABLE IF NOT EXISTS stats (
 key TEXT PRIMARY KEY DEFAULT 'auction_stats',
 total_bids INTEGER NOT NULL DEFAULT 0,
-unique_bidders INTEGER NOT NULL DEFAULT 0);`,
+unique_bidders INTEGER NOT NULL DEFAULT 0);
+
+INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
+`,
 			),
-			this.db.prepare(`INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');`),
 		];
 		await this.db.batch(statements);
+
+		//await this.db.exec(`..`);
 	}
+
+	//
+	// ---------------------
 
 	public async setBidderType(bidder: string, typ: number): Promise<void> {
 		await this.db
@@ -139,10 +154,8 @@ unique_bidders INTEGER NOT NULL DEFAULT 0);`,
 			const finalStatus = await this.queryBidder(bidder);
 			const newRank = finalStatus?.rank ?? null;
 
-			// Successful operation returns [result, null]
 			return [{ oldRank, newRank }, null];
 		} catch (e) {
-			// Catch unexpected database errors
 			const error =
 				e instanceof Error
 					? e
@@ -158,13 +171,23 @@ unique_bidders INTEGER NOT NULL DEFAULT 0);`,
 		return await stmt.bind(bidder).first<BidderStatus>();
 	}
 
-	// Other public methods (getStats, etc.) are unchanged
 	public async queryTopLeaderboard(): Promise<LeaderboardEntry[]> {
 		const stmt = this.db.prepare(
 			`SELECT bidder, amount FROM bids WHERE amount > 0 ORDER BY amount DESC, timestamp ASC LIMIT 10`,
 		);
 		const { results } = await stmt.all<Omit<LeaderboardEntry, "rank">>();
 		return results.map((row, index) => ({ rank: index + 1, ...row }));
+	}
+
+	public async getAuctionTopStats(): Promise<AuctionTopStats> {
+		const statsRow = await this.db
+			.prepare(`SELECT total_bids, unique_bidders FROM stats WHERE key = 'auction_stats'`)
+			.first<{ total_bids: number; unique_bidders: number }>();
+		if (!statsRow) throw new Error("Statistics table not initialized.");
+		return {
+			totalBids: statsRow.total_bids,
+			uniqueBidders: statsRow.unique_bidders,
+		};
 	}
 
 	public async getStats(): Promise<AuctionStats> {
