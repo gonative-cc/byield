@@ -20,6 +20,10 @@ export async function loader({ params, context, request }: Route.LoaderArgs): Pr
 }
 
 // This is a server action to post data to server (data mutations)
+// TODO Stan: we need to pass Sui network info to Controller constructor.
+// Normally, in UI we use `account = useCurrentAccount();` but the function below is in server context,
+//   so we need to provide that information through the request - probably through makeReq.
+//   Whenever we do fetcher.submit the function below (action) is called.
 export async function action({ request, context }: Route.ActionArgs) {
 	const env = context.cloudflare.env;
 	const ctrl = new Controller(env.BeelieversNFT, env.BeelieversD1);

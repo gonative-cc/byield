@@ -68,6 +68,8 @@ export default class Controller {
 	}
 
 	async handleJsonRPC(r: Request) {
+		console.log(">>>>> content-type", r.headers.get("content-type"));
+
 		let reqData: Req;
 		try {
 			reqData = await r.json<Req>();
