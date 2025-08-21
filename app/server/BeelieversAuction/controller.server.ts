@@ -60,10 +60,16 @@ export default class Controller {
 
 	async loadPageData(userAddr?: string): Promise<LoaderDataResp> {
 		const user = userAddr !== undefined ? await this.getUserData(userAddr) : null;
+		const details = this.auctionInfo;
+		const stats = await this.auction.getAuctionTopStats();
+		const leaderboard = await this.auction.getTopLeaderboard();
+		details.totalBids = stats.totalBids;
+		details.uniqueBidders = stats.uniqueBidders;
+		details.highestBidMist = leaderboard.length === 0 ? 0 : leaderboard[0].amount;
 
 		return {
 			error: undefined,
-			leaderboard: await this.auction.getTopLeaderboard(),
+			leaderboard,
 			details: this.auctionInfo,
 			user,
 		};

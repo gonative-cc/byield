@@ -25,6 +25,7 @@ function testAuctionDetails(): AuctionInfo {
 		uniqueBidders: 100,
 		totalBids: 100,
 		highestBidMist: 10e9,
+
 		entryBidMist: 1e6, //  0.001 SUI
 		startsAt,
 		endsAt: 1755780307000,
@@ -38,6 +39,7 @@ function mockAuctionDetails(): AuctionInfo {
 		uniqueBidders: 600,
 		totalBids: 1250,
 		highestBidMist: 30e9,
+
 		entryBidMist: 1e8, // 0.1 SUI
 		startsAt,
 		endsAt: startsAt + 24 * 3600_000,

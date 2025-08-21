@@ -248,6 +248,7 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 		return row;
 	}
 
+	// TODO not used
 	async getStats(): Promise<AuctionStats> {
 		const row = (await this.getAuctionTopStats()) as AuctionStats;
 		const topBids = await this.getTopLeaderboard();
