@@ -35,9 +35,9 @@ describe("authentication testcases", () => {
 
 		const { signature } = await keypair.signTransaction(txBytes);
 
-		await expect(
-			verifySignature(keypair.toSuiAddress(), txBytes, signature),
-		).resolves.toStrictEqual(await tx.getDigest());
+		expect(await verifySignature(keypair.toSuiAddress(), txBytes, signature)).toEqual(
+			await tx.getDigest(),
+		);
 	});
 
 	test("signature verification failed cases", async () => {
@@ -68,8 +68,8 @@ describe("authentication testcases", () => {
 
 		const { signature } = await keypair.signTransaction(txBytes);
 
-		await expect(
-			verifySignature(new Ed25519Keypair().toSuiAddress(), txBytes, signature),
-		).rejects.toThrow("Public key bytes do not match the provided address");
+		expect(
+			await verifySignature(new Ed25519Keypair().toSuiAddress(), txBytes, signature),
+		).toBeNull();
 	});
 });
