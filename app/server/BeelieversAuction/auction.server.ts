@@ -82,6 +82,7 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 		note: string = "",
 	): Promise<[BidResult | null, Error | null]> {
 		try {
+			// TODO: use time from the event
 			const now = new Date();
 			if (now < this.startDate) {
 				return [null, new Error("Auction has not started yet.")];
@@ -95,10 +96,6 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 
 			if (!Number.isInteger(amount) || amount <= 0) {
 				return [null, new Error("Bid amount must be a positive integer.")];
-			}
-
-			if (amount < this.minimumBid) {
-				return [null, new Error(`Minimum first bid is ${this.minimumBid}.`)];
 			}
 
 			// apply boost

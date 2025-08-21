@@ -122,16 +122,6 @@ describe("Auction Class with Tuple Error Handling", () => {
 			expect(r[0].results[0]).toEqual({ uniqueBidders: 11 });
 		});
 
-		test("error: first bid too low", async () => {
-			const [res, err] = await auction.bid(alice, 99);
-
-			expect(res).toBeNull();
-			expect(err).toBeInstanceOf(Error);
-			expect(err?.message).toContain("Minimum first bid is 100");
-			const b = await auction.getBidder(alice);
-			expect(b).toBeNull();
-		});
-
 		test("error: subsequent bid too low", async () => {
 			// first bid OK
 			const firstBid = minBid * 2;
