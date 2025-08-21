@@ -221,7 +221,7 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 	// TODO: merge it with getAuctionTopStats in a batch tx
 	async getTopLeaderboard(): Promise<Bidder[]> {
 		const stmt = this.db.prepare(
-			`SELECT bidder, amount, badges, note, bids FROM bids WHERE amount > 0 ORDER BY amount DESC, timestamp ASC LIMIT 10`,
+			`SELECT bidder, amount, badges, note, bids FROM bids WHERE amount > 0 ORDER BY amount DESC, timestamp ASC LIMIT 21`,
 		);
 		const { results } = await stmt.all<LeaderboardDBEntry>();
 		const uniqueBidders = await this._getUniqueBidders();
