@@ -8,6 +8,7 @@ const MOCK_LEADER_BOARD_DATA: Bidder[] = [
 		amount: 100, // Highest bid - will get "highest single bid" badge
 		badges: [Badge.first_place, Badge.highest_bid],
 		note: "",
+		bids: 2,
 	},
 	{
 		rank: 2,
@@ -15,6 +16,7 @@ const MOCK_LEADER_BOARD_DATA: Bidder[] = [
 		amount: 45,
 		badges: [],
 		note: "",
+		bids: 2,
 	},
 	{
 		rank: 3,
@@ -22,6 +24,7 @@ const MOCK_LEADER_BOARD_DATA: Bidder[] = [
 		amount: 40,
 		badges: [],
 		note: "",
+		bids: 2,
 	},
 	{
 		rank: 10,
@@ -29,6 +32,7 @@ const MOCK_LEADER_BOARD_DATA: Bidder[] = [
 		amount: 15, // Rank 10 - will get "Logo Ika red every 10th position" badge
 		badges: [],
 		note: "",
+		bids: 2,
 	},
 	{
 		rank: 20,
@@ -36,6 +40,7 @@ const MOCK_LEADER_BOARD_DATA: Bidder[] = [
 		amount: 12, // Rank 20 - will get "Logo Ika red every 10th position" badge
 		badges: [],
 		note: "",
+		bids: 2,
 	},
 	{
 		rank: 21,
@@ -43,6 +48,7 @@ const MOCK_LEADER_BOARD_DATA: Bidder[] = [
 		amount: 11, // Rank 21 - will get "nbtc every 21st bidder" badge
 		badges: [],
 		note: "",
+		bids: 2,
 	},
 	{
 		rank: 50,
@@ -50,6 +56,7 @@ const MOCK_LEADER_BOARD_DATA: Bidder[] = [
 		amount: 8,
 		badges: [],
 		note: "",
+		bids: 2,
 	},
 	{
 		rank: 100,
@@ -57,5 +64,6 @@ const MOCK_LEADER_BOARD_DATA: Bidder[] = [
 		amount: 6, // Rank 100 - will get "Whale for top 100" badge
 		badges: [],
 		note: "",
+		bids: 2,
 	},
 ];

@@ -57,6 +57,7 @@ export function defaultUser(_production: boolean): User {
 		badges: [],
 		note: "",
 		wlStatus: AuctionAccountType.DEFAULT,
+		bids: 0,
 	};
 }
 
@@ -73,5 +74,6 @@ function defaultTestUser(): User {
 		],
 		note: "I'm Beellish!",
 		wlStatus: AuctionAccountType.PARTNER_WHITELIST,
+		bids: 4,
 	};
 }
