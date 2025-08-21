@@ -12,7 +12,7 @@ import { Transaction } from "@mysten/sui/transactions";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { toast } from "~/hooks/use-toast";
 import { useNetworkVariables } from "~/networkConfig";
-import { useCurrentAccount, useSignAndExecuteTransaction } from "@mysten/dapp-kit";
+import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
 import { LoaderCircle } from "lucide-react";
 import { SUIIcon } from "~/components/icons";
 
@@ -67,6 +67,7 @@ interface BeelieversBidProps {
 
 export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 	const { auctionBidApi } = useNetworkVariables();
+	const client = useSuiClient();
 	const account = useCurrentAccount();
 	const suiBalanceRes = useCoinBalance();
 	const { mutate: signAndExecTx, isPending, data: txData } = useSignAndExecuteTransaction();
@@ -94,7 +95,7 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 		signAndExecTx(
 			{ transaction },
 			{
-				onSuccess: (result, _variables) => {
+				onSuccess: async (result, _variables) => {
 					console.log(
 						">>>> onsuccess, tx data:",
 						result.bytes,
@@ -103,18 +104,28 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 						"\nsignature",
 						result.signature,
 					);
-					toast({ title, description: "Bid successful" });
-					// Probably we firstly need to wait for tx, before submitting to the server
-					// const { effects } = await suiClient.waitForTransaction({
-					// 	digest: digest,
-					// 	options: {showEffects: true},
-					// });
-					// log --> effects?.created?.[0]?.reference?.objectId!);
 
-					makeReq(fetcher, {
-						method: "postBidTx",
-						params: [account.address, result.bytes, result.signature, note],
+					// Probably we firstly need to wait for tx, before submitting to the server
+					const { effects } = await client.waitForTransaction({
+						digest: result.digest,
+						options: { showEffects: true },
 					});
+
+					if (effects?.status.status === "success") {
+						// log --> effects?.created?.[0]?.reference?.objectId!);
+
+						toast({ title, description: "Bid successful" });
+						makeReq(fetcher, {
+							method: "postBidTx",
+							params: [account.address, result.bytes, result.signature, note],
+						});
+					} else {
+						toast({
+							title,
+							description: "Bid failed. Please try again later.\n",
+							variant: "destructive",
+						});
+					}
 				},
 				onError: (result) => {
 					console.error("tx failed: ", result);
