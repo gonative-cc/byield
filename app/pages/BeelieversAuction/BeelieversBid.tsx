@@ -112,8 +112,7 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 					});
 
 					if (effects?.status.status === "success") {
-						// log --> effects?.created?.[0]?.reference?.objectId!);
-
+						console.error("err", effects.status.error);
 						toast({ title, description: "Bid successful" });
 						makeReq(fetcher, {
 							method: "postBidTx",
