@@ -65,33 +65,34 @@ interface BeelieversBidProps {
 	entryBidMist: number;
 }
 
+const title = "Bid NFT";
+
 export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 	const { auctionBidApi } = useNetworkVariables();
 	const client = useSuiClient();
 	const account = useCurrentAccount();
 	const suiBalanceRes = useCoinBalance();
-	const { mutate: signAndExecTx, isPending, data: txData } = useSignAndExecuteTransaction();
 	const fetcher = useFetcher();
 
-	// TODO: remove WalletContext usage, use useCurrentAccount() or useSuiClient() instead!
-	// const { suiAddr } = useContext(WalletContext);
+	const { mutate: signAndExecTx, isPending, reset } = useSignAndExecuteTransaction();
 
 	const bidForm = useForm<BeelieversBidForm>({
 		mode: "all",
 		reValidateMode: "onChange",
-		disabled: isPending,
 		defaultValues: {
 			bid: "",
 			note: "",
 		},
 	});
 
+	// TODO: remove WalletContext usage, use useCurrentAccount() or useSuiClient() instead!
+	// const { suiAddr } = useContext(WalletContext);
+
 	if (account === null) return <SuiModal />;
 
 	const onSubmit = bidForm.handleSubmit(async ({ bid, note }) => {
 		const mistAmount = parseSUI(bid);
 		const transaction = await createBidTxn(account.address, mistAmount, auctionBidApi);
-		const title = "Bid NFT";
 		signAndExecTx(
 			{ transaction },
 			{
@@ -126,15 +127,17 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 						});
 					}
 				},
-				onError: (result) => {
-					console.error("tx failed: ", result);
+				onError: (error) => {
 					toast({
 						title,
-						description: "Bid failed. Please try again later.\n" + result.message,
+						description: "Bid failed. Please try again later.\n" + error.message,
 						variant: "destructive",
 					});
 				},
-				onSettled: () => suiBalanceRes.refetch(),
+				onSettled: () => {
+					suiBalanceRes.refetch();
+					reset();
+				},
 			},
 		);
 	});
@@ -221,7 +224,6 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 									/>
 								</div>
 								{submitButton(isPending, hasUserBidBefore)}
-								{txData && <span className="break-all">Your TX ID: {txData.digest}</span>}
 							</div>
 						</CardContent>
 					</Card>
