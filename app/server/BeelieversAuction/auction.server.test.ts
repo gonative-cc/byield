@@ -23,8 +23,13 @@ describe("Auction Class with Tuple Error Handling", () => {
 		eve: "eve",
 		felix: "felix",
 	};
-	const stdBadges = [2, 3, 4, 5, 6, 15, 16];
-	const stdBadges1 = [1, ...stdBadges];
+	const b_1_16 = [1, 2, 3, 4, 5, 6, 15, 16];
+	const b_2_16 = [2, 3, 4, 5, 6, 15, 16];
+	const b_2_20 = [2, 3, 4, 5, 6, 15, 16, 20];
+	const b_3_20 = [3, 4, 5, 6, 15, 16, 20];
+	const b_1_20 = [1, ...b_2_20];
+	const b_1_23 = [...b_1_20, 23];
+
 	const note = "Going for the win!";
 
 	beforeAll(async () => {
@@ -76,7 +81,7 @@ describe("Auction Class with Tuple Error Handling", () => {
 		let res = await auction._insertBidder(alice, 0, now);
 		expect(res.success, res.error).toBeTruthy();
 		b = await auction.getBidder(alice);
-		expect(b).toEqual({ amount: 0, badges: [], note: null, wlStatus: 0, rank: null });
+		expect(b).toEqual({ amount: 0, badges: [], note: null, wlStatus: 0, rank: null, bids: 0 });
 
 		// check clearing price
 		let cp = await auction.getClearingPrice();
@@ -91,7 +96,9 @@ describe("Auction Class with Tuple Error Handling", () => {
 		cp = await auction.getClearingPrice();
 		expect(cp).toBe(minBid);
 		l = await auction.getTopLeaderboard();
-		expect(l).toEqual([{ amount: 200, badges: [], bidder: "bob", note: null, rank: 1 }]);
+		const badges = [1, 2, 3, 4, 5, 6];
+		// bids is zero because we manually insert
+		expect(l).toEqual([{ amount: 200, badges, bidder: "bob", note: null, rank: 1, bids: 0 }]);
 	});
 
 	describe("bid", () => {
@@ -106,13 +113,14 @@ describe("Auction Class with Tuple Error Handling", () => {
 			expect(res).toEqual({ oldRank: 1, newRank: 1 });
 			const bidder = await auction.getBidder(alice);
 			expect(bidder?.note).toEqual("Success2!");
+			expect(bidder?.bids).toEqual(2);
 
 			[res, err] = await auction.bid(alice, 102);
 			expect(err).toBeNull();
 
 			const l = await auction.getTopLeaderboard();
 			expect(l).toEqual([
-				{ amount: 102, badges: stdBadges1, bidder: "alice", note: "", rank: 1 },
+				{ amount: 102, badges: b_1_23, bidder: "alice", note: "", rank: 1, bids: 2 },
 			]);
 
 			const w = await auction.getWinners();
@@ -136,17 +144,18 @@ describe("Auction Class with Tuple Error Handling", () => {
 
 			[res, err] = await auction.bid(alice, firstBid);
 			expect(err).toBeInstanceOf(Error);
-			expect(err?.message).toContain("must be greater than current effective bid");
+			expect(err?.message).toContain("must be greater than the previous effective bid");
 
 			[res, err] = await auction.bid(alice, firstBid - 1);
 			expect(err).toBeInstanceOf(Error);
-			expect(err?.message).toContain("must be greater than current effective bid");
+			expect(err?.message).toContain("must be greater than the previous effective bid");
 
 			// data shouldn't change
 			const bidder = await auction.getBidder(alice);
 			expect(bidder).toEqual({
 				amount: firstBid,
-				badges: stdBadges1,
+				badges: b_1_20,
+				bids: 1,
 				note: "",
 				rank: 1,
 				wlStatus: 0,
@@ -207,9 +216,9 @@ describe("Auction Class with Tuple Error Handling", () => {
 				totalBids: 3,
 				uniqueBidders: 3,
 				topBids: [
-					{ rank: 1, amount: 700, bidder: "bob", badges: stdBadges1, note: "" },
-					{ rank: 2, amount: 600, bidder: "alice", badges: stdBadges1, note },
-					{ rank: 3, amount: 500, bidder: "charl", badges: stdBadges, note: "" },
+					{ rank: 1, bids: 1, amount: 700, bidder: "bob", badges: b_1_16, note: "" },
+					{ rank: 2, bids: 1, amount: 600, bidder: "alice", badges: b_2_16, note },
+					{ rank: 3, bids: 1, amount: 500, bidder: "charl", badges: b_2_20, note: "" },
 				],
 			});
 
@@ -250,22 +259,59 @@ describe("Auction Class with Tuple Error Handling", () => {
 			expect(clearingPrice).toBe(310);
 
 			stats = await auction.getStats();
+			const b_3_16 = [3, 4, 5, 6, 15, 16];
 			expect(stats).toEqual({
 				totalBids: 9,
 				uniqueBidders: 6,
 				topBids: [
-					{ rank: 1, amount: 800, bidder: "charl", badges: stdBadges1, note: "" },
-					{ rank: 2, amount: 750, bidder: "bob", badges: stdBadges1, note: "" },
+					{
+						rank: 1,
+						bids: 2,
+						amount: 800,
+						bidder: "charl",
+						badges: [...b_1_16, 23],
+						note: "",
+					},
+					{
+						rank: 2,
+						bids: 2,
+						amount: 750,
+						bidder: "bob",
+						badges: [...b_2_16, 23],
+						note: "",
+					},
 					{
 						rank: 3,
+						bids: 1,
 						amount: 600,
 						bidder: "alice",
-						badges: stdBadges1,
+						badges: b_2_16,
 						note: "Going for the win!",
 					},
-					{ rank: 4, amount: 320, bidder: "eve", badges: stdBadges.slice(1), note: "" },
-					{ rank: 5, amount: 310, bidder: "dylan", badges: stdBadges.slice(1), note: "" },
-					{ rank: 6, amount: 300, bidder: "felix", badges: stdBadges.slice(1), note: "" },
+					{
+						rank: 4,
+						bids: 1,
+						amount: 320,
+						bidder: "eve",
+						badges: b_3_20,
+						note: "",
+					},
+					{
+						rank: 5,
+						bids: 1,
+						amount: 310,
+						bidder: "dylan",
+						badges: b_3_16,
+						note: "",
+					},
+					{
+						rank: 6,
+						bids: 1,
+						amount: 300,
+						bidder: "felix",
+						badges: b_3_16,
+						note: "",
+					},
 				],
 			});
 			const w = await auction.getWinners();

@@ -1,4 +1,5 @@
-import type { Bidder, User } from "./types";
+import type { Bidder, User, User_ } from "./types";
+// import { AuctionAccountType } from "./types";
 import { Badge } from "./types";
 
 export interface BidResult {
@@ -11,6 +12,7 @@ export interface LeaderboardDBEntry {
 	amount: number; // Effective amount
 	badges: string;
 	note: string;
+	bids: number;
 }
 
 export interface AuctionAggStats {
@@ -53,7 +55,8 @@ amount INTEGER NOT NULL,
 timestamp INTEGER NOT NULL,
 wlStatus INTEGER NOT NULL DEFAULT 0,
 note TEXT,
-badges TEXT DEFAULT "[]");
+badges TEXT DEFAULT "[]",
+bids INTEGER DEFAULT 0);
 
 CREATE INDEX IF NOT EXISTS idx_bids_ranking ON bids(amount DESC, timestamp ASC);
 
@@ -106,7 +109,7 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 				return [
 					null,
 					new Error(
-						`New effective bid (${amount}) must be greater than current effective bid (${prevAmount}).`,
+						`New effective bid (${amount}) must be greater than the previous effective bid (${prevAmount}).`,
 					),
 				];
 			}
@@ -122,7 +125,7 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 			const statements = [
 				this.db
 					.prepare(
-						`INSERT INTO bids (bidder, amount, timestamp, note) VALUES (?, ?, ?, ?) ON CONFLICT(bidder) DO UPDATE SET amount = excluded.amount, timestamp = excluded.timestamp, note = excluded.note`,
+						`INSERT INTO bids (bidder, amount, timestamp, note, bids) VALUES (?, ?, ?, ?, 1) ON CONFLICT(bidder) DO UPDATE SET amount = excluded.amount, timestamp = excluded.timestamp, note = excluded.note, bids = excluded.bids+1`,
 					)
 					.bind(bidder, amount, now.getTime(), note),
 				this.db
@@ -134,7 +137,7 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 			const result = await this.db.batch(statements);
 			const uniqueBidders = (result[1].results[0] as { uniqueBidders: number }).uniqueBidders;
 			const newRank = await this._calculateRank(amount, now.getTime());
-			let badges = calcBadges(
+			let badges = calcStaticBadges(
 				amount,
 				prevAmount,
 				newRank || 1,
@@ -151,6 +154,9 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 					.prepare(`UPDATE bids SET badges = ? WHERE bidder = ?`)
 					.bind(JSON.stringify(badges), bidder)
 					.run();
+
+			// TODO: return updated user
+			// and call addDynamicBadges
 
 			return [{ oldRank, newRank }, null];
 		} catch (e) {
@@ -178,8 +184,8 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 	// TODO: optimize
 	async getBidder(bidder: string): Promise<User | null> {
 		const stmt = this.db.prepare(
-			`WITH ranked_bids AS (SELECT bidder, amount, wlStatus, note, badges, RANK() OVER (ORDER BY amount DESC, timestamp ASC) as rank FROM bids WHERE amount > 0)
-		SELECT rank, amount, badges, note, wlStatus FROM ranked_bids WHERE bidder = ?`,
+			`WITH ranked_bids AS (SELECT bidder, amount, wlStatus, note, badges, bids, RANK() OVER (ORDER BY amount DESC, timestamp ASC) as rank FROM bids WHERE amount > 0)
+		SELECT rank, amount, badges, note, wlStatus, bids FROM ranked_bids WHERE bidder = ?`,
 		);
 		let u = await stmt.bind(bidder).first<User>();
 		if (u === null) u = await this._getBidderNoRank(bidder);
@@ -187,32 +193,51 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 
 		// @ts-expect-error u.badges real type is string (from DB), but casted on is list
 		u.badges = JSON.parse(u.badges);
+
+		const uniqueBidders = await this._getUniqueBidders();
+		// const isPartner = u.wlStatus === AuctionAccountType.PARTNER_WHITELIST;
+		addDynamicBadges(u, Math.min(uniqueBidders, this.size));
+
 		return u;
 	}
 
 	// returns User with rank = null
 	async _getBidderNoRank(bidder: string): Promise<User | null> {
 		const u = await this.db
-			.prepare(`SELECT amount, badges, note, wlStatus FROM bids WHERE bidder = ?`)
+			.prepare(`SELECT amount, badges, note, wlStatus, bids FROM bids WHERE bidder = ?`)
 			.bind(bidder)
 			.first<User>();
 		if (u !== null) u.rank = null;
 		return u;
 	}
 
+	async _getUniqueBidders(): Promise<number> {
+		const row = await this.db
+			.prepare(`SELECT uniqueBidders FROM stats WHERE key = 'auction_stats'`)
+			.first<{ uniqueBidders: number }>();
+		return row?.uniqueBidders || 0;
+	}
+
 	// TODO: merge it with getAuctionTopStats in a batch tx
 	async getTopLeaderboard(): Promise<Bidder[]> {
 		const stmt = this.db.prepare(
-			`SELECT bidder, amount, badges, note FROM bids WHERE amount > 0 ORDER BY amount DESC, timestamp ASC LIMIT 10`,
+			`SELECT bidder, amount, badges, note, bids FROM bids WHERE amount > 0 ORDER BY amount DESC, timestamp ASC LIMIT 10`,
 		);
 		const { results } = await stmt.all<LeaderboardDBEntry>();
-		return results.map(({ bidder, amount, badges, note }, index) => ({
-			rank: index + 1,
-			bidder,
-			amount,
-			note,
-			badges: JSON.parse(badges),
-		}));
+		const uniqueBidders = await this._getUniqueBidders();
+		// TODO add addDynamicBadges(u.badges, u.rank, u.bids, isPartner, Math.min(uniqueBidders, this.size));
+		return results.map(({ bidder, amount, badges, note, bids }, index) => {
+			const b = {
+				rank: index + 1,
+				bidder,
+				amount,
+				note,
+				badges: JSON.parse(badges),
+				bids,
+			};
+			addDynamicBadges(b, Math.min(uniqueBidders, this.size));
+			return b;
+		});
 	}
 
 	async getAuctionTopStats(): Promise<AuctionAggStats> {
@@ -270,7 +295,7 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 }
 
 // prevRank - if not assigned previously, then should be assumed to equal
-function calcBadges(
+function calcStaticBadges(
 	amount: number,
 	prevAmount: number,
 	rank: number,
@@ -278,12 +303,6 @@ function calcBadges(
 	uniqueBidders: number,
 ): Badge[] {
 	const badges = [];
-	if (rank === 1) badges.push(Badge.first_place);
-	if (rank <= 3) badges.push(Badge.top_3);
-	if (rank <= 10) badges.push(Badge.top_10);
-	if (rank <= 21) badges.push(Badge.top_21);
-	if (rank <= 100) badges.push(Badge.top_100);
-	if (rank <= 5810) badges.push(Badge.top_5810);
 
 	const diff = (amount - prevAmount) / 1e9; // convert MIST -> SUI
 	if (diff >= 10) badges.push(Badge.bid_over_10);
@@ -298,6 +317,40 @@ function calcBadges(
 	if (uniqueBidders <= 1000) badges.push(Badge.first_1000);
 
 	return badges.sort(cmpNumbers);
+}
+
+// TODO
+// updates badges by adding the dynamic ones
+function addDynamicBadges(
+	u: User_,
+	lastRank: number, // min(uniqueBidders, auctionSize)
+) {
+	const { rank, bids, badges } = u;
+	if (rank !== null) {
+		if (rank === 1) badges.push(Badge.first_place);
+		if (rank <= 3) badges.push(Badge.top_3);
+		if (rank <= 10) badges.push(Badge.top_10);
+		if (rank <= 21) badges.push(Badge.top_21);
+		if (rank <= 100) badges.push(Badge.top_100);
+		if (rank <= 5810) badges.push(Badge.top_5810);
+
+		if (rank % 10 === 0) badges.push(Badge.every_10th_position);
+		if (rank % 21 === 0) badges.push(Badge.nbtc_every_21st_bidder);
+		if (rank == lastRank) badges.push(Badge.last_bid);
+	}
+
+	if (bids >= 2) badges.push(Badge.made_2_bids);
+	if (bids >= 3) badges.push(Badge.made_3_bids);
+	if (bids >= 4) badges.push(Badge.made_4_bids);
+	if (bids >= 5) badges.push(Badge.made_5_bids);
+	if (bids >= 10) badges.push(Badge.made_10_bids);
+	if (bids >= 20) badges.push(Badge.made_20_bids);
+
+	// TODO
+	// highestBid
+	// if (isPartner) badges.push(Badge.partner_wl);
+
+	badges.sort(cmpNumbers);
 }
 
 function mergeBadges(list1: Badge[], list2: Badge[]): Badge[] {
