@@ -96,8 +96,11 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 				return [null, new Error("Bid amount must be a positive integer.")];
 			}
 
+			if (amount < this.minimumBid) {
+				return [null, new Error(`Minimum first bid is ${this.minimumBid}.`)];
+			}
+
 			// apply boost
-			// TODO: test boost
 			const effectiveAmount =
 				(prevBid?.wlStatus ?? 0) > 0 ? Math.floor(amount * 1.05) : amount;
 			const currentEffectiveBid = prevBid?.amount ?? 0;
@@ -109,9 +112,6 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 						`New effective bid (${effectiveAmount}) must be greater than current effective bid (${currentEffectiveBid}).`,
 					),
 				];
-			}
-			if (!prevBid && amount < this.minimumBid) {
-				return [null, new Error(`Minimum first bid is ${this.minimumBid}.`)];
 			}
 
 			note = note.substring(0, 30);
@@ -227,10 +227,15 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 	// Private methods
 	//
 
-	async _insertBidder(bidder: string, amount: number, timestamp: number): Promise<D1Result> {
+	async _insertBidder(
+		bidder: string,
+		amount: number,
+		timestamp: Date,
+		wlStatus: number = 0,
+	): Promise<D1Result> {
 		return await this.db
-			.prepare("INSERT INTO bids (bidder, amount, timestamp) VALUES (?, ?, ?)")
-			.bind(bidder, amount, timestamp)
+			.prepare("INSERT INTO bids (bidder, amount, timestamp, wlStatus) VALUES (?, ?, ?, ?)")
+			.bind(bidder, amount, +timestamp, wlStatus)
 			.run();
 	}
 }

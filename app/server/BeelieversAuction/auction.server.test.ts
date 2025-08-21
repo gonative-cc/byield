@@ -70,7 +70,7 @@ describe("Auction Class with Tuple Error Handling", () => {
 		let b = await auction.getBidder(alice);
 		expect(b).toBeNull();
 
-		let res = await auction._insertBidder(alice, 0, 100);
+		let res = await auction._insertBidder(alice, 0, now);
 		expect(res.success, res.error).toBeTruthy();
 		b = await auction.getBidder(alice);
 		expect(b).toEqual({ amount: 0, badges: [], note: null, wlStatus: 0, rank: null });
@@ -83,7 +83,7 @@ describe("Auction Class with Tuple Error Handling", () => {
 		let l = await auction.getTopLeaderboard();
 		expect(l).toEqual([]);
 
-		res = await auction._insertBidder(users.bob, minBid * 2, 20);
+		res = await auction._insertBidder(users.bob, minBid * 2, now);
 		expect(res.success, res.error).toBeTruthy();
 		cp = await auction.getClearingPrice();
 		expect(cp).toBe(minBid);
@@ -165,6 +165,24 @@ describe("Auction Class with Tuple Error Handling", () => {
 			expect(result).toBeNull();
 			expect(error).toBeInstanceOf(Error);
 			expect(error?.message).toBe("Auction has already ended.");
+		});
+
+		test("boost", async () => {
+			const r = await auction._insertBidder(alice, 0, now, 2);
+			expect(r.success, r.error).toBeTruthy();
+
+			let [res, err] = await auction.bid(alice, minBid, "Success!");
+			expect(err).toBeNull();
+			expect(res).toEqual({ oldRank: null, newRank: 1 });
+			const b = await auction.getBidder(alice);
+			expect(b?.amount).toEqual(minBid * 1.05);
+
+			[res, err] = await auction.bid(alice, 1000, "Success!");
+			expect(err).toBeNull();
+			expect(res).toEqual({ oldRank: 1, newRank: 1 });
+
+			const l = await auction.getTopLeaderboard();
+			expect(l[0].amount).toEqual(1000 * 1.05);
 		});
 	});
 
