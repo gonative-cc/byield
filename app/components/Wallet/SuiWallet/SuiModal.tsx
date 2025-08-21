@@ -155,6 +155,12 @@ export function SuiModal({ label = "Connect Sui Wallet" }: SuiModalProps) {
 					<DialogTitle>Connect Sui Wallet</DialogTitle>
 				</DialogHeader>
 				<DialogDescription>Please select a wallet to connect</DialogDescription>
+				<DialogDescription className="text-xs">
+					P.S: ZKlink / Outh (accounts that are created using e-mail) are not supported
+				</DialogDescription>
+				<DialogDescription className="text-xs">
+					If you&apos;re bidding on your mobile, please use wallet browser e.g Slush wallet browser
+				</DialogDescription>
 				<AvailableWallets />
 			</DialogContent>
 		</Dialog>
