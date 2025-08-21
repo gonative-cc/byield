@@ -137,7 +137,6 @@ export async function checkTxOnChain(
 				showEvents: true,
 			},
 		});
-		await delay(100);
 		return processTransactionData(tx, suiTxId, bidderAddr, "Primary", trustedPackageId);
 	} catch (error) {
 		console.error(`[Primary] Error querying Sui RPC for tx ${suiTxId}:`, error);
