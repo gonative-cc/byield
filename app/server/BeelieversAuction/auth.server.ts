@@ -80,8 +80,8 @@ async function queryIndexerFallback(
 	trustedPackageId: string,
 	indexerUrl: string,
 ): Promise<BidTxEvent | TxCheckError> {
-	const MAX_RETRIES = 3;
-	const RETRY_DELAY_MS = 2000;
+	const MAX_ATTEMPT = 2;
+	const RETRY_DELAY_MS = 1000;
 
 	for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
 		try {
