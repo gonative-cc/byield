@@ -34,6 +34,10 @@ export function BeelieversAuction({
 	const userAccountType = user?.wlStatus;
 
 	console.log(">>>> user", user);
+	for (const l of leaderboard) {
+		console.log(">>>> leader ", l);
+		l.badges = [...new Set(l.badges)];
+	}
 
 	useEffect(() => {
 		if (suiAddr && suiAddr !== lastCheckedAddress.current && userFetcher.state === "idle") {
