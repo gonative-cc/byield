@@ -109,11 +109,6 @@ export default class Controller {
 		signature: string,
 		userMessage?: string,
 	): Promise<BidResult | Response> {
-		// TODO production
-		if (isProductionMode()) {
-			return responseNotImplemented();
-		}
-
 		const txDigest = await verifySignature(userAddr, txBytes, signature);
 		if (txDigest === null) return responseNotAuthorized();
 		if (txDigest.length > maxTxIdSize) {
