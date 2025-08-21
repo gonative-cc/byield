@@ -5,7 +5,7 @@ import { trimAddress } from "~/components/Wallet/walletHelper";
 import { toBadgeRecord, type BadgeRecord } from "~/lib/badgeSystem";
 import type { Bidder, User } from "~/server/BeelieversAuction/types";
 import { BadgesModal } from "~/components/BadgesModal";
-import { formatSUI, parseSUI } from "~/lib/denoms";
+import { formatSUI } from "~/lib/denoms";
 
 const MAX_LEADERBOARD_ROWS = 21;
 
