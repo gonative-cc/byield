@@ -1,9 +1,9 @@
-import { getLeaderBoardData } from "./leaderboard.server";
-import type { LoaderDataResp, AuctionInfo, User } from "./types";
-import type { Req } from "./jsonrpc";
-import { defaultAuctionInfo, defaultUser } from "./defaults";
 import { isValidSuiAddress } from "@mysten/sui/utils";
 import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
+
+import type { LoaderDataResp, AuctionInfo, User, Bidder } from "./types";
+import type { Req } from "./jsonrpc";
+import { defaultAuctionInfo, defaultUser } from "./defaults";
 import { checkTxOnChain } from "./auth.server";
 
 import { fromBase64 } from "@mysten/utils";
@@ -58,8 +58,8 @@ export default class Controller {
 
 		return {
 			error: undefined,
-			leaderboard: getLeaderBoardData(),
-			details: await this.getAuctionDetails(),
+			leaderboard: await this.auction.getTopLeaderboard(),
+			details: this.auctionInfo,
 			user,
 		};
 	}
@@ -77,7 +77,7 @@ export default class Controller {
 			case "queryUser":
 				return this.getUserData(reqData.params[0]);
 			case "queryAuctionDetails":
-				return this.getAuctionDetails();
+				return this.auctionInfo;
 			case "postBidTx": {
 				const [userAddr, txBytes, signature, userMessage] = reqData.params;
 				return this.postBidTx(userAddr, fromBase64(txBytes), signature, userMessage);
@@ -89,15 +89,6 @@ export default class Controller {
 			default:
 				return responseNotFound("Unknown method");
 		}
-	}
-
-	async getAuctionDetails(): Promise<AuctionInfo> {
-		return defaultAuctionInfo(this.isProduction);
-
-		// const detailsJson = await this.kv.get(this.kvKeyDetails);
-		// if (detailsJson !== null) {
-		// 	return JSON.parse(detailsJson) as AuctionDetails;
-		// }
 	}
 
 	async postBidTx(

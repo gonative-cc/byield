@@ -59,7 +59,3 @@ const MOCK_LEADER_BOARD_DATA: Bidder[] = [
 		note: "",
 	},
 ];
-
-export function getLeaderBoardData(): Bidder[] {
-	return MOCK_LEADER_BOARD_DATA;
-}

@@ -6,7 +6,7 @@ export function defaultAuctionInfo(production: boolean): AuctionInfo {
 	}
 	const startsAt = +new Date("2025-08-21T13:00:00Z");
 	return {
-		// TODO: move this
+		// TODO: move this and use DB records!
 		totalBids: 0,
 		uniqueBidders: 0,
 		highestBidMist: 0,
