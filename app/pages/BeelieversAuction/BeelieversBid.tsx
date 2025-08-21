@@ -108,10 +108,6 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 						result.signature,
 					);
 
-					console.log(">>> delay to accomodate network propagation", new Date());
-					await delay(500);
-					console.log(">>> delay done", new Date());
-
 					// Probably we firstly need to wait for tx, before submitting to the server
 					const { effects } = await client.waitForTransaction({
 						digest: result.digest,
@@ -119,13 +115,15 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 					});
 
 					if (effects?.status.status === "success") {
-						console.error("err", effects.status.error);
+						// delay to accomodate network propagation for sending proof of the TX
+						await delay(800);
 						toast({ title, description: "Bid successful" });
 						makeReq(fetcher, {
 							method: "postBidTx",
 							params: [account.address, result.bytes, result.signature, note],
 						});
 					} else {
+						console.error("err", effects?.status.error);
 						toast({
 							title,
 							description: "Bid failed. Please try again later.\n",
