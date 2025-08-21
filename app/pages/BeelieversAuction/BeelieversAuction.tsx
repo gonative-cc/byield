@@ -10,7 +10,6 @@ import { AuctionState } from "./types";
 import type { AuctionInfo, Bidder, User } from "~/server/BeelieversAuction/types";
 import { makeReq } from "~/server/BeelieversAuction/jsonrpc";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
-import { MyPosition } from "./MyPosition";
 
 function getAuctionState(startMs: number, endMs: number): AuctionState {
 	const nowMs = new Date().getTime();
@@ -82,12 +81,6 @@ export function BeelieversAuction({
 			{auctionState == AuctionState.STARTED && (
 				<div className="animate-in slide-in-from-right-4 duration-1000 delay-500 w-full flex justify-center">
 					<BeelieversBid user={user} entryBidMist={entryBidMist} />
-				</div>
-			)}
-
-			{user && (
-				<div className="animate-in slide-in-from-right-4 duration-1000 delay-500 w-full flex justify-center">
-					<MyPosition user={user} />
 				</div>
 			)}
 
