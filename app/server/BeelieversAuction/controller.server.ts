@@ -17,7 +17,7 @@ export default class Controller {
 	kv: KVNamespace;
 	kvKeyTxPrefix = "tx_";
 
-	suiNet: "mainnet" | "testnet" | "devnet" | "localnet";
+	suiNet: SuiNet;
 	trustedPackageId: string;
 	fallbackIndexerUrl: string;
 
@@ -26,7 +26,9 @@ export default class Controller {
 
 	isProduction: boolean;
 
-	constructor(kv: KVNamespace, d1: D1Database) {
+	// TODO: finish this by importing the type from the right location
+	constructor(kv: KVNamespace, d1: D1Database, suiNet: SuiNet) {
+		this.suiNet = suiNet;
 		this.isProduction = isProductionMode();
 		this.kv = kv;
 
@@ -41,6 +43,7 @@ export default class Controller {
 		);
 
 		// TODO: update those values for mainnet!!!
+		// use suiNet to get the right data from app/config/sui/beelievers-auction ....
 		this.suiNet = "testnet";
 		this.trustedPackageId =
 			"0xd5b24b83b168f8656aa7c05af1256e6115de1b80d97be0cddf19297a15535149";
