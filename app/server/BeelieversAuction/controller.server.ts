@@ -4,12 +4,12 @@ import type { Req } from "./jsonrpc";
 import { defaultAuctionInfo, defaultUser } from "./defaults";
 import { isValidSuiAddress } from "@mysten/sui/utils";
 import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
-import { checkTxOnChain, type BidTxEvent } from "./auth.server";
+import { checkTxOnChain } from "./auth.server";
 
 import { fromBase64 } from "@mysten/utils";
 import { verifySignature } from "./auth";
 import { isProductionMode } from "~/lib/appenv";
-import { Auction } from "./auction.server";
+import { Auction, type BidResult } from "./auction.server";
 
 const maxTxIdSize = 44;
 
@@ -104,8 +104,8 @@ export default class Controller {
 		userAddr: string,
 		txBytes: Uint8Array,
 		signature: string,
-		userMessage: string,
-	): Promise<boolean | Response> {
+		userMessage?: string,
+	): Promise<BidResult | Response> {
 		// TODO production
 		if (isProductionMode()) {
 			return responseNotImplemented();
@@ -120,7 +120,7 @@ export default class Controller {
 
 		const keyKv = this.kvKeyTxPrefix + txDigest;
 		const kvCheck = await this.kv.get(keyKv);
-		if (kvCheck !== null) return true;
+		if (kvCheck !== null) return JSON.parse(kvCheck);
 
 		const suiClient = new SuiClient({ url: getFullnodeUrl(this.suiNet) });
 		try {
@@ -137,9 +137,11 @@ export default class Controller {
 			}
 
 			await this.kv.put(keyKv, "");
-			// TODO: bid in DB
-			// return bidEvent;
-			return true;
+			const amount = Number(bidEvent.totalBidAmount);
+			console.log(">>>> bidEvent", bidEvent);
+			const [resp, err] = await this.auction.bid(userAddr, amount, userMessage);
+			if (err !== null) return responseBadRequest(err.message);
+			return resp || { oldRank: 0, newRank: 0 };
 		} catch (error) {
 			console.error(
 				"[Controller] An error occurred during postBidTx:",
