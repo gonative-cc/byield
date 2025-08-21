@@ -31,10 +31,10 @@ function testAuctionDetails(): AuctionInfo {
 	};
 }
 
-export function defaultUser(production: boolean): User {
-	if (!production) {
-		return defaultTestUser();
-	}
+export function defaultUser(_production: boolean): User {
+	// if (!_production) {
+	// 	return defaultTestUser();
+	// }
 	return {
 		rank: null,
 		amount: 0,
@@ -47,7 +47,7 @@ export function defaultUser(production: boolean): User {
 function defaultTestUser(): User {
 	return {
 		rank: 9, // rank starts from 1
-		amount: 1, // 1 MIST
+		amount: 12e8, // 1.2 SUI
 		badges: [
 			Badge.top_10,
 			Badge.top_21,
