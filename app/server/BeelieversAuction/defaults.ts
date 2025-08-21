@@ -24,7 +24,7 @@ function testAuctionDetails(): AuctionInfo {
 		uniqueBidders: 600,
 		totalBids: 1250,
 		highestBidMist: 30e9,
-		entryBidMist: 1e7, // 0.01 SUI
+		entryBidMist: 1e8, // 0.1 SUI
 		startsAt,
 		endsAt: startsAt + 24 * 3600_000,
 		auctionSize: 5810,

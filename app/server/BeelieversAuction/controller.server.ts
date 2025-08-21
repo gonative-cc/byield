@@ -91,6 +91,7 @@ export default class Controller {
 		}
 	}
 
+	// TODO: should return new User record
 	async postBidTx(
 		userAddr: string,
 		txBytes: Uint8Array,
