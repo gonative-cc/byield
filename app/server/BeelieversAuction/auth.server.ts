@@ -41,7 +41,7 @@ function processTransactionData(
 	trustedPackageId: string,
 ): BidTxEvent | TxCheckError {
 	if (!data) {
-		return `[${source}] Response did not contain a result object for tx: ${suiTxId}`;
+		throw new Error(`[${source}] Response did not contain a result object for tx: ${suiTxId}`);
 	}
 
 	if (data.effects?.status?.status !== "success") {
@@ -80,37 +80,45 @@ async function queryIndexerFallback(
 	trustedPackageId: string,
 	indexerUrl: string,
 ): Promise<BidTxEvent | TxCheckError> {
-	try {
-		console.log(`[Fallback] Querying public Suivision indexer for tx: ${suiTxId}`);
-		const response = await fetch(indexerUrl, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({
-				jsonrpc: "2.0",
-				id: suiTxId,
-				method: "sui_getTransactionBlock",
-				params: [suiTxId, { showEffects: true, showEvents: true }],
-			}),
-		});
+	const MAX_RETRIES = 3;
+	const RETRY_DELAY_MS = 2000;
 
-		if (!response.ok) {
-			const errorText = await response.text();
-			return `[Fallback] Suivision API returned an error: ${response.status} ${response.statusText} - ${errorText}`;
+	for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+		try {
+			console.log(`[Fallback] Querying public Suivision indexer for tx: ${suiTxId}`);
+			const response = await fetch(indexerUrl, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					jsonrpc: "2.0",
+					id: suiTxId,
+					method: "sui_getTransactionBlock",
+					params: [suiTxId, { showEffects: true, showEvents: true }],
+				}),
+			});
+
+			if (!response.ok) {
+				throw new Error(`API returned an error: ${response.status} ${response.statusText}`);
+			}
+
+			const jsonResponse: SuiJsonRpcResponse = await response.json();
+			return processTransactionData(
+				jsonResponse.result,
+				suiTxId,
+				bidderAddr,
+				"Fallback",
+				trustedPackageId,
+			);
+		} catch (error) {
+			console.error(`[Fallback] Attempt ${attempt} failed for tx ${suiTxId}:`, error);
+
+			if (attempt < MAX_RETRIES) {
+				console.log(`[Fallback] Retrying in ${RETRY_DELAY_MS / 1000}s...`);
+				await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
+			}
 		}
-
-		const jsonResponse: SuiJsonRpcResponse = await response.json();
-		return processTransactionData(
-			jsonResponse.result,
-			suiTxId,
-			bidderAddr,
-			"Fallback",
-			trustedPackageId,
-		);
-	} catch (error) {
-		return `[Fallback] The indexer also failed for tx ${suiTxId}: ${
-			error instanceof Error ? error.message : String(error)
-		}`;
 	}
+	return `[Fallback] All ${MAX_RETRIES} attempts failed for tx ${suiTxId}.`;
 }
 
 export async function checkTxOnChain(
