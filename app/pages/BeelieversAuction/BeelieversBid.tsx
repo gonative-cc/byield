@@ -16,6 +16,9 @@ import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@
 import { LoaderCircle } from "lucide-react";
 import { SUIIcon } from "~/components/icons";
 
+// function to dealy a bit more for the network delay
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 interface NewTotalBidAmountProps {
 	currentBidInMist: number;
 	entryBidMist: number;
@@ -105,6 +108,10 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 						"\nsignature",
 						result.signature,
 					);
+
+					console.log(">>> delay to accomodate network propagation", new Date());
+					await delay(500);
+					console.log(">>> delay done", new Date());
 
 					// Probably we firstly need to wait for tx, before submitting to the server
 					const { effects } = await client.waitForTransaction({

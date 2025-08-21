@@ -129,11 +129,12 @@ export async function checkTxOnChain(
 				showEvents: true,
 			},
 		});
-
+		await delay(100);
 		return processTransactionData(tx, suiTxId, bidderAddr, "Primary", trustedPackageId);
 	} catch (error) {
 		console.error(`[Primary] Error querying Sui RPC for tx ${suiTxId}:`, error);
 		console.log("[Primary] RPC failed. Attempting to use fallback indexer...");
+		await delay(500);
 		return queryIndexerFallback(suiTxId, bidderAddr, trustedPackageId, indexerURL);
 	}
 }
@@ -157,3 +158,5 @@ export async function verifySignature(
 		return null;
 	}
 }
+
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
