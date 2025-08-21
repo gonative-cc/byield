@@ -5,7 +5,7 @@ import type { LoaderDataResp, AuctionInfo, User, Bidder } from "./types";
 import type { Req } from "./jsonrpc";
 import { defaultAuctionInfo, defaultUser } from "./defaults";
 import { checkTxOnChain } from "./auth.server";
-
+import { networkConfig, type SuiNet } from "~/config/sui/networks";
 import { fromBase64 } from "@mysten/utils";
 import { verifySignature } from "./auth";
 import { isProductionMode } from "~/lib/appenv";
@@ -26,7 +26,6 @@ export default class Controller {
 
 	isProduction: boolean;
 
-	// TODO: finish this by importing the type from the right location
 	constructor(kv: KVNamespace, d1: D1Database, suiNet: SuiNet) {
 		this.suiNet = suiNet;
 		this.isProduction = isProductionMode();
@@ -42,17 +41,17 @@ export default class Controller {
 			ai.entryBidMist,
 		);
 
-		// TODO: update those values for mainnet!!!
-		// use suiNet to get the right data from app/config/sui/beelievers-auction ....
 		this.suiNet = "testnet";
-		this.trustedPackageId =
-			"0xd5b24b83b168f8656aa7c05af1256e6115de1b80d97be0cddf19297a15535149";
-		this.fallbackIndexerUrl = "https://sui-testnet-endpoint.blockvision.org/";
+		const config = networkConfig[this.suiNet];
+		if (!config) {
+			throw new Error(`Configuration for network "${this.suiNet}" not found.`);
+		}
 
-		if (!this.trustedPackageId || !this.fallbackIndexerUrl) {
-			throw new Error(
-				"Missing required environment variables: TRUSTED_PACKAGE_ID and FALLBACK_INDEXER_URL must be set.",
-			);
+		this.trustedPackageId = config.packageId;
+		this.fallbackIndexerUrl = config.fallbackIndexerUrl;
+
+		if (!this.trustedPackageId) {
+			throw new Error(`trustedPackageId is not set for the "${this.suiNet}" network.`);
 		}
 	}
 

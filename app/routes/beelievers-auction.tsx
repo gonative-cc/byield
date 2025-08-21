@@ -6,17 +6,23 @@ import type { Route } from "./+types/beelievers-auction";
 import { useDisconnectWallet, useSuiClientContext } from "@mysten/dapp-kit";
 import { useEffect } from "react";
 import { isProductionMode } from "~/lib/appenv";
+import type { SuiNet } from "~/config/sui/networks";
 
 // if we need to load something directly from the client (browser):
 // https://reactrouter.com/start/framework/data-loading#using-both-loaders
 export async function loader({ params, context, request }: Route.LoaderArgs): Promise<LoaderDataResp> {
 	const env = context.cloudflare.env;
-	const ctrl = new Controller(env.BeelieversNFT, env.BeelieversD1);
 	const url = new URL(request.url);
+	const suiNet =
+		(url.searchParams.get("network") as SuiNet) || (isProductionMode() ? "mainnet" : "testnet");
+
+	const ctrl = new Controller(env.BeelieversNFT, env.BeelieversD1, suiNet);
+	const pageData = await ctrl.loadPageData();
+
 	// const suiAddress = url.searchParams.get("suiAddress") ?? undefined;
 	console.log(">>>>> Page Loader handler - params:", params, "url:", url.href);
 	// TODO: add user param
-	return await ctrl.loadPageData();
+	return { ...pageData, suiNet };
 }
 
 // This is a server action to post data to server (data mutations)
@@ -26,29 +32,44 @@ export async function loader({ params, context, request }: Route.LoaderArgs): Pr
 //   Whenever we do fetcher.submit the function below (action) is called.
 export async function action({ request, context }: Route.ActionArgs) {
 	const env = context.cloudflare.env;
-	const ctrl = new Controller(env.BeelieversNFT, env.BeelieversD1);
+	const body = await request.clone().json<{ suiNet?: SuiNet }>();
+	const suiNet = body.suiNet || (isProductionMode() ? "mainnet" : "testnet");
+	const ctrl = new Controller(env.BeelieversNFT, env.BeelieversD1, suiNet);
 	return ctrl.handleJsonRPC(request);
 }
 
 export default function BeelieversAuctionPage() {
-	const { network } = useSuiClientContext();
+	const { network: clientSuiNet } = useSuiClientContext();
 	const { mutate: disconnect } = useDisconnectWallet();
-	const isTestnet = network === "testnet";
+
 	// TODO: this page get reloaded when we already have account data, so let's try to pass the account
 	// as an argument to the loader somehow. Could be through the URL query.
 	const pageData = useLoaderData<typeof loader>();
+	useEffect(() => {
+		const serverSuiNet = pageData.suiNet;
+
+		if (clientSuiNet && serverSuiNet && clientSuiNet !== serverSuiNet) {
+			window.location.search = `?network=${clientSuiNet}`;
+		}
+	}, [clientSuiNet, pageData.suiNet]);
+
+	useEffect(() => {
+		if (isProductionMode() && clientSuiNet === "testnet") {
+			disconnect();
+		}
+	}, [disconnect, clientSuiNet]);
+
 	if (!pageData || pageData?.error) {
 		throw Error("Couldn't load the auction data");
 	}
 
-	// TODO: remove this after auction. enforce network change
-	useEffect(() => {
-		if (isProductionMode()) {
-			if (isTestnet) {
-				disconnect();
-			}
-		}
-	}, [disconnect, isTestnet]);
+	if (clientSuiNet && pageData.suiNet && clientSuiNet !== pageData.suiNet) {
+		return (
+			<div className="flex justify-center items-center h-screen">
+				<p>Switching to {clientSuiNet} network...</p>
+			</div>
+		);
+	}
 
 	return (
 		<div className="bg-gradient-to-br from-background via-azure-20 to-azure-25 p-4 sm:p-6 lg:p-8">

@@ -11,6 +11,8 @@ import type { AuctionInfo, Bidder, User } from "~/server/BeelieversAuction/types
 import { makeReq } from "~/server/BeelieversAuction/jsonrpc";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { MyPosition } from "./MyPosition";
+import type { SuiNet } from "~/config/sui/networks";
+import { useSuiClientContext } from "@mysten/dapp-kit";
 
 function getAuctionState(startMs: number, endMs: number): AuctionState {
 	const nowMs = new Date().getTime();
@@ -29,6 +31,7 @@ export function BeelieversAuction({
 	leaderboard,
 }: BeelieversAuctionProps) {
 	const { suiAddr } = useContext(WalletContext);
+	const { network } = useSuiClientContext();
 	const lastCheckedAddress = useRef<string | null>(null);
 	const userFetcher = useFetcher<User>();
 	const user: User | undefined = userFetcher?.data;
@@ -40,7 +43,7 @@ export function BeelieversAuction({
 		if (suiAddr && suiAddr !== lastCheckedAddress.current && userFetcher.state === "idle") {
 			// Wallet connected or address changed - check eligibility
 			lastCheckedAddress.current = suiAddr;
-			makeReq<User | null>(userFetcher, { method: "queryUser", params: [suiAddr] });
+			makeReq<User | null>(userFetcher, { method: "queryUser", params: [suiAddr] }, network as SuiNet);
 		} else if (!suiAddr && lastCheckedAddress.current) {
 			// Wallet disconnected - reset state
 			lastCheckedAddress.current = null;

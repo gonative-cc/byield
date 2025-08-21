@@ -1,4 +1,5 @@
 import type { FetcherWithComponents } from "react-router";
+import type { SuiNet } from "~/config/sui/networks";
 
 // TODO: make response types
 export type Req =
@@ -24,10 +25,16 @@ export type Req =
 export async function makeReq<T>(
 	fetcher: FetcherWithComponents<T>,
 	req: Req,
+	suiNet: SuiNet,
 ): Promise<T | undefined> {
-	await fetcher.submit(req, {
+	const body = {
+		...req,
+		suiNet: suiNet,
+	};
+	await fetcher.submit(body, {
 		method: "POST",
-		/*encType: "application/json" */
+		encType: "application/json",
 	});
+
 	return fetcher.data;
 }

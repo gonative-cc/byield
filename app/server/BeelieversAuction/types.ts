@@ -1,3 +1,5 @@
+import type { SuiNet } from "~/config/sui/networks";
+
 export interface AuctionInfo {
 	// start epoch time time in MS
 	startsAt: number;
@@ -46,6 +48,7 @@ export interface LoaderData {
 // TODO move to controller
 export interface LoaderDataResp extends LoaderData {
 	error?: Error;
+	suiNet?: SuiNet;
 }
 
 export enum Badge {

@@ -12,9 +12,10 @@ import { Transaction } from "@mysten/sui/transactions";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { toast } from "~/hooks/use-toast";
 import { useNetworkVariables } from "~/networkConfig";
-import { useCurrentAccount, useSignAndExecuteTransaction } from "@mysten/dapp-kit";
+import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClientContext } from "@mysten/dapp-kit";
 import { LoaderCircle } from "lucide-react";
 import { SUIIcon } from "~/components/icons";
+import type { SuiNet } from "~/config/sui/networks";
 
 interface NewTotalBidAmountProps {
 	currentBidInMist: number;
@@ -74,6 +75,7 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 
 	// TODO: remove WalletContext usage, use useCurrentAccount() or useSuiClient() instead!
 	// const { suiAddr } = useContext(WalletContext);
+	const { network } = useSuiClientContext();
 
 	const bidForm = useForm<BeelieversBidForm>({
 		mode: "all",
@@ -111,10 +113,14 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 					// });
 					// log --> effects?.created?.[0]?.reference?.objectId!);
 
-					makeReq(fetcher, {
-						method: "postBidTx",
-						params: [account.address, result.bytes, result.signature, note],
-					});
+					makeReq(
+						fetcher,
+						{
+							method: "postBidTx",
+							params: [account.address, result.bytes, result.signature, note],
+						},
+						network as SuiNet,
+					);
 				},
 				onError: (result) => {
 					console.error("tx failed: ", result);
