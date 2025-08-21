@@ -207,11 +207,11 @@ function getEligibilityMessage(type?: AuctionAccountType): React.ReactNode | str
 			<li className="text-sm lg:text-base">5% Bid Boost to your price</li>
 			<li className="text-sm lg:text-base">The chance to win 1 out of 10 Mythic NFT</li>
 			<li className="text-sm lg:text-base">
-				You'll win the on-chain badges & you'll get rewarded in the future for them
+				You&apos;ll win the on-chain badges & you&apos;ll get rewarded in the future for them
 			</li>
 			<li className="text-sm lg:text-base">
-				You'll get a change to split 10% of the total auction primary sale revenue, distributed to 21
-				winners (in nBTC)
+				You&apos;ll get a change to split 10% of the total auction primary sale revenue, distributed
+				to 21 winners (in nBTC)
 			</li>
 		</ul>
 	);
@@ -221,7 +221,8 @@ function getEligibilityMessage(type?: AuctionAccountType): React.ReactNode | str
 			return (
 				<>
 					<p className={listHeaderStyle}>
-						Congratulations, you're part of the partner activation program WhiteList, and you get:
+						Congratulations, you&apos;re part of the partner activation program WhiteList, and you
+						get:
 					</p>
 					{partnerBulletPoints()}
 				</>
@@ -230,7 +231,7 @@ function getEligibilityMessage(type?: AuctionAccountType): React.ReactNode | str
 			return (
 				<>
 					<p className={listHeaderStyle}>
-						Congratulations, you're part of the Form program WhiteList, and you get:
+						Congratulations, you&apos;re part of the Form program WhiteList, and you get:
 					</p>
 					{partnerBulletPoints()}
 				</>
