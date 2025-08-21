@@ -1,7 +1,7 @@
 import { isValidSuiAddress } from "@mysten/sui/utils";
 import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
 
-import type { LoaderDataResp, AuctionInfo, User, Bidder } from "./types";
+import type { LoaderDataResp, AuctionInfo, User } from "./types";
 import type { Req } from "./jsonrpc";
 import { defaultAuctionInfo, defaultUser } from "./defaults";
 import { checkTxOnChain, verifySignature } from "./auth.server";
@@ -161,6 +161,8 @@ export default class Controller {
 		return u;
 	}
 }
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 function responseBadRequest(msg: string = "Bad Request"): Response {
 	return new Response(msg, { status: 400 });

@@ -2,6 +2,8 @@ import { SuiClient, type SuiTransactionBlockResponse } from "@mysten/sui/client"
 import { verifyTransactionSignature } from "@mysten/sui/verify";
 import { TransactionDataBuilder } from "@mysten/sui/transactions";
 
+import { delay } from "~/lib/batteries";
+
 export type BidTxEvent = {
 	sender: string;
 	auctionId: string;
@@ -80,7 +82,7 @@ async function queryIndexerFallback(
 	trustedPackageId: string,
 	indexerUrl: string,
 ): Promise<BidTxEvent | TxCheckError> {
-	const MAX_ATTEMPT = 3;
+	const MAX_ATTEMPT = 2;
 	const RETRY_DELAY_MS = 1000;
 
 	for (let attempt = 1; attempt <= MAX_ATTEMPT; attempt++) {
@@ -114,7 +116,7 @@ async function queryIndexerFallback(
 
 			if (attempt < MAX_ATTEMPT) {
 				console.log(`[Fallback] Retrying in ${RETRY_DELAY_MS / 1000}s...`);
-				await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
+				await delay(RETRY_DELAY_MS);
 			}
 		}
 	}
@@ -161,9 +163,7 @@ export async function verifySignature(
 		});
 
 		return TransactionDataBuilder.getDigestFromBytes(tx_bytes);
-	} catch (e) {
+	} catch (_e) {
 		return null;
 	}
 }
-
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));

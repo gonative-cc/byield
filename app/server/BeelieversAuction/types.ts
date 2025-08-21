@@ -72,10 +72,10 @@ export enum Badge {
 	made_10_bids = 11,
 	made_20_bids = 12,
 
-	// dynamic
+	// dynamic, TODO
 	partner_wl = 14, // done through WL status
 
-	// first ever bids made, TODO: maybe we should change to 1000 and 2100?
+	// first ever bids made
 	first_500 = 15,
 	first_1000 = 16,
 
@@ -89,5 +89,5 @@ export enum Badge {
 	nbtc_every_21st_bidder = 22,
 
 	// static
-	dethrone = 26, // NOT done
+	dethrone = 26,
 }

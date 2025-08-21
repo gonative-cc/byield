@@ -16,8 +16,7 @@ import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@
 import { LoaderCircle } from "lucide-react";
 import { SUIIcon } from "~/components/icons";
 
-// function to dealy a bit more for the network delay
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+import { delay } from "~/lib/batteries";
 
 interface NewTotalBidAmountProps {
 	currentBidInMist: number;

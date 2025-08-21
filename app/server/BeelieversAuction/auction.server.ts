@@ -2,6 +2,8 @@ import type { Bidder, User, User_ } from "./types";
 // import { AuctionAccountType } from "./types";
 import { Badge } from "./types";
 
+import { cmpNum } from "~/lib/batteries";
+
 export interface BidResult {
 	newRank: number | null;
 	oldRank: number | null;
@@ -319,7 +321,7 @@ function calcStaticBadges(
 
 	if (rank == 1 && prevRank != 1) badges.push(Badge.dethrone);
 
-	return badges.sort(cmpNumbers);
+	return badges.sort(cmpNum);
 }
 
 // TODO
@@ -353,13 +355,9 @@ function addDynamicBadges(
 	// highestBid
 	// if (isPartner) badges.push(Badge.partner_wl);
 
-	badges.sort(cmpNumbers);
+	badges.sort(cmpNum);
 }
 
 function mergeBadges(list1: Badge[], list2: Badge[]): Badge[] {
-	return [...new Set([...list1, ...list2])].sort(cmpNumbers);
-}
-
-function cmpNumbers(a: number, b: number): number {
-	return a - b;
+	return [...new Set([...list1, ...list2])].sort(cmpNum);
 }

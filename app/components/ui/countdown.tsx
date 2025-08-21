@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import type { WritableStreamDefaultWriter } from "stream/web";
 
 function calcLeft(target: number) {
 	const diff = target - new Date().getTime();

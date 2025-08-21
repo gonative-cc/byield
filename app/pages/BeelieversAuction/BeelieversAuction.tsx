@@ -11,6 +11,8 @@ import type { AuctionInfo, Bidder, User } from "~/server/BeelieversAuction/types
 import { makeReq } from "~/server/BeelieversAuction/jsonrpc";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 
+import { removeDuplicates, sortAndCheckDuplicate } from "~/lib/batteries";
+
 function getAuctionState(startMs: number, endMs: number): AuctionState {
 	const nowMs = new Date().getTime();
 	if (nowMs < startMs) return AuctionState.WILL_START;
@@ -35,8 +37,10 @@ export function BeelieversAuction({
 
 	console.log(">>>> user", user);
 	for (const l of leaderboard) {
-		console.log(">>>> leader ", l);
-		l.badges = [...new Set(l.badges)];
+		if (sortAndCheckDuplicate(l.badges)) {
+			console.log(">>>> leader ", l);
+			l.badges = removeDuplicates(l.badges);
+		}
 	}
 
 	useEffect(() => {
