@@ -27,7 +27,7 @@ export async function makeReq<T>(
 ): Promise<T | undefined> {
 	await fetcher.submit(req, {
 		method: "POST",
-		/*encType: "application/json" */
+		encType: "application/json",
 	});
 	return fetcher.data;
 }
