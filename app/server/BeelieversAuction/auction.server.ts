@@ -342,12 +342,12 @@ function addDynamicBadges(
 		if (rank == lastRank) badges.push(Badge.last_bid);
 	}
 
-	if (bids >= 2) badges.push(Badge.made_2_bids);
-	if (bids >= 3) badges.push(Badge.made_3_bids);
-	if (bids >= 4) badges.push(Badge.made_4_bids);
-	if (bids >= 5) badges.push(Badge.made_5_bids);
-	if (bids >= 10) badges.push(Badge.made_10_bids);
 	if (bids >= 20) badges.push(Badge.made_20_bids);
+	else if (bids >= 10) badges.push(Badge.made_10_bids);
+	else if (bids >= 5) badges.push(Badge.made_5_bids);
+	else if (bids >= 4) badges.push(Badge.made_4_bids);
+	else if (bids >= 3) badges.push(Badge.made_3_bids);
+	else if (bids >= 2) badges.push(Badge.made_2_bids);
 
 	// TODO
 	// highestBid
