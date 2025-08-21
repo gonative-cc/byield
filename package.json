@@ -21,8 +21,7 @@
 		"format": "prettier --write .",
 		"start": "wrangler dev",
 		"typecheck": "react-router typegen && tsc -b",
-		"db:migrate": "wrangler d1 migrations apply byield-dev",
-		"db:migrate:local": "wrangler d1 migrations apply byield-dev --local",
+		"db:migrate": "wrangler d1 migrations apply BeelieversD1",
 		"test": "vitest"
 	},
 	"dependencies": {
