@@ -80,10 +80,10 @@ async function queryIndexerFallback(
 	trustedPackageId: string,
 	indexerUrl: string,
 ): Promise<BidTxEvent | TxCheckError> {
-	const MAX_ATTEMPT = 2;
+	const MAX_ATTEMPT = 3;
 	const RETRY_DELAY_MS = 1000;
 
-	for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+	for (let attempt = 1; attempt <= MAX_ATTEMPT; attempt++) {
 		try {
 			console.log(`[Fallback] Querying public Suivision indexer for tx: ${suiTxId}`);
 			const response = await fetch(indexerUrl, {
@@ -112,13 +112,13 @@ async function queryIndexerFallback(
 		} catch (error) {
 			console.error(`[Fallback] Attempt ${attempt} failed for tx ${suiTxId}:`, error);
 
-			if (attempt < MAX_RETRIES) {
+			if (attempt < MAX_ATTEMPT) {
 				console.log(`[Fallback] Retrying in ${RETRY_DELAY_MS / 1000}s...`);
 				await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
 			}
 		}
 	}
-	return `[Fallback] All ${MAX_RETRIES} attempts failed for tx ${suiTxId}.`;
+	return `[Fallback] All ${MAX_ATTEMPT} attempts failed for tx ${suiTxId}.`;
 }
 
 export async function checkTxOnChain(
