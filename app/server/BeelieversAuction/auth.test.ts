@@ -4,7 +4,7 @@ import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
 import { Transaction } from "@mysten/sui/transactions";
 import { toBase58 } from "@mysten/utils";
 
-import { verifySignature } from "~/server/BeelieversAuction/auth";
+import { verifySignature } from "~/server/BeelieversAuction/auth.server";
 
 describe("authentication testcases", () => {
 	test("signature verification happy cases", async () => {

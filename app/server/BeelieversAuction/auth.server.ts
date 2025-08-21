@@ -1,4 +1,6 @@
 import { SuiClient, type SuiTransactionBlockResponse } from "@mysten/sui/client";
+import { verifyTransactionSignature } from "@mysten/sui/verify";
+import { TransactionDataBuilder } from "@mysten/sui/transactions";
 
 export type BidTxEvent = {
 	sender: string;
@@ -133,5 +135,25 @@ export async function checkTxOnChain(
 		console.error(`[Primary] Error querying Sui RPC for tx ${suiTxId}:`, error);
 		console.log("[Primary] RPC failed. Attempting to use fallback indexer...");
 		return queryIndexerFallback(suiTxId, bidderAddr, trustedPackageId, indexerURL);
+	}
+}
+
+// Returns null on verification failure
+export async function verifySignature(
+	userAddr: string,
+	tx_bytes: Uint8Array,
+	signature: string,
+): Promise<string | null> {
+	try {
+		// throws exception on tx verification:
+		// https://github.com/MystenLabs/ts-sdks/blob/main/packages/typescript/src/verify/verify.ts
+		// return pub key
+		await verifyTransactionSignature(tx_bytes, signature, {
+			address: userAddr,
+		});
+
+		return TransactionDataBuilder.getDigestFromBytes(tx_bytes);
+	} catch (e) {
+		return null;
 	}
 }

@@ -11,6 +11,9 @@ import { verifySignature } from "./auth";
 import { isProductionMode } from "~/lib/appenv";
 import { Auction, type BidResult } from "./auction.server";
 
+import suiTestNetConfig from "~/config/sui/contracts-testnet.json";
+import suiMainNetConfig from "~/config/sui/contracts-mainnet.json";
+
 const maxTxIdSize = 44;
 
 export default class Controller {
@@ -18,7 +21,7 @@ export default class Controller {
 	kvKeyTxPrefix = "tx_";
 
 	suiNet: "mainnet" | "testnet" | "devnet" | "localnet";
-	trustedPackageId: string;
+	auctionPkgId: string; // Sui package object ID
 	fallbackIndexerUrl: string;
 
 	auction: Auction;
@@ -28,6 +31,21 @@ export default class Controller {
 
 	constructor(kv: KVNamespace, d1: D1Database) {
 		this.isProduction = isProductionMode();
+		if (this.isProduction) {
+			this.suiNet = "mainnet";
+			this.auctionPkgId = suiMainNetConfig.auctionBidApi.packageId;
+			this.fallbackIndexerUrl = "https://sui-mainnet-endpoint.blockvision.org/";
+		} else {
+			this.suiNet = "testnet";
+			this.auctionPkgId = suiTestNetConfig.auctionBidApi.packageId;
+			this.fallbackIndexerUrl = "https://sui-testnet-endpoint.blockvision.org/";
+		}
+		if (!this.auctionPkgId || !this.fallbackIndexerUrl) {
+			throw new Error(
+				"Missing required configuration values: auctionPkgId and fallbackIndexerUrl must be set in the config files.",
+			);
+		}
+
 		this.kv = kv;
 
 		const ai = defaultAuctionInfo(this.isProduction);
@@ -39,18 +57,6 @@ export default class Controller {
 			ai.auctionSize,
 			ai.entryBidMist,
 		);
-
-		// TODO: update those values for mainnet!!!
-		this.suiNet = "testnet";
-		this.trustedPackageId =
-			"0xd5b24b83b168f8656aa7c05af1256e6115de1b80d97be0cddf19297a15535149";
-		this.fallbackIndexerUrl = "https://sui-testnet-endpoint.blockvision.org/";
-
-		if (!this.trustedPackageId || !this.fallbackIndexerUrl) {
-			throw new Error(
-				"Missing required environment variables: TRUSTED_PACKAGE_ID and FALLBACK_INDEXER_URL must be set.",
-			);
-		}
 	}
 
 	async loadPageData(userAddr?: string): Promise<LoaderDataResp> {
@@ -120,7 +126,7 @@ export default class Controller {
 				suiClient,
 				txDigest,
 				userAddr,
-				this.trustedPackageId,
+				this.auctionPkgId,
 				this.fallbackIndexerUrl,
 			);
 			if (typeof bidEvent === "string") {
