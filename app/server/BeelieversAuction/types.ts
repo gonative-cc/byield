@@ -1,4 +1,4 @@
-export interface AuctionDetails {
+export interface AuctionInfo {
 	// start epoch time time in MS
 	startsAt: number;
 	// end epoch time time in MS
@@ -38,7 +38,7 @@ export interface Bidder extends User_ {
 }
 
 export interface LoaderData {
-	details: AuctionDetails;
+	details: AuctionInfo;
 	leaderboard: Bidder[];
 	user: User | null;
 }

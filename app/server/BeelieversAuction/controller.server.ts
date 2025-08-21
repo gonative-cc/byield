@@ -1,10 +1,10 @@
 import { getLeaderBoardData } from "./leaderboard.server";
-import type { LoaderDataResp, AuctionDetails, User } from "./types";
+import type { LoaderDataResp, AuctionInfo, User } from "./types";
 import type { Req } from "./jsonrpc";
-import { defaultAuctionDetails, defaultUser } from "./defaults";
+import { defaultAuctionInfo, defaultUser } from "./defaults";
 import { isValidSuiAddress } from "@mysten/sui/utils";
 import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
-import { validateBidTransaction, type BidTxEvent } from "./auth.server";
+import { checkTxOnChain, type BidTxEvent } from "./auth.server";
 
 import { fromBase64 } from "@mysten/utils";
 import { verifySignature } from "./auth";
@@ -15,22 +15,30 @@ const maxTxIdSize = 44;
 
 export default class Controller {
 	kv: KVNamespace;
-	kvKeyTx = "details";
+	kvKeyTxPrefix = "tx_";
 
 	suiNet: "mainnet" | "testnet" | "devnet" | "localnet";
 	trustedPackageId: string;
 	fallbackIndexerUrl: string;
 
 	auction: Auction;
+	auctionInfo: AuctionInfo;
 
 	isProduction: boolean;
 
 	constructor(kv: KVNamespace, d1: D1Database) {
-		// TODO: use it in other functions and defaults
 		this.isProduction = isProductionMode();
 		this.kv = kv;
-		const { startsAt, endsAt, entryBidMist } = defaultAuctionDetails();
-		this.auction = new Auction(d1, new Date(startsAt), new Date(endsAt), 5810, entryBidMist);
+
+		const ai = defaultAuctionInfo(this.isProduction);
+		this.auctionInfo = ai;
+		this.auction = new Auction(
+			d1,
+			new Date(ai.startsAt),
+			new Date(ai.endsAt),
+			ai.auctionSize,
+			ai.entryBidMist,
+		);
 
 		// TODO: update those values for mainnet!!!
 		this.suiNet = "testnet";
@@ -57,8 +65,6 @@ export default class Controller {
 	}
 
 	async handleJsonRPC(r: Request) {
-		// TODO: add id in JSON RPC
-
 		let reqData: Req;
 		try {
 			reqData = await r.json<Req>();
@@ -71,7 +77,7 @@ export default class Controller {
 			case "queryUser":
 				return this.getUserData(reqData.params[0]);
 			case "queryAuctionDetails":
-				return await this.getAuctionDetails();
+				return this.getAuctionDetails();
 			case "postBidTx": {
 				const [userAddr, txBytes, signature, userMessage] = reqData.params;
 				return this.postBidTx(userAddr, fromBase64(txBytes), signature, userMessage);
@@ -85,8 +91,8 @@ export default class Controller {
 		}
 	}
 
-	async getAuctionDetails(): Promise<AuctionDetails> {
-		return defaultAuctionDetails();
+	async getAuctionDetails(): Promise<AuctionInfo> {
+		return defaultAuctionInfo(this.isProduction);
 
 		// const detailsJson = await this.kv.get(this.kvKeyDetails);
 		// if (detailsJson !== null) {
@@ -99,7 +105,7 @@ export default class Controller {
 		txBytes: Uint8Array,
 		signature: string,
 		userMessage: string,
-	): Promise<BidTxEvent | Response> {
+	): Promise<boolean | Response> {
 		// TODO production
 		if (isProductionMode()) {
 			return responseNotImplemented();
@@ -112,26 +118,28 @@ export default class Controller {
 			return responseBadRequest("Bad Tx Digest");
 		}
 
-		// TODO:
-		// check if tx already processed using KV
+		const keyKv = this.kvKeyTxPrefix + txDigest;
+		const kvCheck = await this.kv.get(keyKv);
+		if (kvCheck !== null) return true;
 
-		// TODO: bid in DB
-
+		const suiClient = new SuiClient({ url: getFullnodeUrl(this.suiNet) });
 		try {
-			// TODO: move to a separate function
-			const suiClient = new SuiClient({ url: getFullnodeUrl(this.suiNet) });
-			const validationResult = await validateBidTransaction(
+			const bidEvent = await checkTxOnChain(
 				suiClient,
 				txDigest,
 				userAddr,
 				this.trustedPackageId,
 				this.fallbackIndexerUrl,
 			);
-			if (typeof validationResult === "string") {
-				console.error("[Controller] On-chain validation failed:", validationResult);
+			if (typeof bidEvent === "string") {
+				console.error("[Controller] On-chain validation failed:", bidEvent);
 				return responseNotAuthorized();
 			}
-			return validationResult;
+
+			await this.kv.put(keyKv, "");
+			// TODO: bid in DB
+			// return bidEvent;
+			return true;
 		} catch (error) {
 			console.error(
 				"[Controller] An error occurred during postBidTx:",
@@ -141,7 +149,6 @@ export default class Controller {
 		}
 	}
 
-	// TODO check type change unknown -> null
 	async getUserData(userAddr: string): Promise<User | null> {
 		if (!isValidSuiAddress(userAddr)) {
 			return null;
@@ -149,7 +156,7 @@ export default class Controller {
 
 		const u = await this.auction.getBidder(userAddr);
 		if (u === null) {
-			return defaultUser();
+			return defaultUser(this.isProduction);
 		}
 		return u;
 	}
@@ -174,3 +181,12 @@ function responseNotImplemented(): Response {
 function responseServerError(msg: string = "Server Error"): Response {
 	return new Response(msg, { status: 500 });
 }
+
+// TODO: make JSON RPC response
+// function responseOK(o: string | null): Response {
+// 	return new Response(o, {
+// 		headers: {
+// 			"Content-Type": "application/json",
+// 		},
+// 	});
+// }

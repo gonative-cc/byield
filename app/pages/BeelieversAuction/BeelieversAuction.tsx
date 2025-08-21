@@ -7,7 +7,7 @@ import { AuctionTotals } from "./AuctionTotals";
 import { BeelieversBid } from "./BeelieversBid";
 import { TweetEmbed } from "~/components/TweetEmbed";
 import { AuctionState } from "./types";
-import type { AuctionDetails, Bidder, User } from "~/server/BeelieversAuction/types";
+import type { AuctionInfo, Bidder, User } from "~/server/BeelieversAuction/types";
 import { makeReq } from "~/server/BeelieversAuction/jsonrpc";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { MyPosition } from "./MyPosition";
@@ -20,7 +20,7 @@ function getAuctionState(startMs: number, endMs: number): AuctionState {
 }
 
 interface BeelieversAuctionProps {
-	auctionDetails: AuctionDetails;
+	auctionDetails: AuctionInfo;
 	leaderboard: Bidder[];
 }
 

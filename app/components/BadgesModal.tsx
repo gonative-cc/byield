@@ -169,7 +169,7 @@ const BADGES: BadgeInfo[] = [
 	},
 ];
 
-export function BadgesModal({ msg = "View All Badges" }: { msg: string }) {
+export function BadgesModal({ msg = "View All Badges" }: { msg?: string }) {
 	const [selectedBadge, setSelectedBadge] = useState<BadgeInfo | null>(null);
 
 	return (

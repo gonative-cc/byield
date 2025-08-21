@@ -111,7 +111,7 @@ async function queryIndexerFallback(
 	}
 }
 
-export async function validateBidTransaction(
+export async function checkTxOnChain(
 	suiClient: SuiClient,
 	suiTxId: string,
 	bidderAddr: string,

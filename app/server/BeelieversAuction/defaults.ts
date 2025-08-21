@@ -1,16 +1,16 @@
-import { AuctionAccountType, Badge, type AuctionDetails, type User } from "./types";
+import { AuctionAccountType, Badge, type AuctionInfo, type User } from "./types";
 
-import { isProductionMode } from "~/lib/appenv";
-
-export function defaultAuctionDetails(): AuctionDetails {
-	if (!isProductionMode()) {
+export function defaultAuctionInfo(production: boolean): AuctionInfo {
+	if (!production) {
 		return testAuctionDetails();
 	}
 	const startsAt = +new Date("2025-08-21T13:00:00Z");
 	return {
-		uniqueBidders: 0,
+		// TODO: move this
 		totalBids: 0,
+		uniqueBidders: 0,
 		highestBidMist: 0,
+
 		entryBidMist: 1e9, // 1 SUI
 		startsAt,
 		endsAt: startsAt + 48 * 3600_000,
@@ -18,7 +18,7 @@ export function defaultAuctionDetails(): AuctionDetails {
 	};
 }
 
-function testAuctionDetails(): AuctionDetails {
+function testAuctionDetails(): AuctionInfo {
 	const startsAt = +new Date("2025-08-20T11:00");
 	return {
 		uniqueBidders: 600,
@@ -31,8 +31,8 @@ function testAuctionDetails(): AuctionDetails {
 	};
 }
 
-export function defaultUser(): User {
-	if (!isProductionMode()) {
+export function defaultUser(production: boolean): User {
+	if (!production) {
 		return defaultTestUser();
 	}
 	return {
@@ -47,7 +47,7 @@ export function defaultUser(): User {
 function defaultTestUser(): User {
 	return {
 		rank: 9, // rank starts from 1
-		amount: 5_1 * 1e8, // 5.1 SUI
+		amount: 1, // 1 MIST
 		badges: [
 			Badge.top_10,
 			Badge.top_21,
