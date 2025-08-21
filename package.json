@@ -12,7 +12,7 @@
 		"build:dev": "react-router build --mode dev",
 		"deploy": "pnpm run build --mode dev && wrangler deploy",
 		"deploy:prod:legacy": "pnpm run build && wrangler deploy -c ./wrangler-prod.jsonc",
-		"deploy:prod": "pnpm run build && wrangler deploy -e prod ",
+		"deploy:prod": "pnpm run build && wrangler deploy -e prod",
 		"deploy:prod:ver": "pnpm run build && wrangler versions upload -c ./wrangler-prod.jsonc",
 		"preview": "vite preview",
 		"preview:wrangler": "wrangler dev",
