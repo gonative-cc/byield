@@ -73,12 +73,12 @@ const createColumns = (): Column<Bidder>[] => [
 			return (
 				<div className="flex space-x-2 justify-center">
 					{badges.length > 0 ? (
-						badges?.map((badge, index) => (
+						badges.map((badge, index) => (
 							<img
 								key={index}
 								src={badge.src}
 								alt={String(badge!.name)}
-								className={`bg-gray-400 w-8 h-8 hover:scale-110 transition-transform cursor-help`}
+								className={`bg-orange-500/60 w-8 h-8 hover:scale-110 transition-transform cursor-help`}
 							/>
 						))
 					) : (
