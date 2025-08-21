@@ -1,4 +1,5 @@
 import type { Bidder, User } from "./types";
+import { Badge } from "./types";
 
 export interface BidResult {
 	newRank: number | null;
@@ -101,21 +102,23 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 			}
 
 			// apply boost
-			const effectiveAmount =
-				(prevBid?.wlStatus ?? 0) > 0 ? Math.floor(amount * 1.05) : amount;
-			const currentEffectiveBid = prevBid?.amount ?? 0;
+			amount = (prevBid?.wlStatus ?? 0) > 0 ? Math.floor(amount * 1.05) : amount;
+			const prevAmount = prevBid?.amount ?? 0;
 
-			if (effectiveAmount <= currentEffectiveBid) {
+			if (amount <= prevAmount) {
 				return [
 					null,
 					new Error(
-						`New effective bid (${effectiveAmount}) must be greater than current effective bid (${currentEffectiveBid}).`,
+						`New effective bid (${amount}) must be greater than current effective bid (${prevAmount}).`,
 					),
 				];
 			}
 
 			note = note.substring(0, 30);
-			if (prevBid !== null && !note && !prevBid.note) note = prevBid.note;
+			if (prevBid !== null && !note && !prevBid.note) {
+				note = prevBid.note;
+			}
+			// amount == 0 if the bidder was inserted manually as a WL user
 			const isNewBidder = prevBid === null || prevBid.amount === 0;
 
 			// --- DATABASE TRANSACTION ---
@@ -124,17 +127,33 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 					.prepare(
 						`INSERT INTO bids (bidder, amount, timestamp, note) VALUES (?, ?, ?, ?) ON CONFLICT(bidder) DO UPDATE SET amount = excluded.amount, timestamp = excluded.timestamp, note = excluded.note`,
 					)
-					.bind(bidder, effectiveAmount, now.getTime(), note),
+					.bind(bidder, amount, now.getTime(), note),
 				this.db
 					.prepare(
-						`UPDATE stats SET totalBids = totalBids + 1, uniqueBidders = uniqueBidders + ? WHERE key = 'auction_stats'`,
+						`UPDATE stats SET totalBids = totalBids + 1, uniqueBidders = uniqueBidders + ? WHERE key = 'auction_stats' RETURNING uniqueBidders`,
 					)
 					.bind(isNewBidder ? 1 : 0),
 			];
-			await this.db.batch(statements);
-
-			const finalStatus = await this.getBidder(bidder);
-			const newRank = finalStatus?.rank ?? null;
+			const result = await this.db.batch(statements);
+			const uniqueBidders = (result[1].results[0] as { uniqueBidders: number }).uniqueBidders;
+			const newRank = await this._calculateRank(amount, now.getTime());
+			let badges = calcBadges(
+				amount,
+				prevAmount,
+				newRank || 1,
+				prevBid?.rank || uniqueBidders,
+				uniqueBidders,
+			);
+			let badgesChanged = badges.length > 0;
+			if (badgesChanged && prevBid !== null && prevBid.badges.length > 0) {
+				badges = mergeBadges(prevBid.badges, badges);
+				badgesChanged = badges.length != prevBid.badges.length;
+			}
+			if (badgesChanged)
+				await this.db
+					.prepare(`UPDATE bids SET badges = ? WHERE bidder = ?`)
+					.bind(JSON.stringify(badges), bidder)
+					.run();
 
 			return [{ oldRank, newRank }, null];
 		} catch (e) {
@@ -144,6 +163,19 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 					: new Error("An unknown error occurred during the bid process.");
 			return [null, error];
 		}
+	}
+
+	async _calculateRank(amount: number, timestamp: number): Promise<number | null> {
+		const higherBids = await this.db
+			.prepare(
+				`SELECT COUNT(*) as count FROM bids
+				WHERE amount > ? OR (amount = ? AND timestamp < ?)`,
+			)
+			.bind(amount, amount, timestamp)
+			.first<{ count: number }>();
+
+		if (higherBids === null) return null;
+		return higherBids.count + 1;
 	}
 
 	// TODO: optimize
@@ -238,4 +270,43 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 			.bind(bidder, amount, +timestamp, wlStatus)
 			.run();
 	}
+}
+
+// prevRank - if not assigned previously, then should be assumed to equal
+function calcBadges(
+	amount: number,
+	prevAmount: number,
+	rank: number,
+	prevRank: number,
+	uniqueBidders: number,
+): Badge[] {
+	const badges = [];
+	if (rank === 1) badges.push(Badge.first_place);
+	if (rank <= 3) badges.push(Badge.top_3);
+	if (rank <= 10) badges.push(Badge.top_10);
+	if (rank <= 21) badges.push(Badge.top_21);
+	if (rank <= 100) badges.push(Badge.top_100);
+	if (rank <= 5810) badges.push(Badge.top_5810);
+
+	const diff = (amount - prevAmount) / 1e9; // convert MIST -> SUI
+	if (diff >= 10) badges.push(Badge.bid_over_10);
+	if (diff >= 5) badges.push(Badge.bid_over_5);
+	if (diff >= 3) badges.push(Badge.bid_over_3);
+
+	const diffRank = prevRank - rank;
+	if (diffRank >= 210) badges.push(Badge.climb_up_210);
+	if (diffRank >= 10) badges.push(Badge.climb_up_10);
+
+	if (uniqueBidders <= 500) badges.push(Badge.first_500);
+	if (uniqueBidders <= 1000) badges.push(Badge.first_1000);
+
+	return badges.sort(cmpNumbers);
+}
+
+function mergeBadges(list1: Badge[], list2: Badge[]): Badge[] {
+	return [...new Set([...list1, ...list2])].sort(cmpNumbers);
+}
+
+function cmpNumbers(a: number, b: number): number {
+	return a - b;
 }

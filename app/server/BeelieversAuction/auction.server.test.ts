@@ -23,6 +23,9 @@ describe("Auction Class with Tuple Error Handling", () => {
 		eve: "eve",
 		felix: "felix",
 	};
+	const stdBadges = [2, 3, 4, 5, 6, 15, 16];
+	const stdBadges1 = [1, ...stdBadges];
+	const note = "Going for the win!";
 
 	beforeAll(async () => {
 		worker = new Miniflare({
@@ -104,11 +107,19 @@ describe("Auction Class with Tuple Error Handling", () => {
 
 			const l = await auction.getTopLeaderboard();
 			expect(l).toEqual([
-				{ amount: 101, badges: [], bidder: "alice", note: "Success!", rank: 1 },
+				{ amount: 101, badges: stdBadges1, bidder: "alice", note: "Success!", rank: 1 },
 			]);
 
 			const w = await auction.getWinners();
 			expect(w).toEqual([alice]);
+
+			const tx = auction.db
+				.prepare(
+					"UPDATE stats SET totalBids = totalBids + 1, uniqueBidders = uniqueBidders + ? WHERE key = 'auction_stats' RETURNING uniqueBidders",
+				)
+				.bind(10);
+			const r = await auction.db.batch([tx]);
+			expect(r[0].results[0]).toEqual({ uniqueBidders: 11 });
 		});
 
 		test("error: first bid too low", async () => {
@@ -140,7 +151,7 @@ describe("Auction Class with Tuple Error Handling", () => {
 			const bidder = await auction.getBidder(alice);
 			expect(bidder).toEqual({
 				amount: firstBid,
-				badges: [],
+				badges: stdBadges1,
 				note: "",
 				rank: 1,
 				wlStatus: 0,
@@ -189,7 +200,7 @@ describe("Auction Class with Tuple Error Handling", () => {
 	describe("Full Auction Flow with Tuple Handling", () => {
 		test("should correctly handle the auction lifecycle", async () => {
 			// 1. BIDDING PHASE - successful bids
-			let [res, err] = await auction.bid(users.alice, 600, "Going for the win!");
+			let [res, err] = await auction.bid(users.alice, 600, note);
 			expect(res).toEqual({ oldRank: null, newRank: 1 });
 			[res, err] = await auction.bid(users.bob, 700);
 			expect(res).toEqual({ oldRank: null, newRank: 1 });
@@ -201,15 +212,9 @@ describe("Auction Class with Tuple Error Handling", () => {
 				totalBids: 3,
 				uniqueBidders: 3,
 				topBids: [
-					{ rank: 1, amount: 700, bidder: "bob", badges: [], note: "" },
-					{
-						rank: 2,
-						amount: 600,
-						bidder: "alice",
-						badges: [],
-						note: "Going for the win!",
-					},
-					{ rank: 3, amount: 500, bidder: "charl", badges: [], note: "" },
+					{ rank: 1, amount: 700, bidder: "bob", badges: stdBadges1, note: "" },
+					{ rank: 2, amount: 600, bidder: "alice", badges: stdBadges1, note },
+					{ rank: 3, amount: 500, bidder: "charl", badges: stdBadges, note: "" },
 				],
 			});
 
@@ -254,18 +259,18 @@ describe("Auction Class with Tuple Error Handling", () => {
 				totalBids: 9,
 				uniqueBidders: 6,
 				topBids: [
-					{ rank: 1, amount: 800, bidder: "charl", badges: [], note: "" },
-					{ rank: 2, amount: 750, bidder: "bob", badges: [], note: "" },
+					{ rank: 1, amount: 800, bidder: "charl", badges: stdBadges1, note: "" },
+					{ rank: 2, amount: 750, bidder: "bob", badges: stdBadges1, note: "" },
 					{
 						rank: 3,
 						amount: 600,
 						bidder: "alice",
-						badges: [],
+						badges: stdBadges1,
 						note: "Going for the win!",
 					},
-					{ rank: 4, amount: 320, bidder: "eve", badges: [], note: "" },
-					{ rank: 5, amount: 310, bidder: "dylan", badges: [], note: "" },
-					{ rank: 6, amount: 300, bidder: "felix", badges: [], note: "" },
+					{ rank: 4, amount: 320, bidder: "eve", badges: stdBadges.slice(1), note: "" },
+					{ rank: 5, amount: 310, bidder: "dylan", badges: stdBadges.slice(1), note: "" },
+					{ rank: 6, amount: 300, bidder: "felix", badges: stdBadges.slice(1), note: "" },
 				],
 			});
 			const w = await auction.getWinners();
