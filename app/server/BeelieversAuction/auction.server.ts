@@ -306,8 +306,8 @@ function calcStaticBadges(
 
 	const diff = (amount - prevAmount) / 1e9; // convert MIST -> SUI
 	if (diff >= 10) badges.push(Badge.bid_over_10);
-	if (diff >= 5) badges.push(Badge.bid_over_5);
-	if (diff >= 3) badges.push(Badge.bid_over_3);
+	else if (diff >= 5) badges.push(Badge.bid_over_5);
+	else if (diff >= 3) badges.push(Badge.bid_over_3);
 
 	const diffRank = prevRank - rank;
 	if (diffRank >= 210) badges.push(Badge.climb_up_210);
@@ -315,6 +315,8 @@ function calcStaticBadges(
 
 	if (uniqueBidders <= 500) badges.push(Badge.first_500);
 	if (uniqueBidders <= 1000) badges.push(Badge.first_1000);
+
+	if (rank == 1 && prevRank != 1) badges.push(Badge.dethrone);
 
 	return badges.sort(cmpNumbers);
 }

@@ -41,12 +41,12 @@ const BADGES: BadgeInfo[] = [
 		src: "/assets/auction/badges/Whale_for_top_100.svg",
 		description: "Secured a spot in the top 100 positions",
 	},
-	{
-		name: "Highest Bid",
-		filename: "highest_single_bid.svg",
-		src: "/assets/auction/badges/highest_single_bid.svg",
-		description: "Made the highest single bid",
-	},
+	// {
+	// 	name: "Highest Bid",
+	// 	filename: "highest_single_bid.svg",
+	// 	src: "/assets/auction/badges/highest_single_bid.svg",
+	// 	description: "Made the highest single bid",
+	// },
 	{
 		name: "10+ $SUI Bid",
 		filename: "Single_bid_over_10_Sui.svg",

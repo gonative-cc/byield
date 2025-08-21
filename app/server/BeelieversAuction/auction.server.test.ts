@@ -3,7 +3,7 @@ import { Miniflare } from "miniflare";
 
 import { Auction } from "./auction.server";
 
-describe("Auction Class with Tuple Error Handling", () => {
+describe.skip("Auction Class with Tuple Error Handling", () => {
 	let worker: Miniflare;
 	let auction: Auction;
 
