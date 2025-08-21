@@ -20,6 +20,20 @@ export function defaultAuctionInfo(production: boolean): AuctionInfo {
 
 function testAuctionDetails(): AuctionInfo {
 	const startsAt = +new Date("2025-08-20T11:00Z");
+	// TODO: fix
+	return {
+		uniqueBidders: 100,
+		totalBids: 100,
+		highestBidMist: 10e9,
+		entryBidMist: 1e6, //  0.001 SUI
+		startsAt,
+		endsAt: 1755780307000,
+		auctionSize: 10,
+	};
+}
+
+function mockAuctionDetails(): AuctionInfo {
+	const startsAt = +new Date("2025-08-20T11:00Z");
 	return {
 		uniqueBidders: 600,
 		totalBids: 1250,

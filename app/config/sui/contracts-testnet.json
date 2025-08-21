@@ -7,9 +7,9 @@
 		"sellNBTCFunction": "sell_nbtc"
 	},
 	"auctionBidApi": {
-		"packageId": "0xd5b24b83b168f8656aa7c05af1256e6115de1b80d97be0cddf19297a15535149",
+		"packageId": "0xbad048cf3c9ef2f17ced6c6d03f86c5721fde22093e5a27a8c9c77acbd3be0c3",
 		"module": "auction",
 		"bidEndpoint": "bid",
-		"auctionId": "0xc9d2f1b373e770b77668e5556bd4466c37963f01159c10a71a0bf2d4000877c0"
+		"auctionId": "0xfda0a2182a1fe1bd620c461a89177802616c3c72ab5ab7f28044b8d393243a7f"
 	}
 }
