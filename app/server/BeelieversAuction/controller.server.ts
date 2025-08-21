@@ -4,10 +4,9 @@ import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
 import type { LoaderDataResp, AuctionInfo, User, Bidder } from "./types";
 import type { Req } from "./jsonrpc";
 import { defaultAuctionInfo, defaultUser } from "./defaults";
-import { checkTxOnChain } from "./auth.server";
+import { checkTxOnChain, verifySignature } from "./auth.server";
 
 import { fromBase64 } from "@mysten/utils";
-import { verifySignature } from "./auth";
 import { isProductionMode } from "~/lib/appenv";
 import { Auction, type BidResult } from "./auction.server";
 
