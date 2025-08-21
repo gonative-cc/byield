@@ -26,7 +26,6 @@ export const BADGE_NAME_TO_FILENAME: Record<Badge, string> = {
 	[Badge.first_1000]: "first_1000_bids.svg",
 	[Badge.climb_up_210]: "anyone_climbs_more_than_210_positions_up.svg",
 	[Badge.climb_up_10]: "if_anyone_climbs_10_spots_in_a_single_bid.svg",
-	[Badge.comeback_top_10]: "If_some_one_comesback_to_top_10_after_falling_off_10.svg",
 	[Badge.last_bid]: "Last_bid_in_Leaderboard.svg",
 	[Badge.every_10th_position]: "Logo_Ika_red_every_10th_position.svg",
 	[Badge.made_2nd_bid]: "Made_2nd_bid.svg",

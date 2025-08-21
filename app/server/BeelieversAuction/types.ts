@@ -79,7 +79,6 @@ export enum Badge {
 
 	climb_up_210 = 17,
 	climb_up_10 = 18,
-	comeback_top_10 = 19, // NOT -> already done -> top_10
 
 	// TODO: final calculation
 	last_bid = 20,

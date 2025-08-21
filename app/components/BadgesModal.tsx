@@ -27,25 +27,19 @@ const BADGES: BadgeInfo[] = [
 		name: "Top 10",
 		filename: "Native_top10.svg",
 		src: "/assets/auction/badges/Native_top10.svg",
-		description: "Made it to the top 10 leaderboard",
+		description: "Secured a spot in the top 10 positions",
 	},
 	{
 		name: "Top 21",
 		filename: "Bitcoin_top21.svg",
 		src: "/assets/auction/badges/Bitcoin_top21.svg",
-		description: "Ranked in the top 21 bidders",
+		description: "Secured a spot in the top 21 positions",
 	},
 	{
 		name: "Top 100",
 		filename: "Whale_for_top_100.svg",
 		src: "/assets/auction/badges/Whale_for_top_100.svg",
-		description: "Whale status - top 100 position",
-	},
-	{
-		name: "Top 5810",
-		filename: "Everyone_in_top_5810_positions.svg",
-		src: "/assets/auction/badges/Everyone_in_top_5810_positions.svg",
-		description: "Qualified for NFT minting - top 5810",
+		description: "Secured a spot in the top 100 positions",
 	},
 	{
 		name: "Highest Bid",
@@ -54,22 +48,22 @@ const BADGES: BadgeInfo[] = [
 		description: "Made the highest single bid",
 	},
 	{
-		name: "10+ SUI Bid",
+		name: "10+ $SUI Bid",
 		filename: "Single_bid_over_10_Sui.svg",
 		src: "/assets/auction/badges/Single_bid_over_10_Sui.svg",
-		description: "Single bid over 10 SUI",
+		description: "Single bid over 10 $SUI",
 	},
 	{
-		name: "5+ SUI Bid",
+		name: "5+ $SUI Bid",
 		filename: "Single_bid_over_5_Sui.svg",
 		src: "/assets/auction/badges/Single_bid_over_5_Sui.svg",
-		description: "Single bid over 5 SUI",
+		description: "Single bid over 5 $SUI",
 	},
 	{
-		name: "3+ SUI Bid",
+		name: "3+ $SUI Bid",
 		filename: "Single_bid_over_3_Sui.svg",
 		src: "/assets/auction/badges/Single_bid_over_3_Sui.svg",
-		description: "Single bid over 3 SUI",
+		description: "Single bid over 3 $SUI",
 	},
 	{
 		name: "10+ Bids",
@@ -108,10 +102,10 @@ const BADGES: BadgeInfo[] = [
 		description: "Among first 1000 bidders",
 	},
 	{
-		name: "Climb up 210 position",
+		name: "Climb up 210 spots",
 		filename: "anyone_climbs_more_than_210_positions_up.svg",
 		src: "/assets/auction/badges/anyone_climbs_more_than_210_positions_up.svg",
-		description: "Climb more than 210 position",
+		description: "Climb more than 210 spots",
 	},
 	{
 		name: "Climb 10 spots",
@@ -120,34 +114,28 @@ const BADGES: BadgeInfo[] = [
 		description: "Climb 10 spots",
 	},
 	{
-		name: "Comeback top 10",
-		filename: "If_some_one_comesback_to_top_10_after_falling_off_10.svg",
-		src: "/assets/auction/badges/If_some_one_comesback_to_top_10_after_falling_off_10.svg",
-		description: "Comeback top 10 position after falling off 10 position",
-	},
-	{
-		name: "Last bid",
+		name: "Last spot",
 		filename: "Last_bid_in_Leaderboard.svg",
 		src: "/assets/auction/badges/Last_bid_in_Leaderboard.svg",
-		description: "Last bid in leaderboard",
+		description: "Last spot in leaderboard",
 	},
 	{
-		name: "Every 10th position",
+		name: "Every 10th spot",
 		filename: "Logo_Ika_red_every_10th_position.svg",
 		src: "/assets/auction/badges/Logo_Ika_red_every_10th_position.svg",
-		description: "Ika every 10th position",
+		description: "Every 10th spot in the leaderboard",
 	},
 	{
-		name: "Made 2nd position",
-		filename: "Made_2nd_bid.svg",
-		src: "/assets/auction/badges/Made_2nd_bid.svg",
-		description: "Made 2nd position",
+		name: "nBTC every 21st spot",
+		filename: "nbtc_every_21st_bidder.svg",
+		src: "/assets/auction/badges/nbtc_every_21st_bidder.svg",
+		description: "nBTC every 21st spot",
 	},
 	{
-		name: "Made 3rd bid",
-		filename: "made_3rd_bid.svg",
-		src: "/assets/auction/badges/made_3rd_bid.svg",
-		description: "Made 3rd bid",
+		name: "Dethrone",
+		filename: "Who_dethrones_someone_and_gets_number_1_spot.svg",
+		src: "/assets/auction/badges/Who_dethrones_someone_and_gets_number_1_spot.svg",
+		description: "Dethrones someone and gets number 1 spot",
 	},
 	{
 		name: "Made 4th bid",
@@ -156,16 +144,22 @@ const BADGES: BadgeInfo[] = [
 		description: "Made 4th bid",
 	},
 	{
-		name: "nBTC every 21st bidder",
-		filename: "nbtc_every_21st_bidder.svg",
-		src: "/assets/auction/badges/nbtc_every_21st_bidder.svg",
-		description: "nBTC every 21st bidder",
+		name: "Made 3rd bid",
+		filename: "made_3rd_bid.svg",
+		src: "/assets/auction/badges/made_3rd_bid.svg",
+		description: "Made 3rd bid",
 	},
 	{
-		name: "Dethrone",
-		filename: "Who_dethrones_someone_and_gets_number_1_spot.svg",
-		src: "/assets/auction/badges/Who_dethrones_someone_and_gets_number_1_spot.svg",
-		description: "Dethrones someone and gets number 1 spot",
+		name: "Made 2nd bid",
+		filename: "Made_2nd_bid.svg",
+		src: "/assets/auction/badges/Made_2nd_bid.svg",
+		description: "Made 2nd bid",
+	},
+	{
+		name: "Top 5810",
+		filename: "Everyone_in_top_5810_positions.svg",
+		src: "/assets/auction/badges/Everyone_in_top_5810_positions.svg",
+		description: "Secured a spot in the top 5810 positions",
 	},
 ];
 
@@ -187,7 +181,7 @@ export function BadgesModal({ msg = "View All Badges" }: { msg?: string }) {
 				<div className="flex flex-col lg:flex-row gap-6">
 					{/* Left side - Badges grid */}
 					<div className="flex-1">
-						<div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-4 gap-2 sm:gap-3">
+						<div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-5 gap-2 sm:gap-3">
 							{BADGES.map((badge) => (
 								<button
 									key={badge.filename}
@@ -213,12 +207,12 @@ export function BadgesModal({ msg = "View All Badges" }: { msg?: string }) {
 
 					{/* Right side - Badge details */}
 					{selectedBadge && (
-						<div className="lg:w-80 lg:border-l border-primary/20 lg:border-t-0 pt-4 lg:pt-0 flex items-center justify-center">
+						<div className="lg:w-80 lg:border-l border-primary/20 lg:border-t-0 pt-4 lg:pt-0 flex justify-center">
 							<div className="flex flex-col items-center space-y-3 sm:space-y-4">
 								<img
 									src={selectedBadge.src}
 									alt={selectedBadge.name}
-									className="bg-orange-500/50 text-white w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 object-contain"
+									className="bg-orange-500/50 rounded-lg text-white w-60 h-60 object-contain"
 								/>
 								<h3 className="text-lg sm:text-xl font-bold text-primary text-center">
 									{selectedBadge.name}

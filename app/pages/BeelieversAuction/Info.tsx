@@ -31,7 +31,7 @@ export function Info({ userAccountType, auction_start_ms, auction_end_ms, auctio
 
 	const tweet = `Just placed my bid in the @goNativeCC BTCFi Beelievers NFT auction!
 
-Securing my spot in the top 5810 at beelieversNFT.gonative.cc`;
+Securing my spot in the top 5810 at https://byield.gonative.cc/beelievers-auction`;
 
 	return (
 		<Card className="w-full lg:w-[85%] xl:w-[75%] shadow-2xl border-primary/20 hover:border-primary/40 transition-all duration-300">
@@ -67,11 +67,6 @@ Securing my spot in the top 5810 at beelieversNFT.gonative.cc`;
 					</div>
 					<EligibleStatusBadge userAccountType={userAccountType} />
 					{eligibilityMessage && <p>{eligibilityMessage}</p>}
-					<p>
-						You can bid what you think is a fair value. Top 5810 bidders will win the auction.
-						Winners will pay the lowest winning bid. Any amount above the clearing price is
-						refunded.
-					</p>
 
 					{auctionState === AuctionState.WILL_START && (
 						<div>
@@ -203,12 +198,44 @@ const EligibleStatusBadge = ({ userAccountType }: { userAccountType?: AuctionAcc
 	);
 };
 
-function getEligibilityMessage(type?: AuctionAccountType) {
+function getEligibilityMessage(type?: AuctionAccountType): React.ReactNode | string {
+	const listStyle = "list-disc list-outside ml-10 space-y-2";
+	const listHeaderStyle = "text-sm lg:text-base text-foreground/90 pb-4";
+
+	const partnerBulletPoints = () => (
+		<ul className={listStyle}>
+			<li className="text-sm lg:text-base">5% Bid Boost to your price</li>
+			<li className="text-sm lg:text-base">The chance to win 1 out of 10 Mythic NFT</li>
+			<li className="text-sm lg:text-base">
+				You&apos;ll win the on-chain badges & you&apos;ll get rewarded in the future for them
+			</li>
+			<li className="text-sm lg:text-base">
+				You&apos;ll get a change to split 10% of the total auction primary sale revenue, distributed
+				to 21 winners (in nBTC)
+			</li>
+		</ul>
+	);
+
 	switch (type) {
 		case AuctionAccountType.PARTNER_WHITELIST:
-			return "Congratulations!! you are part of our partners activation program and you get a 5% boost to your price + stand a chance to win 1 out 10 Mythic collections and stand a chance to win 10% of NFT sale amount in Bitcoin (nBTC) given to 21 lucky winners.";
+			return (
+				<>
+					<p className={listHeaderStyle}>
+						Congratulations, you&apos;re part of the partner activation program WhiteList, and you
+						get:
+					</p>
+					{partnerBulletPoints()}
+				</>
+			);
 		case AuctionAccountType.TESTNET_WHITELIST:
-			return "Congratulations!! Thanks to your testnet participation, you're eligible for a 5% boost to your bid price and stand a chance to win 10% of NFT sale amount in Bitcoin (nBTC) given to 21 lucky winners.";
+			return (
+				<>
+					<p className={listHeaderStyle}>
+						Congratulations, you&apos;re part of the Form program WhiteList, and you get:
+					</p>
+					{partnerBulletPoints()}
+				</>
+			);
 		case AuctionAccountType.DEFAULT:
 			return "Participate in auction to buy NFT and stand a chance to win 10% of NFT sale amount in Bitcoin (nBTC) given to 21 lucky winners.";
 		default:
