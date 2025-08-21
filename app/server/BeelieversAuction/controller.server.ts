@@ -112,7 +112,7 @@ export default class Controller {
 
 		const keyKv = this.kvKeyTxPrefix + txDigest;
 		const kvCheck = await this.kv.get(keyKv);
-		if (kvCheck !== null) return JSON.parse(kvCheck);
+		if (kvCheck !== null) return responseOK("already processed");
 
 		const suiClient = new SuiClient({ url: getFullnodeUrl(this.suiNet) });
 		try {
@@ -139,7 +139,7 @@ export default class Controller {
 				"[Controller] An error occurred during postBidTx:",
 				error instanceof Error ? error.message : String(error),
 			);
-			return responseServerError();
+			return responseServerError(String(error));
 		}
 	}
 
@@ -177,10 +177,9 @@ function responseServerError(msg: string = "Server Error"): Response {
 }
 
 // TODO: make JSON RPC response
-// function responseOK(o: string | null): Response {
-// 	return new Response(o, {
-// 		headers: {
-// 			"Content-Type": "application/json",
-// 		},
-// 	});
-// }
+function responseOK(o: string | null): Response {
+	return new Response(
+		o,
+		// {headers: {"Content-Type": "application/json",},}
+	);
+}
