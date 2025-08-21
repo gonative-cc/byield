@@ -120,22 +120,49 @@ export async function checkTxOnChain(
 	trustedPackageId: string,
 	indexerURL: string,
 ): Promise<BidTxEvent | TxCheckError> {
-	try {
-		console.log(`[Primary] Querying Sui RPC for tx: ${suiTxId}`);
-		const tx: SuiTransactionBlockResponse = await suiClient.getTransactionBlock({
-			digest: suiTxId,
-			options: {
-				showEffects: true,
-				showEvents: true,
-			},
-		});
+	const MAX_RETRIES = 3;
+	const RETRY_DELAY_MS = 2000;
 
-		return processTransactionData(tx, suiTxId, bidderAddr, "Primary", trustedPackageId);
-	} catch (error) {
-		console.error(`[Primary] Error querying Sui RPC for tx ${suiTxId}:`, error);
-		console.log("[Primary] RPC failed. Attempting to use fallback indexer...");
-		return queryIndexerFallback(suiTxId, bidderAddr, trustedPackageId, indexerURL);
+	for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+		try {
+			console.log(
+				`[Primary] Querying Sui RPC for tx: ${suiTxId} (Attempt ${attempt}/${MAX_RETRIES})`,
+			);
+			const tx: SuiTransactionBlockResponse = await suiClient.getTransactionBlock({
+				digest: suiTxId,
+				options: {
+					showEffects: true,
+					showEvents: true,
+				},
+			});
+
+			return processTransactionData(tx, suiTxId, bidderAddr, "Primary", trustedPackageId);
+		} catch (error) {
+			const errorMessage = String(
+				error instanceof Error ? error.message : error,
+			).toLowerCase();
+			if (
+				errorMessage.includes("not found") ||
+				errorMessage.includes("could not find the referenced transaction")
+			) {
+				console.log(`[Primary] Tx not found on attempt ${attempt}.`);
+				if (attempt < MAX_RETRIES) {
+					console.log(`[Primary] Retrying in ${RETRY_DELAY_MS / 1000}s...`);
+					await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
+				}
+			} else {
+				console.error(
+					`[Primary] An unexpected RPC error occurred for tx ${suiTxId}:`,
+					error,
+				);
+				break;
+			}
+		}
 	}
+	console.log(
+		`[Primary] All ${MAX_RETRIES} attempts to RPC failed. Attempting to use fallback indexer...`,
+	);
+	return queryIndexerFallback(suiTxId, bidderAddr, trustedPackageId, indexerURL);
 }
 
 // Returns null on verification failure
