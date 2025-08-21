@@ -7,12 +7,16 @@ export async function verifySignature(
 	tx_bytes: Uint8Array,
 	signature: string,
 ): Promise<string | null> {
-	// throws exception on tx verification:
-	// https://github.com/MystenLabs/ts-sdks/blob/main/packages/typescript/src/verify/verify.ts
-	// return pub key
-	await verifyTransactionSignature(tx_bytes, signature, {
-		address: userAddr,
-	});
+	try {
+		// throws exception on tx verification:
+		// https://github.com/MystenLabs/ts-sdks/blob/main/packages/typescript/src/verify/verify.ts
+		// return pub key
+		await verifyTransactionSignature(tx_bytes, signature, {
+			address: userAddr,
+		});
 
-	return TransactionDataBuilder.getDigestFromBytes(tx_bytes);
+		return TransactionDataBuilder.getDigestFromBytes(tx_bytes);
+	} catch (e) {
+		return null;
+	}
 }
