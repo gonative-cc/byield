@@ -13,7 +13,7 @@ export const BADGE_NAME_TO_FILENAME: Record<Badge, string> = {
 	[Badge.top_10]: "Native_top10.svg",
 	[Badge.top_21]: "Bitcoin_top21.svg",
 	[Badge.top_100]: "Whale_for_top_100.svg",
-	[Badge.top_5810]: "Everyone_in_top_5810_positions.svg",
+	[Badge.top_5810]: "Everyone_in_top_5810.webp",
 	[Badge.highest_bid]: "highest_single_bid.svg",
 	[Badge.bid_over_10]: "Single_bid_over_10_Sui.svg",
 	[Badge.bid_over_5]: "Single_bid_over_5_Sui.svg",

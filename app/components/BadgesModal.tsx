@@ -157,8 +157,8 @@ const BADGES: BadgeInfo[] = [
 	},
 	{
 		name: "Top 5810",
-		filename: "Everyone_in_top_5810_positions.svg",
-		src: "/assets/auction/badges/Everyone_in_top_5810_positions.svg",
+		filename: "Everyone_in_top_5810.webp",
+		src: "/assets/auction/badges/Everyone_in_top_5810.webp",
 		description: "Secured a spot in the top 5810 positions",
 	},
 ];
