@@ -134,7 +134,7 @@ describe("Auction Class with Tuple Error Handling", () => {
 			expect(bidder?.note).toEqual("Success2!");
 			expect(extractAB(bidder)).toEqual(toAB(101, 2));
 
-			[res, err] = await auction.bid(alice, 102);
+			[res, err] = await auction.bid(alice, 102, ""); // no note
 			expect(err).toBeNull();
 
 			const l = await auction.getTopLeaderboard();
@@ -143,7 +143,7 @@ describe("Auction Class with Tuple Error Handling", () => {
 					amount: 102,
 					badges: [...b_1_20, 24],
 					bidder: "alice",
-					note: "",
+					note: "Success2!",
 					rank: 1,
 					bids: 3,
 				},
