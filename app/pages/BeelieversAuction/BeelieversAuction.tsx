@@ -25,15 +25,13 @@ interface BeelieversAuctionProps {
 	leaderboard: Bidder[];
 }
 
-export function BeelieversAuction({
-	auctionDetails: { uniqueBidders, totalBids, entryBidMist, startsAt, endsAt },
-	leaderboard,
-}: BeelieversAuctionProps) {
+export function BeelieversAuction({ auctionDetails, leaderboard }: BeelieversAuctionProps) {
 	const { suiAddr } = useContext(WalletContext);
 	const lastCheckedAddress = useRef<string | null>(null);
 	const userFetcher = useFetcher<User>();
 	const user: User | undefined = userFetcher?.data;
-	const userAccountType = user?.wlStatus;
+
+	const { uniqueBidders, totalBids, entryBidMist, startsAt, endsAt } = auctionDetails;
 
 	console.log(">>>> user", user);
 	for (const l of leaderboard) {
@@ -78,12 +76,7 @@ export function BeelieversAuction({
 
 			{/* Info Section with Animation */}
 			<div className="animate-in slide-in-from-left-4 duration-1000 delay-400 w-full flex justify-center">
-				<Info
-					auction_start_ms={startsAt}
-					auction_end_ms={endsAt}
-					auctionState={auctionState}
-					userAccountType={userAccountType}
-				/>
+				<Info auctionState={auctionState} user={user} auctionInfo={auctionDetails} />
 			</div>
 
 			{auctionState == AuctionState.STARTED && (

@@ -66,6 +66,11 @@ export default class Controller {
 		details.totalBids = stats.totalBids;
 		details.uniqueBidders = stats.uniqueBidders;
 		details.highestBidMist = leaderboard.length === 0 ? 0 : leaderboard[0].amount;
+		if (stats.uniqueBidders >= this.auction.size) {
+			const wp = await this.auction.getLastWinningPrice();
+			// we add 0.01 SUI as the min step to bid
+			if (wp !== null) details.entryBidMist = wp + 1e7;
+		}
 
 		return {
 			error: undefined,
@@ -80,14 +85,17 @@ export default class Controller {
 		try {
 			reqData = await r.json<Req>();
 		} catch (_err) {
-			console.log(">>>>> deserializing json", _err);
-			return new Response("Malformed JSON in request body", { status: 400 });
+			console.log(">>>>> Expected JSON content type:", _err);
+			return new Response("Expecting JSON Content-Type and JSON body", {
+				status: 400,
+			});
 		}
 		console.log("handle RPC", reqData);
 		switch (reqData.method) {
 			case "queryUser":
 				return this.getUserData(reqData.params[0]);
 			case "queryAuctionDetails":
+				// TODO: must return update auction info
 				return this.auctionInfo;
 			case "postBidTx": {
 				const [userAddr, txBytes, signature, userMessage] = reqData.params;

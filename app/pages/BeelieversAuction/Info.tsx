@@ -7,26 +7,27 @@ import { BadgesModal } from "~/components/BadgesModal";
 import { AuctionAccountType } from "~/server/BeelieversAuction/types";
 import { TwitterShareButton } from "~/components/TwitterShareButton";
 import { AuctionState } from "./types";
+import type { User, AuctionInfo } from "~/server/BeelieversAuction/types";
 
 interface InfoProps {
-	userAccountType?: AuctionAccountType;
+	user?: User;
+	auctionInfo: AuctionInfo;
 	isError?: boolean;
-	auction_start_ms: number;
-	auction_end_ms: number;
 	auctionState: AuctionState;
 }
 
-export function Info({ userAccountType, auction_start_ms, auction_end_ms, auctionState }: InfoProps) {
-	const eligibilityMessage = getEligibilityMessage(userAccountType);
+export function Info({ user, auctionInfo, auctionState }: InfoProps) {
+	const userAccountType = user?.wlStatus;
+	const eligibilityMessage = getEligibilityMessage(user?.wlStatus);
 	const [showInfo, setShowInfo] = React.useState(false);
 
 	let timeLabel, targetTime;
 	if (auctionState === AuctionState.WILL_START) {
 		timeLabel = "starts";
-		targetTime = auction_start_ms;
+		targetTime = auctionInfo.startsAt;
 	} else {
 		timeLabel = "ends";
-		targetTime = auction_end_ms;
+		targetTime = auctionInfo.endsAt;
 	}
 
 	const tweet = `Just placed my bid in the @goNativeCC BTCFi Beelievers NFT auction!
@@ -65,6 +66,7 @@ Securing my spot in the top 5810 at https://byield.gonative.cc/beelievers-auctio
 						</div>
 						<TwitterShareButton shareContent={tweet} />
 					</div>
+					<NotAWinnerNotifier user={user} auctionSize={auctionInfo.auctionSize} />
 					<EligibleStatusBadge userAccountType={userAccountType} />
 					{eligibilityMessage && <p>{eligibilityMessage}</p>}
 
@@ -188,12 +190,21 @@ const EligibleStatusBadge = ({ userAccountType }: { userAccountType?: AuctionAcc
 	if (!msg) return null;
 
 	return (
-		<div className="p-1 bg-gradient-to-r from-purple-500/10 via-pink-500/5 to-transparent rounded-lg animate-in slide-in-from-right-2 duration-700 animate-flash">
-			<div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-lg border border-purple-400/40">
-				<span className="text-lg">🤝</span>
-				<p className="text-sm font-semibold text-purple-300">{msg}</p>
-				<span className="text-lg animate-bounce">✨</span>
-			</div>
+		<div className="p-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-lg border border-purple-400/40">
+			<span className="text-lg">🤝 </span>
+			<span className="text-sm font-semibold">{msg}</span>
+			<span className="text-lg animate-bounce">✨</span>
+		</div>
+	);
+};
+
+const NotAWinnerNotifier = ({ user, auctionSize }: { user?: User; auctionSize: number }) => {
+	if (!user || user.amount === 0 || user.rank === null || user.rank < auctionSize) return null;
+
+	return (
+		<div className="p-2 bg-gradient-to-r from-orange-700/50 to-orange-700/40 rounded-lg border border-orange-500/70">
+			<span className="text-lg">🔨</span> You slipped from the auction winning list (top 5810 spots).
+			Bid more to save your spot!
 		</div>
 	);
 };

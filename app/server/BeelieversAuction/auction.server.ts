@@ -270,6 +270,16 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 		return result?.amount ?? this.minimumBid;
 	}
 
+	async getLastWinningPrice(): Promise<number | null> {
+		const result = await this.db
+			.prepare(
+				`SELECT amount FROM bids WHERE amount > 0 ORDER BY amount DESC, timestamp ASC LIMIT 1 OFFSET ?`,
+			)
+			.bind(this.size - 1)
+			.first<{ amount: number }>();
+		return result !== null ? result.amount : null;
+	}
+
 	async getWinners(): Promise<string[]> {
 		const result = await this.db
 			.prepare(
