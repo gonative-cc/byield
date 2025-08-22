@@ -72,7 +72,7 @@ const createColumns = (): Column<Bidder>[] => [
 			}
 
 			return (
-				<div className="flex space-x-2 justify-center">
+				<div className="flex flex-wrap gap-2 justify-center">
 					{badges.length > 0 ? (
 						badges.map((badge, index) => (
 							<img
