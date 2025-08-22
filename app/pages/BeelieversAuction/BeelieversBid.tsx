@@ -100,10 +100,10 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 			{
 				onSuccess: async (result, _variables) => {
 					console.log(
-						">>>> onsuccess, tx data:",
-						result.bytes,
-						"\ndigest",
+						">>>> onsuccess, digest: ",
 						result.digest,
+						"\n tx data:",
+						result.bytes,
 						"\nsignature",
 						result.signature,
 					);

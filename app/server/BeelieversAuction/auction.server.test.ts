@@ -1,9 +1,28 @@
 import { describe, test, expect, beforeEach, afterEach, vi, beforeAll, afterAll } from "vitest";
 import { Miniflare } from "miniflare";
+import type { User } from "./types";
 
 import { Auction } from "./auction.server";
+import { number } from "bitcoinjs-lib/src/script";
 
-describe.skip("Auction Class with Tuple Error Handling", () => {
+interface AmountBids {
+	amount: number;
+	bids: number;
+}
+
+function extractAB(bidder: User | null): AmountBids | null {
+	if (!bidder) return null;
+	return {
+		amount: bidder.amount,
+		bids: bidder.bids,
+	};
+}
+
+function toAB(amount: number, bids: number) {
+	return { amount, bids };
+}
+
+describe("Auction Class with Tuple Error Handling", () => {
 	let worker: Miniflare;
 	let auction: Auction;
 
@@ -28,7 +47,6 @@ describe.skip("Auction Class with Tuple Error Handling", () => {
 	const b_2_20 = [2, 3, 4, 5, 6, 15, 16, 20];
 	const b_3_20 = [3, 4, 5, 6, 15, 16, 20];
 	const b_1_20 = [1, ...b_2_20];
-	const b_1_23 = [...b_1_20, 23];
 
 	const note = "Going for the win!";
 
@@ -104,23 +122,31 @@ describe.skip("Auction Class with Tuple Error Handling", () => {
 	describe("bid", () => {
 		test("successful bid", async () => {
 			let [res, err] = await auction.bid(alice, minBid, "Success!");
-
 			expect(err).toBeNull();
 			expect(res).toEqual({ oldRank: null, newRank: 1 });
+			let bidder = await auction.getBidder(alice);
+			expect(extractAB(bidder)).toEqual(toAB(minBid, 1));
 
 			[res, err] = await auction.bid(alice, 101, "Success2!");
 			expect(err).toBeNull();
 			expect(res).toEqual({ oldRank: 1, newRank: 1 });
-			const bidder = await auction.getBidder(alice);
+			bidder = await auction.getBidder(alice);
 			expect(bidder?.note).toEqual("Success2!");
-			expect(bidder?.bids).toEqual(2);
+			expect(extractAB(bidder)).toEqual(toAB(101, 2));
 
 			[res, err] = await auction.bid(alice, 102);
 			expect(err).toBeNull();
 
 			const l = await auction.getTopLeaderboard();
 			expect(l).toEqual([
-				{ amount: 102, badges: b_1_23, bidder: "alice", note: "", rank: 1, bids: 2 },
+				{
+					amount: 102,
+					badges: [...b_1_20, 24],
+					bidder: "alice",
+					note: "",
+					rank: 1,
+					bids: 3,
+				},
 			]);
 
 			const w = await auction.getWinners();
@@ -201,7 +227,7 @@ describe.skip("Auction Class with Tuple Error Handling", () => {
 		});
 	});
 
-	describe("Full Auction Flow with Tuple Handling", () => {
+	describe.skip("Full Auction Flow with Tuple Handling", () => {
 		test("should correctly handle the auction lifecycle", async () => {
 			// 1. BIDDING PHASE - successful bids
 			let [res, err] = await auction.bid(users.alice, 600, note);

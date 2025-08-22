@@ -127,7 +127,7 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 			const statements = [
 				this.db
 					.prepare(
-						`INSERT INTO bids (bidder, amount, timestamp, note, bids) VALUES (?, ?, ?, ?, 1) ON CONFLICT(bidder) DO UPDATE SET amount = excluded.amount, timestamp = excluded.timestamp, note = excluded.note, bids = excluded.bids+1`,
+						`INSERT INTO bids (bidder, amount, timestamp, note, bids) VALUES (?, ?, ?, ?, 1) ON CONFLICT(bidder) DO UPDATE SET amount = excluded.amount, timestamp = excluded.timestamp, note = excluded.note, bids = bids + 1`,
 					)
 					.bind(bidder, amount, now.getTime(), note),
 				this.db
