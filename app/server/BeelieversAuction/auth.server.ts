@@ -143,7 +143,7 @@ export async function checkTxOnChain(
 	} catch (error) {
 		console.error(`[Primary] Error querying Sui RPC for tx ${suiTxId}:`, error);
 		console.log("[Primary] RPC failed. Attempting to use fallback indexer...");
-		await delay(500);
+		await delay(650);
 		return queryIndexerFallback(suiTxId, bidderAddr, trustedPackageId, indexerURL);
 	}
 }
