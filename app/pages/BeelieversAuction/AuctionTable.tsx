@@ -79,7 +79,7 @@ const createColumns = (): Column<Bidder>[] => [
 								key={index}
 								src={badge.src}
 								alt={String(badge!.name)}
-								className={`bg-orange-500/60 rounded w-8 h-8 hover:scale-110 transition-transform cursor-help`}
+								className={`bg-orange-500/60 rounded w-8 h-8 hover:scale-110 transition-transform`}
 							/>
 						))
 					) : (
