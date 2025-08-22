@@ -96,7 +96,7 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 				return [null, new Error("Auction has already ended.")];
 			}
 
-			const prevBid = await this.getBidder(bidder);
+			const prevBid = await this.getBidder(bidder, false);
 			const oldRank = prevBid?.rank ?? null;
 
 			if (!Number.isInteger(amount) || amount <= 0) {
@@ -142,7 +142,7 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 			let badges = calcStaticBadges(
 				amount,
 				prevAmount,
-				newRank || 1,
+				newRank || uniqueBidders,
 				prevBid?.rank || uniqueBidders,
 				uniqueBidders,
 			);
@@ -151,12 +151,12 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 				badges = mergeBadges(prevBid.badges, badges);
 				badgesChanged = badges.length != prevBid.badges.length;
 			}
-			if (badgesChanged)
+			if (badgesChanged) {
 				await this.db
 					.prepare(`UPDATE bids SET badges = ? WHERE bidder = ?`)
 					.bind(JSON.stringify(badges), bidder)
 					.run();
-
+			}
 			// TODO: return updated user
 			// and call addDynamicBadges
 
@@ -184,27 +184,29 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 	}
 
 	// TODO: optimize
-	async getBidder(bidder: string): Promise<User | null> {
+	async getBidder(bidder: string, withDynamicBadges: boolean = true): Promise<User | null> {
 		const stmt = this.db.prepare(
 			`WITH ranked_bids AS (SELECT bidder, amount, wlStatus, note, badges, bids, RANK() OVER (ORDER BY amount DESC, timestamp ASC) as rank FROM bids WHERE amount > 0)
 		SELECT rank, amount, badges, note, wlStatus, bids FROM ranked_bids WHERE bidder = ?`,
 		);
 		let u = await stmt.bind(bidder).first<User>();
-		if (u === null) u = await this._getBidderNoRank(bidder);
+		if (u === null) u = await this._getRawBidder(bidder);
 		if (u === null) return null;
 
 		// @ts-expect-error u.badges real type is string (from DB), but casted on is list
 		u.badges = JSON.parse(u.badges);
 
-		const uniqueBidders = await this._getUniqueBidders();
-		// const isPartner = u.wlStatus === AuctionAccountType.PARTNER_WHITELIST;
-		addDynamicBadges(u, Math.min(uniqueBidders, this.size));
+		if (withDynamicBadges) {
+			const uniqueBidders = await this._getUniqueBidders();
+			// const isPartner = u.wlStatus === AuctionAccountType.PARTNER_WHITELIST;
+			addDynamicBadges(u, Math.min(uniqueBidders, this.size));
+		}
 
 		return u;
 	}
 
 	// returns User with rank = null
-	async _getBidderNoRank(bidder: string): Promise<User | null> {
+	async _getRawBidder(bidder: string): Promise<User | null> {
 		const u = await this.db
 			.prepare(`SELECT amount, badges, note, wlStatus, bids FROM bids WHERE bidder = ?`)
 			.bind(bidder)
@@ -227,7 +229,6 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 		);
 		const { results } = await stmt.all<LeaderboardDBEntry>();
 		const uniqueBidders = await this._getUniqueBidders();
-		// TODO add addDynamicBadges(u.badges, u.rank, u.bids, isPartner, Math.min(uniqueBidders, this.size));
 		return results.map(({ bidder, amount, badges, note, bids }, index) => {
 			const b = {
 				rank: index + 1,
@@ -334,9 +335,7 @@ function calcStaticBadges(
 	return badges.sort(cmpNum);
 }
 
-// TODO
-// updates badges by adding the dynamic ones
-function addDynamicBadges(
+export function addDynamicBadges(
 	u: User_,
 	lastRank: number, // min(uniqueBidders, auctionSize)
 ) {
@@ -361,8 +360,7 @@ function addDynamicBadges(
 	else if (bids >= 3) badges.push(Badge.made_3_bids);
 	else if (bids >= 2) badges.push(Badge.made_2_bids);
 
-	// TODO
-	// highestBid
+	// TODO highestBid
 	// if (isPartner) badges.push(Badge.partner_wl);
 
 	badges.sort(cmpNum);

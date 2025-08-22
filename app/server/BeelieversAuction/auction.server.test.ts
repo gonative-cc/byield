@@ -2,8 +2,7 @@ import { describe, test, expect, beforeEach, afterEach, vi, beforeAll, afterAll 
 import { Miniflare } from "miniflare";
 import type { User } from "./types";
 
-import { Auction } from "./auction.server";
-import { number } from "bitcoinjs-lib/src/script";
+import { Auction, addDynamicBadges } from "./auction.server";
 
 interface AmountBids {
 	amount: number;
@@ -227,7 +226,7 @@ describe("Auction Class with Tuple Error Handling", () => {
 		});
 	});
 
-	describe.skip("Full Auction Flow with Tuple Handling", () => {
+	describe("Full Auction Flow with Tuple Handling", () => {
 		test("should correctly handle the auction lifecycle", async () => {
 			// 1. BIDDING PHASE - successful bids
 			let [res, err] = await auction.bid(users.alice, 600, note);
@@ -242,8 +241,15 @@ describe("Auction Class with Tuple Error Handling", () => {
 				totalBids: 3,
 				uniqueBidders: 3,
 				topBids: [
-					{ rank: 1, bids: 1, amount: 700, bidder: "bob", badges: b_1_16, note: "" },
-					{ rank: 2, bids: 1, amount: 600, bidder: "alice", badges: b_2_16, note },
+					{
+						rank: 1,
+						bids: 1,
+						amount: 700,
+						bidder: users.bob,
+						badges: [...b_1_16, 26],
+						note: "",
+					},
+					{ rank: 2, bids: 1, amount: 600, bidder: users.alice, badges: b_2_16, note },
 					{ rank: 3, bids: 1, amount: 500, bidder: "charl", badges: b_2_20, note: "" },
 				],
 			});
@@ -294,23 +300,23 @@ describe("Auction Class with Tuple Error Handling", () => {
 						rank: 1,
 						bids: 2,
 						amount: 800,
-						bidder: "charl",
-						badges: [...b_1_16, 23],
+						bidder: users.charl,
+						badges: [1, 2, 3, 4, 5, 6, 15, 16, 23, 26], // TODO: dup
 						note: "",
 					},
 					{
 						rank: 2,
-						bids: 2,
+						bids: 3,
 						amount: 750,
-						bidder: "bob",
-						badges: [...b_2_16, 23],
+						bidder: users.bob,
+						badges: [...b_2_16, 24, 26],
 						note: "",
 					},
 					{
 						rank: 3,
 						bids: 1,
 						amount: 600,
-						bidder: "alice",
+						bidder: users.alice,
 						badges: b_2_16,
 						note: "Going for the win!",
 					},
@@ -318,7 +324,7 @@ describe("Auction Class with Tuple Error Handling", () => {
 						rank: 4,
 						bids: 1,
 						amount: 320,
-						bidder: "eve",
+						bidder: users.eve,
 						badges: b_3_20,
 						note: "",
 					},
@@ -326,7 +332,7 @@ describe("Auction Class with Tuple Error Handling", () => {
 						rank: 5,
 						bids: 1,
 						amount: 310,
-						bidder: "dylan",
+						bidder: users.dylan,
 						badges: b_3_16,
 						note: "",
 					},
@@ -334,7 +340,7 @@ describe("Auction Class with Tuple Error Handling", () => {
 						rank: 6,
 						bids: 1,
 						amount: 300,
-						bidder: "felix",
+						bidder: users.felix,
 						badges: b_3_16,
 						note: "",
 					},
@@ -342,6 +348,22 @@ describe("Auction Class with Tuple Error Handling", () => {
 			});
 			const w = await auction.getWinners();
 			expect(w).toEqual([users.charl, users.bob, users.alice, users.eve]);
+		});
+	});
+
+	describe("badges", () => {
+		test("dynamic add", () => {
+			const charl = {
+				amount: 800,
+				badges: [15, 16, 26],
+				note: "",
+				wlStatus: 0,
+				bids: 2,
+				rank: 1,
+			};
+			const lastRank = 4;
+			addDynamicBadges(charl, lastRank);
+			expect(charl.badges).toEqual([1, 2, 3, 4, 5, 6, 15, 16, 23, 26]);
 		});
 	});
 });
