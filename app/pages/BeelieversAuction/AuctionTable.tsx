@@ -64,7 +64,7 @@ const createColumns = (): Column<Bidder>[] => [
 		),
 		accessor: "badges",
 		Cell: ({ row }: CellProps<Bidder>) => {
-			const badgeNames = [...new Set(row.original.badges || [])];
+			const badgeNames = row.original.badges || [];
 			const badges = [] as BadgeRecord[];
 			for (const b of badgeNames) {
 				const bn = toBadgeRecord(b);
