@@ -51,7 +51,7 @@ export const Countdown: React.FC<CountdownProps> = ({ targetTime, onTimeUp, clas
 		<span className={cls} role="timer" aria-live="polite">
 			<span style={styleV(hours)}>{hours}</span>:
 			<span style={styleV(minutes)}>{padNumber(minutes)}</span>:
-			<span style={styleV(seconds)}>{seconds}</span>
+			<span style={styleV(seconds)}>{padNumber(seconds)}</span>
 		</span>
 	);
 };
