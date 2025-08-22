@@ -7,9 +7,10 @@ interface AuctionTotalsProps {
 	uniqueBidders: number;
 	totalBids: number;
 	entryBidMist: number;
+	size: number;
 }
 
-export function AuctionTotals({ uniqueBidders, totalBids, entryBidMist }: AuctionTotalsProps) {
+export function AuctionTotals({ uniqueBidders, totalBids, entryBidMist, size }: AuctionTotalsProps) {
 	// Validate entryBidMist is within safe limits
 	if (entryBidMist >= Number.MAX_SAFE_INTEGER / 4) {
 		throw new Error(
@@ -33,7 +34,7 @@ export function AuctionTotals({ uniqueBidders, totalBids, entryBidMist }: Auctio
 	);
 
 	return (
-		<div className="flex flex-col sm:flex-row gap-4 sm:gap-6 w-full max-w-4xl">
+		<div className="flex flex-col sm:flex-row gap-2 sm:gap-6 w-full max-w-3xl">
 			{createCard(uniqueBidders.toLocaleString(), "Unique Bidders")}
 			{createCard(totalBids.toLocaleString(), "Total Bids")}
 			{createCard(
@@ -45,6 +46,7 @@ export function AuctionTotals({ uniqueBidders, totalBids, entryBidMist }: Auctio
 					</div>
 				</Tooltip>,
 			)}
+			{createCard(size.toString(), "Auction Size")}
 		</div>
 	);
 }

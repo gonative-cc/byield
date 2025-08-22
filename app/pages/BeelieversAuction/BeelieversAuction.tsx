@@ -70,6 +70,7 @@ export function BeelieversAuction({ auctionDetails, leaderboard }: BeelieversAuc
 						uniqueBidders={uniqueBidders}
 						totalBids={totalBids}
 						entryBidMist={entryBidMist}
+						size={auctionDetails.auctionSize}
 					/>
 				</div>
 			)}
