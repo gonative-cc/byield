@@ -123,7 +123,7 @@ export function AuctionTable({ data, user, suiAddr }: AuctionTableProps) {
 		<div className="w-full space-y-4">
 			{/* Header Section */}
 			<span className="text-muted-foreground group-hover:text-foreground/80 transition-colors">
-				To see your bid details, you need to refresh the browser after the making the bid.
+				To see your bid details, you need to refresh the browser after making the bid.
 			</span>
 			<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-2 pt-4">
 				<div className="flex items-center gap-3">

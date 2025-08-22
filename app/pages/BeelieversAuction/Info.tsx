@@ -210,7 +210,7 @@ function getEligibilityMessage(type?: AuctionAccountType): React.ReactNode | str
 				You&apos;ll win the on-chain badges & you&apos;ll get rewarded in the future for them
 			</li>
 			<li className="text-sm lg:text-base">
-				You&apos;ll get a change to split 10% of the total auction primary sale revenue, distributed
+				You&apos;ll get a chance to split 10% of the total auction primary sale revenue, distributed
 				to 21 winners (in nBTC)
 			</li>
 		</ul>
