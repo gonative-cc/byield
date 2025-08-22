@@ -4,15 +4,75 @@ import { Link } from "react-router";
 import { Button } from "./ui/button";
 import { FormProvider, useForm } from "react-hook-form";
 import { FormInput } from "./form/FormInput";
-import { useXverseWallet } from "./Wallet/XverseWallet/useWallet";
-import { useContext } from "react";
+import { useXverseConnect, useXverseWallet } from "./Wallet/XverseWallet/useWallet";
+import { useContext, useEffect, useState } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
 import { FormNumericInput } from "./form/FormNumericInput";
 import { NumericFormat } from "react-number-format";
-import { formatBTC, parseBTC } from "~/lib/denoms";
+import { BTC, formatBTC, parseBTC } from "~/lib/denoms";
+import { nBTCMintTx } from "~/lib/nbtc";
+import { useToast } from "~/hooks/use-toast";
+import { Modal } from "./ui/dialog";
+import { Check } from "lucide-react";
+import { classNames } from "~/util/tailwind";
+import { isValidSuiAddress } from "@mysten/sui/utils";
+import { isMainNetNetwork } from "~/lib/appenv";
 
-const nBTCMintFeeInSatoshi = 10n;
+interface TransactionStatusProps {
+	SUIAddress: string;
+	txnId: string;
+	handleRetry: () => void;
+}
+
+function TransactionStatus({ SUIAddress, txnId, handleRetry }: TransactionStatusProps) {
+	const isMainNetMode = isMainNetNetwork();
+	const bitcoinBroadcastLink = isMainNetMode
+		? `https://mempool.space/tx/${txnId}`
+		: `https://mempool.space/testnet4/tx/${txnId}`;
+	const suiScanExplorerLink = isMainNetMode
+		? `https://suiscan.xyz/mainnet/account/${SUIAddress}`
+		: `https://suiscan.xyz/testnet/account/${SUIAddress}`;
+
+	return (
+		<div className="p-4 rounded-lg text-white flex flex-col gap-4">
+			<div className="flex flex-col items-center gap-2">
+				<Check
+					className={classNames({
+						"text-green-500": true,
+					})}
+					size={30}
+				/>{" "}
+				Success
+				<Link
+					target="_blank"
+					to={bitcoinBroadcastLink}
+					rel="noreferrer"
+					className="underline text-primary"
+				>
+					Track bitcoin transaction confirmation in explorer
+				</Link>
+				<Link
+					target="_blank"
+					to={suiScanExplorerLink}
+					rel="noreferrer"
+					className="underline text-primary"
+				>
+					Explore SUI coins
+				</Link>
+			</div>
+
+			<Button onClick={handleRetry}>Ok</Button>
+		</div>
+	);
+}
+
+function formatSuiAddress(SuiAddress: string) {
+	if (SuiAddress.toLowerCase().startsWith("0x")) {
+		return SuiAddress.substring(2);
+	}
+	return SuiAddress;
+}
 
 const PERCENTAGES = [
 	{
@@ -35,13 +95,13 @@ const PERCENTAGES = [
 
 function Percentage({ onChange }: { onChange: (value: number) => void }) {
 	return (
-		<div className="flex justify-between mb-4 space-x-2">
+		<div className="flex justify-between space-x-2 mb-4">
 			{PERCENTAGES.map(({ id, value }) => (
 				<Button
 					type="button"
 					key={id}
 					onClick={() => onChange(value)}
-					variant="outline"
+					variant="ghost"
 					className="bg-azure-10 w-full flex-1 flex"
 				>
 					{value}%
@@ -79,34 +139,47 @@ interface MintNBTCForm {
 }
 
 export function MintBTC() {
-	const { balance: walletBalance } = useXverseWallet();
-	const { isWalletConnected } = useContext(WalletContext);
+	const { toast } = useToast();
+	const [txId, setTxId] = useState<string | undefined>(undefined);
+	const { connectWallet } = useXverseConnect();
+	const { balance: walletBalance, currentAddress } = useXverseWallet();
+	const { isWalletConnected, suiAddr } = useContext(WalletContext);
 	const isBitCoinWalletConnected = isWalletConnected(Wallets.Xverse);
-	const balance = parseBTC(walletBalance ?? "0");
+
 	const mintNBTCForm = useForm<MintNBTCForm>({
 		mode: "all",
 		reValidateMode: "onChange",
 		defaultValues: {
 			numberOfBTC: "",
-			suiAddress: "",
+			suiAddress: suiAddr || "",
 		},
 	});
 
 	const { handleSubmit, watch, setValue } = mintNBTCForm;
-	const numberOfBTC = watch("numberOfBTC");
+	const SuiAddress = watch("suiAddress");
 
-	const youReceive = parseBTC(numberOfBTC || "0") - nBTCMintFeeInSatoshi;
+	useEffect(() => setValue("suiAddress", suiAddr || ""), [setValue, suiAddr]);
 
 	return (
 		<FormProvider {...mintNBTCForm}>
 			<form
-				onSubmit={handleSubmit((formData) => {
-					// TODO: handle the nbtc form data
-					console.log("Depositing with Sui Address:", formData);
+				onSubmit={handleSubmit(async ({ numberOfBTC, suiAddress }) => {
+					if (currentAddress) {
+						const response = await nBTCMintTx(
+							currentAddress,
+							Number(parseBTC(numberOfBTC)),
+							formatSuiAddress(suiAddress),
+							toast,
+						);
+						if (response && response.status === "success") {
+							setTxId(response.result.txid);
+						}
+					}
 				})}
+				className="w-full md:w-1/2"
 			>
 				<Card>
-					<CardContent className="p-6 rounded-lg text-white flex flex-col gap-4 bg-azure-10">
+					<CardContent className="p-6 rounded-lg text-white flex flex-col bg-azure-10">
 						{isBitCoinWalletConnected && walletBalance && (
 							<BitcoinBalance availableBalance={walletBalance} />
 						)}
@@ -114,21 +187,32 @@ export function MintBTC() {
 							required
 							name="numberOfBTC"
 							placeholder="Enter number of BTC"
-							rightAdornments={<span className="text-sm font-medium w-20">~$0 USD</span>}
 							className="h-16"
+							inputMode="decimal"
+							decimalScale={BTC}
+							allowNegative={false}
+							createEmptySpace
 							rules={{
 								validate: {
 									isWalletConnected: () =>
 										isBitCoinWalletConnected || "Please connect Bitcoin wallet",
-									balance: (value: string) =>
-										parseBTC(value) <= balance || "Not enough balance available",
+									enoughBalance: (value: string) => {
+										if (walletBalance) {
+											if (parseBTC(value) <= BigInt(walletBalance)) {
+												return true;
+											}
+											return "Not enough balance";
+										}
+									},
 								},
 							}}
 						/>
 						<Percentage
 							onChange={(value: number) => {
-								const val = (balance * BigInt(value)) / BigInt(100);
-								setValue("numberOfBTC", formatBTC(val));
+								if (walletBalance) {
+									const val = (BigInt(walletBalance) * BigInt(value)) / 100n;
+									setValue("numberOfBTC", formatBTC(BigInt(val)));
+								}
 							}}
 						/>
 						<FormInput
@@ -136,21 +220,38 @@ export function MintBTC() {
 							name="suiAddress"
 							placeholder="Enter destination Sui Address..."
 							className="h-16"
+							createEmptySpace
+							rules={{
+								validate: {
+									validateSUIAddress: (value: string) => {
+										if (isValidSuiAddress(value)) {
+											return true;
+										}
+										return "Enter valid Sui address";
+									},
+								},
+							}}
 						/>
-						{youReceive && (
-							<Fee feeInSatoshi={nBTCMintFeeInSatoshi} youReceive={formatBTC(youReceive)} />
+						{isBitCoinWalletConnected ? (
+							<Button type="submit">Deposit BTC and mint nBTC</Button>
+						) : (
+							<Button type="button" onClick={connectWallet}>
+								Connect Bitcoin Wallet
+							</Button>
 						)}
-						<Button type="submit">Deposit BTC and mint nBTC</Button>
-						<div className="flex justify-between">
-							<span>TX ID: b99d9a361ac9db3...</span>
-							<Link
-								target="_blank"
-								to={"https://v3.tailwindcss.com/docs/font-weight"}
-								rel="noreferrer"
+						{txId && (
+							<Modal
+								title={"Mint BTC Transaction Status"}
+								open
+								handleClose={() => setTxId(() => undefined)}
 							>
-								Track confirmation in explorer
-							</Link>
-						</div>
+								<TransactionStatus
+									handleRetry={() => setTxId(() => undefined)}
+									txnId={txId}
+									SUIAddress={SuiAddress}
+								/>
+							</Modal>
+						)}
 					</CardContent>
 				</Card>
 			</form>
