@@ -99,7 +99,11 @@ export function BeelieversAuction({ auctionDetails, leaderboard }: BeelieversAuc
 
 			{/* Partners Section with Animation */}
 			<div className="animate-in fade-in-0 duration-1000 delay-700 w-full">
-				<img src="/assets/auction/partner/partners.png" alt="partners" />
+				<img
+					src="/assets/auction/partner/partners.webp"
+					alt="partners"
+					className="text-center mx-auto w-auto"
+				/>
 			</div>
 		</div>
 	);
