@@ -18,6 +18,7 @@ const maxTxIdSize = 44;
 export default class Controller {
 	kv: KVNamespace;
 	kvKeyTxPrefix = "tx_";
+	kvKeyTxPrefixNotAuthorized = "txNA_";
 
 	suiNet: "mainnet" | "testnet" | "devnet" | "localnet";
 	auctionPkgId: string; // Sui package object ID
@@ -139,6 +140,8 @@ export default class Controller {
 			);
 			if (typeof bidEvent === "string") {
 				console.error("[Controller] On-chain validation failed:", bidEvent);
+				const keyKvNA = this.kvKeyTxPrefixNotAuthorized + txDigest;
+				await this.kv.put(keyKvNA, "");
 				return responseNotAuthorized();
 			}
 
