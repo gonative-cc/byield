@@ -19,7 +19,8 @@ export function defaultAuctionInfo(production: boolean): AuctionInfo {
 }
 
 function testAuctionDetails(): AuctionInfo {
-	const startsAt = +new Date("2025-08-20T11:00Z");
+	const oneh = 3600_000;
+	const startsAt = +new Date() - oneh;
 	return {
 		uniqueBidders: 100,
 		totalBids: 100,
@@ -27,26 +28,12 @@ function testAuctionDetails(): AuctionInfo {
 
 		entryBidMist: 1e6, //  0.001 SUI
 		startsAt,
-		endsAt: 1755780307000,
+		endsAt: startsAt + 10 * oneh,
 		auctionSize: 10,
 	};
 }
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
-function mockAuctionDetails(): AuctionInfo {
-	const startsAt = +new Date("2025-08-20T11:00Z");
-	return {
-		uniqueBidders: 600,
-		totalBids: 1250,
-		highestBidMist: 30e9,
-
-		entryBidMist: 1e8, // 0.1 SUI
-		startsAt,
-		endsAt: startsAt + 24 * 3600_000,
-		auctionSize: 5810,
-	};
-}
+ 
 
 export function defaultUser(_production: boolean): User {
 	return {

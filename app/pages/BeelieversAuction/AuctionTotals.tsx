@@ -35,6 +35,7 @@ export function AuctionTotals({ uniqueBidders, totalBids, entryBidMist, size }: 
 
 	return (
 		<div className="flex flex-col sm:flex-row gap-2 sm:gap-6 w-full max-w-3xl">
+			{createCard(size.toString(), "Auction Size")}
 			{createCard(uniqueBidders.toLocaleString(), "Unique Bidders")}
 			{createCard(totalBids.toLocaleString(), "Total Bids")}
 			{createCard(
@@ -46,7 +47,6 @@ export function AuctionTotals({ uniqueBidders, totalBids, entryBidMist, size }: 
 					</div>
 				</Tooltip>,
 			)}
-			{createCard(size.toString(), "Auction Size")}
 		</div>
 	);
 }

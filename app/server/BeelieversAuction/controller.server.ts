@@ -68,8 +68,8 @@ export default class Controller {
 		details.highestBidMist = leaderboard.length === 0 ? 0 : leaderboard[0].amount;
 		if (stats.uniqueBidders >= this.auction.size) {
 			const wp = await this.auction.getLastWinningPrice();
-			// we add 0.01 SUI as the min step to bid
-			if (wp !== null) details.entryBidMist = wp + 1e7;
+			// we add 0.1 SUI as the min step to bid
+			if (wp !== null) details.entryBidMist = wp + 1e8;
 		}
 
 		return {

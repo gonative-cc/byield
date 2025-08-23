@@ -48,9 +48,12 @@ function NewTotalBidAmount({ currentBidInMist, additionalBidInSUI, entryBidMist 
 			{moreBidNeeded > 0 && (
 				<div className="flex justify-between items-center">
 					<span className="text-sm text-muted-foreground">
-						Bid above the Entry Price to get into the winning list:
+						Your added bid should be at least
+						<span className="font-semibold text-primary">
+							&nbsp; {formatSUI(moreBidNeeded)} SUI &nbsp;
+						</span>
+						to get into the winning list:
 					</span>
-					<div className="text-lg font-semibold text-primary">{formatSUI(moreBidNeeded)} SUI</div>
 				</div>
 			)}
 		</div>
