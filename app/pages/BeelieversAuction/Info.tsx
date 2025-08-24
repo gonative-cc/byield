@@ -40,12 +40,12 @@ Securing my spot in the top 5810 at https://byield.gonative.cc/beelievers-auctio
 				<div className="flex-shrink-0 flex justify-center lg:justify-start">
 					<div className="animate-float">
 						<img
-							src="/assets/bee/bee-with-hammer.svg"
+							src="/assets/bee/bee-with-hammer.webp"
 							alt="bee-with-hammer"
 							className="hidden lg:block w-auto h-auto"
 						/>
 						<img
-							src="/assets/bee/bee-with-face-only.svg"
+							src="/assets/bee/bee-with-face-only.webp"
 							alt="bee-with-face-only"
 							className="lg:hidden block w-auto h-auto"
 						/>
