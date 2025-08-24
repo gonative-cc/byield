@@ -9,4 +9,5 @@ export enum AuctionState {
 	WILL_START = "WILL_START",
 	STARTED = "STARTED",
 	ENDED = "ENDED",
+	RECONCILLED = "RECONCILLED",
 }

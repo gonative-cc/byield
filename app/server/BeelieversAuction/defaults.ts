@@ -1,9 +1,10 @@
 import { AuctionAccountType, Badge, type AuctionInfo, type User, type Bidder } from "./types";
 
-export function defaultAuctionInfo(production: boolean): AuctionInfo {
-	if (!production) {
-		return testAuctionDetails();
-	}
+export function defaultAuctionInfo(_production: boolean): AuctionInfo {
+	// TODO: make an env Var
+	// if (!production) {
+	// 	return testAuctionDetails();
+	// }
 	const startsAt = +new Date("2025-08-21T13:00:00Z");
 	return {
 		// TODO: move this and use DB records!
@@ -15,12 +16,13 @@ export function defaultAuctionInfo(production: boolean): AuctionInfo {
 		startsAt,
 		endsAt: startsAt + 48 * 3600_000,
 		auctionSize: 5810,
+		clearingPrice: null,
 	};
 }
-
+/* eslint-disable @typescript-eslint/no-unused-vars */
 function testAuctionDetails(): AuctionInfo {
-	const oneh = 3600_000;
-	const startsAt = +new Date() - oneh;
+	const oneHour = 3600_000;
+	const startsAt = +new Date() - oneHour;
 	return {
 		uniqueBidders: 100,
 		totalBids: 100,
@@ -28,12 +30,11 @@ function testAuctionDetails(): AuctionInfo {
 
 		entryBidMist: 1e6, //  0.001 SUI
 		startsAt,
-		endsAt: startsAt + 10 * oneh,
+		endsAt: startsAt + 10 * oneHour,
 		auctionSize: 10,
+		clearingPrice: null,
 	};
 }
-
- 
 
 export function defaultUser(_production: boolean): User {
 	return {

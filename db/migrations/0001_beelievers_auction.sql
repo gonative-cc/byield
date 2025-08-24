@@ -7,7 +7,8 @@ CREATE TABLE IF NOT EXISTS bids (
   wlStatus  INTEGER NOT NULL DEFAULT 0,
   note      TEXT,
   badges    TEXT DEFAULT "[]",
-  bids      INTEGER DEFAULT 0);
+  bids      INTEGER DEFAULT 0,
+  rank INTEGER);
 
 CREATE INDEX IF NOT EXISTS idx_bids_ranking ON bids(
   amount DESC, timestamp ASC);

@@ -73,7 +73,7 @@ describe("Auction Class with Tuple Error Handling", () => {
 		// Setting auction window around the user's provided time for context
 		vi.setSystemTime(now);
 
-		auction = new Auction(db, timeStart, timeEnd, auctionSize, minBid);
+		auction = new Auction(db, timeStart, timeEnd, auctionSize, minBid, null);
 		await auction.initialize();
 	});
 	afterEach(() => {

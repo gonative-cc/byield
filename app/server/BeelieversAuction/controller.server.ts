@@ -29,6 +29,8 @@ export default class Controller {
 
 	isProduction: boolean;
 
+	finalized_clearing_price = 5260500000;
+
 	constructor(kv: KVNamespace, d1: D1Database) {
 		this.isProduction = isProductionMode();
 		if (this.isProduction) {
@@ -56,6 +58,7 @@ export default class Controller {
 			new Date(ai.endsAt),
 			ai.auctionSize,
 			ai.entryBidMist,
+			this.finalized_clearing_price,
 		);
 	}
 
@@ -67,10 +70,12 @@ export default class Controller {
 		details.totalBids = stats.totalBids;
 		details.uniqueBidders = stats.uniqueBidders;
 		details.highestBidMist = leaderboard.length === 0 ? 0 : leaderboard[0].amount;
+		details.clearingPrice = this.finalized_clearing_price;
+
 		if (stats.uniqueBidders >= this.auction.size) {
-			const wp = await this.auction.getLastWinningPrice();
+			const entryBid = await this.auction.getLastWinningPrice();
 			// we add 0.1 SUI as the min step to bid
-			if (wp !== null) details.entryBidMist = wp + 1e8;
+			if (entryBid !== null) details.entryBidMist = entryBid + 1e8;
 		}
 
 		return {

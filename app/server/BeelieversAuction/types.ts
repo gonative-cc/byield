@@ -13,6 +13,8 @@ export interface AuctionInfo {
 	totalBids: number;
 	// number of items in the auction
 	auctionSize: number;
+	// set once the auction ended. Otherwise null
+	clearingPrice: number | null; // in MIST
 }
 
 export enum AuctionAccountType {

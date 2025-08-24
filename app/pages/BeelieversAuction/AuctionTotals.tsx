@@ -2,19 +2,17 @@ import { Info } from "lucide-react";
 import { Card, CardContent } from "~/components/ui/card";
 import { Tooltip } from "~/components/ui/tooltip";
 import { formatSUI } from "~/lib/denoms";
+import type { AuctionInfo } from "~/server/BeelieversAuction/types";
 
 interface AuctionTotalsProps {
-	uniqueBidders: number;
-	totalBids: number;
-	entryBidMist: number;
-	size: number;
+	info: AuctionInfo;
 }
 
-export function AuctionTotals({ uniqueBidders, totalBids, entryBidMist, size }: AuctionTotalsProps) {
+export function AuctionTotals({ info }: AuctionTotalsProps) {
 	// Validate entryBidMist is within safe limits
-	if (entryBidMist >= Number.MAX_SAFE_INTEGER / 4) {
+	if (info.entryBidMist >= Number.MAX_SAFE_INTEGER / 4) {
 		throw new Error(
-			`entryBidMist (${entryBidMist}) exceeds maximum safe value (${Number.MAX_SAFE_INTEGER / 4})`,
+			`entryBidMist (${info.entryBidMist}) exceeds maximum safe value (${Number.MAX_SAFE_INTEGER / 4})`,
 		);
 	}
 
@@ -33,16 +31,25 @@ export function AuctionTotals({ uniqueBidders, totalBids, entryBidMist, size }: 
 		</Card>
 	);
 
+	let priceTitle = "Minimum Bid";
+	let price = info.entryBidMist;
+	let tooltip = "Current minimum bid to enter the winning list";
+	if (info.clearingPrice) {
+		priceTitle = "Minting Price";
+		price = info.clearingPrice;
+		tooltip = "Final clearing price of the auction";
+	}
+
 	return (
 		<div className="flex flex-col sm:flex-row gap-2 sm:gap-6 w-full max-w-3xl">
-			{createCard(size.toString(), "Auction Size")}
-			{createCard(uniqueBidders.toLocaleString(), "Unique Bidders")}
-			{createCard(totalBids.toLocaleString(), "Total Bids")}
+			{createCard(info.auctionSize.toString(), "Auction Size")}
+			{createCard(info.uniqueBidders.toLocaleString(), "Unique Bidders")}
+			{createCard(info.totalBids.toLocaleString(), "Total Bids")}
 			{createCard(
-				formatSUI(BigInt(entryBidMist)) + " SUI",
-				<Tooltip tooltip="Current minimum bid to enter the winning list">
+				formatSUI(BigInt(price)) + " SUI",
+				<Tooltip tooltip={tooltip}>
 					<div className="text-muted-foreground flex items-center justify-center gap-1 group-hover:text-foreground/80 transition-colors">
-						Minimum Bid
+						{priceTitle}
 						<Info size="16" className="text-primary hover:text-orange-400 transition-colors" />
 					</div>
 				</Tooltip>,

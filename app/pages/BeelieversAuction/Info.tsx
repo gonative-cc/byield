@@ -52,21 +52,28 @@ Securing my spot in the top 5810 at https://byield.gonative.cc/beelievers-auctio
 					</div>
 				</div>
 				<div className="flex flex-col gap-4 lg:gap-6 py-0 w-full lg:text-base leading-relaxed">
-					<div className="flex flex-row justify-between items-center gap-4">
-						<div className="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-lg border border-primary/20 font-semibold text-primary">
-							<span className="text-2xl">⏰</span>
-							{auctionState === AuctionState.ENDED ? (
-								<span className="text">Auction ended</span>
-							) : (
+					<div className="flex gap-4">
+						{[AuctionState.WILL_START, AuctionState.STARTED].includes(auctionState) && (
+							<div className="px-4 py-2 bg-primary/10 rounded-lg border border-primary/20 font-semibold text-primary">
+								<span className="text-2xl">⏰</span>
 								<>
 									<span className="text-sm"> Auction {timeLabel} in </span>
 									<Countdown targetTime={targetTime} />
 								</>
-							)}
+							</div>
+						)}
+						<div className="ml-auto">
+							<TwitterShareButton shareContent={tweet} />
 						</div>
-						<TwitterShareButton shareContent={tweet} />
 					</div>
-					<NotAWinnerNotifier user={user} auctionSize={auctionInfo.auctionSize} />
+					<FinalizedNotifier
+						user={user}
+						auctionSize={auctionInfo.auctionSize}
+						state={auctionState}
+					/>
+					{auctionState === AuctionState.STARTED && (
+						<NotAWinnerNotifier user={user} auctionSize={auctionInfo.auctionSize} />
+					)}
 					<EligibleStatusBadge userAccountType={userAccountType} />
 					{eligibilityMessage && <p>{eligibilityMessage}</p>}
 
@@ -194,6 +201,40 @@ const EligibleStatusBadge = ({ userAccountType }: { userAccountType?: AuctionAcc
 			<span className="text-lg">🤝 </span>
 			<span className="text-sm font-semibold">{msg}</span>
 			<span className="text-lg animate-bounce">✨</span>
+		</div>
+	);
+};
+
+const FinalizedNotifier = ({
+	user,
+	auctionSize,
+	state,
+}: {
+	user?: User;
+	auctionSize: number;
+	state: AuctionState;
+}) => {
+	let msg: string = "";
+	switch (state) {
+		case AuctionState.ENDED: {
+			msg = "Confirming results";
+			break;
+		}
+		case AuctionState.RECONCILLED: {
+			if (!user) break;
+			msg = "😒 Unfortunately, you didn't win the auction.";
+			if ((user.rank || 0) <= auctionSize) msg = "🏆 You made it to the winning list!";
+			break;
+		}
+		default:
+			return;
+	}
+
+	return (
+		<div className="p-2 text-lg">
+			<span className="text-xlg">🔨</span> Auction ended. Minting will be availabled in the next few
+			days.
+			<p className="mt-4">{msg}</p>
 		</div>
 	);
 };

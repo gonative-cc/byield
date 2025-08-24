@@ -13,25 +13,24 @@ import { WalletContext } from "~/providers/ByieldWalletProvider";
 
 import { removeDuplicates, sortAndCheckDuplicate } from "~/lib/batteries";
 
-function getAuctionState(startMs: number, endMs: number): AuctionState {
+function getAuctionState(startMs: number, endMs: number, clearingPrice: number | null): AuctionState {
 	const nowMs = new Date().getTime();
 	if (nowMs < startMs) return AuctionState.WILL_START;
 	if (nowMs < endMs) return AuctionState.STARTED;
+	if (clearingPrice !== null) return AuctionState.RECONCILLED;
 	return AuctionState.ENDED;
 }
 
 interface BeelieversAuctionProps {
-	auctionDetails: AuctionInfo;
+	info: AuctionInfo;
 	leaderboard: Bidder[];
 }
 
-export function BeelieversAuction({ auctionDetails, leaderboard }: BeelieversAuctionProps) {
+export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps) {
 	const { suiAddr } = useContext(WalletContext);
 	const lastCheckedAddress = useRef<string | null>(null);
 	const userFetcher = useFetcher<User>();
 	const user: User | undefined = userFetcher?.data;
-
-	const { uniqueBidders, totalBids, entryBidMist, startsAt, endsAt } = auctionDetails;
 
 	console.log(">>>> user", user);
 	for (const l of leaderboard) {
@@ -53,7 +52,7 @@ export function BeelieversAuction({ auctionDetails, leaderboard }: BeelieversAuc
 	}, [userFetcher, userFetcher.state, suiAddr]);
 
 	const twitterPost = "https://twitter.com/goNativeCC/status/1956370231191818263";
-	const auctionState = getAuctionState(startsAt, endsAt);
+	const auctionState = getAuctionState(info.startsAt, info.endsAt, info.clearingPrice);
 
 	return (
 		<div className="flex flex-col items-center gap-6 sm:gap-8 lg:gap-10 w-full relative">
@@ -66,23 +65,18 @@ export function BeelieversAuction({ auctionDetails, leaderboard }: BeelieversAuc
 			{/* Auction Stats with Staggered Animation */}
 			{auctionState !== AuctionState.WILL_START && (
 				<div className="animate-in slide-in-from-bottom-4 duration-1000 delay-300 w-full flex justify-center">
-					<AuctionTotals
-						uniqueBidders={uniqueBidders}
-						totalBids={totalBids}
-						entryBidMist={entryBidMist}
-						size={auctionDetails.auctionSize}
-					/>
+					<AuctionTotals info={info} />
 				</div>
 			)}
 
 			{/* Info Section with Animation */}
 			<div className="animate-in slide-in-from-left-4 duration-1000 delay-400 w-full flex justify-center">
-				<Info auctionState={auctionState} user={user} auctionInfo={auctionDetails} />
+				<Info auctionState={auctionState} user={user} auctionInfo={info} />
 			</div>
 
 			{auctionState == AuctionState.STARTED && (
 				<div className="animate-in slide-in-from-right-4 duration-1000 delay-500 w-full flex justify-center">
-					<BeelieversBid user={user} entryBidMist={entryBidMist} />
+					<BeelieversBid user={user} entryBidMist={info.entryBidMist} />
 				</div>
 			)}
 

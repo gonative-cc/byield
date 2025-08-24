@@ -32,6 +32,7 @@ export class Auction {
 	endDate: Date;
 	size: number;
 	minimumBid: number;
+	finalized_clearing_price: number | null;
 
 	constructor(
 		db: D1Database,
@@ -39,12 +40,14 @@ export class Auction {
 		endDate: Date,
 		auctionSize: number,
 		minimumBid: number = 2e9,
+		finalized_clearing_price: number | null,
 	) {
 		this.db = db;
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.size = auctionSize;
 		this.minimumBid = minimumBid;
+		this.finalized_clearing_price = finalized_clearing_price;
 	}
 
 	// TODO: remove and read from migrations
@@ -58,7 +61,8 @@ timestamp INTEGER NOT NULL,
 wlStatus INTEGER NOT NULL DEFAULT 0,
 note TEXT,
 badges TEXT DEFAULT "[]",
-bids INTEGER DEFAULT 0);
+bids INTEGER DEFAULT 0,
+rank INTEGER);
 
 CREATE INDEX IF NOT EXISTS idx_bids_ranking ON bids(amount DESC, timestamp ASC);
 
@@ -183,14 +187,21 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 		return higherBids.count + 1;
 	}
 
-	// TODO: optimize
 	async getBidder(bidder: string, withDynamicBadges: boolean = true): Promise<User | null> {
-		const stmt = this.db.prepare(
-			`WITH ranked_bids AS (SELECT bidder, amount, wlStatus, note, badges, bids, RANK() OVER (ORDER BY amount DESC, timestamp ASC) as rank FROM bids WHERE amount > 0)
+		let u = null;
+		if (this.finalized_clearing_price) {
+			const stmt = this.db.prepare(`SELECT * FROM bids WHERE bidder = ?`);
+			u = await stmt.bind(bidder).first<User>();
+		} else {
+			// TODO: optimize
+			const stmt = this.db.prepare(
+				`WITH ranked_bids AS (SELECT bidder, amount, wlStatus, note, badges, bids, RANK() OVER (ORDER BY amount DESC, timestamp ASC) as rank FROM bids WHERE amount > 0)
 		SELECT rank, amount, badges, note, wlStatus, bids FROM ranked_bids WHERE bidder = ?`,
-		);
-		let u = await stmt.bind(bidder).first<User>();
-		if (u === null) u = await this._getRawBidder(bidder);
+			);
+			u = await stmt.bind(bidder).first<User>();
+			if (u === null) u = await this._getRawBidder(bidder);
+		}
+
 		if (u === null) return null;
 
 		// @ts-expect-error u.badges real type is string (from DB), but casted on is list
@@ -262,6 +273,10 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 	}
 
 	async getClearingPrice(): Promise<number> {
+		if (this.finalized_clearing_price) {
+			return this.finalized_clearing_price;
+		}
+
 		const result = await this.db
 			.prepare(
 				`SELECT amount FROM bids WHERE amount > 0 ORDER BY amount DESC, timestamp ASC LIMIT 1 OFFSET ?`,
@@ -282,12 +297,8 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 	}
 
 	async getWinners(): Promise<string[]> {
-		const result = await this.db
-			.prepare(
-				`SELECT bidder FROM bids WHERE amount > 0 ORDER BY amount DESC, timestamp ASC LIMIT ?`,
-			)
-			.bind(this.size)
-			.raw<string>();
+		const stmt = `SELECT bidder FROM bids WHERE amount > 0 ORDER BY amount DESC, timestamp ASC LIMIT ?`;
+		const result = await this.db.prepare(stmt).bind(this.size).raw<string>();
 		return result.flat();
 	}
 
