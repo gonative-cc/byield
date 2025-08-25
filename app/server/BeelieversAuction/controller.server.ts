@@ -2,8 +2,8 @@ import { isValidSuiAddress } from "@mysten/sui/utils";
 import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
 
 import type { LoaderDataResp, AuctionInfo, User } from "./types";
-import type { Req } from "./jsonrpc";
-import { defaultAuctionInfo, defaultUser } from "./defaults";
+import type { RaffleResp, Req } from "./jsonrpc";
+import { defaultAuctionInfo, defaultUser, mockRaffleWinners } from "./defaults";
 import { checkTxOnChain, verifySignature } from "./auth.server";
 
 import { fromBase64 } from "@mysten/utils";
@@ -100,9 +100,6 @@ export default class Controller {
 		switch (reqData.method) {
 			case "queryUser":
 				return this.getUserData(reqData.params[0]);
-			case "queryAuctionDetails":
-				// TODO: must return update auction info
-				return this.auctionInfo;
 			case "postBidTx": {
 				const [userAddr, txBytes, signature, userMessage] = reqData.params;
 				return this.postBidTx(userAddr, fromBase64(txBytes), signature, userMessage);
@@ -110,6 +107,9 @@ export default class Controller {
 			case "pageData": {
 				const [suiAddr] = reqData.params;
 				return this.loadPageData(suiAddr);
+			}
+			case "queryRaffle": {
+				return this.getRaffle();
 			}
 			default:
 				return responseNotFound("Unknown method");
@@ -175,6 +175,16 @@ export default class Controller {
 			return defaultUser(this.isProduction);
 		}
 		return u;
+	}
+
+	async getRaffle(): Promise<RaffleResp | null> {
+		if (this.isProduction) {
+			return null;
+		}
+		return {
+			winners: mockRaffleWinners(),
+			totalAmount: 105 * 1e9,
+		};
 	}
 }
 
