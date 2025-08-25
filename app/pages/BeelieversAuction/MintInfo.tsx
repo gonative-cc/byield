@@ -1,19 +1,19 @@
 import { Card, CardContent } from "~/components/ui/card";
-import { type User } from "~/server/BeelieversAuction/types";
+import { type AuctionInfo, type User } from "~/server/BeelieversAuction/types";
 import { formatSUI } from "~/lib/denoms";
 import { Button } from "~/components/ui/button";
 
 interface MintInfoProps {
+	auctionInfo: AuctionInfo;
 	user?: User;
 }
 
-export function MintInfo({ user }: MintInfoProps) {
+export function MintInfo({ user, auctionInfo: { clearingPrice } }: MintInfoProps) {
 	const currentBidInMist = BigInt(user?.amount || 0);
 
 	// TODO: get it from server
-	const mintPrice = BigInt(5 * 1e9);
 	const wonRaffle = false;
-	const refund = mintPrice - currentBidInMist;
+	const refund = clearingPrice ? BigInt(clearingPrice) - BigInt(currentBidInMist) : null;
 
 	return (
 		<Card className="w-full lg:w-[85%] xl:w-[75%] shadow-2xl border-primary/20 hover:border-primary/40 transition-all duration-300">
@@ -32,7 +32,7 @@ export function MintInfo({ user }: MintInfoProps) {
 						<div className="flex justify-between items-center mb-2 w-full">
 							<span className="text-sm text-muted-foreground">Mint Price:</span>
 							<div className="text-lg font-semibold text-primary">
-								{formatSUI(String(mintPrice))} SUI
+								{formatSUI(String(clearingPrice))} SUI
 							</div>
 						</div>
 						<div className="flex justify-between items-center mb-2">
@@ -68,14 +68,16 @@ export function MintInfo({ user }: MintInfoProps) {
 							>
 								Mint
 							</Button>
-							<Button
-								type="button"
-								onClick={() => {
-									// TODO: handle refund
-								}}
-							>
-								Refund {formatSUI(refund)} SUI
-							</Button>
+							{refund && (
+								<Button
+									type="button"
+									onClick={() => {
+										// TODO: handle refund
+									}}
+								>
+									Refund {formatSUI(refund)} SUI
+								</Button>
+							)}
 						</div>
 					)}
 				</div>
