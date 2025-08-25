@@ -1,17 +1,16 @@
 import { useFetcher } from "react-router";
-import { useContext, useEffect, useRef } from "react";
-
-import { Info } from "./Info";
+import { useContext, useEffect, useRef, type ReactNode } from "react";
 import { AuctionTable } from "./AuctionTable";
 import { AuctionTotals } from "./AuctionTotals";
-import { BeelieversBid } from "./BeelieversBid";
-import { TweetEmbed } from "~/components/TweetEmbed";
 import { AuctionState } from "./types";
 import type { AuctionInfo, Bidder, User } from "~/server/BeelieversAuction/types";
 import { makeReq } from "~/server/BeelieversAuction/jsonrpc";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
-
 import { removeDuplicates, sortAndCheckDuplicate } from "~/lib/batteries";
+import { AuctionRaffleTable } from "./AuctionRaffleTable";
+import { MintInfo } from "./MintInfo";
+import { Info as AuctionsInfo } from "./Info";
+import { RaffleStats } from "./RaffleStats";
 
 function getAuctionState(startMs: number, endMs: number, clearingPrice: number | null): AuctionState {
 	const nowMs = new Date().getTime();
@@ -51,32 +50,55 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 		}
 	}, [userFetcher, userFetcher.state, suiAddr]);
 
-	const twitterPost = "https://twitter.com/goNativeCC/status/1956370231191818263";
 	const auctionState = getAuctionState(info.startsAt, info.endsAt, info.clearingPrice);
+	// TODO: get mint info
+	const showMintInfo = true;
+
+	const renderHeading = (content: ReactNode) => (
+		<div className="flex flex-col items-center gap-4">
+			<p className="md:text-3xl text-2xl text-center font-semibold max-w-120">{content}</p>
+		</div>
+	);
 
 	return (
 		<div className="flex flex-col items-center gap-6 sm:gap-8 lg:gap-10 w-full relative">
 			{/* Hero Title with Animation */}
-			<div className="flex flex-col items-center gap-4">
-				<p className="md:text-3xl text-2xl text-center font-semibold max-w-120">
-					<span className="text-2xl text-primary md:text-3xl">🐝 BTCFi Beelievers</span> Auction
-				</p>
-			</div>
-			{/* Auction Stats with Staggered Animation */}
-			{auctionState !== AuctionState.WILL_START && (
-				<div className="animate-in slide-in-from-bottom-4 duration-1000 delay-300 w-full flex justify-center">
-					<AuctionTotals info={info} />
-				</div>
+			{renderHeading(
+				<>
+					<span className="text-2xl text-primary md:text-3xl">🐝 BTCFi Beelievers</span> Mint
+				</>,
 			)}
 
 			{/* Info Section with Animation */}
 			<div className="animate-in slide-in-from-left-4 duration-1000 delay-400 w-full flex justify-center">
-				<Info auctionState={auctionState} user={user} auctionInfo={info} />
+				{showMintInfo ? (
+					<MintInfo user={user} auctionInfo={info} />
+				) : (
+					<AuctionsInfo auctionInfo={info} auctionState={auctionState} />
+				)}
 			</div>
 
-			{auctionState == AuctionState.STARTED && (
-				<div className="animate-in slide-in-from-right-4 duration-1000 delay-500 w-full flex justify-center">
-					<BeelieversBid user={user} entryBidMist={info.entryBidMist} />
+			{renderHeading(
+				<>
+					<span className="text-2xl text-primary md:text-3xl">Raffle</span>
+				</>,
+			)}
+
+			<div className="animate-in slide-in-from-bottom-4 duration-1000 delay-300 w-full flex justify-center">
+				<RaffleStats />
+			</div>
+
+			{/* Leaderboard Table with Animation */}
+			<div className="animate-in slide-in-from-bottom-4 duration-1000 delay-600 w-full">
+				<div className="flex flex-col-reverse lg:flex-row gap-6 w-full">
+					<AuctionRaffleTable data={leaderboard} />
+				</div>
+			</div>
+
+			{/* Auction Stats with Staggered Animation */}
+			{auctionState !== AuctionState.WILL_START && (
+				<div className="animate-in slide-in-from-bottom-4 duration-1000 delay-300 w-full flex justify-center">
+					<AuctionTotals info={info} />
 				</div>
 			)}
 
@@ -88,8 +110,6 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 					</div>
 				</div>
 			)}
-			{/* Twitter post */}
-			<TweetEmbed src={twitterPost} />
 
 			{/* Partners Section with Animation */}
 			<div className="animate-in fade-in-0 duration-1000 delay-700 w-full">
