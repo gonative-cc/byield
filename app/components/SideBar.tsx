@@ -37,13 +37,6 @@ function navMenuItems(): MenuItem[] {
 					},
 				],
 			},
-			{
-				icon: "/assets/navigation/bee-with-bitcoin.svg",
-				id: "navigation-4",
-				title: "Beelievers Auction (mainnet)",
-				link: "/beelievers-auction",
-				subNavItems: [],
-			},
 		];
 	}
 
@@ -80,9 +73,24 @@ function navMenuItems(): MenuItem[] {
 		{
 			icon: "/assets/navigation/bee-with-bitcoin.svg",
 			id: "navigation-4",
-			title: "Beelievers Auction (mainnet)",
-			link: "/beelievers-auction",
-			subNavItems: [],
+			title: "Beelievers (mainnet)",
+			link: "",
+			subNavItems: [
+				{
+					id: "navigation-4-1",
+					link: "/beelievers-auction",
+					title: "Auction",
+					icon: "",
+					subNavItems: [],
+				},
+				{
+					id: "navigation-4-2",
+					link: "/beelievers-mint",
+					title: "Mint",
+					icon: "",
+					subNavItems: [],
+				},
+			],
 		},
 	];
 }
