@@ -89,7 +89,7 @@ export const Table = <T extends object>({ columns, data, className, getRowProps 
 					<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
 						<span className="text-2xl">📊</span>
 					</div>
-					<p>No auction data available</p>
+					<p>No data available</p>
 				</div>
 			</td>
 		</tr>

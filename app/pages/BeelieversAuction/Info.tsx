@@ -1,6 +1,4 @@
 import React from "react";
-import { ChevronsDown, ChevronsUp } from "lucide-react";
-
 import { Card, CardContent } from "~/components/ui/card";
 import { Countdown } from "~/components/ui/countdown";
 import { BadgesModal } from "~/components/BadgesModal";
@@ -8,6 +6,7 @@ import { AuctionAccountType } from "~/server/BeelieversAuction/types";
 import { TwitterShareButton } from "~/components/TwitterShareButton";
 import { AuctionState } from "./types";
 import type { User, AuctionInfo } from "~/server/BeelieversAuction/types";
+import { Accordion } from "~/components/ui/accordion";
 
 interface InfoProps {
 	user?: User;
@@ -19,7 +18,6 @@ interface InfoProps {
 export function Info({ user, auctionInfo, auctionState }: InfoProps) {
 	const userAccountType = user?.wlStatus;
 	const eligibilityMessage = getEligibilityMessage(user?.wlStatus);
-	const [showInfo, setShowInfo] = React.useState(false);
 
 	let timeLabel, targetTime;
 	if (auctionState === AuctionState.WILL_START) {
@@ -83,34 +81,25 @@ Securing my spot in the top 5810 at https://byield.gonative.cc/beelievers-auctio
 						</div>
 					)}
 
-					<Instructions showInfo={showInfo} onToggle={() => setShowInfo(!showInfo)} />
+					<Instructions />
 				</div>
 			</CardContent>
 		</Card>
 	);
 }
 
-const Instructions = ({ showInfo, onToggle }: { showInfo: boolean; onToggle: () => void }) => {
+const Instructions = () => {
 	return (
-		<div className="backdrop-blur-sm shadow-lg border border-primary/20 rounded-lg overflow-hidden">
-			<button
-				onClick={onToggle}
-				className="flex items-center justify-between w-full p-4 lg:p-6 text-left bg-gradient-to-r from-primary/10 to-primary/5 hover:from-primary/20 hover:to-primary/10 text-primary hover:text-orange-400 text-lg lg:text-xl transition-all duration-300 group"
-			>
+		<Accordion
+			title={
 				<div className="flex items-center gap-3">
 					<span className="text-2xl">🐝</span>
 					<span className="font-bold">BTCFi Beelievers NFT Auction – How It Works?</span>
 				</div>
-				<div className={`transform transition-transform duration-300 group-hover:scale-110`}>
-					{showInfo ? <ChevronsUp size={24} /> : <ChevronsDown size={24} />}
-				</div>
-			</button>
-			<div
-				className={`transition-all duration-500 ease-in-out ${showInfo ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"} overflow-hidden`}
-			>
-				{showInfo && <InstructionDetails />}
-			</div>
-		</div>
+			}
+		>
+			<InstructionDetails />
+		</Accordion>
 	);
 };
 
