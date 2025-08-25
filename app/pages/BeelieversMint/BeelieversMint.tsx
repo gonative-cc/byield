@@ -620,12 +620,12 @@ function BeelieversMintFunction() {
 						<div className="flex-shrink-0 flex justify-center lg:justify-start">
 							<div className="animate-float">
 								<img
-									src="/assets/bee/bee-looking-right.svg"
-									alt="bee-looking-right.svg"
+									src="/assets/bee/bee-looking-right.webp"
+									alt="bee-looking-right.webp"
 									className="hidden lg:block w-auto h-auto"
 								/>
 								<img
-									src="/assets/bee/bee-with-face-only.svg"
+									src="/assets/bee/bee-with-face-only.webp"
 									alt="bee-with-face-only"
 									className="lg:hidden block w-auto h-auto"
 								/>
