@@ -27,6 +27,7 @@
 	"dependencies": {
 		"@ethersproject/units": "^5.8.0",
 		"@mysten/dapp-kit": "^0.17.3",
+		"@mysten/kiosk": "^0.12.10",
 		"@mysten/sui": "^1.37.2",
 		"@radix-ui/react-dialog": "^1.1.14",
 		"@radix-ui/react-popover": "^1.1.14",
@@ -85,6 +86,7 @@
 		"lint-staged": "^15.5.2",
 		"miniflare": "^4.20250816.0",
 		"postcss": "^8.5.6",
+		"prettier": "^3.4.2",
 		"tailwindcss": "^4.1.11",
 		"typescript": "^5.8.3",
 		"typescript-eslint": "^8.38.0",

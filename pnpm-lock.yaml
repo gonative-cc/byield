@@ -14,6 +14,9 @@ importers:
       '@mysten/dapp-kit':
         specifier: ^0.17.3
         version: 0.17.3(@tanstack/react-query@5.83.0(react@19.1.0))(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(typescript@5.8.3)
+      '@mysten/kiosk':
+        specifier: ^0.12.10
+        version: 0.12.24(typescript@5.8.3)
       '@mysten/sui':
         specifier: ^1.37.2
         version: 1.37.2(typescript@5.8.3)
@@ -183,6 +186,9 @@ importers:
       postcss:
         specifier: ^8.5.6
         version: 8.5.6
+      prettier:
+        specifier: ^3.4.2
+        version: 3.6.2
       tailwindcss:
         specifier: ^4.1.11
         version: 4.1.11
@@ -1080,11 +1086,19 @@ packages:
       '@tanstack/react-query': ^5.0.0
       react: '*'
 
+  '@mysten/kiosk@0.12.24':
+    resolution: {integrity: sha512-haN1loWGvBVRVGSAgFVhQA7Pyviw1ilosxyEBw8QvCDRav7s38cNcB8RUM9OAo+EV05wZSSK/PQWRH7EPcXR8A==}
+    engines: {node: '>=18'}
+
   '@mysten/slush-wallet@0.1.20':
     resolution: {integrity: sha512-e4/E/xHvhrROIWPmwMzcrhLB5EfBddh4LjaUsKow9urvhFGk20QjvDbN3IzbM3c9zhvfHHQLRl7P7HQ0VXRWCQ==}
 
   '@mysten/sui@1.37.2':
     resolution: {integrity: sha512-HZLsKfiqbIgZvmoSPdW+AVNEzj9OYf9TV/VP9qEAIKERLS9EEeBYpz3Ju7WR6apuQvjOtPGs5yimEOuQQ7sRww==}
+    engines: {node: '>=18'}
+
+  '@mysten/sui@1.37.4':
+    resolution: {integrity: sha512-3dKddNEF7XTfPnYIfVyHHTX+9fraQrKFxiBJ8nveISqo4skyClH/nDyS8Nkh7coknbWghuSSsD82liCOZX2uLw==}
     engines: {node: '>=18'}
 
   '@mysten/utils@0.1.1':
@@ -5032,6 +5046,15 @@ snapshots:
       - react-dom
       - typescript
 
+  '@mysten/kiosk@0.12.24(typescript@5.8.3)':
+    dependencies:
+      '@mysten/sui': 1.37.4(typescript@5.8.3)
+      '@mysten/utils': 0.1.1
+    transitivePeerDependencies:
+      - '@gql.tada/svelte-support'
+      - '@gql.tada/vue-support'
+      - typescript
+
   '@mysten/slush-wallet@0.1.20(typescript@5.8.3)':
     dependencies:
       '@mysten/sui': 1.37.2(typescript@5.8.3)
@@ -5046,6 +5069,25 @@ snapshots:
       - typescript
 
   '@mysten/sui@1.37.2(typescript@5.8.3)':
+    dependencies:
+      '@graphql-typed-document-node/core': 3.2.0(graphql@16.11.0)
+      '@mysten/bcs': 1.7.0
+      '@mysten/utils': 0.1.1
+      '@noble/curves': 1.9.4
+      '@noble/hashes': 1.8.0
+      '@scure/base': 1.2.6
+      '@scure/bip32': 1.7.0
+      '@scure/bip39': 1.6.0
+      gql.tada: 1.8.12(graphql@16.11.0)(typescript@5.8.3)
+      graphql: 16.11.0
+      poseidon-lite: 0.2.1
+      valibot: 0.36.0
+    transitivePeerDependencies:
+      - '@gql.tada/svelte-support'
+      - '@gql.tada/vue-support'
+      - typescript
+
+  '@mysten/sui@1.37.4(typescript@5.8.3)':
     dependencies:
       '@graphql-typed-document-node/core': 3.2.0(graphql@16.11.0)
       '@mysten/bcs': 1.7.0
