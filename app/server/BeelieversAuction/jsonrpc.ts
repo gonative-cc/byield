@@ -1,14 +1,12 @@
 import type { FetcherWithComponents } from "react-router";
+import type { Raffle } from "./types";
 
 // TODO: make response types
+// TODO: maybe we should extend this by adding network as the top level param?
 export type Req =
 	| {
 			method: "queryUser";
 			params: [string];
-	  }
-	| {
-			method: "queryAuctionDetails";
-			params: [];
 	  }
 	| {
 			method: "postBidTx";
@@ -19,6 +17,10 @@ export type Req =
 			method: "pageData";
 			// suiTxId, bidder, amount, msg
 			params: [string];
+	  }
+	| {
+			method: "queryRaffle";
+			params: [];
 	  };
 
 export async function makeReq<T>(
@@ -27,4 +29,10 @@ export async function makeReq<T>(
 ): Promise<T | undefined> {
 	await fetcher.submit(req, { method: "POST", encType: "application/json" });
 	return fetcher.data;
+}
+
+export interface RaffleResp {
+	winners: Raffle[];
+	// total amount in MIST (TODO: need to convert to USD)
+	totalAmount: number;
 }

@@ -93,3 +93,8 @@ export enum Badge {
 	// static
 	dethrone = 26,
 }
+
+export interface Raffle {
+	id: number;
+	address: string;
+}
