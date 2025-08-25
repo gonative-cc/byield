@@ -6,7 +6,7 @@ import { AuctionAccountType } from "~/server/BeelieversAuction/types";
 import { TwitterShareButton } from "~/components/TwitterShareButton";
 import { AuctionState } from "./types";
 import type { User, AuctionInfo } from "~/server/BeelieversAuction/types";
-import { Accordion } from "~/components/ui/accordion";
+import { Collapse } from "~/components/ui/collapse";
 
 interface InfoProps {
 	user?: User;
@@ -90,7 +90,7 @@ Securing my spot in the top 5810 at https://byield.gonative.cc/beelievers-auctio
 
 const Instructions = () => {
 	return (
-		<Accordion
+		<Collapse
 			title={
 				<div className="flex items-center gap-3">
 					<span className="text-2xl">🐝</span>
@@ -99,7 +99,7 @@ const Instructions = () => {
 			}
 		>
 			<InstructionDetails />
-		</Accordion>
+		</Collapse>
 	);
 };
 

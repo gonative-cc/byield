@@ -46,6 +46,7 @@ const createColumns = (): Column<Bidder>[] => [
 export function AuctionRaffleTable({ data }: AuctionRaffleTableProps) {
 	const getDisplayData = (): Bidder[] => {
 		// TODO: get raffle data
+		console.log("handle raffle data", data);
 		return [];
 	};
 

@@ -27,22 +27,16 @@ export function AuctionTotals({ info }: AuctionTotalsProps) {
 
 	return (
 		<div className="flex flex-col sm:flex-row gap-2 sm:gap-6 w-full max-w-3xl">
-			<StatsCard title={info.uniqueBidders.toLocaleString()} body="Unique Bidders" />
-			<StatsCard title={info.totalBids.toLocaleString()} body="Total Bids" />
-			<StatsCard
-				title={formatSUI(BigInt(price)) + " SUI"}
-				body={
-					<Tooltip tooltip={tooltip}>
-						<div className="text-muted-foreground flex items-center justify-center gap-1 group-hover:text-foreground/80 transition-colors">
-							{priceTitle}
-							<Info
-								size="16"
-								className="text-primary hover:text-orange-400 transition-colors"
-							/>
-						</div>
-					</Tooltip>
-				}
-			/>
+			<StatsCard title={info.uniqueBidders.toLocaleString()}>Unique Bidders</StatsCard>
+			<StatsCard title={info.totalBids.toLocaleString()}>Total Bids</StatsCard>
+			<StatsCard title={formatSUI(BigInt(price)) + " SUI"}>
+				<Tooltip tooltip={tooltip}>
+					<div className="text-muted-foreground flex items-center justify-center gap-1 group-hover:text-foreground/80 transition-colors">
+						{priceTitle}
+						<Info size="16" className="text-primary hover:text-orange-400 transition-colors" />
+					</div>
+				</Tooltip>
+			</StatsCard>
 		</div>
 	);
 }

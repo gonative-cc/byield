@@ -3,6 +3,35 @@ import { type AuctionInfo, type User } from "~/server/BeelieversAuction/types";
 import { formatSUI } from "~/lib/denoms";
 import { Button } from "~/components/ui/button";
 
+interface MintActionProps {
+	refund: bigint | null;
+}
+
+function MintAction({ refund }: MintActionProps) {
+	return (
+		<div className="flex gap-4">
+			<Button
+				type="button"
+				onClick={() => {
+					// TODO: handle mint
+				}}
+			>
+				Mint
+			</Button>
+			{refund && (
+				<Button
+					type="button"
+					onClick={() => {
+						// TODO: handle refund
+					}}
+				>
+					Refund {formatSUI(refund)} SUI
+				</Button>
+			)}
+		</div>
+	);
+}
+
 interface MintInfoProps {
 	auctionInfo: AuctionInfo;
 	user?: User;
@@ -58,28 +87,7 @@ export function MintInfo({ user, auctionInfo: { clearingPrice } }: MintInfoProps
 							</div>
 						</div>
 					</div>
-					{user && (
-						<div className="flex gap-4">
-							<Button
-								type="button"
-								onClick={() => {
-									// TODO: handle mint
-								}}
-							>
-								Mint
-							</Button>
-							{refund && (
-								<Button
-									type="button"
-									onClick={() => {
-										// TODO: handle refund
-									}}
-								>
-									Refund {formatSUI(refund)} SUI
-								</Button>
-							)}
-						</div>
-					)}
+					{user && <MintAction refund={refund} />}
 				</div>
 			</CardContent>
 		</Card>

@@ -6,7 +6,7 @@ interface AccordionProps {
 	children: ReactNode;
 }
 
-export function Accordion({ title, children }: AccordionProps) {
+export function Collapse({ title, children }: AccordionProps) {
 	const [showInfo, setShowInfo] = useState<boolean>(false);
 
 	return (

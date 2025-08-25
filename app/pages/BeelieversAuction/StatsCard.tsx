@@ -3,10 +3,10 @@ import { Card, CardContent } from "~/components/ui/card";
 
 interface StatsCardProps {
 	title: string;
-	body: string | ReactNode;
+	children: string | ReactNode;
 }
 
-export function StatsCard({ title, body }: StatsCardProps) {
+export function StatsCard({ title, children }: StatsCardProps) {
 	return (
 		<Card
 			className={`flex-1 group hover:scale-105 transition-all duration-300 animate-in slide-in-from-bottom-2 delay-50`}
@@ -16,7 +16,7 @@ export function StatsCard({ title, body }: StatsCardProps) {
 					{title}
 				</div>
 				<div className="text-muted-foreground group-hover:text-foreground/80 transition-colors">
-					{body}
+					{children}
 				</div>
 			</CardContent>
 		</Card>

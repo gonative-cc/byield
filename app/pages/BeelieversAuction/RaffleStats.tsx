@@ -7,7 +7,7 @@ export function RaffleStats() {
 
 	return (
 		<div className="flex flex-col sm:flex-row gap-2 sm:gap-6 w-full max-w-3xl">
-			<StatsCard title={formatSUI(BigInt(totalRaffleInMist))} body="Total Raffle amount" />
+			<StatsCard title={formatSUI(BigInt(totalRaffleInMist))}>Total Raffle amount</StatsCard>
 		</div>
 	);
 }

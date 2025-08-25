@@ -9,7 +9,7 @@ import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { removeDuplicates, sortAndCheckDuplicate } from "~/lib/batteries";
 import { AuctionRaffleTable } from "./AuctionRaffleTable";
 import { MintInfo } from "./MintInfo";
-import { Info } from "./Info";
+import { Info as AuctionsInfo } from "./Info";
 import { RaffleStats } from "./RaffleStats";
 
 function getAuctionState(startMs: number, endMs: number, clearingPrice: number | null): AuctionState {
@@ -74,7 +74,7 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 				{showMintInfo ? (
 					<MintInfo user={user} auctionInfo={info} />
 				) : (
-					<Info auctionInfo={info} auctionState={auctionState} />
+					<AuctionsInfo auctionInfo={info} auctionState={auctionState} />
 				)}
 			</div>
 
