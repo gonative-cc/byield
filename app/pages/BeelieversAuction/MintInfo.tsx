@@ -39,6 +39,7 @@ function MintAction({ isUserEligibleForMinting, refund }: MintActionProps) {
 	const { mutate: signAndExecTx, isPending } = useSignAndExecuteTransaction();
 	const client = useSuiClient();
 	const account = useCurrentAccount();
+	const isUserEligibleForRefund = (refund && refund > 0) || false;
 
 	const handleRefund = async () => {
 		if (!account?.address) {
@@ -109,7 +110,7 @@ function MintAction({ isUserEligibleForMinting, refund }: MintActionProps) {
 					🐝 Mint
 				</Button>
 			)}
-			{refund && (
+			{isUserEligibleForRefund && refund && (
 				<Button
 					type="button"
 					disabled={isPending}
