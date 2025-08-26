@@ -31,7 +31,7 @@ export async function makeReq<T>(
 	return fetcher.data;
 }
 
-export type UserResp = User | null;
+export type QueryUserResp = User | null;
 
 export interface RaffleResp_ {
 	winners: Raffle[];
@@ -39,4 +39,4 @@ export interface RaffleResp_ {
 	totalAmount: number;
 }
 
-export type RaffleResp = RaffleResp_ | null;
+export type QueryRaffleResp = RaffleResp_ | null;

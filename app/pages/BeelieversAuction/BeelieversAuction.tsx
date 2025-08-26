@@ -3,8 +3,8 @@ import { useContext, useEffect, useRef, type ReactNode } from "react";
 import { AuctionTable } from "./AuctionTable";
 import { AuctionTotals } from "./AuctionTotals";
 import { AuctionState } from "./types";
-import type { AuctionInfo, Bidder, User } from "~/server/BeelieversAuction/types";
-import { makeReq, type RaffleResp, type UserResp } from "~/server/BeelieversAuction/jsonrpc";
+import type { AuctionInfo, Bidder } from "~/server/BeelieversAuction/types";
+import { makeReq, type QueryRaffleResp, type QueryUserResp } from "~/server/BeelieversAuction/jsonrpc";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { removeDuplicates, sortAndCheckDuplicate } from "~/lib/batteries";
 import { RaffleTable } from "./RaffleTable";
@@ -29,10 +29,10 @@ interface BeelieversAuctionProps {
 export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps) {
 	const { suiAddr } = useContext(WalletContext);
 	const lastCheckedAddress = useRef<string | null>(null);
-	const userFetcher = useFetcher<UserResp>();
-	const raffleFetcher = useFetcher<RaffleResp>();
-	const user: UserResp = userFetcher.data ?? null;
-	const raffle: RaffleResp = raffleFetcher.data ?? null;
+	const userFetcher = useFetcher<QueryUserResp>();
+	const raffleFetcher = useFetcher<QueryRaffleResp>();
+	const user: QueryUserResp = userFetcher.data ?? null;
+	const raffle: QueryRaffleResp = raffleFetcher.data ?? null;
 	const auctionState = getAuctionState(info.startsAt, info.endsAt, info.clearingPrice);
 
 	console.log(">>>> raffle", raffle);
@@ -50,7 +50,7 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 		if (suiAddr && suiAddr !== lastCheckedAddress.current && userFetcher.state === "idle") {
 			// Wallet connected or address changed - check eligibility
 			lastCheckedAddress.current = suiAddr;
-			makeReq<UserResp>(userFetcher, { method: "queryUser", params: [suiAddr] });
+			makeReq<QueryUserResp>(userFetcher, { method: "queryUser", params: [suiAddr] });
 		} else if (!suiAddr && lastCheckedAddress.current) {
 			// Wallet disconnected - reset state
 			lastCheckedAddress.current = null;
@@ -60,7 +60,7 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 	useEffect(() => {
 		// query the raffle
 		if (raffleFetcher.state === "idle" && !raffle && auctionState === AuctionState.RECONCILLED) {
-			makeReq<RaffleResp>(raffleFetcher, { method: "queryRaffle", params: [] });
+			makeReq<QueryRaffleResp>(raffleFetcher, { method: "queryRaffle", params: [] });
 		}
 	}, [raffleFetcher, raffle, auctionState]);
 
