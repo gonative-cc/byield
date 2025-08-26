@@ -3,7 +3,7 @@ import { SUIIcon } from "~/components/icons";
 import { Table } from "~/components/ui/table";
 import { trimAddress } from "~/components/Wallet/walletHelper";
 import type { Raffle } from "~/server/BeelieversAuction/types";
-import { formatSUI } from "~/lib/denoms";
+import { formatBTC, formatSUI } from "~/lib/denoms";
 
 interface RaffleTableProps {
 	data: Raffle[];
@@ -35,8 +35,8 @@ const createColumns = (): Column<Raffle>[] => [
 		Cell: ({ row }: CellProps<Raffle>) => (
 			<div className="flex items-center space-x-2 font-semibold">
 				<SUIIcon prefix="" className="h-5 w-5 text-primary" />
-				<span className="text-primary">{formatSUI(String(row.original.amount || 0))}</span>
-				<span className="text-muted-foreground text-sm">SUI</span>
+				<span className="text-primary">{formatBTC(BigInt(row.original.amount || 0))}</span>
+				<span className="text-muted-foreground text-sm">BTC</span>
 			</div>
 		),
 	},

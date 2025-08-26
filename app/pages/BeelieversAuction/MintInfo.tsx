@@ -2,10 +2,31 @@ import { Card, CardContent } from "~/components/ui/card";
 import { type AuctionInfo, type User } from "~/server/BeelieversAuction/types";
 import { formatSUI } from "~/lib/denoms";
 import { Button } from "~/components/ui/button";
+import { classNames } from "~/util/tailwind";
 import { Transaction } from "@mysten/sui/transactions";
-import { useSuiClient, useCurrentAccount, useSignAndExecuteTransaction } from "@mysten/dapp-kit";
-import { useNetworkVariables } from "~/networkConfig";
+import { useSignAndExecuteTransaction, useSuiClient, useCurrentAccount } from "@mysten/dapp-kit";
 import { toast } from "~/hooks/use-toast";
+import { useNetworkVariables } from "~/networkConfig";
+
+interface MintInfoItemProps {
+	title: string;
+	value: string;
+	isLastItem?: boolean;
+}
+
+function MintInfoItem({ title, value, isLastItem = false }: MintInfoItemProps) {
+	return (
+		<div
+			className={classNames({
+				"flex justify-between items-center py-2  border-primary/20": true,
+				"border-b": !isLastItem,
+			})}
+		>
+			<span className="text-base text-muted-foreground font-medium">{title}</span>
+			<div className="text-xl font-bold text-primary">{value}</div>
+		</div>
+	);
+}
 
 interface MintActionProps {
 	refund: bigint | null;
@@ -73,19 +94,28 @@ function MintAction({ refund }: MintActionProps) {
 	};
 
 	return (
-		<div className="flex gap-4">
+		<div className="flex flex-col sm:flex-row gap-4">
 			<Button
 				type="button"
 				disabled={isPending}
+				size="lg"
+				className="flex-1 bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
 				onClick={() => {
 					// TODO: handle mint
 				}}
 			>
-				Mint
+				🐝 Mint
 			</Button>
 			{refund && (
-				<Button type="button" disabled={isPending} onClick={handleRefund}>
-					Refund {formatSUI(refund)} SUI
+				<Button
+					type="button"
+					disabled={isPending}
+					size="lg"
+					variant="outline"
+					className="flex-1 border-primary text-primary hover:bg-primary hover:text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+					onClick={handleRefund}
+				>
+					💰 Refund {formatSUI(refund)} SUI
 				</Button>
 			)}
 		</div>
@@ -104,47 +134,44 @@ export function MintInfo({ user, auctionInfo: { clearingPrice } }: MintInfoProps
 	const wonRaffle = false;
 	const refund = clearingPrice ? BigInt(clearingPrice) - BigInt(currentBidInMist) : null;
 
+	const isUserInTop5810 = user && user.rank && user?.rank <= 5810;
+
 	return (
-		<Card className="w-full lg:w-[85%] xl:w-[75%] shadow-2xl border-primary/20 hover:border-primary/40 transition-all duration-300">
-			<CardContent className="p-4 lg:p-8 rounded-lg text-white flex flex-col lg:flex-row gap-6 lg:gap-8 bg-gradient-to-br from-azure-25 via-azure-20 to-azure-15">
+		<Card className="w-full lg:w-[85%] xl:w-[75%] shadow-2xl border-primary/30 hover:border-primary/50 transition-all duration-300 hover:shadow-primary/10">
+			<CardContent className="p-4 lg:p-8 rounded-lg text-white flex flex-col lg:flex-row gap-8 lg:gap-12 bg-gradient-to-br from-azure-25 via-azure-20 to-azure-15">
 				<div className="flex-shrink-0 flex justify-center lg:justify-start">
 					<div className="animate-float">
+						<div className="absolute inset-0 bg-primary/20 rounded-xl blur-xl"></div>
 						<img
 							src="/assets/bee/bee-with-gonative.webp"
 							alt="bee-with-gonative"
-							className="rounded-xl w-60 h-60"
+							className="relative rounded-xl w-64 h-64 lg:w-72 lg:h-72 object-cover border-2 border-primary/30"
 						/>
 					</div>
 				</div>
 				<div className="flex flex-col w-full justify-between gap-8">
-					<div className="p-3 bg-primary/10 rounded-lg border border-primary/20">
-						<div className="flex justify-between items-center mb-2 w-full">
-							<span className="text-sm text-muted-foreground">Mint Price:</span>
-							<div className="text-lg font-semibold text-primary">
-								{formatSUI(String(clearingPrice))} SUI
-							</div>
-						</div>
-						<div className="flex justify-between items-center mb-2">
-							<span className="text-sm text-muted-foreground">Your bid:</span>
-							<div className="text-lg font-semibold text-primary">
-								{formatSUI(String(currentBidInMist))} SUI
-							</div>
-						</div>
-						{user && (
-							<div className="flex justify-between items-center mb-2">
-								<span className="text-sm text-muted-foreground">Status</span>
-								<div className="text-lg font-semibold text-primary">
-									{user.rank && user?.rank <= 5810
-										? "Winner"
-										: "Couldn't get into top 5810"}
-								</div>
-							</div>
-						)}
-						<div className="flex justify-between items-center mb-2">
-							<span className="text-sm text-muted-foreground">Raffle:</span>
-							<div className="text-lg font-semibold text-primary">
-								{wonRaffle ? "Won" : "Not Won"}
-							</div>
+					<div className="space-y-4">
+						<h3 className="text-xl lg:text-2xl font-bold text-primary">Mint Details</h3>
+						<div className="p-4 bg-primary/15 rounded-xl border border-primary/30 backdrop-blur-sm space-y-4">
+							<MintInfoItem
+								title="Mint Price:"
+								value={formatSUI(String(clearingPrice)) + " SUI"}
+							/>
+							<MintInfoItem
+								title="Your Bid:"
+								value={formatSUI(String(currentBidInMist)) + " SUI"}
+							/>
+							{user && (
+								<MintInfoItem
+									title="Status:"
+									value={isUserInTop5810 ? "🎉 Winner" : "❌ Not in top 5810"}
+								/>
+							)}
+							<MintInfoItem
+								title="Raffle:"
+								value={wonRaffle ? "🎊 Won" : "Not won"}
+								isLastItem
+							/>
 						</div>
 					</div>
 					{user && <MintAction refund={refund} />}

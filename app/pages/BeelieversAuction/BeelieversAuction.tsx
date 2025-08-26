@@ -12,6 +12,7 @@ import { MintInfo } from "./MintInfo";
 import { Info as AuctionsInfo } from "./Info";
 import { RaffleStats } from "./RaffleStats";
 import { FAQ } from "./FAQ";
+import { Collapse } from "~/components/ui/collapse";
 
 function getAuctionState(startMs: number, endMs: number, clearingPrice: number | null): AuctionState {
 	const nowMs = new Date().getTime();
@@ -94,24 +95,24 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 				)}
 			</div>
 
-			<Header>
-				<span className="text-2xl text-primary md:text-3xl">Raffle</span>
-			</Header>
+			<Collapse title={<span className="text-2xl text-primary md:text-3xl">Raffle</span>}>
+				<div className="space-y-6">
+					{raffle && (
+						<div className="animate-in slide-in-from-bottom-4 duration-1000 delay-300 w-full flex justify-center">
+							<RaffleStats totalRaffleInMist={raffle.totalAmount} />
+						</div>
+					)}
 
-			{raffle && (
-				<div className="animate-in slide-in-from-bottom-4 duration-1000 delay-300 w-full flex justify-center">
-					<RaffleStats totalRaffleInMist={raffle.totalAmount} />
+					{/* Leaderboard Table with Animation */}
+					{raffle && (
+						<div className="animate-in slide-in-from-bottom-4 duration-1000 delay-600 w-full">
+							<div className="flex flex-col-reverse lg:flex-row gap-6 w-full">
+								<RaffleTable data={raffle?.winners} />
+							</div>
+						</div>
+					)}
 				</div>
-			)}
-
-			{/* Leaderboard Table with Animation */}
-			{raffle && (
-				<div className="animate-in slide-in-from-bottom-4 duration-1000 delay-600 w-full">
-					<div className="flex flex-col-reverse lg:flex-row gap-6 w-full">
-						<RaffleTable data={raffle?.winners} />
-					</div>
-				</div>
-			)}
+			</Collapse>
 
 			{/* Auction Stats with Staggered Animation */}
 			{auctionState !== AuctionState.WILL_START && (
