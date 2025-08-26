@@ -1,5 +1,5 @@
 import type { FetcherWithComponents } from "react-router";
-import type { Raffle } from "./types";
+import type { Raffle, User } from "./types";
 
 // TODO: make response types
 // TODO: maybe we should extend this by adding network as the top level param?
@@ -31,8 +31,12 @@ export async function makeReq<T>(
 	return fetcher.data;
 }
 
-export interface RaffleResp {
+export type QueryUserResp = User | null;
+
+export interface RaffleResp_ {
 	winners: Raffle[];
 	// total amount in MIST (TODO: need to convert to USD)
 	totalAmount: number;
 }
+
+export type QueryRaffleResp = RaffleResp_ | null;

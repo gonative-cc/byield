@@ -12,7 +12,7 @@ const MAX_LEADERBOARD_ROWS = 21;
 interface AuctionTableProps {
 	data: Bidder[];
 	suiAddr: string | null;
-	user?: User;
+	user: User | null;
 }
 
 const createColumns = (): Column<Bidder>[] => [

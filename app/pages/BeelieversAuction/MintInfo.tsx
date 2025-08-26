@@ -94,7 +94,7 @@ function MintAction({ refund }: MintActionProps) {
 
 interface MintInfoProps {
 	auctionInfo: AuctionInfo;
-	user?: User;
+	user: User | null;
 }
 
 export function MintInfo({ user, auctionInfo: { clearingPrice } }: MintInfoProps) {
