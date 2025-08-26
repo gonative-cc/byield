@@ -8,10 +8,11 @@ CREATE TABLE IF NOT EXISTS bids (
   note      TEXT,
   badges    TEXT DEFAULT "[]",
   bids      INTEGER DEFAULT 0,
-  rank INTEGER);
+  rank      INTEGER);
 
-CREATE INDEX IF NOT EXISTS idx_bids_ranking ON bids(
-  amount DESC, timestamp ASC);
+CREATE INDEX IF NOT EXISTS idx_bids_ranking ON bids(amount DESC, timestamp ASC);
+CREATE INDEX idx_bids_rank ON bids(rank DESC)
+  WHERE rank IS NOT NULL;
 
 CREATE TABLE IF NOT EXISTS stats (
   key           TEXT PRIMARY KEY DEFAULT 'auction_stats',
