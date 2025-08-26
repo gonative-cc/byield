@@ -80,8 +80,6 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 				</p>
 			</Header>
 
-			<div className="animate-in slide-in-from-left-4 duration-1000 delay-400 w-full flex justify-center"></div>
-
 			<div className="animate-in slide-in-from-left-4 duration-1000 delay-400 w-full flex justify-center">
 				{showMintInfo ? (
 					<MintInfo user={user} auctionInfo={info} />
