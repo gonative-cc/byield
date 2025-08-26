@@ -5,11 +5,10 @@ import { trimAddress } from "~/components/Wallet/walletHelper";
 import type { Raffle } from "~/server/BeelieversAuction/types";
 import { formatSUI } from "~/lib/denoms";
 
-interface AuctionRaffleTableProps {
+interface RaffleTableProps {
 	data: Raffle[];
 }
 
-// TODO: make it compatible with raffle
 const createColumns = (): Column<Raffle>[] => [
 	{
 		Header: "🏆 ID",
@@ -43,7 +42,7 @@ const createColumns = (): Column<Raffle>[] => [
 	},
 ];
 
-export function AuctionRaffleTable({ data }: AuctionRaffleTableProps) {
+export function RaffleTable({ data }: RaffleTableProps) {
 	const columns = createColumns();
 
 	return (

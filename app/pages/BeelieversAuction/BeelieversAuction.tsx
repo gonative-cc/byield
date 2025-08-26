@@ -7,7 +7,7 @@ import type { AuctionInfo, Bidder, User } from "~/server/BeelieversAuction/types
 import { makeReq, type RaffleResp } from "~/server/BeelieversAuction/jsonrpc";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { removeDuplicates, sortAndCheckDuplicate } from "~/lib/batteries";
-import { AuctionRaffleTable } from "./AuctionRaffleTable";
+import { RaffleTable } from "./RaffleTable";
 import { MintInfo } from "./MintInfo";
 import { Info as AuctionsInfo } from "./Info";
 import { RaffleStats } from "./RaffleStats";
@@ -106,7 +106,7 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 			{raffle && (
 				<div className="animate-in slide-in-from-bottom-4 duration-1000 delay-600 w-full">
 					<div className="flex flex-col-reverse lg:flex-row gap-6 w-full">
-						<AuctionRaffleTable data={raffle?.winners} />
+						<RaffleTable data={raffle?.winners} />
 					</div>
 				</div>
 			)}
