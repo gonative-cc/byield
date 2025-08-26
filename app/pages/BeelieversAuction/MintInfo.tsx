@@ -56,7 +56,7 @@ export function MintInfo({ user, auctionInfo: { clearingPrice } }: MintInfoProps
 						/>
 					</div>
 				</div>
-				<div className="flex flex-col w-full justify-between">
+				<div className="flex flex-col w-full justify-between gap-8">
 					<div className="p-3 bg-primary/10 rounded-lg border border-primary/20">
 						<div className="flex justify-between items-center mb-2 w-full">
 							<span className="text-sm text-muted-foreground">Mint Price:</span>
