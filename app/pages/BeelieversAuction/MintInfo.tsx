@@ -11,6 +11,7 @@ interface MintActionProps {
 	refund: bigint | null;
 }
 
+// TODO: determine if user has claimed before or not
 function MintAction({ refund }: MintActionProps) {
 	const { auctionBidApi } = useNetworkVariables();
 	const { mutate: signAndExecTx, isPending } = useSignAndExecuteTransaction();
