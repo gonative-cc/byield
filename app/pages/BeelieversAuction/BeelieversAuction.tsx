@@ -4,7 +4,7 @@ import { AuctionTable } from "./AuctionTable";
 import { AuctionTotals } from "./AuctionTotals";
 import { AuctionState } from "./types";
 import type { AuctionInfo, Bidder, User } from "~/server/BeelieversAuction/types";
-import { makeReq } from "~/server/BeelieversAuction/jsonrpc";
+import { makeReq, type RaffleResp } from "~/server/BeelieversAuction/jsonrpc";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { removeDuplicates, sortAndCheckDuplicate } from "~/lib/batteries";
 import { AuctionRaffleTable } from "./AuctionRaffleTable";
@@ -29,7 +29,11 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 	const { suiAddr } = useContext(WalletContext);
 	const lastCheckedAddress = useRef<string | null>(null);
 	const userFetcher = useFetcher<User>();
+	const raffleFetcher = useFetcher<RaffleResp>();
 	const user: User | undefined = userFetcher?.data;
+	const raffle: RaffleResp | undefined = raffleFetcher?.data;
+
+	console.log(">>>> raffle", raffle);
 
 	console.log(">>>> user", user);
 	for (const l of leaderboard) {
@@ -40,6 +44,7 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 	}
 
 	useEffect(() => {
+		// query the user
 		if (suiAddr && suiAddr !== lastCheckedAddress.current && userFetcher.state === "idle") {
 			// Wallet connected or address changed - check eligibility
 			lastCheckedAddress.current = suiAddr;
@@ -49,6 +54,13 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 			lastCheckedAddress.current = null;
 		}
 	}, [userFetcher, userFetcher.state, suiAddr]);
+
+	useEffect(() => {
+		// query the raffle
+		if (raffleFetcher.state === "idle" && !raffle) {
+			makeReq<RaffleResp | null>(raffleFetcher, { method: "queryRaffle", params: [] });
+		}
+	}, [raffleFetcher, raffle]);
 
 	const auctionState = getAuctionState(info.startsAt, info.endsAt, info.clearingPrice);
 	// TODO: get mint info
@@ -84,16 +96,20 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 				</>,
 			)}
 
-			<div className="animate-in slide-in-from-bottom-4 duration-1000 delay-300 w-full flex justify-center">
-				<RaffleStats />
-			</div>
+			{raffle && (
+				<div className="animate-in slide-in-from-bottom-4 duration-1000 delay-300 w-full flex justify-center">
+					<RaffleStats totalRaffleInMist={raffle.totalAmount} />
+				</div>
+			)}
 
 			{/* Leaderboard Table with Animation */}
-			<div className="animate-in slide-in-from-bottom-4 duration-1000 delay-600 w-full">
-				<div className="flex flex-col-reverse lg:flex-row gap-6 w-full">
-					<AuctionRaffleTable data={leaderboard} />
+			{raffle && (
+				<div className="animate-in slide-in-from-bottom-4 duration-1000 delay-600 w-full">
+					<div className="flex flex-col-reverse lg:flex-row gap-6 w-full">
+						<AuctionRaffleTable data={raffle?.winners} />
+					</div>
 				</div>
-			</div>
+			)}
 
 			{/* Auction Stats with Staggered Animation */}
 			{auctionState !== AuctionState.WILL_START && (

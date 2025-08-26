@@ -97,4 +97,5 @@ export enum Badge {
 export interface Raffle {
 	id: number;
 	address: string;
+	amount: number; // in mist
 }

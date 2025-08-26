@@ -142,26 +142,110 @@ const MOCK_LEADER_BOARD_DATA: Bidder[] = [
 
 export function mockRaffleWinners(): Raffle[] {
 	return [
-		{ id: 1, address: "0x2c7b5d2d4c9e8a7f0e6c5a9b8d1c3a0f9b6e7d8c4a1e5f0d2c7b5d2d4c9e8a7f" },
-		{ id: 2, address: "0x3d8c1e2f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d" },
-		{ id: 3, address: "0x4e9d2c3e4f5a6b7c8d9e0f1a2b3c4d5e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c" },
-		{ id: 4, address: "0x5a1f2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a" },
-		{ id: 5, address: "0x6b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c0d1e2f3a4b5c6d7e8f9a0b1c" },
-		{ id: 6, address: "0x7c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c0d1e2f3a4b5c6d7e8f9a0b1c2d" },
-		{ id: 7, address: "0x8d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e" },
-		{ id: 8, address: "0x9e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f" },
-		{ id: 9, address: "0xae6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a" },
-		{ id: 10, address: "0xbf7b8c9d0e1f2a3b4c5d6e7f8a9b0c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b" },
-		{ id: 11, address: "0xcb8c9d0e1f2a3b4c5d6e7f8a9b0c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c" },
-		{ id: 12, address: "0xdc9d0e1f2a3b4c5d6e7f8a9b0c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d" },
-		{ id: 13, address: "0xed0e1f2a3b4c5d6e7f8a9b0c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e" },
-		{ id: 14, address: "0xfe1f2a3b4c5d6e7f8a9b0c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f" },
-		{ id: 15, address: "0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b" },
-		{ id: 16, address: "0x2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c" },
-		{ id: 17, address: "0x3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d" },
-		{ id: 18, address: "0x4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e" },
-		{ id: 19, address: "0x5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f" },
-		{ id: 20, address: "0x6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a" },
-		{ id: 21, address: "0x7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b" },
+		{
+			id: 1,
+			address: "0x2c7b5d2d4c9e8a7f0e6c5a9b8d1c3a0f9b6e7d8c4a1e5f0d2c7b5d2d4c9e8a7f",
+			amount: 2 * 1e9,
+		},
+		{
+			id: 2,
+			address: "0x3d8c1e2f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d",
+			amount: 2 * 1e9,
+		},
+		{
+			id: 3,
+			address: "0x4e9d2c3e4f5a6b7c8d9e0f1a2b3c4d5e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c",
+			amount: 2 * 1e9,
+		},
+		{
+			id: 4,
+			address: "0x5a1f2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a",
+			amount: 2 * 1e9,
+		},
+		{
+			id: 5,
+			address: "0x6b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c0d1e2f3a4b5c6d7e8f9a0b1c",
+			amount: 2 * 1e9,
+		},
+		{
+			id: 6,
+			address: "0x7c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c0d1e2f3a4b5c6d7e8f9a0b1c2d",
+			amount: 2 * 1e9,
+		},
+		{
+			id: 7,
+			address: "0x8d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e",
+			amount: 2 * 1e9,
+		},
+		{
+			id: 8,
+			address: "0x9e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f",
+			amount: 2 * 1e9,
+		},
+		{
+			id: 9,
+			address: "0xae6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a",
+			amount: 2 * 1e9,
+		},
+		{
+			id: 10,
+			address: "0xbf7b8c9d0e1f2a3b4c5d6e7f8a9b0c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b",
+			amount: 2 * 1e9,
+		},
+		{
+			id: 11,
+			address: "0xcb8c9d0e1f2a3b4c5d6e7f8a9b0c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c",
+			amount: 2 * 1e9,
+		},
+		{
+			id: 12,
+			address: "0xdc9d0e1f2a3b4c5d6e7f8a9b0c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d",
+			amount: 2 * 1e9,
+		},
+		{
+			id: 13,
+			address: "0xed0e1f2a3b4c5d6e7f8a9b0c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e",
+			amount: 2 * 1e9,
+		},
+		{
+			id: 14,
+			address: "0xfe1f2a3b4c5d6e7f8a9b0c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f",
+			amount: 2 * 1e9,
+		},
+		{
+			id: 15,
+			address: "0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b",
+			amount: 2 * 1e9,
+		},
+		{
+			id: 16,
+			address: "0x2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c",
+			amount: 2 * 1e9,
+		},
+		{
+			id: 17,
+			address: "0x3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d",
+			amount: 2 * 1e9,
+		},
+		{
+			id: 18,
+			address: "0x4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e",
+			amount: 2 * 1e9,
+		},
+		{
+			id: 19,
+			address: "0x5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f",
+			amount: 2 * 1e9,
+		},
+		{
+			id: 20,
+			address: "0x6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a",
+			amount: 2 * 1e9,
+		},
+		{
+			id: 21,
+			address: "0x7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b",
+			amount: 2 * 1e9,
+		},
 	];
 }
