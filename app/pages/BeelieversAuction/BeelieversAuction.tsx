@@ -33,6 +33,7 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 	const raffleFetcher = useFetcher<RaffleResp>();
 	const user: User | undefined = userFetcher?.data;
 	const raffle: RaffleResp | undefined = raffleFetcher?.data;
+	const auctionState = getAuctionState(info.startsAt, info.endsAt, info.clearingPrice);
 
 	console.log(">>>> raffle", raffle);
 
@@ -58,12 +59,11 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 
 	useEffect(() => {
 		// query the raffle
-		if (raffleFetcher.state === "idle" && !raffle) {
+		if (raffleFetcher.state === "idle" && !raffle && auctionState === AuctionState.RECONCILLED) {
 			makeReq<RaffleResp | null>(raffleFetcher, { method: "queryRaffle", params: [] });
 		}
-	}, [raffleFetcher, raffle]);
+	}, [raffleFetcher, raffle, auctionState]);
 
-	const auctionState = getAuctionState(info.startsAt, info.endsAt, info.clearingPrice);
 	// TODO: get mint info
 	const showMintInfo = true;
 

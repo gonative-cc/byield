@@ -13,9 +13,9 @@ export async function loader({ params, context, request }: Route.LoaderArgs): Pr
 	const env = context.cloudflare.env;
 	const ctrl = new Controller(env.BeelieversNFT, env.BeelieversD1);
 	const url = new URL(request.url);
+	// TODO: add user param
 	// const suiAddress = url.searchParams.get("suiAddress") ?? undefined;
 	console.log(">>>>> Page Loader handler - params:", params, "url:", url.href);
-	// TODO: add user param
 	return await ctrl.loadPageData();
 }
 
@@ -39,10 +39,8 @@ export default function BeelieversAuctionPage() {
 
 	// TODO: remove this after auction. enforce network change
 	useEffect(() => {
-		if (isProductionMode()) {
-			if (isTestnet) {
-				disconnect();
-			}
+		if (isProductionMode() && isTestnet) {
+			disconnect();
 		}
 	}, [disconnect, isTestnet]);
 
