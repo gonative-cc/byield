@@ -10,12 +10,7 @@
 		"packageId": "0xbad048cf3c9ef2f17ced6c6d03f86c5721fde22093e5a27a8c9c77acbd3be0c3",
 		"module": "auction",
 		"bidEndpoint": "bid",
-		"auctionId": "0xfda0a2182a1fe1bd620c461a89177802616c3c72ab5ab7f28044b8d393243a7f"
-	},
-	"withdraw": {
-		"packageId": "0x72d39ba605a369b292620ed74a20fda11f544f5a2ea962f04edaa0e4600a5976",
-		"module": "auction",
 		"withdrawFunction": "withdraw",
-		"auctionId": "0x71013a8ad350480826025b09040a8f1fe4d7011adcfa9c32f37d2d883df2e755"
+		"auctionId": "0xfda0a2182a1fe1bd620c461a89177802616c3c72ab5ab7f28044b8d393243a7f"
 	}
 }
