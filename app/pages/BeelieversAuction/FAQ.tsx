@@ -23,15 +23,13 @@ export function FAQ() {
 	);
 
 	return (
-		<div className="animate-in slide-in-from-bottom-4 duration-1000 delay-700 w-full max-w-5xl">
-			<div className="bg-card/50 backdrop-blur-sm rounded-2xl p-4 lg:p-8 border border-primary/20 shadow-2xl">
-				<div className="text-center mb-6">
-					<h2 className="text-3xl font-bold text-primary mb-3">🤔 Frequently Asked Questions</h2>
-					<p className="text-muted-foreground">Everything you need to know about Beelievers NFTs</p>
-				</div>
-				<div className="space-y-6">
-					{FAQS.map(({ id, question, answer }) => renderQuestion(id, question, answer))}
-				</div>
+		<div className="animate-in slide-in-from-bottom-4 duration-1000 delay-700 w-full max-w-5xl bg-card/50 backdrop-blur-sm rounded-2xl p-4 lg:p-8 border border-primary/20 shadow-2xl">
+			<div className="text-center mb-6">
+				<h2 className="text-3xl font-bold text-primary mb-3">🤔 Frequently Asked Questions</h2>
+				<p className="text-muted-foreground">Everything you need to know about Beelievers NFTs</p>
+			</div>
+			<div className="space-y-6">
+				{FAQS.map(({ id, question, answer }) => renderQuestion(id, question, answer))}
 			</div>
 		</div>
 	);

@@ -29,11 +29,13 @@ export function Collapse({ title, className = "", children }: AccordionProps) {
 					{showInfo ? <ChevronsUp size={24} /> : <ChevronsDown size={24} />}
 				</div>
 			</button>
-			<div
-				className={`transition-all duration-500 ease-in-out ${showInfo ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"} overflow-hidden`}
-			>
-				{showInfo && <div className="p-4 lg:p-6">{children}</div>}
-			</div>
+			{showInfo && (
+				<div
+					className={`p-4 lg:p-6 transition-all duration-500 ease-in-out ${showInfo ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"} overflow-hidden`}
+				>
+					{children}
+				</div>
+			)}
 		</div>
 	);
 }

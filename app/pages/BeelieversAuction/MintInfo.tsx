@@ -102,7 +102,7 @@ function MintAction({ isUserEligibleForMinting, refund }: MintActionProps) {
 					type="button"
 					disabled={isPending}
 					size="lg"
-					className="flex-1 bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+					className="flex-1"
 					onClick={() => {
 						// TODO: handle mint
 					}}
@@ -114,9 +114,10 @@ function MintAction({ isUserEligibleForMinting, refund }: MintActionProps) {
 				<Button
 					type="button"
 					disabled={isPending}
+					isLoading={isPending}
 					size="lg"
 					variant="outline"
-					className="flex-1 border-primary text-primary hover:bg-primary hover:text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+					className="flex-1"
 					onClick={handleRefund}
 				>
 					💰 Refund {formatSUI(refund)} SUI
@@ -133,15 +134,13 @@ interface MintInfoProps {
 
 export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize } }: MintInfoProps) {
 	const currentBidInMist = BigInt(user?.amount || 0);
-	const isUserInTop5810 = user && user.rank && user?.rank <= 5810;
 	// user rank is less than or equal to auction size
-	const isUserEligibleForMinting = (user && user.rank && user.rank <= auctionSize) || false;
+	const isWinner = (user && user.rank && user.rank <= auctionSize) || false;
 
 	let refund: bigint | null = null;
-	try {
-		refund = clearingPrice ? BigInt(clearingPrice) - currentBidInMist : null;
-	} catch (e) {
-		console.error("Failed to calculate the refund", e);
+	if (clearingPrice) {
+		refund = currentBidInMist - BigInt(clearingPrice);
+		if (refund < 0) refund = 0n;
 	}
 
 	return (
@@ -172,19 +171,17 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize } }: 
 							{user && (
 								<MintInfoItem
 									title="Status:"
-									value={isUserInTop5810 ? "🎉 Winner" : "❌ Not in top 5810"}
+									value={isWinner ? "🎉 Winner" : "❌ Not in top 5810"}
 								/>
 							)}
 							<MintInfoItem
 								title="Raffle:"
-								value={isUserInTop5810 ? "🎊 Won" : "Not won"}
+								value={isWinner ? "🎊 Won" : "Not won"}
 								isLastItem
 							/>
 						</div>
 					</div>
-					{user && (
-						<MintAction isUserEligibleForMinting={isUserEligibleForMinting} refund={refund} />
-					)}
+					{user && <MintAction isUserEligibleForMinting={isWinner} refund={refund} />}
 				</div>
 			</CardContent>
 		</Card>
