@@ -2,7 +2,7 @@ import { isValidSuiAddress } from "@mysten/sui/utils";
 import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
 
 import type { LoaderDataResp, AuctionInfo, User } from "./types";
-import type { RaffleResp, Req } from "./jsonrpc";
+import type { RaffleResp, Req, UserResp } from "./jsonrpc";
 import { defaultAuctionInfo, defaultUser, mockRaffleWinners } from "./defaults";
 import { checkTxOnChain, verifySignature } from "./auth.server";
 
@@ -165,7 +165,7 @@ export default class Controller {
 		}
 	}
 
-	async getUserData(userAddr: string): Promise<User | null> {
+	async getUserData(userAddr: string): Promise<UserResp> {
 		if (!isValidSuiAddress(userAddr)) {
 			return null;
 		}
@@ -177,7 +177,7 @@ export default class Controller {
 		return u;
 	}
 
-	async getRaffle(): Promise<RaffleResp | null> {
+	async getRaffle(): Promise<RaffleResp> {
 		if (this.isProduction) {
 			return null;
 		}

@@ -4,7 +4,7 @@ import { AuctionTable } from "./AuctionTable";
 import { AuctionTotals } from "./AuctionTotals";
 import { AuctionState } from "./types";
 import type { AuctionInfo, Bidder, User } from "~/server/BeelieversAuction/types";
-import { makeReq, type RaffleResp } from "~/server/BeelieversAuction/jsonrpc";
+import { makeReq, type RaffleResp, type UserResp } from "~/server/BeelieversAuction/jsonrpc";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { removeDuplicates, sortAndCheckDuplicate } from "~/lib/batteries";
 import { RaffleTable } from "./RaffleTable";
@@ -29,15 +29,15 @@ interface BeelieversAuctionProps {
 export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps) {
 	const { suiAddr } = useContext(WalletContext);
 	const lastCheckedAddress = useRef<string | null>(null);
-	const userFetcher = useFetcher<User>();
+	const userFetcher = useFetcher<UserResp>();
 	const raffleFetcher = useFetcher<RaffleResp>();
-	const user: User | undefined = userFetcher?.data;
-	const raffle: RaffleResp | undefined = raffleFetcher?.data;
+	const user: UserResp = userFetcher.data ?? null;
+	const raffle: RaffleResp = raffleFetcher.data ?? null;
 	const auctionState = getAuctionState(info.startsAt, info.endsAt, info.clearingPrice);
 
 	console.log(">>>> raffle", raffle);
-
 	console.log(">>>> user", user);
+
 	for (const l of leaderboard) {
 		if (sortAndCheckDuplicate(l.badges)) {
 			console.log(">>>> leader ", l);
@@ -50,7 +50,7 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 		if (suiAddr && suiAddr !== lastCheckedAddress.current && userFetcher.state === "idle") {
 			// Wallet connected or address changed - check eligibility
 			lastCheckedAddress.current = suiAddr;
-			makeReq<User | null>(userFetcher, { method: "queryUser", params: [suiAddr] });
+			makeReq<UserResp>(userFetcher, { method: "queryUser", params: [suiAddr] });
 		} else if (!suiAddr && lastCheckedAddress.current) {
 			// Wallet disconnected - reset state
 			lastCheckedAddress.current = null;
@@ -60,7 +60,7 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 	useEffect(() => {
 		// query the raffle
 		if (raffleFetcher.state === "idle" && !raffle && auctionState === AuctionState.RECONCILLED) {
-			makeReq<RaffleResp | null>(raffleFetcher, { method: "queryRaffle", params: [] });
+			makeReq<RaffleResp>(raffleFetcher, { method: "queryRaffle", params: [] });
 		}
 	}, [raffleFetcher, raffle, auctionState]);
 
