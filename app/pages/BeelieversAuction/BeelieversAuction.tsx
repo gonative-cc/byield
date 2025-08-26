@@ -67,21 +67,27 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 	const showMintInfo = true;
 
 	const renderHeading = (content: ReactNode) => (
-		<div className="flex flex-col items-center gap-4">
-			<p className="md:text-3xl text-2xl text-center font-semibold max-w-120">{content}</p>
-		</div>
+		<h1 className="flex flex-col items-center md:text-3xl text-2xl font-semibold max-w-120">{content}</h1>
 	);
 
 	return (
 		<div className="flex flex-col items-center gap-6 sm:gap-8 lg:gap-10 w-full relative">
-			{/* Hero Title with Animation */}
 			{renderHeading(
 				<>
-					<span className="text-2xl text-primary md:text-3xl">🐝 BTCFi Beelievers</span> Mint
+					<p>
+						<span className="text-2xl text-primary md:text-3xl">🐝 BTCFi Beelievers</span> Mint
+					</p>
+					<p className="text-lg mt-3 text-muted-foreground">
+						➡️{" "}
+						<a className="link-raw" href="https://www.gonative.cc/beelievers">
+							Landing page and FAQ
+						</a>
+					</p>
 				</>,
 			)}
 
-			{/* Info Section with Animation */}
+			<div className="animate-in slide-in-from-left-4 duration-1000 delay-400 w-full flex justify-center"></div>
+
 			<div className="animate-in slide-in-from-left-4 duration-1000 delay-400 w-full flex justify-center">
 				{showMintInfo ? (
 					<MintInfo user={user} auctionInfo={info} />
