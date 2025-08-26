@@ -217,7 +217,7 @@ function BeelieversMintFunction() {
 								isPersonal: false,
 							};
 
-							localStorage.setItem("kioskInfo", JSON.stringify(kioskData));
+							localStorage.setItem(`kioskInfo-${account.address}`, JSON.stringify(kioskData));
 							return kioskData;
 						}
 					}
