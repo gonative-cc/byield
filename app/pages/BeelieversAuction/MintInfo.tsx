@@ -2,16 +2,81 @@ import { Card, CardContent } from "~/components/ui/card";
 import { type AuctionInfo, type User } from "~/server/BeelieversAuction/types";
 import { formatSUI } from "~/lib/denoms";
 import { Button } from "~/components/ui/button";
+import { Transaction } from "@mysten/sui/transactions";
+import { useSuiClient, useCurrentAccount, useSignAndExecuteTransaction } from "@mysten/dapp-kit";
+import { useNetworkVariables } from "~/networkConfig";
+import { toast } from "~/hooks/use-toast";
 
 interface MintActionProps {
 	refund: bigint | null;
 }
 
+// TODO: determine if user has claimed before or not
 function MintAction({ refund }: MintActionProps) {
+	const { auctionBidApi } = useNetworkVariables();
+	const { mutate: signAndExecTx, isPending } = useSignAndExecuteTransaction();
+	const client = useSuiClient();
+	const account = useCurrentAccount();
+
+	const handleRefund = async () => {
+		if (!account?.address) {
+			toast({ title: "SUI wallet", description: "Please connect SUI wallet", variant: "destructive" });
+			return;
+		}
+		if (!refund) {
+			toast({ title: "Refund", description: "No refund available", variant: "destructive" });
+			return;
+		}
+		try {
+			const transaction = await createWithdrawTxn(account.address, auctionBidApi);
+			signAndExecTx(
+				{ transaction },
+				{
+					onSuccess: async (result) => {
+						const { effects } = await client.waitForTransaction({
+							digest: result.digest,
+							options: { showEffects: true },
+						});
+
+						if (effects?.status.status === "success") {
+							toast({
+								title: "Refund successful",
+								description: `${formatSUI(refund)} SUI refunded`,
+							});
+						} else {
+							console.error("Claim tx error: ", effects?.status.error);
+							toast({
+								title: "Refund failed",
+								description: "Please try again later.",
+								variant: "destructive",
+							});
+						}
+					},
+					onError: (error) => {
+						console.error("Claim tx error:", error);
+						toast({
+							title: "Refund failed",
+							description: "Please try again later.\n" + error.message,
+							variant: "destructive",
+						});
+					},
+				},
+			);
+		} catch (error) {
+			console.error("Claim tx error:", error);
+			toast({
+				title: "Transaction error",
+				description: "Failed to create transaction.\n" + error,
+				variant: "destructive",
+			});
+		}
+	};
+
 	return (
 		<div className="flex gap-4">
 			<Button
 				type="button"
+				disabled={isPending}
 				onClick={() => {
 					// TODO: handle mint
 				}}
@@ -19,12 +84,7 @@ function MintAction({ refund }: MintActionProps) {
 				Mint
 			</Button>
 			{refund && (
-				<Button
-					type="button"
-					onClick={() => {
-						// TODO: handle refund
-					}}
-				>
+				<Button type="button" disabled={isPending} onClick={handleRefund}>
 					Refund {formatSUI(refund)} SUI
 				</Button>
 			)}
@@ -93,3 +153,23 @@ export function MintInfo({ user, auctionInfo: { clearingPrice } }: MintInfoProps
 		</Card>
 	);
 }
+
+type RefundCallTargets = {
+	packageId: string;
+	module: string;
+	withdrawFunction: string;
+	auctionId: string;
+};
+
+const createWithdrawTxn = async (
+	senderAddress: string,
+	{ packageId, module, withdrawFunction, auctionId }: RefundCallTargets,
+): Promise<Transaction> => {
+	const txn = new Transaction();
+	txn.setSender(senderAddress);
+	txn.moveCall({
+		target: `${packageId}::${module}::${withdrawFunction}`,
+		arguments: [txn.object(auctionId)],
+	});
+	return txn;
+};
