@@ -53,7 +53,7 @@ function MintAction({ refund }: MintActionProps) {
 						}
 					},
 					onError: (error) => {
-						console.log("Claim tx error:", error);
+						console.error("Claim tx error:", error);
 						toast({
 							title: "Refund failed",
 							description: "Please try again later.\n" + error.message,
@@ -63,6 +63,7 @@ function MintAction({ refund }: MintActionProps) {
 				},
 			);
 		} catch (error) {
+			console.error("Claim tx error:", error);
 			toast({
 				title: "Transaction error",
 				description: "Failed to create transaction.\n" + error,
