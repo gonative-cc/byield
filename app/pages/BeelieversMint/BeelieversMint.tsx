@@ -118,7 +118,7 @@ function BeelieversMintFunction() {
 
 	const kioskClient = new KioskClient({
 		client,
-		network: Network.TESTNET,
+		network: Network.MAINNET,
 	});
 
 	useEffect(() => {
