@@ -11,6 +11,7 @@ import { RaffleTable } from "./RaffleTable";
 import { MintInfo } from "./MintInfo";
 import { Info as AuctionsInfo } from "./Info";
 import { RaffleStats } from "./RaffleStats";
+import { FAQ } from "./FAQ";
 
 function getAuctionState(startMs: number, endMs: number, clearingPrice: number | null): AuctionState {
 	const nowMs = new Date().getTime();
@@ -135,6 +136,7 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 					className="text-center mx-auto w-auto"
 				/>
 			</div>
+			<FAQ />
 		</div>
 	);
 }
