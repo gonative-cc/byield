@@ -15,8 +15,9 @@ const TRANSFER_POLICY_ID = "";
 const AUCTION_PACKAGE = "0xff4982cd449809676699d1a52c5562fc15b9b92cb41bde5f8845a14647186704";
 const AUCTION_OBJECT_ID = "0x161524be15687cca96dec58146568622458905c30479452351f231cac5d64c41";
 const RANDOM_ID = "0x8";
+const CLOCK_ID = "0x6";
 const _ADMIN_CAP = "";
-const MINT_START_TIME = 1755975600000;
+const MINT_START_TIME = 1755975600000; //timestamp in ms
 
 //testnet
 //const PACKAGE_ID = "0xada75092e6cecd4ddb31c328b31e6d5beea6860068e9ba32fe27560027faaa2f";
@@ -440,7 +441,7 @@ function BeelieversMintFunction() {
 					paymentCoin,
 					tx.object(TRANSFER_POLICY_ID),
 					tx.object(RANDOM_ID),
-					tx.object("0x6"), // Clock
+					tx.object(CLOCK_ID), // Clock
 					tx.object(AUCTION_OBJECT_ID),
 					tx.object(kioskId),
 					tx.object(kioskCapId),
