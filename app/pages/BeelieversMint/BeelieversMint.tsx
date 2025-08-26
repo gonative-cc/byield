@@ -150,12 +150,12 @@ function BeelieversMintFunction() {
 		return () => clearInterval(timerInterval);
 	}, [collectionState.mint_start]);
 
-	const storeKioskInfo = (address: string, kioskId: string, kioskCapId: string, isPersonal?: boolean) => {
+	const storeKioskInfo = (address: string, kioskId: string, kioskCapId: string) => {
 		const kioskData = {
 			kioskId,
 			kioskCapId,
 			address,
-			isPersonal,
+			isPersonal: false,
 		};
 		localStorage.setItem(`kioskInfo-${address}`, JSON.stringify(kioskData));
 		setKioskInfo(kioskData);
@@ -206,18 +206,20 @@ function BeelieversMintFunction() {
 					const { kioskOwnerCaps } = await kioskClient.getOwnedKiosks({ address: account.address });
 
 					if (kioskOwnerCaps && kioskOwnerCaps.length > 0) {
-						const kioskCap = kioskOwnerCaps[0];
-						const isPersonal = kioskCap.isPersonal || false;
+						// Find a non-personal kiosk
+						const nonPersonalKiosk = kioskOwnerCaps.find((kiosk) => !kiosk.isPersonal);
 
-						const kioskData = {
-							kioskId: kioskCap.kioskId,
-							kioskCapId: kioskCap.objectId,
-							address: account.address,
-							isPersonal,
-						};
+						if (nonPersonalKiosk) {
+							const kioskData = {
+								kioskId: nonPersonalKiosk.kioskId,
+								kioskCapId: nonPersonalKiosk.objectId,
+								address: account.address,
+								isPersonal: false,
+							};
 
-						localStorage.setItem("kioskInfo", JSON.stringify(kioskData));
-						return kioskData;
+							localStorage.setItem("kioskInfo", JSON.stringify(kioskData));
+							return kioskData;
+						}
 					}
 				} catch (error) {
 					console.error("Error fetching kiosks from network:", error);
@@ -419,7 +421,7 @@ function BeelieversMintFunction() {
 					throw new Error("Failed to retrieve kiosk or kiosk cap ID");
 				}
 
-				storeKioskInfo(account.address, kioskId, kioskCapId, false); // New kiosks are not personal
+				storeKioskInfo(account.address, kioskId, kioskCapId); // New kiosks are not personal
 				setKioskInfo({ kioskId, kioskCapId, address: account.address, isPersonal: false });
 			} else {
 				kioskId = kioskInfo.kioskId;
@@ -431,24 +433,6 @@ function BeelieversMintFunction() {
 			// Create payment coin (0 SUI for free mint)
 			const [paymentCoin] = tx.splitCoins(tx.gas, [tx.pure.u64(0)]);
 
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			let borrowedCap: any, borrowPromise: any;
-
-			// Handle personal kiosk cap borrowing
-			if (kioskInfo?.isPersonal) {
-				// Borrow the kiosk owner cap for personal kiosks
-				const borrowResult = tx.moveCall({
-					target: "0x0cb4bcc0560340eb1a1b929cabe56b33fc6449820ec8c1980d69bb98b649b802::personal_kiosk::borrow_val",
-					arguments: [tx.object(kioskCapId)],
-				});
-				borrowedCap = borrowResult[0];
-				borrowPromise = borrowResult[1];
-			} else {
-				// For regular kiosks, use the capability directly
-				borrowedCap = tx.object(kioskCapId);
-				borrowPromise = null;
-			}
-
 			tx.moveCall({
 				target: `${PACKAGE_ID}::mint::mint`,
 				arguments: [
@@ -459,17 +443,9 @@ function BeelieversMintFunction() {
 					tx.object("0x6"), // Clock
 					tx.object(AUCTION_OBJECT_ID),
 					tx.object(kioskId),
-					borrowedCap,
+					tx.object(kioskCapId),
 				],
 			});
-
-			// Return the borrowed cap only if it's a personal kiosk
-			if (kioskInfo?.isPersonal) {
-				tx.moveCall({
-					target: "0x0cb4bcc0560340eb1a1b929cabe56b33fc6449820ec8c1980d69bb98b649b802::personal_kiosk::return_val",
-					arguments: [tx.object(kioskCapId), borrowedCap, borrowPromise],
-				});
-			}
 
 			const { bytes, signature } = await signTransaction({
 				transaction: tx,
