@@ -67,22 +67,25 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 	// TODO: get mint info
 	const showMintInfo = true;
 
-	const renderHeading = (content: ReactNode) => (
-		<div className="flex flex-col items-center gap-4">
-			<p className="md:text-3xl text-2xl text-center font-semibold max-w-120">{content}</p>
-		</div>
-	);
-
 	return (
 		<div className="flex flex-col items-center gap-6 sm:gap-8 lg:gap-10 w-full relative">
-			{/* Hero Title with Animation */}
-			{renderHeading(
-				<>
+			<Header>
+				<p>
 					<span className="text-2xl text-primary md:text-3xl">🐝 BTCFi Beelievers</span> Mint
-				</>,
-			)}
+				</p>
+				<p className="text-lg mt-3 text-muted-foreground">
+					➡️{" "}
+					<a
+						className="link-raw"
+						href="https://www.gonative.cc/beelievers"
+						target="_blank"
+						rel="noreferrer"
+					>
+						Landing page and FAQ
+					</a>
+				</p>
+			</Header>
 
-			{/* Info Section with Animation */}
 			<div className="animate-in slide-in-from-left-4 duration-1000 delay-400 w-full flex justify-center">
 				{showMintInfo ? (
 					<MintInfo user={user} auctionInfo={info} />
@@ -91,11 +94,9 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 				)}
 			</div>
 
-			{renderHeading(
-				<>
-					<span className="text-2xl text-primary md:text-3xl">Raffle</span>
-				</>,
-			)}
+			<Header>
+				<span className="text-2xl text-primary md:text-3xl">Raffle</span>
+			</Header>
 
 			{raffle && (
 				<div className="animate-in slide-in-from-bottom-4 duration-1000 delay-300 w-full flex justify-center">
@@ -138,5 +139,13 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 			</div>
 			<FAQ />
 		</div>
+	);
+}
+
+function Header({ children }: { children: ReactNode }) {
+	return (
+		<h1 className="flex flex-col items-center md:text-3xl text-2xl font-semibold max-w-120">
+			{children}
+		</h1>
 	);
 }
