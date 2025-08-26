@@ -29,11 +29,12 @@ function MintInfoItem({ title, value, isLastItem = false }: MintInfoItemProps) {
 }
 
 interface MintActionProps {
+	isUserEligibleForMinting: boolean;
 	refund: bigint | null;
 }
 
 // TODO: determine if user has claimed before or not
-function MintAction({ refund }: MintActionProps) {
+function MintAction({ isUserEligibleForMinting, refund }: MintActionProps) {
 	const { auctionBidApi } = useNetworkVariables();
 	const { mutate: signAndExecTx, isPending } = useSignAndExecuteTransaction();
 	const client = useSuiClient();
@@ -95,17 +96,19 @@ function MintAction({ refund }: MintActionProps) {
 
 	return (
 		<div className="flex flex-col sm:flex-row gap-4">
-			<Button
-				type="button"
-				disabled={isPending}
-				size="lg"
-				className="flex-1 bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
-				onClick={() => {
-					// TODO: handle mint
-				}}
-			>
-				🐝 Mint
-			</Button>
+			{isUserEligibleForMinting && (
+				<Button
+					type="button"
+					disabled={isPending}
+					size="lg"
+					className="flex-1 bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+					onClick={() => {
+						// TODO: handle mint
+					}}
+				>
+					🐝 Mint
+				</Button>
+			)}
 			{refund && (
 				<Button
 					type="button"
@@ -127,14 +130,18 @@ interface MintInfoProps {
 	user?: User;
 }
 
-export function MintInfo({ user, auctionInfo: { clearingPrice } }: MintInfoProps) {
+export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize } }: MintInfoProps) {
 	const currentBidInMist = BigInt(user?.amount || 0);
-
-	// TODO: get it from server
-	const wonRaffle = false;
-	const refund = clearingPrice ? BigInt(clearingPrice) - BigInt(currentBidInMist) : null;
-
 	const isUserInTop5810 = user && user.rank && user?.rank <= 5810;
+	// user rank is less than or equal to auction size
+	const isUserEligibleForMinting = (user && user.rank && user.rank <= auctionSize) || false;
+
+	let refund: bigint | null = null;
+	try {
+		refund = clearingPrice ? BigInt(clearingPrice) - currentBidInMist : null;
+	} catch (e) {
+		console.error("Failed to calculate the refund", e);
+	}
 
 	return (
 		<Card className="w-full lg:w-[85%] xl:w-[75%] shadow-2xl border-primary/30 hover:border-primary/50 transition-all duration-300 hover:shadow-primary/10">
@@ -169,12 +176,14 @@ export function MintInfo({ user, auctionInfo: { clearingPrice } }: MintInfoProps
 							)}
 							<MintInfoItem
 								title="Raffle:"
-								value={wonRaffle ? "🎊 Won" : "Not won"}
+								value={isUserInTop5810 ? "🎊 Won" : "Not won"}
 								isLastItem
 							/>
 						</div>
 					</div>
-					{user && <MintAction refund={refund} />}
+					{user && (
+						<MintAction isUserEligibleForMinting={isUserEligibleForMinting} refund={refund} />
+					)}
 				</div>
 			</CardContent>
 		</Card>
