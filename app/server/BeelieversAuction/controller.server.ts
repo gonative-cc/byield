@@ -116,7 +116,6 @@ export default class Controller {
 		}
 	}
 
-	// TODO: should return new User record
 	async postBidTx(
 		userAddr: string,
 		txBytes: Uint8Array,
@@ -129,6 +128,7 @@ export default class Controller {
 			console.error("txDigest too long!", txDigest);
 			return responseBadRequest("Bad Tx Digest");
 		}
+		// TODO: Vu: extract timestamp from txBytes
 
 		const keyKv = this.kvKeyTxPrefix + txDigest;
 		const kvCheck = await this.kv.get(keyKv);
@@ -149,12 +149,12 @@ export default class Controller {
 				await this.kv.put(keyKvNA, "");
 				return responseNotAuthorized();
 			}
-
 			await this.kv.put(keyKv, "");
 			const amount = Number(bidEvent.totalBidAmount);
-			console.log(">>>> bidEvent", bidEvent);
+
 			const [resp, err] = await this.auction.bid(userAddr, amount, userMessage);
 			if (err !== null) return responseBadRequest(err.message);
+
 			return resp || { oldRank: 0, newRank: 0 };
 		} catch (error) {
 			console.error(
