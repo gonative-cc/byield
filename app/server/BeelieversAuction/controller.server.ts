@@ -3,7 +3,7 @@ import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
 
 import type { LoaderDataResp, AuctionInfo } from "./types";
 import type { QueryRaffleResp, Req, QueryUserResp } from "./jsonrpc";
-import { defaultAuctionInfo, defaultUser, mockRaffleWinners } from "./defaults";
+import { defaultAuctionInfo, defaultUser, mainnetRaffleWinners } from "./defaults";
 import { checkTxOnChain, verifySignature } from "./auth.server";
 
 import { fromBase64 } from "@mysten/utils";
@@ -28,7 +28,7 @@ export default class Controller {
 	auctionInfo: AuctionInfo;
 
 	isProduction: boolean;
-
+	// hardcoded based on the mainnet result
 	finalized_clearing_price = 5260500000;
 
 	constructor(kv: KVNamespace, d1: D1Database) {
@@ -178,12 +178,11 @@ export default class Controller {
 	}
 
 	async getRaffle(): Promise<QueryRaffleResp> {
-		if (this.isProduction) {
-			return null;
-		}
+		// hardcoded values based on mainnet events
+		// https://suivision.xyz/txblock/6DsEZJ7AtyZ4QanoH4iw3QA5NpcfFvWA98AAJxk1wYea?tab=Events
 		return {
-			winners: mockRaffleWinners(),
-			totalAmount: 105 * 1e9,
+			winners: mainnetRaffleWinners(),
+			totalAmount: 0.09365095,
 		};
 	}
 }

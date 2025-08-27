@@ -3,7 +3,7 @@ import { SUIIcon } from "~/components/icons";
 import { Table } from "~/components/ui/table";
 import { trimAddress } from "~/components/Wallet/walletHelper";
 import type { Raffle } from "~/server/BeelieversAuction/types";
-import { formatBTC, formatSUI } from "~/lib/denoms";
+import { formatBTC } from "~/lib/denoms";
 
 interface RaffleTableProps {
 	data: Raffle[];
