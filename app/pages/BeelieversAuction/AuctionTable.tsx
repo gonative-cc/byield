@@ -28,9 +28,6 @@ const createColumns = (): Column<Bidder>[] => [
 		accessor: "bidder",
 		Cell: ({ row }: CellProps<Bidder>) => (
 			<div className="flex items-center space-x-2">
-				<div className="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-orange-400 flex items-center justify-center text-xs font-bold text-black">
-					{row.original.bidder.slice(2, 4).toUpperCase()}
-				</div>
 				<span className="font-mono text-sm">{trimAddress(row.original.bidder)}</span>
 			</div>
 		),

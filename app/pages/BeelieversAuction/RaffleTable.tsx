@@ -1,5 +1,4 @@
 import type { CellProps, Column } from "react-table";
-import { SUIIcon } from "~/components/icons";
 import { Table } from "~/components/ui/table";
 import { trimAddress } from "~/components/Wallet/walletHelper";
 import type { Raffle } from "~/server/BeelieversAuction/types";
@@ -21,10 +20,7 @@ const createColumns = (): Column<Raffle>[] => [
 		Header: "👤 Address",
 		accessor: "address",
 		Cell: ({ row }: CellProps<Raffle>) => (
-			<div className="flex items-center space-x-2">
-				<div className="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-orange-400 flex items-center justify-center text-xs font-bold text-black">
-					{row.original.address.slice(2, 4).toUpperCase()}
-				</div>
+			<div className="flex items-center space-x-2 font-mono">
 				<span className="font-mono text-sm">{trimAddress(row.original.address)}</span>
 			</div>
 		),
@@ -34,9 +30,8 @@ const createColumns = (): Column<Raffle>[] => [
 		accessor: "amount",
 		Cell: ({ row }: CellProps<Raffle>) => (
 			<div className="flex items-center space-x-2 font-semibold">
-				<SUIIcon prefix="" className="h-5 w-5 text-primary" />
 				<span className="text-primary">{formatBTC(BigInt(row.original.amount || 0))}</span>
-				<span className="text-muted-foreground text-sm">BTC</span>
+				<span className="text-muted-foreground text-sm">nBTC</span>
 			</div>
 		),
 	},

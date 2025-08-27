@@ -182,7 +182,7 @@ export default class Controller {
 		// https://suivision.xyz/txblock/6DsEZJ7AtyZ4QanoH4iw3QA5NpcfFvWA98AAJxk1wYea?tab=Events
 		return {
 			winners: mainnetRaffleWinners(),
-			totalAmount: 0.09365095,
+			totalAmount: 93650950,
 		};
 	}
 }

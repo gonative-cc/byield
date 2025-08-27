@@ -2,29 +2,27 @@ import { ChevronsDown, ChevronsUp } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { cn } from "~/util/tailwind";
 
-interface AccordionProps {
+interface CollapseProps {
 	title: string | ReactNode;
 	children: ReactNode;
 	className?: string;
 }
 
-export function Collapse({ title, className = "", children }: AccordionProps) {
+export function Collapse({ title, className = "", children }: CollapseProps) {
 	const [showInfo, setShowInfo] = useState<boolean>(false);
 
 	return (
 		<div
 			className={cn(
-				"w-full backdrop-blur-sm shadow-lg border border-primary/20 rounded-lg overflow-hidden",
+				"backdrop-blur-sm shadow-lg border border-primary/20 rounded-lg overflow-hidden",
 				className,
 			)}
 		>
 			<button
 				onClick={() => setShowInfo((prevState) => !prevState)}
-				className="flex items-center justify-between w-full p-4 lg:p-6 text-left bg-gradient-to-r from-primary/10 to-primary/5 hover:from-primary/20 hover:to-primary/10 text-primary hover:text-orange-400 text-lg lg:text-xl transition-all duration-300 group"
+				className="flex items-center justify-between w-full p-4 lg:p-6 text-left bg-gradient-to-r from-primary/10 to-primary/5 hover:from-primary/20 hover:to-primary/10 text-primary hover:text-orange-400 text-lg lg:text-xl"
 			>
-				<div className="flex items-center gap-3">
-					{typeof title === "string" ? <span className="font-bold">{title}</span> : title}
-				</div>
+				{typeof title === "string" ? <span className="font-bold">{title}</span> : title}
 				<div className={`transform transition-transform duration-300 group-hover:scale-110`}>
 					{showInfo ? <ChevronsUp size={24} /> : <ChevronsDown size={24} />}
 				</div>

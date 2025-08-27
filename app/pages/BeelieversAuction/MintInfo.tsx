@@ -29,12 +29,12 @@ function MintInfoItem({ title, value, isLastItem = false }: MintInfoItemProps) {
 }
 
 interface MintActionProps {
-	isUserEligibleForMinting: boolean;
+	isWinner: boolean;
 	refund: bigint | null;
 }
 
 // TODO: determine if user has claimed before or not
-function MintAction({ isUserEligibleForMinting, refund }: MintActionProps) {
+function MintAction({ isWinner: isWinner, refund }: MintActionProps) {
 	const { auctionBidApi } = useNetworkVariables();
 	const { mutate: signAndExecTx, isPending } = useSignAndExecuteTransaction();
 	const client = useSuiClient();
@@ -97,7 +97,7 @@ function MintAction({ isUserEligibleForMinting, refund }: MintActionProps) {
 
 	return (
 		<div className="flex flex-col sm:flex-row gap-4">
-			{isUserEligibleForMinting && (
+			{isWinner && (
 				<Button
 					type="button"
 					disabled={isPending}
@@ -135,7 +135,7 @@ interface MintInfoProps {
 export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize } }: MintInfoProps) {
 	const currentBidInMist = BigInt(user?.amount || 0);
 	// user rank is less than or equal to auction size
-	const isWinner = (user && user.rank && user.rank <= auctionSize) || false;
+	const isWinner = user && user.rank && user.rank <= auctionSize;
 
 	let refund: bigint | null = null;
 	if (clearingPrice) {
@@ -170,18 +170,14 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize } }: 
 							/>
 							{user && (
 								<MintInfoItem
-									title="Status:"
+									title="Auction Status:"
 									value={isWinner ? "🎉 Winner" : "❌ Not in top 5810"}
+									isLastItem
 								/>
 							)}
-							<MintInfoItem
-								title="Raffle:"
-								value={isWinner ? "🎊 Won" : "Not won"}
-								isLastItem
-							/>
 						</div>
 					</div>
-					{user && <MintAction isUserEligibleForMinting={isWinner} refund={refund} />}
+					{user && <MintAction isWinner={isWinner} refund={refund} />}
 				</div>
 			</CardContent>
 		</Card>

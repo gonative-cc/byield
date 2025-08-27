@@ -169,5 +169,5 @@ export function mainnetRaffleWinners(): Raffle[] {
 		"0x12e85865d49e82df95f1e561a3f4c34ec676bfae23d79ab26396d3da6f9ebc98",
 	];
 
-	return addresses.map((address, i) => mkRaffleRecord(i + 1, address, 0.00445956));
+	return addresses.map((address, i) => mkRaffleRecord(i + 1, address, 445956));
 }
