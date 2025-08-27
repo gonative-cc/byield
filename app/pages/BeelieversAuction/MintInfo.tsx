@@ -34,7 +34,7 @@ interface MintActionProps {
 }
 
 // TODO: determine if user has claimed before or not
-function MintAction({ isWinner: isWinner, refund }: MintActionProps) {
+function MintAction({ isWinner, refund }: MintActionProps) {
 	const { auctionBidApi } = useNetworkVariables();
 	const { mutate: signAndExecTx, isPending } = useSignAndExecuteTransaction();
 	const client = useSuiClient();
@@ -97,7 +97,7 @@ function MintAction({ isWinner: isWinner, refund }: MintActionProps) {
 
 	return (
 		<div className="flex flex-col sm:flex-row gap-4">
-			{isWinner && (
+			{/* isWinner && (
 				<Button
 					type="button"
 					disabled={isPending}
@@ -109,8 +109,8 @@ function MintAction({ isWinner: isWinner, refund }: MintActionProps) {
 				>
 					🐝 Mint
 				</Button>
-			)}
-			{isUserEligibleForRefund && refund && (
+			) */}
+			{isUserEligibleForRefund && (
 				<Button
 					type="button"
 					disabled={isPending}
@@ -120,7 +120,10 @@ function MintAction({ isWinner: isWinner, refund }: MintActionProps) {
 					className="flex-1"
 					onClick={handleRefund}
 				>
-					💰 Refund {formatSUI(refund)} SUI
+					💰 Refund {formatSUI(refund!)} SUI
+					<div className="text-small text-muted-foreground">
+						NOTE: if you already claimed refund, subsequent claim will fail
+					</div>
 				</Button>
 			)}
 		</div>
@@ -135,12 +138,16 @@ interface MintInfoProps {
 export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize } }: MintInfoProps) {
 	const currentBidInMist = BigInt(user?.amount || 0);
 	// user rank is less than or equal to auction size
-	const isWinner = user && user.rank && user.rank <= auctionSize;
+	const isWinner = (user?.rank ?? auctionSize + 1) <= auctionSize;
 
 	let refund: bigint | null = null;
-	if (clearingPrice) {
-		refund = currentBidInMist - BigInt(clearingPrice);
-		if (refund < 0) refund = 0n;
+	if (isWinner) {
+		if (clearingPrice) {
+			refund = currentBidInMist - BigInt(clearingPrice);
+			if (refund < 0) refund = 0n;
+		}
+	} else {
+		refund = currentBidInMist;
 	}
 
 	return (
@@ -177,6 +184,7 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize } }: 
 							)}
 						</div>
 					</div>
+					Minting will be enabled soon.
 					{user && <MintAction isWinner={isWinner} refund={refund} />}
 				</div>
 			</CardContent>

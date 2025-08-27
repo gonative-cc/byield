@@ -66,9 +66,6 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 		}
 	}, [raffleFetcher, raffle, auctionState]);
 
-	// TODO: get mint info
-	const showMintInfo = true;
-
 	return (
 		<div className="flex flex-col items-center gap-6 sm:gap-8 lg:gap-10 w-full relative">
 			<Header>
@@ -90,7 +87,7 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 			</Header>
 
 			<div className="w-full flex justify-center">
-				{showMintInfo ? (
+				{auctionState === AuctionState.RECONCILLED ? (
 					<MintInfo user={user} auctionInfo={info} />
 				) : (
 					<AuctionInfoSection auctionInfo={info} auctionState={auctionState} />
@@ -154,7 +151,8 @@ function RaffleResults({ raffle }: { raffle: QueryRaffleResp }) {
 				<a
 					className="link"
 					href="https://suivision.xyz/txblock/E6PBgp5jA6vMs3rzS32nRseUiEBkDxf7WXjdsU6pL6Rz?tab=Events"
-					target="_blank" rel="noreferrer"
+					target="_blank"
+					rel="noreferrer"
 				>
 					total NFT sale
 				</a>{" "}
