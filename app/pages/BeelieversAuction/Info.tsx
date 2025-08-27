@@ -105,10 +105,10 @@ const Instructions = () => {
 
 function InstructionDetails() {
 	const listStyle = "list-disc list-outside ml-6 space-y-2";
-	const headerStyle = "pt-2 text-primary font-semibold text-lg flex items-center gap-2";
+	const headerStyle = "text-primary font-semibold text-lg flex items-center gap-2";
 	return (
-		<div className="px-4 lg:px-6 pb-6 text-foreground leading-7 animate-in slide-in-from-top-2 duration-500">
-			<div className="space-y-6 pt-4">
+		<div className="text-foreground leading-7 animate-in slide-in-from-top-2 duration-500">
+			<div className="space-y-6">
 				<h3 className={headerStyle}>
 					<span className="text-2xl">💰</span>
 					Auction Format: Fair & Transparent
