@@ -35,3 +35,7 @@ export function BitCoinIcon() {
 export function NBTCIcon(props: IconProps) {
 	return <Icon prefix={"nBTC"} src="/assets/coins/nbtc.svg" alt="nBTC" {...props} />;
 }
+
+export function NBTCRaw({ className }: { className?: string }) {
+	return <img src="/assets/coins/nbtc.svg" alt="nBTC" className={className} />;
+}

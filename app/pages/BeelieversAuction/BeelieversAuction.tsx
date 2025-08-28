@@ -9,10 +9,11 @@ import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { removeDuplicates, sortAndCheckDuplicate } from "~/lib/batteries";
 import { RaffleTable } from "./RaffleTable";
 import { MintInfo } from "./MintInfo";
-import { Info as AuctionsInfo } from "./Info";
-import { RaffleStats } from "./RaffleStats";
+import { Info as AuctionInfoSection } from "./Info";
 import { FAQ } from "./FAQ";
 import { Collapse } from "~/components/ui/collapse";
+import { NBTCRaw } from "~/components/icons";
+import { formatSUI } from "~/lib/denoms";
 
 function getAuctionState(startMs: number, endMs: number, clearingPrice: number | null): AuctionState {
 	const nowMs = new Date().getTime();
@@ -65,14 +66,12 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 		}
 	}, [raffleFetcher, raffle, auctionState]);
 
-	// TODO: get mint info
-	const showMintInfo = true;
-
 	return (
 		<div className="flex flex-col items-center gap-6 sm:gap-8 lg:gap-10 w-full relative">
 			<Header>
 				<p>
-					<span className="text-2xl text-primary md:text-3xl">🐝 BTCFi Beelievers</span> Mint
+					🐝 BTCFi Beelievers
+					<span className="text-foreground"> Mint</span>
 				</p>
 				<p className="text-lg mt-3 text-muted-foreground">
 					➡️{" "}
@@ -87,57 +86,44 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 				</p>
 			</Header>
 
-			<div className="animate-in slide-in-from-left-4 duration-1000 delay-400 w-full flex justify-center">
-				{showMintInfo ? (
+			<div className="w-full flex justify-center">
+				{auctionState === AuctionState.RECONCILLED ? (
 					<MintInfo user={user} auctionInfo={info} />
 				) : (
-					<AuctionsInfo auctionInfo={info} auctionState={auctionState} />
+					<AuctionInfoSection auctionInfo={info} auctionState={auctionState} />
 				)}
 			</div>
 
-			<Collapse title={<span className="text-2xl text-primary md:text-3xl">Raffle</span>}>
-				<div className="space-y-6">
-					{raffle && (
-						<div className="animate-in slide-in-from-bottom-4 duration-1000 delay-300 w-full flex justify-center">
-							<RaffleStats totalRaffleInMist={raffle.totalAmount} />
-						</div>
-					)}
-
-					{/* Leaderboard Table with Animation */}
-					{raffle && (
-						<div className="animate-in slide-in-from-bottom-4 duration-1000 delay-600 w-full">
-							<div className="flex flex-col-reverse lg:flex-row gap-6 w-full">
-								<RaffleTable data={raffle?.winners} />
-							</div>
-						</div>
-					)}
-				</div>
+			<Collapse
+				className="lg:w-[85%] xl:w-[75%]"
+				title={<span className="text-xl text-primary md:text-2xl">Raffle Results</span>}
+			>
+				<RaffleResults raffle={raffle} />
 			</Collapse>
 
-			{/* Auction Stats with Staggered Animation */}
 			{auctionState !== AuctionState.WILL_START && (
-				<div className="animate-in slide-in-from-bottom-4 duration-1000 delay-300 w-full flex justify-center">
-					<AuctionTotals info={info} />
-				</div>
-			)}
+				<>
+					<Header>
+						<span className="text-primary"> 🔨 Auction</span>
+					</Header>
 
-			{/* Leaderboard Table with Animation */}
-			{auctionState !== AuctionState.WILL_START && (
-				<div className="animate-in slide-in-from-bottom-4 duration-1000 delay-600 w-full">
-					<div className="flex flex-col-reverse lg:flex-row gap-6 w-full">
-						<AuctionTable data={leaderboard} user={user} suiAddr={suiAddr} />
+					<div className="w-full flex justify-center">
+						<AuctionTotals info={info} />
 					</div>
-				</div>
+					<div className="animate-in slide-in-from-bottom-4 duration-1000 delay-600 w-full">
+						<div className="flex flex-col-reverse lg:flex-row gap-6 w-full">
+							<AuctionTable data={leaderboard} user={user} suiAddr={suiAddr} />
+						</div>
+					</div>
+				</>
 			)}
 
 			{/* Partners Section with Animation */}
-			<div className="animate-in fade-in-0 duration-1000 delay-700 w-full">
-				<img
-					src="/assets/auction/partner/partners.webp"
-					alt="partners"
-					className="text-center mx-auto w-auto"
-				/>
-			</div>
+			<img
+				src="/assets/auction/partner/partners.webp"
+				alt="partners"
+				className="text-center mx-auto w-auto"
+			/>
 			<FAQ />
 		</div>
 	);
@@ -145,8 +131,37 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 
 function Header({ children }: { children: ReactNode }) {
 	return (
-		<h1 className="flex flex-col items-center md:text-3xl text-2xl font-semibold max-w-120">
+		<h1 className="flex flex-col items-center md:text-3xl text-2xl text-primary font-semibold max-w-120">
 			{children}
 		</h1>
+	);
+}
+
+function RaffleResults({ raffle }: { raffle: QueryRaffleResp }) {
+	if (!raffle) return;
+
+	return (
+		<>
+			<section className="w-full mb-6">
+				<div className="text-xl font-bold text-primary group-hover:text-orange-400 transition-colors duration-300 mb-2">
+					<NBTCRaw className="inline mr-2 h-[1.1em] w-auto align-middle" /> Total winnings:{" "}
+					{formatSUI(BigInt(raffle.totalAmount))} nBTC
+				</div>
+				This represents 10% of the{" "}
+				<a
+					className="link"
+					href="https://suivision.xyz/txblock/E6PBgp5jA6vMs3rzS32nRseUiEBkDxf7WXjdsU6pL6Rz?tab=Events"
+					target="_blank"
+					rel="noreferrer"
+				>
+					total NFT sale
+				</a>{" "}
+				exchanged to BTC on 2025-08-26. Winners will be able to claim nBTC once the mainnet is live.
+			</section>
+
+			<div className="flex flex-col-reverse lg:flex-row gap-6 w-full">
+				<RaffleTable data={raffle?.winners} />
+			</div>
+		</>
 	);
 }

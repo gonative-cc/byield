@@ -1,5 +1,5 @@
 import { Card, CardContent } from "~/components/ui/card";
-import { type AuctionInfo, type User } from "~/server/BeelieversAuction/types";
+import { AuctionAccountType, type AuctionInfo, type User } from "~/server/BeelieversAuction/types";
 import { formatSUI } from "~/lib/denoms";
 import { Button } from "~/components/ui/button";
 import { classNames } from "~/util/tailwind";
@@ -29,25 +29,19 @@ function MintInfoItem({ title, value, isLastItem = false }: MintInfoItemProps) {
 }
 
 interface MintActionProps {
-	isUserEligibleForMinting: boolean;
-	refund: bigint | null;
+	isWinner: boolean;
+	doRefund: DoRefund;
 }
 
-// TODO: determine if user has claimed before or not
-function MintAction({ isUserEligibleForMinting, refund }: MintActionProps) {
+function MintAction({ isWinner, doRefund }: MintActionProps) {
 	const { auctionBidApi } = useNetworkVariables();
 	const { mutate: signAndExecTx, isPending } = useSignAndExecuteTransaction();
 	const client = useSuiClient();
 	const account = useCurrentAccount();
-	const isUserEligibleForRefund = (refund && refund > 0) || false;
 
 	const handleRefund = async () => {
 		if (!account?.address) {
 			toast({ title: "SUI wallet", description: "Please connect SUI wallet", variant: "destructive" });
-			return;
-		}
-		if (!refund) {
-			toast({ title: "Refund", description: "No refund available", variant: "destructive" });
 			return;
 		}
 		try {
@@ -97,7 +91,7 @@ function MintAction({ isUserEligibleForMinting, refund }: MintActionProps) {
 
 	return (
 		<div className="flex flex-col sm:flex-row gap-4">
-			{isUserEligibleForMinting && (
+			{/* isWinner && (
 				<Button
 					type="button"
 					disabled={isPending}
@@ -109,8 +103,10 @@ function MintAction({ isUserEligibleForMinting, refund }: MintActionProps) {
 				>
 					🐝 Mint
 				</Button>
-			)}
-			{isUserEligibleForRefund && refund && (
+			) */}
+			{doRefund === DoRefund.NoBoosted &&
+				"You have nothing to withdraw because you are a winner and your bid is below (due to boost) or at the Mint Price"}
+			{doRefund === DoRefund.Yes && (
 				<Button
 					type="button"
 					disabled={isPending}
@@ -120,11 +116,20 @@ function MintAction({ isUserEligibleForMinting, refund }: MintActionProps) {
 					className="flex-1"
 					onClick={handleRefund}
 				>
-					💰 Refund {formatSUI(refund)} SUI
+					💰 Refund
+					<div className="text-small text-muted-foreground">
+						NOTE: if you already claimed refund, subsequent claim will fail
+					</div>
 				</Button>
 			)}
 		</div>
 	);
+}
+
+enum DoRefund {
+	No = 0,
+	Yes = 1,
+	NoBoosted = 2,
 }
 
 interface MintInfoProps {
@@ -133,14 +138,19 @@ interface MintInfoProps {
 }
 
 export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize } }: MintInfoProps) {
-	const currentBidInMist = BigInt(user?.amount || 0);
-	// user rank is less than or equal to auction size
-	const isWinner = (user && user.rank && user.rank <= auctionSize) || false;
-
-	let refund: bigint | null = null;
-	if (clearingPrice) {
-		refund = currentBidInMist - BigInt(clearingPrice);
-		if (refund < 0) refund = 0n;
+	if (user === null) {
+		return <p className="text-xl">Connect to your wallet to see minting info</p>;
+	}
+	const currentBidInMist = BigInt(user.amount);
+	const isWinner = user.rank !== null && user.rank < auctionSize;
+	const boosted = user.wlStatus > AuctionAccountType.DEFAULT;
+	let doRefund: DoRefund = DoRefund.No;
+	if (user.amount > 0) {
+		doRefund =
+			// apply boost to see if there is anything to withdraw in case he is a winner.
+			isWinner && Math.round(user.amount / 1.05) <= Number(clearingPrice)
+				? DoRefund.NoBoosted
+				: DoRefund.Yes;
 	}
 
 	return (
@@ -165,23 +175,18 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize } }: 
 								value={formatSUI(String(clearingPrice)) + " SUI"}
 							/>
 							<MintInfoItem
-								title="Your Bid:"
+								title={`Your Bid ${boosted ? "(5% boosted)" : ""}:`}
 								value={formatSUI(String(currentBidInMist)) + " SUI"}
 							/>
-							{user && (
-								<MintInfoItem
-									title="Status:"
-									value={isWinner ? "🎉 Winner" : "❌ Not in top 5810"}
-								/>
-							)}
 							<MintInfoItem
-								title="Raffle:"
-								value={isWinner ? "🎊 Won" : "Not won"}
+								title="Auction Status:"
+								value={isWinner ? "🎉 Winner" : "❌ Not in top 5810"}
 								isLastItem
 							/>
 						</div>
 					</div>
-					{user && <MintAction isUserEligibleForMinting={isWinner} refund={refund} />}
+					Minting will be enabled soon.
+					<MintAction isWinner={isWinner} doRefund={doRefund} />
 				</div>
 			</CardContent>
 		</Card>
