@@ -30,7 +30,7 @@ function MintInfoItem({ title, value, isLastItem = false }: MintInfoItemProps) {
 
 interface MintActionProps {
 	isWinner: boolean;
-	doRefund: boolean;
+	doRefund: DoRefund;
 }
 
 function MintAction({ isWinner, doRefund }: MintActionProps) {
@@ -104,7 +104,9 @@ function MintAction({ isWinner, doRefund }: MintActionProps) {
 					🐝 Mint
 				</Button>
 			) */}
-			{doRefund && (
+			{doRefund === DoRefund.NoBoosted &&
+				"You have nothing to withdraw because you are a winner and your bid is below (due to boost) or at the Mint Price"}
+			{doRefund === DoRefund.Yes && (
 				<Button
 					type="button"
 					disabled={isPending}
@@ -124,6 +126,12 @@ function MintAction({ isWinner, doRefund }: MintActionProps) {
 	);
 }
 
+enum DoRefund {
+	No = 0,
+	Yes = 1,
+	NoBoosted = 2,
+}
+
 interface MintInfoProps {
 	auctionInfo: AuctionInfo;
 	user: User | null;
@@ -135,8 +143,15 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize } }: 
 	}
 	const currentBidInMist = BigInt(user.amount);
 	const isWinner = user.rank !== null && user.rank < auctionSize;
-	const doRefund = user.amount > 0;
 	const boosted = user.wlStatus > AuctionAccountType.DEFAULT;
+	let doRefund: DoRefund = DoRefund.No;
+	if (user.amount > 0) {
+		doRefund =
+			// apply boost to see if there is anything to withdraw in case he is a winner.
+			isWinner && Math.round(user.amount / 1.05) <= Number(clearingPrice)
+				? DoRefund.NoBoosted
+				: DoRefund.Yes;
+	}
 
 	return (
 		<Card className="w-full lg:w-[85%] xl:w-[75%] shadow-2xl border-primary/30 hover:border-primary/50 transition-all duration-300 hover:shadow-primary/10">
