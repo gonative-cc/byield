@@ -155,7 +155,7 @@ export default class Controller {
 			const [resp, err] = await this.auction.bid(userAddr, amount, timestampMs, userMessage);
 			if (err !== null) return responseBadRequest(err.message);
 
-			return resp || { oldRank: 0, newRank: 0, timestampMs: 0 };
+			return resp || { oldRank: 0, newRank: 0 };
 		} catch (error) {
 			console.error(
 				"[Controller] An error occurred during postBidTx:",

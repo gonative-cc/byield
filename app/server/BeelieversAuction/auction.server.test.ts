@@ -121,20 +121,22 @@ describe("Auction Class with Tuple Error Handling", () => {
 
 	describe("bid", () => {
 		test("successful bid", async () => {
-			let [res, err] = await auction.bid(alice, minBid, 100, "Success!");
+			// valid time for auction
+			const txBidTimestampMs = auction.startDate.getTime() + 10;
+			let [res, err] = await auction.bid(alice, minBid, txBidTimestampMs, "Success!");
 			expect(err).toBeNull();
-			expect(res).toEqual({ oldRank: null, newRank: 1, timestampMs: 100 });
+			expect(res).toEqual({ oldRank: null, newRank: 1 });
 			let bidder = await auction.getBidder(alice);
 			expect(extractAB(bidder)).toEqual(toAB(minBid, 1));
 
-			[res, err] = await auction.bid(alice, 101, 100, "Success2!");
+			[res, err] = await auction.bid(alice, 101, txBidTimestampMs, "Success2!");
 			expect(err).toBeNull();
-			expect(res).toEqual({ oldRank: 1, newRank: 1, timestampMs: 100 });
+			expect(res).toEqual({ oldRank: 1, newRank: 1 });
 			bidder = await auction.getBidder(alice);
 			expect(bidder?.note).toEqual("Success2!");
 			expect(extractAB(bidder)).toEqual(toAB(101, 2));
 
-			[res, err] = await auction.bid(alice, 102, 100, ""); // no note
+			[res, err] = await auction.bid(alice, 102, txBidTimestampMs, ""); // no note
 			expect(err).toBeNull();
 
 			const l = await auction.getTopLeaderboard();
@@ -164,15 +166,15 @@ describe("Auction Class with Tuple Error Handling", () => {
 		test("error: subsequent bid too low", async () => {
 			// first bid OK
 			const firstBid = minBid * 2;
-			let [res, err] = await auction.bid(alice, firstBid);
+			let [res, err] = await auction.bid(alice, firstBid, Date.now());
 			expect(res).toBeDefined();
 			expect(err).toBeNull();
 
-			[res, err] = await auction.bid(alice, firstBid);
+			[res, err] = await auction.bid(alice, firstBid, Date.now());
 			expect(err).toBeInstanceOf(Error);
 			expect(err?.message).toContain("must be greater than the previous effective bid");
 
-			[res, err] = await auction.bid(alice, firstBid - 1);
+			[res, err] = await auction.bid(alice, firstBid - 1, Date.now());
 			expect(err).toBeInstanceOf(Error);
 			expect(err?.message).toContain("must be greater than the previous effective bid");
 
@@ -189,8 +191,11 @@ describe("Auction Class with Tuple Error Handling", () => {
 		});
 
 		test("error: auction has not started", async () => {
-			auction.startDate = timeEnd; // we don't change the current time
-			const [result, error] = await auction.bid(alice, minBid);
+			const [result, error] = await auction.bid(
+				alice,
+				minBid,
+				auction.startDate.getTime() - 1,
+			);
 
 			expect(result).toBeNull();
 			expect(error).toBeInstanceOf(Error);
@@ -200,8 +205,11 @@ describe("Auction Class with Tuple Error Handling", () => {
 		});
 
 		test("error: auction has ended", async () => {
-			auction.endDate = timeBefore;
-			const [result, error] = await auction.bid("user1", minBid);
+			const [result, error] = await auction.bid(
+				"user1",
+				minBid,
+				auction.endDate.getTime() + 1,
+			);
 
 			expect(result).toBeNull();
 			expect(error).toBeInstanceOf(Error);
@@ -212,15 +220,16 @@ describe("Auction Class with Tuple Error Handling", () => {
 			const r = await auction._insertBidder(alice, 0, now, 2);
 			expect(r.success, r.error).toBeTruthy();
 
-			let [res, err] = await auction.bid(alice, minBid, 100, "Success!");
+			const txBidTimestampMs = auction.startDate.getTime() + 10;
+			let [res, err] = await auction.bid(alice, minBid, txBidTimestampMs, "Success!");
 			expect(err).toBeNull();
-			expect(res).toEqual({ oldRank: null, newRank: 1, timestampMs: 100 });
+			expect(res).toEqual({ oldRank: null, newRank: 1 });
 			const b = await auction.getBidder(alice);
 			expect(b?.amount).toEqual(minBid * 1.05);
 
-			[res, err] = await auction.bid(alice, 1000, 100, "Success!");
+			[res, err] = await auction.bid(alice, 1000, txBidTimestampMs, "Success!");
 			expect(err).toBeNull();
-			expect(res).toEqual({ oldRank: 1, newRank: 1, timestampMs: 100 });
+			expect(res).toEqual({ oldRank: 1, newRank: 1 });
 
 			const l = await auction.getTopLeaderboard();
 			expect(l[0].amount).toEqual(1000 * 1.05);
@@ -230,12 +239,13 @@ describe("Auction Class with Tuple Error Handling", () => {
 	describe("Full Auction Flow with Tuple Handling", () => {
 		test("should correctly handle the auction lifecycle", async () => {
 			// 1. BIDDING PHASE - successful bids
-			let [res, err] = await auction.bid(users.alice, 600, 100, note);
-			expect(res).toEqual({ oldRank: null, newRank: 1, timestampMs: 100 });
-			[res, err] = await auction.bid(users.bob, 700);
-			expect(res).toEqual({ oldRank: null, newRank: 1, timestampMs: 0 });
-			[res, err] = await auction.bid(users.charl, 500);
-			expect(res).toEqual({ oldRank: null, newRank: 3, timestampMs: 0 });
+			let txBidTimestampMs = auction.startDate.getTime() + 10;
+			let [res, err] = await auction.bid(users.alice, 600, txBidTimestampMs, note);
+			expect(res).toEqual({ oldRank: null, newRank: 1 });
+			[res, err] = await auction.bid(users.bob, 700, txBidTimestampMs);
+			expect(res).toEqual({ oldRank: null, newRank: 1 });
+			[res, err] = await auction.bid(users.charl, 500, txBidTimestampMs);
+			expect(res).toEqual({ oldRank: null, newRank: 3 });
 
 			let stats = await auction.getStats();
 			expect(stats).toEqual({
@@ -256,33 +266,34 @@ describe("Auction Class with Tuple Error Handling", () => {
 			});
 
 			// 2. Invalid Bob bid attempt
-			[res, err] = await auction.bid(users.bob, 300); // Less than Bob's current bid
+			[res, err] = await auction.bid(users.bob, 300, txBidTimestampMs); // Less than Bob's current bid
 			expect(err).toBeInstanceOf(Error);
 			expect(res).toBeNull();
 
 			// Now a valid bid
-			[res, err] = await auction.bid(users.bob, 720);
-			expect(res).toEqual({ oldRank: 1, newRank: 1, timestampMs: 0 });
+			[res, err] = await auction.bid(users.bob, 720, txBidTimestampMs);
+			expect(res).toEqual({ oldRank: 1, newRank: 1 });
 
 			// 3. Charlie bids more
-			[res, err] = await auction.bid(users.charl, 800);
-			expect(res).toEqual({ oldRank: 3, newRank: 1, timestampMs: 0 });
+			[res, err] = await auction.bid(users.charl, 800, txBidTimestampMs);
+			expect(res).toEqual({ oldRank: 3, newRank: 1 });
 			// bob tries again, but not enough to beat charlie
-			[res, err] = await auction.bid(users.bob, 750);
-			expect(res).toEqual({ oldRank: 2, newRank: 2, timestampMs: 0 });
+			[res, err] = await auction.bid(users.bob, 750, txBidTimestampMs);
+			expect(res).toEqual({ oldRank: 2, newRank: 2 });
 
 			// 4. A few more bids
 			expect(auction.size).toBe(4);
-			[res, err] = await auction.bid(users.dylan, 310); // highest that didn't make it -> clearing price
-			expect(res).toEqual({ oldRank: null, newRank: 4, timestampMs: 0 });
-			[res, err] = await auction.bid(users.eve, 320);
-			expect(res).toEqual({ oldRank: null, newRank: 4, timestampMs: 0 });
-			[res, err] = await auction.bid(users.felix, 300); // smallest bid
-			expect(res).toEqual({ oldRank: null, newRank: 6, timestampMs: 0 });
+			[res, err] = await auction.bid(users.dylan, 310, txBidTimestampMs); // highest that didn't make it -> clearing price
+			expect(res).toEqual({ oldRank: null, newRank: 4 });
+			[res, err] = await auction.bid(users.eve, 320, txBidTimestampMs);
+			expect(res).toEqual({ oldRank: null, newRank: 4 });
+			[res, err] = await auction.bid(users.felix, 300, txBidTimestampMs); // smallest bid
+			expect(res).toEqual({ oldRank: null, newRank: 6 });
 
 			// 3. AUCTION ENDS
-			auction.endDate = timeBefore;
-			[res, err] = await auction.bid("another_user", 900);
+			// auction.endDate = timeBefore;
+			txBidTimestampMs = auction.endDate.getTime() + 10;
+			[res, err] = await auction.bid("another_user", 900, txBidTimestampMs);
 			expect(err?.message).toBe("Auction has already ended.");
 			expect(res).toBeNull();
 
