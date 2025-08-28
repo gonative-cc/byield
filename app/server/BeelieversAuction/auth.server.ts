@@ -8,35 +8,20 @@ export type BidTxEvent = {
 	sender: string;
 	auctionId: string;
 	totalBidAmount: string;
+	timestampMs: string;
 };
-
-interface TxData {
-	effects?: {
-		status?: {
-			status?: "success" | "failure";
-			error?: string;
-		};
-	} | null;
-	events?:
-		| {
-				type: string;
-				parsedJson: unknown;
-				sender: string;
-		  }[]
-		| null;
-}
 
 interface SuiJsonRpcResponse {
 	jsonrpc: string;
 	id: number;
-	result?: TxData;
+	result?: SuiTransactionBlockResponse;
 }
 
 type TxCheckError = string;
 
 // Returns BidDetails on successful tx verification, or TxCheckError otherwise.
 function processTransactionData(
-	data: TxData | undefined,
+	data: SuiTransactionBlockResponse | undefined,
 	suiTxId: string,
 	bidderAddr: string,
 	source: "Primary" | "Fallback",
@@ -73,6 +58,9 @@ function processTransactionData(
 		sender,
 		auctionId: auction_id,
 		totalBidAmount: total_bid_amount,
+		// timestamps not null if transaction is finalized in a checkpoint
+		// In our case, we ensure this is finalized so we can query this
+		timestampMs: data.timestampMs!,
 	};
 }
 

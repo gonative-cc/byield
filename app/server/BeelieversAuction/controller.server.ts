@@ -151,8 +151,8 @@ export default class Controller {
 			}
 			await this.kv.put(keyKv, "");
 			const amount = Number(bidEvent.totalBidAmount);
-
-			const [resp, err] = await this.auction.bid(userAddr, amount, userMessage);
+			const timestampMs = parseInt(bidEvent.timestampMs);
+			const [resp, err] = await this.auction.bid(userAddr, amount, timestampMs, userMessage);
 			if (err !== null) return responseBadRequest(err.message);
 
 			return resp || { oldRank: 0, newRank: 0 };

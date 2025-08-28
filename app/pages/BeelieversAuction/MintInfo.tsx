@@ -58,7 +58,7 @@ function MintAction({ isWinner, doRefund }: MintActionProps) {
 						if (effects?.status.status === "success") {
 							toast({
 								title: "Refund successful",
-								description: `${formatSUI(refund)} SUI refunded`,
+								description: `SUI refunded`,
 							});
 						} else {
 							console.error("Claim tx error: ", effects?.status.error);

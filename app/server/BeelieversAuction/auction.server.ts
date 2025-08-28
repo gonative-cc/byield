@@ -88,15 +88,14 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 	async bid(
 		bidder: string,
 		amount: number,
+		bidTxTimestampMs: number,
 		note: string = "",
 	): Promise<[BidResult | null, Error | null]> {
 		try {
-			// TODO: use time from the event
-			const now = new Date();
-			if (now < this.startDate) {
+			if (bidTxTimestampMs < this.startDate.getTime()) {
 				return [null, new Error("Auction has not started yet.")];
 			}
-			if (now > this.endDate) {
+			if (bidTxTimestampMs > this.endDate.getTime()) {
 				return [null, new Error("Auction has already ended.")];
 			}
 
@@ -133,7 +132,7 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 					.prepare(
 						`INSERT INTO bids (bidder, amount, timestamp, note, bids) VALUES (?, ?, ?, ?, 1) ON CONFLICT(bidder) DO UPDATE SET amount = excluded.amount, timestamp = excluded.timestamp, note = ?, bids = bids + 1`,
 					)
-					.bind(bidder, amount, now.getTime(), note, note),
+					.bind(bidder, amount, bidTxTimestampMs, note, note),
 				this.db
 					.prepare(
 						`UPDATE stats SET totalBids = totalBids + 1, uniqueBidders = uniqueBidders + ? WHERE key = 'auction_stats' RETURNING uniqueBidders`,
@@ -142,7 +141,7 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 			];
 			const result = await this.db.batch(statements);
 			const uniqueBidders = (result[1].results[0] as { uniqueBidders: number }).uniqueBidders;
-			const newRank = await this._calculateRank(amount, now.getTime());
+			const newRank = await this._calculateRank(amount, bidTxTimestampMs);
 			let badges = calcStaticBadges(
 				amount,
 				prevAmount,
