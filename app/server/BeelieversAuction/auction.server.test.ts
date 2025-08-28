@@ -120,20 +120,20 @@ describe("Auction Class with Tuple Error Handling", () => {
 
 	describe("bid", () => {
 		test("successful bid", async () => {
-			let [res, err] = await auction.bid(alice, minBid, "Success!");
+			let [res, err] = await auction.bid(alice, minBid, 100, "Success!");
 			expect(err).toBeNull();
 			expect(res).toEqual({ oldRank: null, newRank: 1 });
 			let bidder = await auction.getBidder(alice);
 			expect(extractAB(bidder)).toEqual(toAB(minBid, 1));
 
-			[res, err] = await auction.bid(alice, 101, "Success2!");
+			[res, err] = await auction.bid(alice, 101, 100, "Success2!");
 			expect(err).toBeNull();
 			expect(res).toEqual({ oldRank: 1, newRank: 1 });
 			bidder = await auction.getBidder(alice);
 			expect(bidder?.note).toEqual("Success2!");
 			expect(extractAB(bidder)).toEqual(toAB(101, 2));
 
-			[res, err] = await auction.bid(alice, 102, ""); // no note
+			[res, err] = await auction.bid(alice, 102, 100, ""); // no note
 			expect(err).toBeNull();
 
 			const l = await auction.getTopLeaderboard();
@@ -211,13 +211,13 @@ describe("Auction Class with Tuple Error Handling", () => {
 			const r = await auction._insertBidder(alice, 0, now, 2);
 			expect(r.success, r.error).toBeTruthy();
 
-			let [res, err] = await auction.bid(alice, minBid, "Success!");
+			let [res, err] = await auction.bid(alice, minBid, 100, "Success!");
 			expect(err).toBeNull();
 			expect(res).toEqual({ oldRank: null, newRank: 1 });
 			const b = await auction.getBidder(alice);
 			expect(b?.amount).toEqual(minBid * 1.05);
 
-			[res, err] = await auction.bid(alice, 1000, "Success!");
+			[res, err] = await auction.bid(alice, 1000, 100, "Success!");
 			expect(err).toBeNull();
 			expect(res).toEqual({ oldRank: 1, newRank: 1 });
 
@@ -229,7 +229,7 @@ describe("Auction Class with Tuple Error Handling", () => {
 	describe("Full Auction Flow with Tuple Handling", () => {
 		test("should correctly handle the auction lifecycle", async () => {
 			// 1. BIDDING PHASE - successful bids
-			let [res, err] = await auction.bid(users.alice, 600, note);
+			let [res, err] = await auction.bid(users.alice, 600, 100, note);
 			expect(res).toEqual({ oldRank: null, newRank: 1 });
 			[res, err] = await auction.bid(users.bob, 700);
 			expect(res).toEqual({ oldRank: null, newRank: 1 });

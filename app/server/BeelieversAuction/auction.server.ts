@@ -7,6 +7,7 @@ import { cmpNum } from "~/lib/batteries";
 export interface BidResult {
 	newRank: number | null;
 	oldRank: number | null;
+	timestampMs: number | null;
 }
 
 export interface LeaderboardDBEntry {
@@ -88,6 +89,7 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 	async bid(
 		bidder: string,
 		amount: number,
+		timestampMs: number = 0,
 		note: string = "",
 	): Promise<[BidResult | null, Error | null]> {
 		try {
@@ -164,7 +166,7 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 			// TODO: return updated user
 			// and call addDynamicBadges
 
-			return [{ oldRank, newRank }, null];
+			return [{ oldRank, newRank, timestampMs }, null];
 		} catch (e) {
 			const error =
 				e instanceof Error
