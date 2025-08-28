@@ -173,6 +173,8 @@ export default class Controller {
 		const u = await this.auction.getBidder(userAddr);
 		if (u === null) {
 			return defaultUser(this.isProduction);
+		} else {
+			u.amount = Math.floor(u.amount);
 		}
 		return u;
 	}
