@@ -122,7 +122,7 @@ describe("Auction Class with Tuple Error Handling", () => {
 	describe("bid", () => {
 		test("successful bid", async () => {
 			// valid time for auction
-			const txBidTimestampMs = auction.startDate.getTime() + 10;
+			const txBidTimestampMs = now.getTime();
 			let [res, err] = await auction.bid(alice, minBid, txBidTimestampMs, "Success!");
 			expect(err).toBeNull();
 			expect(res).toEqual({ oldRank: null, newRank: 1 });
