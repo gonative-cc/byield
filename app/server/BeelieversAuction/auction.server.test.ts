@@ -3,6 +3,7 @@ import { Miniflare } from "miniflare";
 import type { User } from "./types";
 
 import { Auction, addDynamicBadges } from "./auction.server";
+import { timeStamp } from "console";
 
 interface AmountBids {
 	amount: number;
@@ -122,13 +123,13 @@ describe("Auction Class with Tuple Error Handling", () => {
 		test("successful bid", async () => {
 			let [res, err] = await auction.bid(alice, minBid, 100, "Success!");
 			expect(err).toBeNull();
-			expect(res).toEqual({ oldRank: null, newRank: 1 });
+			expect(res).toEqual({ oldRank: null, newRank: 1, timestampMs: 100 });
 			let bidder = await auction.getBidder(alice);
 			expect(extractAB(bidder)).toEqual(toAB(minBid, 1));
 
 			[res, err] = await auction.bid(alice, 101, 100, "Success2!");
 			expect(err).toBeNull();
-			expect(res).toEqual({ oldRank: 1, newRank: 1 });
+			expect(res).toEqual({ oldRank: 1, newRank: 1, timestampMs: 100 });
 			bidder = await auction.getBidder(alice);
 			expect(bidder?.note).toEqual("Success2!");
 			expect(extractAB(bidder)).toEqual(toAB(101, 2));
@@ -213,13 +214,13 @@ describe("Auction Class with Tuple Error Handling", () => {
 
 			let [res, err] = await auction.bid(alice, minBid, 100, "Success!");
 			expect(err).toBeNull();
-			expect(res).toEqual({ oldRank: null, newRank: 1 });
+			expect(res).toEqual({ oldRank: null, newRank: 1, timestampMs: 100 });
 			const b = await auction.getBidder(alice);
 			expect(b?.amount).toEqual(minBid * 1.05);
 
 			[res, err] = await auction.bid(alice, 1000, 100, "Success!");
 			expect(err).toBeNull();
-			expect(res).toEqual({ oldRank: 1, newRank: 1 });
+			expect(res).toEqual({ oldRank: 1, newRank: 1, timestampMs: 100 });
 
 			const l = await auction.getTopLeaderboard();
 			expect(l[0].amount).toEqual(1000 * 1.05);
@@ -230,11 +231,11 @@ describe("Auction Class with Tuple Error Handling", () => {
 		test("should correctly handle the auction lifecycle", async () => {
 			// 1. BIDDING PHASE - successful bids
 			let [res, err] = await auction.bid(users.alice, 600, 100, note);
-			expect(res).toEqual({ oldRank: null, newRank: 1 });
+			expect(res).toEqual({ oldRank: null, newRank: 1, timestampMs: 100 });
 			[res, err] = await auction.bid(users.bob, 700);
-			expect(res).toEqual({ oldRank: null, newRank: 1 });
+			expect(res).toEqual({ oldRank: null, newRank: 1, timestampMs: 0 });
 			[res, err] = await auction.bid(users.charl, 500);
-			expect(res).toEqual({ oldRank: null, newRank: 3 });
+			expect(res).toEqual({ oldRank: null, newRank: 3, timestampMs: 0 });
 
 			let stats = await auction.getStats();
 			expect(stats).toEqual({
@@ -261,23 +262,23 @@ describe("Auction Class with Tuple Error Handling", () => {
 
 			// Now a valid bid
 			[res, err] = await auction.bid(users.bob, 720);
-			expect(res).toEqual({ oldRank: 1, newRank: 1 });
+			expect(res).toEqual({ oldRank: 1, newRank: 1, timestampMs: 0 });
 
 			// 3. Charlie bids more
 			[res, err] = await auction.bid(users.charl, 800);
-			expect(res).toEqual({ oldRank: 3, newRank: 1 });
+			expect(res).toEqual({ oldRank: 3, newRank: 1, timestampMs: 0 });
 			// bob tries again, but not enough to beat charlie
 			[res, err] = await auction.bid(users.bob, 750);
-			expect(res).toEqual({ oldRank: 2, newRank: 2 });
+			expect(res).toEqual({ oldRank: 2, newRank: 2, timestampMs: 0 });
 
 			// 4. A few more bids
 			expect(auction.size).toBe(4);
 			[res, err] = await auction.bid(users.dylan, 310); // highest that didn't make it -> clearing price
-			expect(res).toEqual({ oldRank: null, newRank: 4 });
+			expect(res).toEqual({ oldRank: null, newRank: 4, timestampMs: 0 });
 			[res, err] = await auction.bid(users.eve, 320);
-			expect(res).toEqual({ oldRank: null, newRank: 4 });
+			expect(res).toEqual({ oldRank: null, newRank: 4, timestampMs: 0 });
 			[res, err] = await auction.bid(users.felix, 300); // smallest bid
-			expect(res).toEqual({ oldRank: null, newRank: 6 });
+			expect(res).toEqual({ oldRank: null, newRank: 6, timestampMs: 0 });
 
 			// 3. AUCTION ENDS
 			auction.endDate = timeBefore;
