@@ -122,7 +122,7 @@ describe("Auction Class with Tuple Error Handling", () => {
 	describe("bid", () => {
 		test("successful bid", async () => {
 			// valid time for auction
-			const txBidTimestampMs = auction.startDate.getTime() + 10;
+			const txBidTimestampMs = now.getTime();
 			let [res, err] = await auction.bid(alice, minBid, txBidTimestampMs, "Success!");
 			expect(err).toBeNull();
 			expect(res).toEqual({ oldRank: null, newRank: 1 });
@@ -166,15 +166,15 @@ describe("Auction Class with Tuple Error Handling", () => {
 		test("error: subsequent bid too low", async () => {
 			// first bid OK
 			const firstBid = minBid * 2;
-			let [res, err] = await auction.bid(alice, firstBid, Date.now());
+			let [res, err] = await auction.bid(alice, firstBid, now.getTime());
 			expect(res).toBeDefined();
 			expect(err).toBeNull();
 
-			[res, err] = await auction.bid(alice, firstBid, Date.now());
+			[res, err] = await auction.bid(alice, firstBid, now.getTime());
 			expect(err).toBeInstanceOf(Error);
 			expect(err?.message).toContain("must be greater than the previous effective bid");
 
-			[res, err] = await auction.bid(alice, firstBid - 1, Date.now());
+			[res, err] = await auction.bid(alice, firstBid - 1, now.getTime());
 			expect(err).toBeInstanceOf(Error);
 			expect(err?.message).toContain("must be greater than the previous effective bid");
 
