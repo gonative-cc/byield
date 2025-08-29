@@ -11,8 +11,9 @@ import { isMainNetNetwork } from "./appenv";
 export const PRICE_PER_NBTC_IN_SUI = 25000n;
 export const NBTC_COIN_TYPE =
 	"0x5419f6e223f18a9141e91a42286f2783eee27bf2667422c2100afc7b2296731b::nbtc::NBTC";
+const DUST_THRESHOLD_SATOSHI = 546;
 
-// TODO: This needs node pollyfill. Find workaround for this.
+// TODO: This needs node polyfill. Find workaround for this.
 export async function nBTCMintTx(
 	bitcoinAddress: Address,
 	sendAmountInSatoshi: number,
@@ -104,7 +105,7 @@ export async function nBTCMintTx(
 		const changeAmount = totalAvailable - sendAmountInSatoshi - estimatedFee;
 
 		// Only add change output if change amount is significant (> dust threshold)
-		const dustThreshold = 546; // Standard dust threshold in satoshis
+		const dustThreshold = DUST_THRESHOLD_SATOSHI; // Standard dust threshold in satoshis
 		if (changeAmount > dustThreshold) {
 			psbt.addOutput({
 				address: bitcoinAddress.address,

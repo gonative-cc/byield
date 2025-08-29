@@ -1,5 +1,7 @@
 {
 	"mint": {
-		"depositAddress": "tb1qjgqhst2hlgjkh36pg6r3hdnz7zvurafe9h5lkx"
+		"depositAddress": "tb1qjgqhst2hlgjkh36pg6r3hdnz7zvurafe9h5lkx",
+		"bitcoinBroadcastLink": "https://mempool.space/tx/",
+		"suiScanExplorerLink": "https://suiscan.xyz/mainnet/account/"
 	}
 }

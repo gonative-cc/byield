@@ -18,6 +18,8 @@ import { Check } from "lucide-react";
 import { classNames } from "~/util/tailwind";
 import { isValidSuiAddress } from "@mysten/sui/utils";
 import { isMainNetNetwork } from "~/lib/appenv";
+import mainnetConfig from "~/config/mint/contracts-mainnet.json";
+import testnetConfig from "~/config/mint/contracts-testnet.json";
 
 interface TransactionStatusProps {
 	SUIAddress: string;
@@ -27,12 +29,9 @@ interface TransactionStatusProps {
 
 function TransactionStatus({ SUIAddress, txnId, handleRetry }: TransactionStatusProps) {
 	const isMainNetMode = isMainNetNetwork();
-	const bitcoinBroadcastLink = isMainNetMode
-		? `https://mempool.space/tx/${txnId}`
-		: `https://mempool.space/testnet4/tx/${txnId}`;
-	const suiScanExplorerLink = isMainNetMode
-		? `https://suiscan.xyz/mainnet/account/${SUIAddress}`
-		: `https://suiscan.xyz/testnet/account/${SUIAddress}`;
+	const config = isMainNetMode ? mainnetConfig : testnetConfig;
+	const bitcoinBroadcastLink = `${config.mint.bitcoinBroadcastLink}${txnId}`;
+	const suiScanExplorerLink = `${config.mint.suiScanExplorerLink}${SUIAddress}`;
 
 	return (
 		<div className="p-4 rounded-lg text-white flex flex-col gap-4">
