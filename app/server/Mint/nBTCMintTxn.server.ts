@@ -5,7 +5,7 @@ import { fetchUTXOs, fetchValidateAddress } from "~/api/btcrpc";
 import type { UTXO, ValidateAddressI } from "~/api/btcrpc";
 import { nBTC_ADDR } from "~/lib/nbtc";
 
-export async function nBTCMintTxn(
+export async function nBTCMintTx(
 	bitcoinAddress: Address,
 	sendAmount: number,
 	opReturnInput: string,
