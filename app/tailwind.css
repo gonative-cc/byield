@@ -105,6 +105,7 @@
 @layer utilities {
   html,
   body {
+    scrollbar-color: auto;
     @apply dark:bg-gray-950;
   }
 }
