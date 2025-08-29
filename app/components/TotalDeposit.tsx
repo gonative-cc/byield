@@ -132,9 +132,7 @@ export function TotalDeposit() {
 	return (
 		<div className="flex flex-col gap-10 w-full">
 			<div className="flex justify-between w-full gap-4">
-				{nbtcBalance && (
-					<DepositCard id="nbtc-balance" title="nBTC Balance" value={formatNBTC(nbtcBalance)} />
-				)}
+				<DepositCard id="nbtc-balance" title="nBTC Balance" value={formatNBTC(nbtcBalance)} />
 			</div>
 			<div className="flex flex-col gap-4">
 				<div className="flex justify-between items-center w-full">

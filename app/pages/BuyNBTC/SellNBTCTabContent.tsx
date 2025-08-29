@@ -139,7 +139,7 @@ export function SellNBTCTabContent() {
 					</span>
 				</div>
 				{isSuiWalletConnected ? (
-					<Button type="submit" disabled={isPending} isLoading={isPending}>
+					<Button type="submit" disabled={isPending} isLoading={isPending} layout="oneLine">
 						Sell nBTC
 						<ChevronRight />
 					</Button>

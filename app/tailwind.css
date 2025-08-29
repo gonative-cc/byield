@@ -1,155 +1,121 @@
 @import "tailwindcss";
 
 @plugin 'tailwindcss-animate';
-/* TODO: enable daisUI
-   @plugin "daisyui"; */
 
-@custom-variant dark (&:is(.dark *));
-
+/* TODO: remove this when react daisy component is integrated */
 @theme {
   --font-sans:
     Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji,
     Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  --color-azure-10: rgba(19, 23, 32, 1);
+  --color-azure-15: rgba(31, 36, 47, 1);
+  --color-azure-20: rgba(12, 17, 29, 1);
+  --color-azure-25: rgba(18, 25, 42, 1);
 
-  --radius-lg: var(--radius);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-sm: calc(var(--radius) - 4px);
-
-  --color-azure-10: #131720;
-  --color-azure-15: #1f242f;
-  --color-azure-20: #0c111d;
-  --color-azure-25: #12192a;
-
-  --color-gray-10: #6d717b;
-
-  --color-white-3: rgba(255, 255, 255, 0.03);
-  --color-dark-blue: #060b1a;
-  --color-white-10: rgba(255, 255, 255, 0.1);
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
-
-  --color-card: hsl(var(--card));
-  --color-card-foreground: hsl(var(--card-foreground));
-
-  --color-popover: hsl(var(--popover));
-  --color-popover-foreground: hsl(var(--popover-foreground));
-
-  --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
-
-  --color-secondary: hsl(var(--secondary));
-  --color-secondary-foreground: hsl(var(--secondary-foreground));
-
+  --color-muted-foreground: rgba(165, 165, 165, 1);
   --color-muted: hsl(var(--muted));
-  --color-muted-foreground: hsl(var(--muted-foreground));
 
-  --color-accent: hsl(var(--accent));
-  --color-accent-foreground: hsl(var(--accent-foreground));
+  --foreground: 0 0% 98%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --primary-foreground: rgba(238, 132, 44, 1);
+  --secondary: rgba(40, 40, 40, 1);
+  --secondary-foreground: rgba(250, 250, 250, 1);
+  --muted: rgba(40, 40, 40, 1);
+  --accent: rgba(40, 40, 40, 1);
+  --destructive: rgba(208, 4, 22, 1);
+  --destructive-foreground: rgba(251, 55, 72, 1);
+  --ring: 240 4.9% 83.9%;
+}
 
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-
-  --color-border: hsl(var(--border));
-  --color-input: hsl(var(--input));
-  --color-ring: hsl(var(--ring));
-
-  --color-chart-1: hsl(var(--chart-1));
-  --color-chart-2: hsl(var(--chart-2));
-  --color-chart-3: hsl(var(--chart-3));
-  --color-chart-4: hsl(var(--chart-4));
-  --color-chart-5: hsl(var(--chart-5));
+@layer base {
+  :root {
+    --muted-foreground: rgba(117, 117, 117, 1);
+  }
+  .dark {
+    --muted-foreground: rgba(165, 165, 165, 1);
+  }
 }
 
 /*
-  The default border color has changed to `currentcolor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
+  This is the main daisyUI plugin configuration.
+  It enables two custom themes: 'native-light' and 'native-dark'.
+  - 'native-light' is the default theme for the site.
+  - 'native-dark' is automatically applied if the user prefers a dark color scheme.
 */
-@layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
-  }
+@plugin "daisyui" {
+  themes: dark --default;
+  logs: false; /* Disables daisyUI console logs for a cleaner console */
+}
+
+/*
+  ==========================================================================
+  DARK THEME
+  ==========================================================================
+  This theme is based on the light-mode colors and variables found in your
+  tailwind-native.css file. It features a clean, bright interface.
+*/
+@plugin "daisyui/theme" {
+  name: "dark";
+  default: true;
+  prefersdark: false;
+  color-scheme: light;
+
+  /* --- Brand Colors --- */
+  --color-primary: rgba(229, 122, 33, 1);
+  --color-primary-content: var(--primary-foreground);
+  --color-secondary: rgba(40, 40, 40, 1);
+  --color-secondary-content: hsl(240 5.9% 10%);
+  --color-accent: rgba(39, 39, 42, 1);
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-neutral: hsl(240 3.8% 46.1%);
+  --color-neutral-content: rgba(255, 255, 255, 1);
+
+  /* --- Base Colors --- */
+  --color-base-100: rgba(255, 255, 255, 1);
+  --color-base-200: hsl(240 5.9% 90%);
+  --color-base-300: hsl(240 4.8% 85%);
+  --color-base-content: hsl(240 10% 3.9%);
+
+  /* --- Semantic Colors --- */
+  --color-info: rgba(58, 191, 248, 1);
+  --color-info-content: rgba(165, 165, 165, 1);
+  --color-success: rgba(54, 211, 153, 1);
+  --color-success-content: rgba(0, 51, 32, 1);
+  --color-warning: rgba(251, 189, 35, 1);
+  --color-warning-content: rgba(56, 40, 0, 1);
+  --color-error: hsl(0 84.2% 60.2%);
+  --color-error-content: hsl(0 0% 98%);
+
+  /* */
+  --color-info-muted-foreground: rgba(165, 165, 165, 1);
+
+  /* --- Theme Variables --- */
+  --radius-selector: 0.25rem;
+  --radius-field: 0.375rem; /* calc(0.5rem - 2px) */
+  --radius-box: 0.5rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
 }
 
 @layer utilities {
   html,
   body {
-    @apply bg-white dark:bg-gray-950;
-    @media (prefers-color-scheme: dark) {
-      color-scheme: dark;
-    }
-  }
-}
-
-@layer base {
-  :root {
-    --background: #090e16;
-    --foreground: rgba(244, 244, 245, 1);
-    --card: rgba(255, 255, 255, 1);
-    --card-foreground: rgba(244, 244, 245, 1);
-    --popover: rgba(255, 255, 255, 1);
-    --popover-foreground: rgba(244, 244, 245, 1);
-    --primary: #e57a21;
-    --primary-foreground: #ee842c;
-    --secondary: rgba(244, 244, 245, 1);
-    --secondary-foreground: rgba(244, 244, 245, 1);
-    --muted: rgba(244, 244, 245, 1);
-    --muted-foreground: rgba(117, 117, 117, 1);
-    --accent: rgba(244, 244, 245, 1);
-    --accent-foreground: rgba(244, 244, 245, 1);
-    --destructive: rgba(255, 59, 48, 1);
-    --destructive-foreground: rgba(250, 250, 250, 1);
-    --border: rgba(229, 229, 229, 1);
-    --input: rgba(229, 229, 229, 1);
-    --ring: rgba(244, 244, 245, 1);
-    --chart-1: rgba(255, 170, 145, 1);
-    --chart-2: rgba(125, 200, 165, 1);
-    --chart-3: rgba(100, 145, 180, 1);
-    --chart-4: rgba(255, 215, 145, 1);
-    --chart-5: rgba(255, 195, 130, 1);
-    --radius: 0.5rem;
-  }
-  .dark {
-    --background: #090e16;
-    --foreground: rgba(250, 250, 250, 1);
-    --card: rgba(244, 244, 245, 1);
-    --card-foreground: rgba(250, 250, 250, 1);
-    --popover: rgba(244, 244, 245, 1);
-    --popover-foreground: rgba(250, 250, 250, 1);
-    --primary: #e57a21;
-    --primary-foreground: #ee842c;
-    --secondary: rgba(40, 40, 40, 1);
-    --secondary-foreground: rgba(250, 250, 250, 1);
-    --muted: rgba(40, 40, 40, 1);
-    --muted-foreground: rgba(165, 165, 165, 1);
-    --accent: rgba(40, 40, 40, 1);
-    --accent-foreground: rgba(250, 250, 250, 1);
-    --destructive: #d00416;
-    --destructive-foreground: #fb3748;
-    --border: rgba(40, 40, 40, 1);
-    --input: rgba(40, 40, 40, 1);
-    --ring: rgba(212, 212, 212, 1);
-    --chart-1: rgba(100, 150, 255, 1);
-    --chart-2: rgba(75, 200, 175, 1);
-    --chart-3: rgba(255, 185, 100, 1);
-    --chart-4: rgba(185, 125, 255, 1);
-    --chart-5: rgba(255, 100, 125, 1);
+    scrollbar-color: auto;
+    @apply dark:bg-gray-950;
   }
 }
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-gray-800;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
   }
 }
 
@@ -242,19 +208,6 @@ a.link-raw {
   @apply hover:underline;
 }
 
-/* Mobile-first responsive utilities */
-@media (max-width: 640px) {
-  .mobile-padding {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-
-  .mobile-text-sm {
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-  }
-}
-
 /* Smooth scrolling for better UX */
 html {
   scroll-behavior: smooth;
@@ -272,31 +225,10 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-primary);
+  background: rgba(229, 122, 33, 1);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #ee842c;
-}
-
-/* Loading skeleton animation */
-@keyframes skeleton-loading {
-  0% {
-    background-position: -200px 0;
-  }
-  100% {
-    background-position: calc(200px + 100%) 0;
-  }
-}
-
-.skeleton {
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.1),
-    transparent
-  );
-  background-size: 200px 100%;
-  animation: skeleton-loading 1.5s infinite;
+  background: rgba(238, 132, 44, 1);
 }

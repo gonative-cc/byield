@@ -24,7 +24,7 @@ export function Footer() {
 							<div className="flex flex-col gap-2">
 								{subHeaders.map(({ title, link }) => (
 									<Link key={title} to={link} target="_blank" rel="noreferrer">
-										<span className="text-gray-10 text-sm md:text-base hover:text-white md:text-nowrap">
+										<span className="text-muted-foreground text-sm md:text-base hover:text-white md:text-nowrap">
 											{title}
 										</span>
 									</Link>
@@ -35,7 +35,7 @@ export function Footer() {
 				</div>
 			</div>
 			<div className="flex items-center justify-center h-20 md:h-44 md:bg-size-[auto,contain] md:bg-position-[center,left] bg-no-repeat md:bg-[url('https://cdn.prod.website-files.com/669384bb0581e8c6129231e2/671380f67b8e1b5fed9795ea_go-native-footer.svg'),url('/assets/bee/bee.webp')] bg-[url('https://cdn.prod.website-files.com/669384bb0581e8c6129231e2/671380f67b8e1b5fed9795ea_go-native-footer.svg')] bg-contain">
-				<span className="text-gray-10 md:text-base text-sm">
+				<span className="text-muted-foreground md:text-base text-sm">
 					Copyright © {new Date().getFullYear()} Native | All Rights Reserved
 				</span>
 			</div>
