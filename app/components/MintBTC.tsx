@@ -20,6 +20,7 @@ import { isValidSuiAddress } from "@mysten/sui/utils";
 import devnetConfig from "~/config/bitcoin-devnet.json";
 import mainnetConfig from "~/config/bitcoin-mainnet.json";
 import { BitcoinNetworkType } from "sats-connect";
+import { useNetworkVariables } from "~/networkConfig";
 
 interface TransactionStatusProps {
 	SuiAddress: string;
@@ -28,12 +29,13 @@ interface TransactionStatusProps {
 }
 
 function TransactionStatus({ SuiAddress, txId, handleRetry }: TransactionStatusProps) {
+	const { nBTC } = useNetworkVariables()
 	const { network } = useXverseWallet();
 	const isMainNetMode = network === BitcoinNetworkType.Mainnet;
 	// TODO: have one source of truth to get network details
 	const config = isMainNetMode ? mainnetConfig : devnetConfig;
 	const bitcoinBroadcastLink = `${config.bitcoinBroadcastLink}${txId}`;
-	const suiScanExplorerLink = `${config.suiScanExplorerLink}${SuiAddress}`;
+	const suiScanExplorerLink = `${nBTC.suiScanExplorerLink}${SuiAddress}`;
 
 	return (
 		<div className="p-4 rounded-lg text-white flex flex-col gap-4">
@@ -68,11 +70,11 @@ function TransactionStatus({ SuiAddress, txId, handleRetry }: TransactionStatusP
 	);
 }
 
-function formatSuiAddress(SuiAddress: string) {
-	if (SuiAddress.toLowerCase().startsWith("0x")) {
-		return SuiAddress.substring(2);
+function formatSuiAddress(suiAddress: string) {
+	if (suiAddress.toLowerCase().startsWith("0x")) {
+		return suiAddress.substring(2);
 	}
-	return SuiAddress;
+	return suiAddress;
 }
 
 const PERCENTAGES = [

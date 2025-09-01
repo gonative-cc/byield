@@ -12,5 +12,8 @@
 		"bidEndpoint": "bid",
 		"withdrawFunction": "withdraw",
 		"auctionId": "0xfda0a2182a1fe1bd620c461a89177802616c3c72ab5ab7f28044b8d393243a7f"
+	},
+	"nBTC": {
+		"suiScanExplorerLink": "https://suiscan.xyz/testnet/account/"
 	}
 }
