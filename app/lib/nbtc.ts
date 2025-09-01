@@ -16,12 +16,14 @@ const DUST_THRESHOLD_SATOSHI = 546;
 // TODO: This needs node polyfill. Find workaround for this.
 export async function nBTCMintTx(
 	bitcoinAddress: Address,
-	sendAmountInSatoshi: number,
-	opReturnInput: string,
+	mintAmountInSatoshi: number,
+	opReturn: string,
 	toast?: ToastFunction,
 ): Promise<RpcResult<"signPsbt"> | undefined> {
 	try {
+		// validate address
 		const isMainNetMode = isMainNetNetwork();
+		// TODO: have one source of truth to get network details
 		const network: Network = isMainNetMode ? networks.bitcoin : networks.testnet;
 		const depositAddress = isMainNetMode
 			? mintMainNetConfig.mint.depositAddress
@@ -51,11 +53,12 @@ export async function nBTCMintTx(
 			return;
 		}
 
+		// TODO: dynamic fee calculation
 		const estimatedFee = 1000;
 
 		// Check if we have sufficient funds
 		const totalAvailable = utxos[0].value;
-		const totalRequired = sendAmountInSatoshi + estimatedFee;
+		const totalRequired = mintAmountInSatoshi + estimatedFee;
 
 		if (totalAvailable < totalRequired) {
 			console.error("Insufficient funds for transaction and fee.");
@@ -80,12 +83,12 @@ export async function nBTCMintTx(
 
 		psbt.addOutput({
 			address: depositAddress,
-			value: sendAmountInSatoshi,
+			value: mintAmountInSatoshi,
 		});
 
 		let opReturnData: Buffer;
 		try {
-			opReturnData = Buffer.from(opReturnInput, "hex");
+			opReturnData = Buffer.from(opReturn, "hex");
 		} catch (error) {
 			console.error("Invalid OP_RETURN data:", error);
 			toast?.({
@@ -102,7 +105,7 @@ export async function nBTCMintTx(
 			value: 0,
 		});
 
-		const changeAmount = totalAvailable - sendAmountInSatoshi - estimatedFee;
+		const changeAmount = totalAvailable - mintAmountInSatoshi - estimatedFee;
 
 		// Only add change output if change amount is significant (> dust threshold)
 		const dustThreshold = DUST_THRESHOLD_SATOSHI; // Standard dust threshold in satoshis

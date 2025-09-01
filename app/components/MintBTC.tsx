@@ -22,16 +22,17 @@ import mainnetConfig from "~/config/mint/contracts-mainnet.json";
 import testnetConfig from "~/config/mint/contracts-testnet.json";
 
 interface TransactionStatusProps {
-	SUIAddress: string;
-	txnId: string;
+	SuiAddress: string;
+	txId: string;
 	handleRetry: () => void;
 }
 
-function TransactionStatus({ SUIAddress, txnId, handleRetry }: TransactionStatusProps) {
+function TransactionStatus({ SuiAddress, txId, handleRetry }: TransactionStatusProps) {
 	const isMainNetMode = isMainNetNetwork();
+	// TODO: have one source of truth to get network details
 	const config = isMainNetMode ? mainnetConfig : testnetConfig;
-	const bitcoinBroadcastLink = `${config.mint.bitcoinBroadcastLink}${txnId}`;
-	const suiScanExplorerLink = `${config.mint.suiScanExplorerLink}${SUIAddress}`;
+	const bitcoinBroadcastLink = `${config.mint.bitcoinBroadcastLink}${txId}`;
+	const suiScanExplorerLink = `${config.mint.suiScanExplorerLink}${SuiAddress}`;
 
 	return (
 		<div className="p-4 rounded-lg text-white flex flex-col gap-4">
@@ -222,7 +223,7 @@ export function MintBTC() {
 							createEmptySpace
 							rules={{
 								validate: {
-									validateSUIAddress: (value: string) => {
+									validateSuiAddress: (value: string) => {
 										if (isValidSuiAddress(value)) {
 											return true;
 										}
@@ -246,8 +247,8 @@ export function MintBTC() {
 							>
 								<TransactionStatus
 									handleRetry={() => setTxId(() => undefined)}
-									txnId={txId}
-									SUIAddress={SuiAddress}
+									txId={txId}
+									SuiAddress={SuiAddress}
 								/>
 							</Modal>
 						)}
