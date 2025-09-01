@@ -5,6 +5,7 @@ import { BitcoinNetworkType } from "sats-connect";
 import { useCallback, useMemo } from "react";
 import { trimAddress } from "../walletHelper";
 import { NumericFormat } from "react-number-format";
+import { formatBTC } from "~/lib/denoms";
 
 function NetWorkOptions() {
 	const { network, switchNetwork } = useXverseWallet();
@@ -62,9 +63,9 @@ export function XverseWallet() {
 			{balance && (
 				<NumericFormat
 					displayType="text"
-					value={balance}
+					value={formatBTC(BigInt(balance))}
 					suffix=" BTC"
-					className="text-lg font-semibold"
+					className="shrink-0"
 				/>
 			)}
 			<Button onClick={disconnectWallet}>Disconnect</Button>
