@@ -17,8 +17,8 @@ import { Modal } from "./ui/dialog";
 import { Check } from "lucide-react";
 import { classNames } from "~/util/tailwind";
 import { isValidSuiAddress } from "@mysten/sui/utils";
-import mainnetConfig from "~/config/mint/contracts-mainnet.json";
-import testnetConfig from "~/config/mint/contracts-testnet.json";
+import devnetConfig from "~/config/bitcoin-devnet.json";
+import mainnetConfig from "~/config/bitcoin-mainnet.json";
 import { BitcoinNetworkType } from "sats-connect";
 
 interface TransactionStatusProps {
@@ -31,9 +31,9 @@ function TransactionStatus({ SuiAddress, txId, handleRetry }: TransactionStatusP
 	const { network } = useXverseWallet();
 	const isMainNetMode = network === BitcoinNetworkType.Mainnet;
 	// TODO: have one source of truth to get network details
-	const config = isMainNetMode ? mainnetConfig : testnetConfig;
-	const bitcoinBroadcastLink = `${config.mint.bitcoinBroadcastLink}${txId}`;
-	const suiScanExplorerLink = `${config.mint.suiScanExplorerLink}${SuiAddress}`;
+	const config = isMainNetMode ? mainnetConfig : devnetConfig;
+	const bitcoinBroadcastLink = `${config.bitcoinBroadcastLink}${txId}`;
+	const suiScanExplorerLink = `${config.suiScanExplorerLink}${SuiAddress}`;
 
 	return (
 		<div className="p-4 rounded-lg text-white flex flex-col gap-4">

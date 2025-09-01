@@ -4,8 +4,8 @@ import type { Address, RpcResult } from "sats-connect";
 import { fetchUTXOs, fetchValidateAddress } from "~/api/btcrpc";
 import type { UTXO, ValidateAddressI } from "~/api/btcrpc";
 import type { ToastFunction } from "~/hooks/use-toast";
-import mintTestNetConfig from "~/config/mint/contracts-testnet.json";
-import mintMainNetConfig from "~/config/mint/contracts-mainnet.json";
+import devnetConfig from "~/config/bitcoin-devnet.json";
+import mainnetConfig from "~/config/bitcoin-mainnet.json";
 
 export const PRICE_PER_NBTC_IN_SUI = 25000n;
 export const NBTC_COIN_TYPE =
@@ -24,8 +24,8 @@ export async function nBTCMintTx(
 		// TODO: have one source of truth to get network details
 		const network: Network = isMainNetMode ? networks.bitcoin : networks.testnet;
 		const depositAddress = isMainNetMode
-			? mintMainNetConfig.mint.depositAddress
-			: mintTestNetConfig.mint.depositAddress;
+			? mainnetConfig.nBTC.depositAddress
+			: devnetConfig.nBTC.depositAddress;
 
 		const utxos: UTXO[] = await fetchUTXOs(bitcoinAddress.address);
 		if (!utxos?.length) {
