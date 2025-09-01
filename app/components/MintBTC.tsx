@@ -29,7 +29,7 @@ interface TransactionStatusProps {
 }
 
 function TransactionStatus({ SuiAddress, txId, handleRetry }: TransactionStatusProps) {
-	const { nBTC } = useNetworkVariables()
+	const { nBTC } = useNetworkVariables();
 	const { network } = useXverseWallet();
 	const isMainNetMode = network === BitcoinNetworkType.Mainnet;
 	// TODO: have one source of truth to get network details
