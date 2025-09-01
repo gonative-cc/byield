@@ -1,7 +1,7 @@
 import type { AppLoadContext, EntryContext } from "react-router";
 import { ServerRouter } from "react-router";
 import { isbot } from "isbot";
-import { renderToReadableStream } from "react-dom/server.edge";
+import { renderToReadableStream } from "react-dom/server";
 
 export default async function handleRequest(
 	request: Request,
