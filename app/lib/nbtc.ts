@@ -6,7 +6,6 @@ import type { UTXO, ValidateAddressI } from "~/api/btcrpc";
 import type { ToastFunction } from "~/hooks/use-toast";
 import mintTestNetConfig from "~/config/mint/contracts-testnet.json";
 import mintMainNetConfig from "~/config/mint/contracts-mainnet.json";
-import { isMainNetNetwork } from "./appenv";
 
 export const PRICE_PER_NBTC_IN_SUI = 25000n;
 export const NBTC_COIN_TYPE =
@@ -18,11 +17,10 @@ export async function nBTCMintTx(
 	bitcoinAddress: Address,
 	mintAmountInSatoshi: number,
 	opReturn: string,
+	isMainNetMode: boolean,
 	toast?: ToastFunction,
 ): Promise<RpcResult<"signPsbt"> | undefined> {
 	try {
-		// validate address
-		const isMainNetMode = isMainNetNetwork();
 		// TODO: have one source of truth to get network details
 		const network: Network = isMainNetMode ? networks.bitcoin : networks.testnet;
 		const depositAddress = isMainNetMode

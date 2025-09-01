@@ -4,10 +4,6 @@ export function isProductionMode(): boolean {
 	return import.meta.env.MODE === "production";
 }
 
-export function isMainNetNetwork(): boolean {
-	return import.meta.env.NETWORK === "mainnet";
-}
-
 export function printAppEnv() {
 	console.log("App Env: ", import.meta.env);
 }

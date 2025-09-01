@@ -17,9 +17,9 @@ import { Modal } from "./ui/dialog";
 import { Check } from "lucide-react";
 import { classNames } from "~/util/tailwind";
 import { isValidSuiAddress } from "@mysten/sui/utils";
-import { isMainNetNetwork } from "~/lib/appenv";
 import mainnetConfig from "~/config/mint/contracts-mainnet.json";
 import testnetConfig from "~/config/mint/contracts-testnet.json";
+import { BitcoinNetworkType } from "sats-connect";
 
 interface TransactionStatusProps {
 	SuiAddress: string;
@@ -28,7 +28,8 @@ interface TransactionStatusProps {
 }
 
 function TransactionStatus({ SuiAddress, txId, handleRetry }: TransactionStatusProps) {
-	const isMainNetMode = isMainNetNetwork();
+	const { network } = useXverseWallet();
+	const isMainNetMode = network === BitcoinNetworkType.Mainnet;
 	// TODO: have one source of truth to get network details
 	const config = isMainNetMode ? mainnetConfig : testnetConfig;
 	const bitcoinBroadcastLink = `${config.mint.bitcoinBroadcastLink}${txId}`;
@@ -142,9 +143,10 @@ export function MintBTC() {
 	const { toast } = useToast();
 	const [txId, setTxId] = useState<string | undefined>(undefined);
 	const { connectWallet } = useXverseConnect();
-	const { balance: walletBalance, currentAddress } = useXverseWallet();
+	const { balance: walletBalance, currentAddress, network } = useXverseWallet();
 	const { isWalletConnected, suiAddr } = useContext(WalletContext);
 	const isBitCoinWalletConnected = isWalletConnected(Wallets.Xverse);
+	const isMainNetMode = network === BitcoinNetworkType.Mainnet;
 
 	const mintNBTCForm = useForm<MintNBTCForm>({
 		mode: "all",
@@ -160,21 +162,26 @@ export function MintBTC() {
 
 	useEffect(() => setValue("suiAddress", suiAddr || ""), [setValue, suiAddr]);
 
+	const handlenBTCMintTx = async ({ numberOfBTC, suiAddress }: MintNBTCForm) => {
+		if (currentAddress) {
+			const response = await nBTCMintTx(
+				currentAddress,
+				Number(parseBTC(numberOfBTC)),
+				formatSuiAddress(suiAddress),
+				isMainNetMode,
+				toast,
+			);
+			if (response && response.status === "success") {
+				setTxId(response.result.txid);
+			}
+		}
+	};
+
 	return (
 		<FormProvider {...mintNBTCForm}>
 			<form
-				onSubmit={handleSubmit(async ({ numberOfBTC, suiAddress }) => {
-					if (currentAddress) {
-						const response = await nBTCMintTx(
-							currentAddress,
-							Number(parseBTC(numberOfBTC)),
-							formatSuiAddress(suiAddress),
-							toast,
-						);
-						if (response && response.status === "success") {
-							setTxId(response.result.txid);
-						}
-					}
+				onSubmit={handleSubmit(async (form) => {
+					handlenBTCMintTx({ ...form });
 				})}
 				className="w-full md:w-1/2"
 			>
