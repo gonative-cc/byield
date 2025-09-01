@@ -13,7 +13,5 @@
 		"withdrawFunction": "withdraw",
 		"auctionId": "0x161524be15687cca96dec58146568622458905c30479452351f231cac5d64c41"
 	},
-	"nBTC": {
-		"suiScanExplorerLink": "https://suiscan.xyz/mainnet/account/"
-	}
+	"accountExplorer": "https://suiscan.xyz/mainnet/account/"
 }

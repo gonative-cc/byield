@@ -29,13 +29,13 @@ interface TransactionStatusProps {
 }
 
 function TransactionStatus({ SuiAddress, txId, handleRetry }: TransactionStatusProps) {
-	const { nBTC } = useNetworkVariables();
+	const { accountExplorer } = useNetworkVariables();
 	const { network } = useXverseWallet();
 	const isMainNetMode = network === BitcoinNetworkType.Mainnet;
 	// TODO: have one source of truth to get network details
 	const config = isMainNetMode ? mainnetConfig : devnetConfig;
 	const bitcoinBroadcastLink = `${config.bitcoinBroadcastLink}${txId}`;
-	const suiScanExplorerLink = `${nBTC.suiScanExplorerLink}${SuiAddress}`;
+	const suiScanExplorerLink = `${accountExplorer}${SuiAddress}`;
 
 	return (
 		<div className="p-4 rounded-lg text-white flex flex-col gap-4">
