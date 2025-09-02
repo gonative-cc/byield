@@ -6,11 +6,17 @@
 		"buyNBTCFunction": "buy_nbtc",
 		"sellNBTCFunction": "sell_nbtc"
 	},
-	"auctionBidApi": {
-		"packageId": "0xbad048cf3c9ef2f17ced6c6d03f86c5721fde22093e5a27a8c9c77acbd3be0c3",
+	"beelieversAuction": {
+		"packageId": "0xdbf3aaf553b3bc58d2e726d12424eb0ebb761ae62285a55b52011e40653bd4c8",
+		"auctionId": "0xff4982cd449809676699d1a52c5562fc15b9b92cb41bde5f8845a14647186704",
 		"module": "auction",
 		"bidEndpoint": "bid",
-		"withdrawFunction": "withdraw",
-		"auctionId": "0xfda0a2182a1fe1bd620c461a89177802616c3c72ab5ab7f28044b8d393243a7f"
-	}
+		"withdrawFunction": "withdraw"
+	},
+	"beelieversMint": {
+		"packageId": "",
+		"collectionId": "",
+		"mintStart": 1756821968014
+	},
+	"accountExplorer": "https://suiscan.xyz/testnet/account/"
 }

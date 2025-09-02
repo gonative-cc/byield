@@ -73,7 +73,7 @@ interface BeelieversBidProps {
 const title = "Bid NFT";
 
 export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
-	const { auctionBidApi } = useNetworkVariables();
+	const { beelieversAuction } = useNetworkVariables();
 	const client = useSuiClient();
 	const account = useCurrentAccount();
 	const suiBalanceRes = useCoinBalance();
@@ -97,7 +97,7 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 
 	const onSubmit = bidForm.handleSubmit(async ({ bid, note }) => {
 		const mistAmount = parseSUI(bid);
-		const transaction = await createBidTxn(account.address, mistAmount, auctionBidApi);
+		const transaction = await createBidTxn(account.address, mistAmount, beelieversAuction);
 		signAndExecTx(
 			{ transaction },
 			{

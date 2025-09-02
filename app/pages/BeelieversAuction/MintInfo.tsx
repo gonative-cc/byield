@@ -34,7 +34,7 @@ interface MintActionProps {
 }
 
 function MintAction({ isWinner, doRefund }: MintActionProps) {
-	const { auctionBidApi } = useNetworkVariables();
+	const { beelieversAuction } = useNetworkVariables();
 	const { mutate: signAndExecTx, isPending } = useSignAndExecuteTransaction();
 	const client = useSuiClient();
 	const account = useCurrentAccount();
@@ -45,7 +45,7 @@ function MintAction({ isWinner, doRefund }: MintActionProps) {
 			return;
 		}
 		try {
-			const transaction = await createWithdrawTxn(account.address, auctionBidApi);
+			const transaction = await createWithdrawTxn(account.address, beelieversAuction);
 			signAndExecTx(
 				{ transaction },
 				{
