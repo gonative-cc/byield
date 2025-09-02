@@ -1,11 +1,10 @@
-import { networks, opcodes, Psbt, script, type Network } from "bitcoinjs-lib";
+import { opcodes, Psbt, script } from "bitcoinjs-lib";
 import Wallet from "sats-connect";
-import type { Address, RpcResult } from "sats-connect";
+import { BitcoinNetworkType, type Address, type RpcResult } from "sats-connect";
 import { fetchUTXOs, fetchValidateAddress } from "~/api/btcrpc";
 import type { UTXO, ValidateAddressI } from "~/api/btcrpc";
+import { getBitcoinNetworkConfig } from "~/components/Wallet/XverseWallet/useWallet";
 import type { ToastFunction } from "~/hooks/use-toast";
-import devnetConfig from "~/config/bitcoin-devnet.json";
-import mainnetConfig from "~/config/bitcoin-mainnet.json";
 
 export const PRICE_PER_NBTC_IN_SUI = 25000n;
 export const NBTC_COIN_TYPE =
@@ -16,15 +15,12 @@ export async function nBTCMintTx(
 	bitcoinAddress: Address,
 	mintAmountInSatoshi: number,
 	opReturn: string,
-	isMainNetMode: boolean,
+	bitcoinNetworkType: BitcoinNetworkType,
+	depositAddress: string,
 	toast?: ToastFunction,
 ): Promise<RpcResult<"signPsbt"> | undefined> {
 	try {
-		// TODO: have one source of truth to get network details
-		const network: Network = isMainNetMode ? networks.bitcoin : networks.testnet;
-		const depositAddress = isMainNetMode
-			? mainnetConfig.nBTC.depositAddress
-			: devnetConfig.nBTC.depositAddress;
+		const network = getBitcoinNetworkConfig(bitcoinNetworkType);
 
 		const utxos: UTXO[] = await fetchUTXOs(bitcoinAddress.address);
 		if (!utxos?.length) {

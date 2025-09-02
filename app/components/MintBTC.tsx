@@ -17,9 +17,7 @@ import { Modal } from "./ui/dialog";
 import { Check } from "lucide-react";
 import { classNames } from "~/util/tailwind";
 import { isValidSuiAddress } from "@mysten/sui/utils";
-import devnetConfig from "~/config/bitcoin-devnet.json";
-import mainnetConfig from "~/config/bitcoin-mainnet.json";
-import { BitcoinNetworkType } from "sats-connect";
+import { useBitcoinNetworkVariables } from "~/hooks/useBitcoinNetworkVariables";
 import { useNetworkVariables } from "~/networkConfig";
 
 interface TransactionStatusProps {
@@ -30,11 +28,8 @@ interface TransactionStatusProps {
 
 function TransactionStatus({ SuiAddress, txId, handleRetry }: TransactionStatusProps) {
 	const { accountExplorer } = useNetworkVariables();
-	const { network } = useXverseWallet();
-	const isMainNetMode = network === BitcoinNetworkType.Mainnet;
-	// TODO: have one source of truth to get network details
-	const config = isMainNetMode ? mainnetConfig : devnetConfig;
-	const bitcoinBroadcastLink = `${config.bitcoinBroadcastLink}${txId}`;
+	const bitcoinConfig = useBitcoinNetworkVariables();
+	const bitcoinBroadcastLink = `${bitcoinConfig.bitcoinBroadcastLink}${txId}`;
 	const suiScanExplorerLink = `${accountExplorer}${SuiAddress}`;
 
 	return (
@@ -148,7 +143,7 @@ export function MintBTC() {
 	const { balance: walletBalance, currentAddress, network } = useXverseWallet();
 	const { isWalletConnected, suiAddr } = useContext(WalletContext);
 	const isBitCoinWalletConnected = isWalletConnected(Wallets.Xverse);
-	const isMainNetMode = network === BitcoinNetworkType.Mainnet;
+	const bitcoinConfig = useBitcoinNetworkVariables();
 
 	const mintNBTCForm = useForm<MintNBTCForm>({
 		mode: "all",
@@ -170,7 +165,8 @@ export function MintBTC() {
 				currentAddress,
 				Number(parseBTC(numberOfBTC)),
 				formatSuiAddress(suiAddress),
-				isMainNetMode,
+				network,
+				bitcoinConfig.nBTC.depositAddress,
 				toast,
 			);
 			if (response && response.status === "success") {

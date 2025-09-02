@@ -13,6 +13,18 @@ import type { Address } from "sats-connect";
 import { useToast } from "~/hooks/use-toast";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
+import { networks, type Network } from "bitcoinjs-lib";
+
+export function getBitcoinNetworkConfig(network: BitcoinNetworkType): Network | undefined {
+	switch (network) {
+		case BitcoinNetworkType.Mainnet:
+			return networks.bitcoin;
+		case BitcoinNetworkType.Regtest:
+			return networks.regtest;
+		case BitcoinNetworkType.Testnet4:
+			return networks.testnet;
+	}
+}
 
 export const useXverseConnect = () => {
 	const { toast } = useToast();
