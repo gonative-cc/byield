@@ -35,6 +35,13 @@ function navMenuItems(): MenuItem[] {
 						link: "/",
 						title: "Buy or Sell nBTC",
 					},
+					{
+						id: "navigation-2-2",
+						link: "/mint",
+						icon: "",
+						subNavItems: [],
+						title: "Mint nBTC",
+					},
 				],
 			},
 			{

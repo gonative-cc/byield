@@ -13,8 +13,6 @@ import { Wallets } from "~/components/Wallet";
 import { trimAddress } from "../walletHelper";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { NumericFormat } from "react-number-format";
-import { EllipsisVertical } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 import { formatSUI } from "~/lib/denoms";
 import { useLocation } from "react-router";
 import { isProductionMode } from "~/lib/appenv";
@@ -100,35 +98,30 @@ function SuiWalletMobileView() {
 	const { balance } = useCoinBalance();
 
 	return (
-		<div className="flex w-full gap-1 items-center md:hidden">
-			<NetWorkOptions />
-			<Accounts />
-			<Popover>
-				<PopoverTrigger asChild>
-					<EllipsisVertical size={50} />
-				</PopoverTrigger>
-				<PopoverContent className="w-60">
-					<div className="grid gap-4">
-						<p>
-							Balance:{" "}
-							<NumericFormat
-								displayType="text"
-								value={formatSUI(balance)}
-								suffix=" SUI"
-								className="shrink-0 text-primary"
-							/>
-						</p>
-						<Button
-							onClick={() => {
-								disconnect();
-								handleWalletConnect(Wallets.SuiWallet, false);
-							}}
-						>
-							Disconnect
-						</Button>
-					</div>
-				</PopoverContent>
-			</Popover>
+		<div className="flex w-full flex-col gap-4 items-center md:hidden">
+			<div className="flex gap-2 w-full justify-between">
+				<NetWorkOptions />
+				<Accounts />
+			</div>
+			<div className="flex w-full items-center justify-between gap-4">
+				<p>
+					Balance:{" "}
+					<NumericFormat
+						displayType="text"
+						value={formatSUI(balance)}
+						suffix=" SUI"
+						className="shrink-0 text-primary"
+					/>
+				</p>
+				<Button
+					onClick={() => {
+						disconnect();
+						handleWalletConnect(Wallets.SuiWallet, false);
+					}}
+				>
+					Disconnect
+				</Button>
+			</div>
 		</div>
 	);
 }
