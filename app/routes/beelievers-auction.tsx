@@ -14,7 +14,7 @@ export async function loader({ params, context, request }: Route.LoaderArgs): Pr
 	const ctrl = new Controller(env.BeelieversNFT, env.BeelieversD1);
 	const url = new URL(request.url);
 	// TODO: set user address to the params
-	// Probaby we can use https://reactrouter.com/start/framework/route-module#unstable_clientmiddleware
+	// Probably we can use https://reactrouter.com/start/framework/route-module#unstable_clientmiddleware
 	// const suiAddress = url.searchParams.get("suiAddress") ?? undefined;
 	console.log(">>>>> Page Loader handler - params:", params, "url:", url.href);
 	return await ctrl.loadPageData();
