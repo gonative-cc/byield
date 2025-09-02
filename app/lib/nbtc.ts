@@ -22,6 +22,16 @@ export async function nBTCMintTx(
 	try {
 		const network = getBitcoinNetworkConfig(bitcoinNetworkType);
 
+		if (!network) {
+			console.error("network config not found");
+			toast?.({
+				title: "Bitcoin network",
+				description: "Bitcoin network not found",
+				variant: "destructive",
+			});
+			return;
+		}
+
 		const utxos: UTXO[] = await fetchUTXOs(bitcoinAddress.address);
 		if (!utxos?.length) {
 			console.error("utxos not found.");

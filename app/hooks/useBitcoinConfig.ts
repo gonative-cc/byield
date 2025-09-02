@@ -10,6 +10,7 @@ interface NetworkConfig {
 }
 
 const getBitcoinNetworkConfig: Record<BitcoinNetworkType, NetworkConfig> = {
+	// regtest is devnet config
 	Regtest: {
 		variables: {
 			...devnetConfig,
@@ -31,7 +32,7 @@ const getBitcoinNetworkConfig: Record<BitcoinNetworkType, NetworkConfig> = {
 	},
 };
 
-export function useBitcoinNetworkVariables(): BitcoinNetworkVariables {
+export function useBitcoinConfig(): BitcoinNetworkVariables {
 	const { network } = useXverseWallet();
 
 	return getBitcoinNetworkConfig[network].variables;

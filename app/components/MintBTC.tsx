@@ -17,7 +17,7 @@ import { Modal } from "./ui/dialog";
 import { Check } from "lucide-react";
 import { classNames } from "~/util/tailwind";
 import { isValidSuiAddress } from "@mysten/sui/utils";
-import { useBitcoinNetworkVariables } from "~/hooks/useBitcoinNetworkVariables";
+import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import { useNetworkVariables } from "~/networkConfig";
 
 interface TransactionStatusProps {
@@ -28,7 +28,7 @@ interface TransactionStatusProps {
 
 function TransactionStatus({ SuiAddress, txId, handleRetry }: TransactionStatusProps) {
 	const { accountExplorer } = useNetworkVariables();
-	const bitcoinConfig = useBitcoinNetworkVariables();
+	const bitcoinConfig = useBitcoinConfig();
 	const bitcoinBroadcastLink = `${bitcoinConfig.bitcoinBroadcastLink}${txId}`;
 	const suiScanExplorerLink = `${accountExplorer}${SuiAddress}`;
 
@@ -143,7 +143,7 @@ export function MintBTC() {
 	const { balance: walletBalance, currentAddress, network } = useXverseWallet();
 	const { isWalletConnected, suiAddr } = useContext(WalletContext);
 	const isBitCoinWalletConnected = isWalletConnected(Wallets.Xverse);
-	const bitcoinConfig = useBitcoinNetworkVariables();
+	const bitcoinConfig = useBitcoinConfig();
 
 	const mintNBTCForm = useForm<MintNBTCForm>({
 		mode: "all",

@@ -15,7 +15,7 @@ import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
 import { networks, type Network } from "bitcoinjs-lib";
 
-export function getBitcoinNetworkConfig(network: BitcoinNetworkType): Network | undefined {
+export function getBitcoinNetworkConfig(network: BitcoinNetworkType): Network | null {
 	switch (network) {
 		case BitcoinNetworkType.Mainnet:
 			return networks.bitcoin;
@@ -23,6 +23,8 @@ export function getBitcoinNetworkConfig(network: BitcoinNetworkType): Network | 
 			return networks.regtest;
 		case BitcoinNetworkType.Testnet4:
 			return networks.testnet;
+		default:
+			return null;
 	}
 }
 
