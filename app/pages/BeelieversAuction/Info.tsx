@@ -54,10 +54,8 @@ Securing my spot in the top 5810 at https://byield.gonative.cc/beelievers-auctio
 						{[AuctionState.WILL_START, AuctionState.STARTED].includes(auctionState) && (
 							<div className="px-4 py-2 bg-primary/10 rounded-lg border border-primary/20 font-semibold text-primary">
 								<span className="text-2xl">⏰</span>
-								<>
-									<span className="text-sm"> Auction {timeLabel} in </span>
-									<Countdown targetTime={targetTime} />
-								</>
+								<span className="text-sm"> Auction {timeLabel} in </span>
+								<Countdown targetTime={targetTime} />
 							</div>
 						)}
 						<div className="ml-auto">

@@ -1,12 +1,14 @@
-import { Card, CardContent } from "~/components/ui/card";
-import { AuctionAccountType, type AuctionInfo, type User } from "~/server/BeelieversAuction/types";
-import { formatSUI } from "~/lib/denoms";
-import { Button } from "~/components/ui/button";
-import { classNames } from "~/util/tailwind";
 import { Transaction } from "@mysten/sui/transactions";
 import { useSignAndExecuteTransaction, useSuiClient, useCurrentAccount } from "@mysten/dapp-kit";
+
+import { Countdown } from "~/components/ui/countdown";
+import { Card, CardContent } from "~/components/ui/card";
+import { Button } from "~/components/ui/button";
+import { formatSUI } from "~/lib/denoms";
+import { classNames } from "~/util/tailwind";
 import { toast } from "~/hooks/use-toast";
 import { useNetworkVariables } from "~/networkConfig";
+import { AuctionAccountType, type AuctionInfo, type User } from "~/server/BeelieversAuction/types";
 
 interface MintInfoItemProps {
 	title: string;
@@ -34,7 +36,7 @@ interface MintActionProps {
 }
 
 function MintAction({ isWinner, doRefund }: MintActionProps) {
-	const { beelieversAuction } = useNetworkVariables();
+	const { beelieversAuction, beelieversMint } = useNetworkVariables();
 	const { mutate: signAndExecTx, isPending } = useSignAndExecuteTransaction();
 	const client = useSuiClient();
 	const account = useCurrentAccount();
@@ -91,7 +93,7 @@ function MintAction({ isWinner, doRefund }: MintActionProps) {
 
 	return (
 		<div className="flex flex-col sm:flex-row gap-4">
-			{/* isWinner && (
+			{isWinner && (
 				<Button
 					type="button"
 					disabled={isPending}
@@ -103,7 +105,7 @@ function MintAction({ isWinner, doRefund }: MintActionProps) {
 				>
 					🐝 Mint
 				</Button>
-			) */}
+			)}
 			{doRefund === DoRefund.NoBoosted &&
 				"You have nothing to withdraw because you are a winner and your bid is below (due to boost) or at the Mint Price"}
 			{doRefund === DoRefund.Yes && (
@@ -138,9 +140,12 @@ interface MintInfoProps {
 }
 
 export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize } }: MintInfoProps) {
+	const { beelieversMint } = useNetworkVariables();
+
 	if (user === null) {
 		return <p className="text-xl">Connect to your wallet to see minting info</p>;
 	}
+
 	const currentBidInMist = BigInt(user.amount);
 	const isWinner = user.rank !== null && user.rank < auctionSize;
 	const boosted = user.wlStatus > AuctionAccountType.DEFAULT;
@@ -170,6 +175,12 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize } }: 
 					<div className="space-y-4">
 						<h3 className="text-xl lg:text-2xl font-bold text-primary">Mint Details</h3>
 						<div className="p-4 bg-primary/15 rounded-xl border border-primary/30 backdrop-blur-sm space-y-4">
+							<div className="px-4 py-2 bg-primary/10 rounded-lg border border-primary/20 font-semibold text-primary">
+								<span className="text-2xl">⏰</span>
+								<span className="text-sm"> Minting starts in </span>
+								<Countdown targetTime={beelieversMint.mintStart} />
+							</div>
+
 							<MintInfoItem
 								title="Mint Price:"
 								value={formatSUI(String(clearingPrice)) + " SUI"}
@@ -185,7 +196,6 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize } }: 
 							/>
 						</div>
 					</div>
-					Minting will be enabled soon.
 					<MintAction isWinner={isWinner} doRefund={doRefund} />
 				</div>
 			</CardContent>
