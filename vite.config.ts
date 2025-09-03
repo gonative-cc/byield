@@ -7,6 +7,7 @@ import { nodePolyfills } from "vite-plugin-node-polyfills";
 
 export default defineConfig({
 	plugins: [
+		cloudflare(),
 		tailwindcss(),
 		reactRouter(),
 		tsconfigPaths(),
@@ -15,7 +16,6 @@ export default defineConfig({
 				Buffer: true,
 			},
 		}),
-		cloudflare(),
 	],
 	build: {
 		minify: true,

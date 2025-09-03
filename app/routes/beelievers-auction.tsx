@@ -1,5 +1,4 @@
 import { BeelieversAuction } from "~/pages/BeelieversAuction/BeelieversAuction";
-import { useLoaderData } from "react-router";
 import Controller from "~/server/BeelieversAuction/controller.server";
 import type { LoaderDataResp } from "~/server/BeelieversAuction/types";
 import type { Route } from "./+types/beelievers-auction";

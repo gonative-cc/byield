@@ -12,7 +12,7 @@ declare module "react-router" {
 /* eslint-disable */
 const requestHandler = createRequestHandler(
 	() => import("virtual:react-router/server-build"), // @ts-ignore
-	import.meta.env.MODE,
+	import.meta.env.MODE
 );
 /* eslint-enable */
 
