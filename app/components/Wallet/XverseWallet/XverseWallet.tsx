@@ -74,23 +74,8 @@ function XverseWalletMobileView() {
 	);
 }
 
-function Balance() {
-	const { balance } = useXverseWallet();
-	if (!balance) return null;
-
-	return (
-		<NumericFormat
-			displayType="text"
-			value={formatBTC(BigInt(balance))}
-			suffix=" BTC"
-			className="shrink-0"
-		/>
-	);
-}
-
 export function XverseWallet() {
-	const { balance } = useXverseWallet();
-	const { disconnectWallet } = useXverseWallet();
+	const { balance, disconnectWallet } = useXverseWallet();
 
 	return (
 		<>
