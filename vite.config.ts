@@ -1,5 +1,5 @@
 import { reactRouter } from "@react-router/dev/vite";
-import { cloudflare } from "@cloudflare/vite-plugin";
+import { cloudflareDevProxy } from "@react-router/dev/vite/cloudflare";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
@@ -8,6 +8,7 @@ import { nodePolyfills } from "vite-plugin-node-polyfills";
 export default defineConfig({
 	plugins: [
 		tailwindcss(),
+		cloudflareDevProxy(),
 		reactRouter(),
 		tsconfigPaths(),
 		nodePolyfills({
@@ -15,7 +16,6 @@ export default defineConfig({
 				Buffer: true,
 			},
 		}),
-		cloudflare(),
 	],
 	build: {
 		minify: true,
