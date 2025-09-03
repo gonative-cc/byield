@@ -36,7 +36,7 @@ interface MintActionProps {
 }
 
 function MintAction({ isWinner, doRefund }: MintActionProps) {
-	const { beelieversAuction } = useNetworkVariables();
+	const { beelieversAuction, beelieversMint } = useNetworkVariables();
 	const { mutate: signAndExecTx, isPending } = useSignAndExecuteTransaction();
 	const client = useSuiClient();
 	const account = useCurrentAccount();
@@ -93,7 +93,7 @@ function MintAction({ isWinner, doRefund }: MintActionProps) {
 
 	return (
 		<div className="flex flex-col sm:flex-row gap-4">
-			{/* isWinner && (
+			{isWinner && (
 				<Button
 					type="button"
 					disabled={isPending}
@@ -105,7 +105,7 @@ function MintAction({ isWinner, doRefund }: MintActionProps) {
 				>
 					🐝 Mint
 				</Button>
-			) */}
+			)}
 			{doRefund === DoRefund.NoBoosted &&
 				"You have nothing to withdraw because you are a winner and your bid is below (due to boost) or at the Mint Price"}
 			{doRefund === DoRefund.Yes && (
@@ -196,7 +196,6 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize } }: 
 							/>
 						</div>
 					</div>
-					Minting will be enabled soon.
 					<MintAction isWinner={isWinner} doRefund={doRefund} />
 				</div>
 			</CardContent>
