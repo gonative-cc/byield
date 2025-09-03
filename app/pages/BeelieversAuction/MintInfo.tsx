@@ -1,5 +1,13 @@
 import { Transaction } from "@mysten/sui/transactions";
-import { useSignAndExecuteTransaction, useSuiClient, useCurrentAccount } from "@mysten/dapp-kit";
+import {
+	useSignAndExecuteTransaction,
+	useSuiClient,
+	useCurrentAccount,
+	useSignTransaction,
+} from "@mysten/dapp-kit";
+import { useEffect, useState } from "react";
+import { KioskClient, Network, KioskTransaction } from "@mysten/kiosk";
+import { LoaderCircle } from "lucide-react";
 
 import { Countdown } from "~/components/ui/countdown";
 import { Card, CardContent } from "~/components/ui/card";
@@ -9,6 +17,13 @@ import { classNames } from "~/util/tailwind";
 import { toast } from "~/hooks/use-toast";
 import { useNetworkVariables } from "~/networkConfig";
 import { AuctionAccountType, type AuctionInfo, type User } from "~/server/BeelieversAuction/types";
+
+const PACKAGE_ID = "0x3064d43ee6cc4d703d4c10089786f0ae805b24d2d031326520131d78667ffc2c";
+const COLLECTION_OBJECT_ID = "0x6a41d0a1b90172e558ec08169dff16dbe2b7d0d99d9c5f6164f00b6ae1c245a1";
+const TRANSFER_POLICY_ID = "0xef61e56ab17cac808a79bd5741054a3167f80608f4eb3908ff129ce0769fec40";
+const AUCTION_OBJECT_ID = "0x5ae4810b0a0a30b5767c3da561f2fb64315167a9cfa809ad877e1f5902cb2e41";
+const RANDOM_ID = "0x8";
+const CLOCK_ID = "0x6";
 
 interface MintInfoItemProps {
 	title: string;
@@ -33,13 +48,135 @@ function MintInfoItem({ title, value, isLastItem = false }: MintInfoItemProps) {
 interface MintActionProps {
 	isWinner: boolean;
 	doRefund: DoRefund;
+	clearingPrice: bigint;
 }
 
-function MintAction({ isWinner, doRefund }: MintActionProps) {
-	const { beelieversAuction, beelieversMint } = useNetworkVariables();
-	const { mutate: signAndExecTx, isPending } = useSignAndExecuteTransaction();
+function MintAction({ isWinner, doRefund, clearingPrice }: MintActionProps) {
+	const { beelieversAuction } = useNetworkVariables();
+	const { mutate: signAndExecTx, isPending: isRefundPending } = useSignAndExecuteTransaction();
+	const { mutateAsync: signTransaction } = useSignTransaction();
 	const client = useSuiClient();
 	const account = useCurrentAccount();
+
+	const [isMinting, setIsMinting] = useState(false);
+	const [isEligible, setIsEligible] = useState(false);
+	const [kioskInfo, setKioskInfo] = useState<{
+		kioskId: string;
+		kioskCapId: string;
+		address: string;
+	} | null>(null);
+
+	const kioskClient = new KioskClient({
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		client: client as any, // Package version conflict between @mysten libraries
+		network: Network.TESTNET,
+	});
+
+	useEffect(() => {
+		if (account) {
+			setIsEligible(true);
+			console.log("TESTING: Set isEligible to true");
+		}
+	}, [account]);
+
+	const mintNFT = async () => {
+		if (!account) return;
+		try {
+			setIsMinting(true);
+			let kioskId, kioskCapId;
+
+			if (!kioskInfo) {
+				const tx = new Transaction();
+				const kioskTx = new KioskTransaction({
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					transaction: tx as any, // Package version conflict
+					kioskClient,
+				});
+				kioskTx.create();
+				kioskTx.shareAndTransferCap(account.address);
+				kioskTx.finalize();
+
+				const { bytes, signature } = await signTransaction({
+					transaction: tx,
+					chain: "sui:testnet",
+				});
+
+				const result = await client.executeTransactionBlock({
+					transactionBlock: bytes,
+					signature,
+					options: { showEffects: true, showInput: true, showRawEffects: true },
+				});
+
+				await new Promise((resolve) => setTimeout(resolve, 5000));
+				const txBlock = await client.getTransactionBlock({
+					digest: result.digest,
+					options: { showEffects: true, showInput: true },
+				});
+
+				if (txBlock.effects && txBlock.effects.created) {
+					txBlock.effects.created.forEach((obj) => {
+						const owner = obj.owner as { Shared?: unknown; AddressOwner?: string };
+						if (owner.Shared) {
+							kioskId = obj.reference.objectId;
+						} else if (owner.AddressOwner === account.address) {
+							kioskCapId = obj.reference.objectId;
+						}
+					});
+				}
+
+				if (!kioskId || !kioskCapId) {
+					throw new Error("Failed to retrieve kiosk or kiosk cap ID");
+				}
+
+				setKioskInfo({ kioskId, kioskCapId, address: account.address });
+			} else {
+				kioskId = kioskInfo.kioskId;
+				kioskCapId = kioskInfo.kioskCapId;
+			}
+
+			const tx = new Transaction();
+			const [paymentCoin] = tx.splitCoins(tx.gas, [tx.pure.u64(clearingPrice)]);
+			tx.moveCall({
+				target: `${PACKAGE_ID}::mint::mint`,
+				arguments: [
+					tx.object(COLLECTION_OBJECT_ID),
+					paymentCoin,
+					tx.object(TRANSFER_POLICY_ID),
+					tx.object(RANDOM_ID),
+					tx.object(CLOCK_ID),
+					tx.object(AUCTION_OBJECT_ID),
+					tx.object(kioskId),
+					tx.object(kioskCapId),
+				],
+			});
+
+			const { bytes, signature } = await signTransaction({
+				transaction: tx,
+				chain: "sui:testnet",
+			});
+
+			await client.executeTransactionBlock({
+				transactionBlock: bytes,
+				signature,
+				options: { showEffects: true, showInput: true },
+			});
+
+			toast({
+				title: "Minting Successful",
+				description: "Successfully minted Beeliever NFT",
+				variant: "default",
+			});
+		} catch (error) {
+			console.error("Error minting:", error);
+			toast({
+				title: "Minting Error",
+				description: (error as Error).message || "An error occurred during minting",
+				variant: "destructive",
+			});
+		} finally {
+			setIsMinting(false);
+		}
+	};
 
 	const handleRefund = async () => {
 		if (!account?.address) {
@@ -91,19 +228,20 @@ function MintAction({ isWinner, doRefund }: MintActionProps) {
 		}
 	};
 
+	const isPending = isRefundPending || isMinting;
+
 	return (
 		<div className="flex flex-col sm:flex-row gap-4">
-			{isWinner && (
-				<Button
-					type="button"
-					disabled={isPending}
-					size="lg"
-					className="flex-1"
-					onClick={() => {
-						// TODO: handle mint
-					}}
-				>
-					🐝 Mint
+			{isWinner && isEligible && (
+				<Button type="button" disabled={isPending} size="lg" className="flex-1" onClick={mintNFT}>
+					{isMinting ? (
+						<span className="flex items-center gap-2">
+							<LoaderCircle className="animate-spin w-6 h-6" />
+							Minting...
+						</span>
+					) : (
+						"🐝 Mint"
+					)}
 				</Button>
 			)}
 			{doRefund === DoRefund.NoBoosted &&
@@ -112,7 +250,7 @@ function MintAction({ isWinner, doRefund }: MintActionProps) {
 				<Button
 					type="button"
 					disabled={isPending}
-					isLoading={isPending}
+					isLoading={isRefundPending}
 					size="lg"
 					variant="outline"
 					className="flex-1"
@@ -139,7 +277,7 @@ interface MintInfoProps {
 	user: User | null;
 }
 
-export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize } }: MintInfoProps) {
+export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auctionSize } }: MintInfoProps) {
 	const { beelieversMint } = useNetworkVariables();
 
 	if (user === null) {
@@ -147,7 +285,7 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize } }: 
 	}
 
 	const currentBidInMist = BigInt(user.amount);
-	const isWinner = user.rank !== null && user.rank < auctionSize;
+	const isWinner = true; // TESTING: Force winner status
 	const boosted = user.wlStatus > AuctionAccountType.DEFAULT;
 	let doRefund: DoRefund = DoRefund.No;
 	if (user.amount > 0) {
@@ -196,7 +334,11 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize } }: 
 							/>
 						</div>
 					</div>
-					<MintAction isWinner={isWinner} doRefund={doRefund} />
+					<MintAction
+						isWinner={isWinner}
+						doRefund={doRefund}
+						clearingPrice={BigInt(clearingPrice || 0)}
+					/>
 				</div>
 			</CardContent>
 		</Card>
