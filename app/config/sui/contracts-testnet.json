@@ -8,14 +8,18 @@
 	},
 	"beelieversAuction": {
 		"packageId": "0xdbf3aaf553b3bc58d2e726d12424eb0ebb761ae62285a55b52011e40653bd4c8",
-		"auctionId": "0xff4982cd449809676699d1a52c5562fc15b9b92cb41bde5f8845a14647186704",
+		"auctionId": "0x5ae4810b0a0a30b5767c3da561f2fb64315167a9cfa809ad877e1f5902cb2e41",
 		"module": "auction",
 		"bidEndpoint": "bid",
 		"withdrawFunction": "withdraw"
 	},
 	"beelieversMint": {
-		"packageId": "",
-		"collectionId": "",
+		"packageId": "0x3064d43ee6cc4d703d4c10089786f0ae805b24d2d031326520131d78667ffc2c",
+		"collectionId": "0x6a41d0a1b90172e558ec08169dff16dbe2b7d0d99d9c5f6164f00b6ae1c245a1",
+		"transferPolicyId": "0xef61e56ab17cac808a79bd5741054a3167f80608f4eb3908ff129ce0769fec40",
+		"auctionObjectId": "0x5ae4810b0a0a30b5767c3da561f2fb64315167a9cfa809ad877e1f5902cb2e41",
+		"randomId": "0x8",
+		"clockId": "0x6",
 		"mintStart": 1756899768721
 	},
 	"accountExplorer": "https://suiscan.xyz/testnet/account/"

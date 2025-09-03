@@ -7,7 +7,6 @@ import {
 } from "@mysten/dapp-kit";
 import { useEffect, useState } from "react";
 import { KioskClient, Network, KioskTransaction } from "@mysten/kiosk";
-import { LoaderCircle } from "lucide-react";
 
 import { Countdown } from "~/components/ui/countdown";
 import { Card, CardContent } from "~/components/ui/card";
@@ -18,12 +17,7 @@ import { toast } from "~/hooks/use-toast";
 import { useNetworkVariables } from "~/networkConfig";
 import { AuctionAccountType, type AuctionInfo, type User } from "~/server/BeelieversAuction/types";
 
-const PACKAGE_ID = "0x3064d43ee6cc4d703d4c10089786f0ae805b24d2d031326520131d78667ffc2c";
-const COLLECTION_OBJECT_ID = "0x6a41d0a1b90172e558ec08169dff16dbe2b7d0d99d9c5f6164f00b6ae1c245a1";
-const TRANSFER_POLICY_ID = "0xef61e56ab17cac808a79bd5741054a3167f80608f4eb3908ff129ce0769fec40";
-const AUCTION_OBJECT_ID = "0x5ae4810b0a0a30b5767c3da561f2fb64315167a9cfa809ad877e1f5902cb2e41";
-const RANDOM_ID = "0x8";
-const CLOCK_ID = "0x6";
+// Constants moved to config file - see contracts-testnet.json
 
 interface MintInfoItemProps {
 	title: string;
@@ -52,11 +46,44 @@ interface MintActionProps {
 }
 
 function MintAction({ isWinner, doRefund, clearingPrice }: MintActionProps) {
-	const { beelieversAuction } = useNetworkVariables();
+	const { beelieversAuction, beelieversMint } = useNetworkVariables();
 	const { mutate: signAndExecTx, isPending: isRefundPending } = useSignAndExecuteTransaction();
 	const { mutateAsync: signTransaction } = useSignTransaction();
 	const client = useSuiClient();
 	const account = useCurrentAccount();
+	const mintPackageId = beelieversMint.packageId;
+
+	const createMintTransaction = (kioskId: string, kioskCapId: string) => {
+		const tx = new Transaction();
+		const [paymentCoin] = tx.splitCoins(tx.gas, [tx.pure.u64(clearingPrice)]);
+		tx.moveCall({
+			target: `${mintPackageId}::mint::mint`,
+			arguments: [
+				tx.object(beelieversMint.collectionId),
+				paymentCoin,
+				tx.object(beelieversMint.transferPolicyId),
+				tx.object(beelieversMint.randomId),
+				tx.object(beelieversMint.clockId),
+				tx.object(beelieversMint.auctionObjectId),
+				tx.object(kioskId),
+				tx.object(kioskCapId),
+			],
+		});
+		return tx;
+	};
+
+	const signAndExecuteTransaction = async (transaction: Transaction) => {
+		const { bytes, signature } = await signTransaction({
+			transaction,
+			chain: "sui:testnet",
+		});
+
+		return await client.executeTransactionBlock({
+			transactionBlock: bytes,
+			signature,
+			options: { showEffects: true, showInput: true },
+		});
+	};
 
 	const [isMinting, setIsMinting] = useState(false);
 	const [isEligible, setIsEligible] = useState(false);
@@ -67,8 +94,8 @@ function MintAction({ isWinner, doRefund, clearingPrice }: MintActionProps) {
 	} | null>(null);
 
 	const kioskClient = new KioskClient({
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		client: client as any, // Package version conflict between @mysten libraries
+		// TODO: Remove this type casting once @mysten library version conflicts are resolved
+		client: client as any, // eslint-disable-line @typescript-eslint/no-explicit-any
 		network: Network.TESTNET,
 	});
 
@@ -88,8 +115,8 @@ function MintAction({ isWinner, doRefund, clearingPrice }: MintActionProps) {
 			if (!kioskInfo) {
 				const tx = new Transaction();
 				const kioskTx = new KioskTransaction({
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-					transaction: tx as any, // Package version conflict
+					// TODO: Remove this type casting once @mysten library version conflicts are resolved
+					transaction: tx as any, // eslint-disable-line @typescript-eslint/no-explicit-any
 					kioskClient,
 				});
 				kioskTx.create();
@@ -134,37 +161,12 @@ function MintAction({ isWinner, doRefund, clearingPrice }: MintActionProps) {
 				kioskCapId = kioskInfo.kioskCapId;
 			}
 
-			const tx = new Transaction();
-			const [paymentCoin] = tx.splitCoins(tx.gas, [tx.pure.u64(clearingPrice)]);
-			tx.moveCall({
-				target: `${PACKAGE_ID}::mint::mint`,
-				arguments: [
-					tx.object(COLLECTION_OBJECT_ID),
-					paymentCoin,
-					tx.object(TRANSFER_POLICY_ID),
-					tx.object(RANDOM_ID),
-					tx.object(CLOCK_ID),
-					tx.object(AUCTION_OBJECT_ID),
-					tx.object(kioskId),
-					tx.object(kioskCapId),
-				],
-			});
-
-			const { bytes, signature } = await signTransaction({
-				transaction: tx,
-				chain: "sui:testnet",
-			});
-
-			await client.executeTransactionBlock({
-				transactionBlock: bytes,
-				signature,
-				options: { showEffects: true, showInput: true },
-			});
+			const tx = createMintTransaction(kioskId, kioskCapId);
+			await signAndExecuteTransaction(tx);
 
 			toast({
 				title: "Minting Successful",
 				description: "Successfully minted Beeliever NFT",
-				variant: "default",
 			});
 		} catch (error) {
 			console.error("Error minting:", error);
@@ -233,15 +235,15 @@ function MintAction({ isWinner, doRefund, clearingPrice }: MintActionProps) {
 	return (
 		<div className="flex flex-col sm:flex-row gap-4">
 			{isWinner && isEligible && (
-				<Button type="button" disabled={isPending} size="lg" className="flex-1" onClick={mintNFT}>
-					{isMinting ? (
-						<span className="flex items-center gap-2">
-							<LoaderCircle className="animate-spin w-6 h-6" />
-							Minting...
-						</span>
-					) : (
-						"🐝 Mint"
-					)}
+				<Button
+					type="button"
+					disabled={isPending}
+					isLoading={isMinting}
+					size="lg"
+					className="flex-1"
+					onClick={mintNFT}
+				>
+					🐝 Mint
 				</Button>
 			)}
 			{doRefund === DoRefund.NoBoosted &&
@@ -285,7 +287,8 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 	}
 
 	const currentBidInMist = BigInt(user.amount);
-	const isWinner = true; // TESTING: Force winner status
+	// TESTING: Force winner status to test minting on testnet deployment
+	const isWinner = true; // user.rank !== null && user.rank < _auctionSize;
 	const boosted = user.wlStatus > AuctionAccountType.DEFAULT;
 	let doRefund: DoRefund = DoRefund.No;
 	if (user.amount > 0) {
