@@ -1,7 +1,9 @@
 export enum MintingTxStatus {
-	SUCCESS = "SUCCESS",
+	MINED = "MINED",
 	FAILED = "FAILED",
 	PENDING = "PENDING",
+	REORG = "REORG",
+	CONFIRMING = "CONFIRMING",
 }
 
 export interface MintTransaction {

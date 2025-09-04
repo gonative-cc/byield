@@ -2,11 +2,12 @@ import { MintBTC } from "~/pages/Mint/MintBTC";
 import { MintBTCTable } from "~/pages/Mint/MintBTCTable";
 import { MintingTxStatus, type MintTransaction } from "~/server/Mint/types";
 
+// TODO: mocked mint tx data
 const data: MintTransaction[] = [
 	{
 		bitcoinTxId: "0xe670405731f97182a4e5056b63385ddd6f7929dfa1a64f82c5f0bdd780dc79f4",
 		amountInSatoshi: 1000000,
-		status: MintingTxStatus.SUCCESS,
+		status: MintingTxStatus.MINED,
 		suiAddress: "0xba455f7c35581977cfb7a14e91c95333f01c80650d323793e8749c815e982d6b",
 		suiTxId: "0x2c1d35581977cfb7a14e91c95333f01c80650d323793e8749c815e982d6b",
 		timestamp: 1678886400,
