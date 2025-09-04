@@ -5,7 +5,6 @@ import { trimAddress } from "~/components/Wallet/walletHelper";
 import { formatBTC } from "~/lib/denoms";
 import { type MintTransaction } from "~/server/Mint/types";
 import { Info } from "lucide-react";
-import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 
 function MintTableTooltip({ tooltip, label }: { tooltip: string; label: string }) {
 	return (
