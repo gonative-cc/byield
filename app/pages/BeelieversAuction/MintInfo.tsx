@@ -290,6 +290,7 @@ function MintAction({ isWinner, doRefund, hasMinted }: MintActionProps) {
 
 	const [isMinting, setIsMinting] = useState(false);
 	const [mintedNftId, setMintedNftId] = useState<string | null>(null);
+	const [nftMetadata, setNftMetadata] = useState<NftMetadata | null>(null);
 
 	const kioskClient = new KioskClient({
 		client: client as any,
@@ -364,6 +365,31 @@ function MintAction({ isWinner, doRefund, hasMinted }: MintActionProps) {
 		initializeKioskInfo();
 	}, [account]);
 
+	const fetchNftMetadata = async (client: any, nftId: string): Promise<NftMetadata | null> => {
+		try {
+			const nftObject = await client.getObject({
+				id: nftId,
+				options: { showContent: true },
+			});
+
+			if (nftObject.data?.content && "fields" in nftObject.data.content) {
+				const fields = nftObject.data.content.fields as any;
+				return {
+					id: nftId,
+					name: fields.name || "Beeliever NFT",
+					image_url: fields.image_url || "",
+					token_id: fields.token_id || "0",
+					attributes: fields.attributes || { fields: { contents: [] } },
+					badges: fields.badges || [],
+				};
+			}
+			return null;
+		} catch (error) {
+			console.error("Error fetching NFT metadata:", error);
+			return null;
+		}
+	};
+
 	const handleMintNFT = async () => {
 		if (!account) return;
 		let kioskId, kioskCapId;
@@ -411,10 +437,12 @@ function MintAction({ isWinner, doRefund, hasMinted }: MintActionProps) {
 			console.log(">>> mint result", result.digest, result.errors);
 
 			const nftId = extractNftIdFromResult(result, kioskId);
-			console.log(">>> extracted NFT ID:", nftId);
-
 			if (nftId) {
 				setMintedNftId(nftId);
+
+				const metadata = await fetchNftMetadata(client, nftId);
+				setNftMetadata(metadata);
+
 				toast(createNftSuccessToast(nftId, network));
 			} else {
 				toast({
@@ -508,7 +536,7 @@ function MintAction({ isWinner, doRefund, hasMinted }: MintActionProps) {
 				</Button>
 			)}
 
-			{mintedNftId && <NftDisplay nftId={mintedNftId} network={network} />}
+			{mintedNftId && <NftDisplay nftId={mintedNftId} network={network} metadata={nftMetadata} />}
 
 			{hasMinted && (
 				<div className="flex-1 text-center p-3 bg-primary/10 rounded-lg border border-primary/20">
