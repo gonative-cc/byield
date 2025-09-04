@@ -15,6 +15,19 @@ import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
 import { networks, type Network } from "bitcoinjs-lib";
 
+// devent config
+const devNetConfig: Network = {
+	messagePrefix: "",
+	bech32: "tb",
+	bip32: {
+		public: 0x043587cf, // xpub
+		private: 0x04358394, // xprv
+	},
+	pubKeyHash: 0x6f,
+	scriptHash: 0xc4,
+	wif: 0xef,
+};
+
 export function getBitcoinNetworkConfig(network: BitcoinNetworkType): Network | null {
 	switch (network) {
 		case BitcoinNetworkType.Mainnet:
@@ -24,7 +37,7 @@ export function getBitcoinNetworkConfig(network: BitcoinNetworkType): Network | 
 		case BitcoinNetworkType.Testnet4:
 			return networks.testnet;
 		default:
-			return null;
+			return devNetConfig;
 	}
 }
 

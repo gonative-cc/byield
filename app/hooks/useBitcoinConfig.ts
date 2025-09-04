@@ -3,7 +3,7 @@ import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
 import devnetConfig from "~/config/bitcoin-devnet.json";
 import mainnetConfig from "~/config/bitcoin-mainnet.json";
 
-type ExtendedBitcoinNetworkType = BitcoinNetworkType | "Devnet";
+export type ExtendedBitcoinNetworkType = BitcoinNetworkType | "Devnet";
 type BitcoinNetworkVariables = typeof mainnetConfig | typeof devnetConfig | Record<string, never>;
 
 interface NetworkConfig {
@@ -30,6 +30,7 @@ const getBitcoinNetworkConfig: Record<ExtendedBitcoinNetworkType, NetworkConfig>
 	Signet: {
 		variables: {},
 	},
+	// Regtest is localnet
 	Regtest: {
 		variables: {},
 	},
