@@ -55,13 +55,17 @@ function MintAction({ isWinner, doRefund, clearingPrice }: MintActionProps) {
 
 	const createMintTransaction = (kioskId: string, kioskCapId: string) => {
 		const tx = new Transaction();
-		const [paymentCoin] = tx.splitCoins(tx.gas, [tx.pure.u64(clearingPrice)]);
+		// TODO: no need for payment, so let's set dummy 1 mist
+		const [paymentCoin] = tx.splitCoins(tx.gas, [1]);
 		tx.moveCall({
 			target: `${mintPackageId}::mint::mint`,
 			arguments: [
 				tx.object(beelieversMint.collectionId),
+				// TODO: in next iteration this must be removed (we updated API, but we need to deploy it)
 				paymentCoin,
 				tx.object(beelieversMint.transferPolicyId),
+				// TODO: random ID and clock ID is const. Probably it's defined in the SDK - so let's
+				// check if it's there (you can ask Vu), otherwise, define it in app/lib/suiobj.ts (new file)
 				tx.object(beelieversMint.randomId),
 				tx.object(beelieversMint.clockId),
 				tx.object(beelieversMint.auctionObjectId),
@@ -86,7 +90,6 @@ function MintAction({ isWinner, doRefund, clearingPrice }: MintActionProps) {
 	};
 
 	const [isMinting, setIsMinting] = useState(false);
-	const [isEligible, setIsEligible] = useState(false);
 	const [kioskInfo, setKioskInfo] = useState<{
 		kioskId: string;
 		kioskCapId: string;
@@ -98,13 +101,6 @@ function MintAction({ isWinner, doRefund, clearingPrice }: MintActionProps) {
 		client: client as any, // eslint-disable-line @typescript-eslint/no-explicit-any
 		network: Network.TESTNET,
 	});
-
-	useEffect(() => {
-		if (account) {
-			setIsEligible(true);
-			console.log("TESTING: Set isEligible to true");
-		}
-	}, [account]);
 
 	const mintNFT = async () => {
 		if (!account) return;
@@ -231,10 +227,12 @@ function MintAction({ isWinner, doRefund, clearingPrice }: MintActionProps) {
 	};
 
 	const isPending = isRefundPending || isMinting;
+	// NOTE: we don't need to check account here - isWinner already has that check.
+	const canMint = isWinner && beelieversMint.mintStart <= +new Date();
 
 	return (
 		<div className="flex flex-col sm:flex-row gap-4">
-			{isWinner && isEligible && (
+			{canMint && (
 				<Button
 					type="button"
 					disabled={isPending}
