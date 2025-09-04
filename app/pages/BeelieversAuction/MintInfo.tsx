@@ -114,13 +114,44 @@ const createNftSuccessToast = (nftId: string, network: string) => {
 				</a>
 			</div>
 		),
-		duration: 10000, 
+		duration: 10000,
 	};
+};
+
+interface NftMetadata {
+	id: string;
+	name: string;
+	image_url: string;
+	token_id: string;
+	attributes: {
+		fields: {
+			contents: Array<{
+				fields: {
+					key: string;
+					value: string;
+				};
+			}>;
+		};
+	};
+	badges: string[];
+}
+
+const getWalrusImageUrl = (imageUrl: string): string => {
+	if (imageUrl.startsWith("http")) {
+		return imageUrl;
+	}
+	return `https://walrus.tusky.io/${imageUrl}`;
+};
+
+const getAttributeValue = (attributes: NftMetadata["attributes"], key: string): string => {
+	const attr = attributes.fields.contents.find((item) => item.fields.key === key);
+	return attr?.fields.value || "";
 };
 
 interface NftDisplayProps {
 	nftId: string;
 	network: string;
+	metadata?: NftMetadata | null;
 }
 
 function NftDisplay({ nftId, network, metadata }: NftDisplayProps) {
