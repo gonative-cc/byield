@@ -74,9 +74,9 @@ function MintAction({ isWinner, doRefund }: MintActionProps) {
 
 	const handleMintNFT = async () => {
 		if (!account) return;
-		try {
-			let kioskId, kioskCapId;
+		let kioskId, kioskCapId;
 
+		try {
 			if (!kioskInfo) {
 				toast({
 					title: "Creating Kiosk object",
@@ -113,7 +113,7 @@ function MintAction({ isWinner, doRefund }: MintActionProps) {
 
 			toast({ title: "Minting NFT", variant: "info" });
 
-			const tx = createMintTransaction(kioskId, kioskCapId, beelieversMint);
+			const tx = createMintTx(kioskId, kioskCapId, beelieversMint, beelieversAuction.auctionId);
 			const result = await signAndExecuteTransaction(tx);
 			console.log(">>> mint result", result.digest, result.errors);
 
@@ -323,13 +323,12 @@ interface MintCfg {
 	packageId: string;
 	collectionId: string;
 	transferPolicyId: string;
-	auctionObjectId: string;
 	mintStart: 1756899768721;
 }
 
 // TODO: move to app/lib/suienv.ts
 
-function createMintTransaction(kioskId: string, kioskCapId: string, mintCfg: MintCfg): Transaction {
+function createMintTx(kioskId: string, kioskCapId: string, mintCfg: MintCfg, auctionId: string): Transaction {
 	const tx = new Transaction();
 	// TODO: no need for payment - in new API we removed it.
 	const [paymentCoin] = tx.splitCoins(tx.gas, [tx.pure.u64(0)]);
@@ -345,7 +344,7 @@ function createMintTransaction(kioskId: string, kioskCapId: string, mintCfg: Min
 			// check if it's there (you can ask Vu), otherwise, define it in app/lib/suiobj.ts (new file)
 			tx.object(SUI_RANDOM_OBJECT_ID),
 			tx.object(SUI_CLOCK_OBJECT_ID),
-			tx.object(mintCfg.auctionObjectId),
+			tx.object(auctionId),
 			tx.object(kioskId),
 			tx.object(kioskCapId),
 		],
