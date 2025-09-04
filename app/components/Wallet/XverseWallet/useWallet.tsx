@@ -13,6 +13,22 @@ import type { Address } from "sats-connect";
 import { useToast } from "~/hooks/use-toast";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
+import { networks, type Network } from "bitcoinjs-lib";
+import { ExtendedBitcoinNetworkType } from "~/hooks/useBitcoinConfig";
+
+export function getBitcoinNetworkConfig(network: ExtendedBitcoinNetworkType): Network | null {
+	switch (network) {
+		case ExtendedBitcoinNetworkType.Mainnet:
+			return networks.bitcoin;
+		case ExtendedBitcoinNetworkType.Regtest:
+		case ExtendedBitcoinNetworkType.Devnet:
+			return networks.regtest;
+		case ExtendedBitcoinNetworkType.Testnet4:
+			return networks.testnet;
+		default:
+			return null;
+	}
+}
 
 export const useXverseConnect = () => {
 	const { toast } = useToast();
@@ -64,7 +80,7 @@ export const useXverseWallet = () => {
 	const [currentAddress, setCurrentAddress] = useState<Address | null>(null);
 	const [balance, setBalance] = useState<string>();
 	// TODO: Default bitcoin network on connection is Testnet4
-	const [network, setNetwork] = useState<BitcoinNetworkType>(BitcoinNetworkType.Testnet4);
+	const [network, setNetwork] = useState<ExtendedBitcoinNetworkType>(ExtendedBitcoinNetworkType.Testnet4);
 
 	const getBalance = useCallback(async () => {
 		try {
@@ -102,7 +118,7 @@ export const useXverseWallet = () => {
 	const getNetworkStatus = useCallback(async () => {
 		const response = await Wallet.request(getNetworkMethodName, null);
 		if (response.status === "success") {
-			setNetwork(response.result.bitcoin.name);
+			setNetwork(response.result.bitcoin.name as unknown as ExtendedBitcoinNetworkType);
 		} else {
 			toast({
 				title: "Network",
@@ -146,17 +162,23 @@ export const useXverseWallet = () => {
 	}, [handleWalletConnect, toast]);
 
 	const switchNetwork = useCallback(
-		async (newNetwork: BitcoinNetworkType) => {
-			const response = await Wallet.request(changeNetworkMethodName, {
-				name: newNetwork,
-			});
-			if (response.status === "success") setNetwork(newNetwork);
-			else {
-				toast({
-					title: "Network",
-					description: "Failed to switch network",
-					variant: "destructive",
+		async (newNetwork: ExtendedBitcoinNetworkType) => {
+			// Only switch if it's a valid BitcoinNetworkType (not Devnet)
+			if (newNetwork !== ExtendedBitcoinNetworkType.Devnet) {
+				const response = await Wallet.request(changeNetworkMethodName, {
+					name: newNetwork as unknown as BitcoinNetworkType,
 				});
+				if (response.status === "success") setNetwork(newNetwork);
+				else {
+					toast({
+						title: "Network",
+						description: "Failed to switch network",
+						variant: "destructive",
+					});
+				}
+			} else {
+				// Handle Devnet case - just set the network state
+				setNetwork(newNetwork);
 			}
 		},
 		[toast],

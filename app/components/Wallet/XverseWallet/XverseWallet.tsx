@@ -1,17 +1,20 @@
 import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
 import { Button } from "../../ui/button";
 import { type Option, SelectInput } from "../../ui/select";
-import { BitcoinNetworkType } from "sats-connect";
 import { useMemo } from "react";
 import { trimAddress } from "../walletHelper";
 import { NumericFormat } from "react-number-format";
 import { formatBTC } from "~/lib/denoms";
+import { ExtendedBitcoinNetworkType } from "~/hooks/useBitcoinConfig";
 
 function NetWorkOptions() {
 	const { network, switchNetwork } = useXverseWallet();
-	// TODO: currently only bitcoin test v4 is supported. This will be removed when app goes into production
 	const bitcoinSupportedNetwork: Option[] = useMemo(
-		() => [{ label: BitcoinNetworkType.Testnet4, value: BitcoinNetworkType.Testnet4 }],
+		() => [
+			{ label: ExtendedBitcoinNetworkType.Testnet4, value: ExtendedBitcoinNetworkType.Testnet4 },
+			{ label: ExtendedBitcoinNetworkType.Regtest, value: ExtendedBitcoinNetworkType.Regtest },
+			{ label: ExtendedBitcoinNetworkType.Mainnet, value: ExtendedBitcoinNetworkType.Mainnet },
+		],
 		[],
 	);
 
@@ -71,20 +74,6 @@ function XverseWalletMobileView() {
 				<Button onClick={disconnectWallet}>Disconnect</Button>
 			</div>
 		</div>
-	);
-}
-
-function Balance() {
-	const { balance } = useXverseWallet();
-	if (!balance) return null;
-
-	return (
-		<NumericFormat
-			displayType="text"
-			value={formatBTC(BigInt(balance))}
-			suffix=" BTC"
-			className="shrink-0"
-		/>
 	);
 }
 
