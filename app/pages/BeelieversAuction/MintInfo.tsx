@@ -286,11 +286,6 @@ function MintAction({ isWinner, doRefund, hasMinted }: MintActionProps) {
 					🐝 Mint
 				</Button>
 			)}
-			{hasMinted && (
-				<div className="flex-1 text-center p-3 bg-primary/10 rounded-lg border border-primary/20">
-					<span className="text-primary font-semibold">✅ Already Minted</span>
-				</div>
-			)}
 			{doRefund === DoRefund.NoBoosted &&
 				"You have nothing to withdraw because you are a winner and your bid is below (due to boost) or at the Mint Price"}
 			{doRefund === DoRefund.Yes && (
@@ -330,35 +325,11 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 	const account = useCurrentAccount();
 	const [hasMinted, setHasMinted] = useState(false);
 
-	// Check if user has already minted
-	const checkHasMinted = useCallback(async () => {
-		if (!account || !beelieversMint.packageId) return;
-
-		try {
-			const txb = new Transaction();
-			txb.moveCall({
-				target: `${beelieversMint.packageId}::mint::has_minted_public`,
-				arguments: [txb.object(beelieversMint.collectionId), txb.pure.address(account.address)],
-			});
-
-			const result = await client.devInspectTransactionBlock({
-				sender: account.address,
-				transactionBlock: txb,
-			});
-
-			const hasAlreadyMinted = result.results?.[0]?.returnValues?.[0]?.[0]?.[0] === 1;
-			setHasMinted(hasAlreadyMinted);
-		} catch (error) {
-			console.error("Error checking mint status:", error);
-			setHasMinted(false);
-		}
-	}, [account, client, beelieversMint]);
-
 	useEffect(() => {
-		if (account) {
-			checkHasMinted();
-		}
-	}, [account, checkHasMinted]);
+		if (!account) return;
+
+		queryHasMinted(account.address, client, beelieversMint).then(setHasMinted);
+	}, [account, client, beelieversMint]);
 
 	if (user === null) {
 		return <p className="text-xl">Connect to your wallet to see minting info</p>;
@@ -527,4 +498,25 @@ export function formatSuiErr(err: string): string {
 	}
 
 	return `Tx aborted, function: ${txErr.funName} reason: "${reason}"`;
+}
+
+async function queryHasMinted(addr: string, client: SuiClient, cfg: MintCfg): Promise<boolean | undefined> {
+	try {
+		const txb = new Transaction();
+		txb.moveCall({
+			// TODO: in latest API this is has_minted
+			target: `${cfg.packageId}::mint::has_minted_public`,
+			arguments: [txb.object(cfg.collectionId), txb.pure.address(addr)],
+		});
+
+		const result = await client.devInspectTransactionBlock({
+			sender: addr,
+			transactionBlock: txb,
+		});
+
+		return result.results?.[0]?.returnValues?.[0]?.[0]?.[0] === 1;
+	} catch (error) {
+		console.error("Error checking mint status:", error);
+		return false;
+	}
 }
