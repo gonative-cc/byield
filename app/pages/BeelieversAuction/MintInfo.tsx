@@ -5,7 +5,7 @@ import {
 	useCurrentAccount,
 	useSignTransaction,
 } from "@mysten/dapp-kit";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { KioskClient, Network, KioskTransaction } from "@mysten/kiosk";
 
 import { Countdown } from "~/components/ui/countdown";
@@ -17,40 +17,8 @@ import { toast } from "~/hooks/use-toast";
 import { useNetworkVariables } from "~/networkConfig";
 import { AuctionAccountType, type AuctionInfo, type User } from "~/server/BeelieversAuction/types";
 import type { SuiClient } from "@mysten/sui/client";
-
-// SUI system object constants
-const SUI_RANDOM_ID = "0x8";
-const SUI_CLOCK_ID = "0x6";
-
-function createMintTransaction(
-	mintPackageId: string,
-	collectionId: string,
-	transferPolicyId: string,
-	auctionObjectId: string,
-	kioskId: string,
-	kioskCapId: string,
-): Transaction {
-	const tx = new Transaction();
-	// TODO: no need for payment, so let's set dummy 1 mist
-	const [paymentCoin] = tx.splitCoins(tx.gas, [1]);
-	tx.moveCall({
-		target: `${mintPackageId}::mint::mint`,
-		arguments: [
-			tx.object(collectionId),
-			// TODO: in next iteration this must be removed (we updated API, but we need to deploy it)
-			paymentCoin,
-			tx.object(transferPolicyId),
-			// TODO: random ID and clock ID is const. Probably it's defined in the SDK - so let's
-			// check if it's there (you can ask Vu), otherwise, define it in app/lib/suiobj.ts (new file)
-			tx.object(SUI_RANDOM_ID),
-			tx.object(SUI_CLOCK_ID),
-			tx.object(auctionObjectId),
-			tx.object(kioskId),
-			tx.object(kioskCapId),
-		],
-	});
-	return tx;
-}
+import { SUI_RANDOM_OBJECT_ID } from "~/lib/suienv";
+import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
 
 interface MintInfoItemProps {
 	title: string;
@@ -75,16 +43,14 @@ function MintInfoItem({ title, value, isLastItem = false }: MintInfoItemProps) {
 interface MintActionProps {
 	isWinner: boolean;
 	doRefund: DoRefund;
-	clearingPrice: bigint;
 }
 
-function MintAction({ isWinner, doRefund, clearingPrice }: MintActionProps) {
+function MintAction({ isWinner, doRefund }: MintActionProps) {
 	const { beelieversAuction, beelieversMint } = useNetworkVariables();
 	const { mutate: signAndExecTx, isPending } = useSignAndExecuteTransaction();
 	const { mutateAsync: signTransaction } = useSignTransaction();
 	const { network, client } = useSuiClientContext();
 	const account = useCurrentAccount();
-	const mintPackageId = beelieversMint.packageId;
 
 	const signAndExecuteTransaction = async (transaction: Transaction) => {
 		const { bytes, signature } = await signTransaction({
@@ -326,11 +292,7 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 							/>
 						</div>
 					</div>
-					<MintAction
-						isWinner={isWinner}
-						doRefund={doRefund}
-						clearingPrice={BigInt(clearingPrice || 0)}
-					/>
+					<MintAction isWinner={isWinner} doRefund={doRefund} />
 				</div>
 			</CardContent>
 		</Card>
@@ -362,10 +324,10 @@ interface MintCfg {
 	collectionId: string;
 	transferPolicyId: string;
 	auctionObjectId: string;
-	randomId: string;
-	clockId: string;
 	mintStart: 1756899768721;
 }
+
+// TODO: move to app/lib/suienv.ts
 
 function createMintTransaction(kioskId: string, kioskCapId: string, mintCfg: MintCfg): Transaction {
 	const tx = new Transaction();
@@ -381,8 +343,8 @@ function createMintTransaction(kioskId: string, kioskCapId: string, mintCfg: Min
 			tx.object(mintCfg.transferPolicyId),
 			// TODO: random ID and clock ID is const. Probably it's defined in the SDK - so let's
 			// check if it's there (you can ask Vu), otherwise, define it in app/lib/suiobj.ts (new file)
-			tx.object(mintCfg.randomId),
-			tx.object(mintCfg.clockId),
+			tx.object(SUI_RANDOM_OBJECT_ID),
+			tx.object(SUI_CLOCK_OBJECT_ID),
 			tx.object(mintCfg.auctionObjectId),
 			tx.object(kioskId),
 			tx.object(kioskCapId),
