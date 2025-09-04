@@ -1,24 +1,24 @@
-import { Card, CardContent } from "./ui/card";
-import { BitcoinBalance } from "./BitcoinBalance";
+import { Card, CardContent } from "../../components/ui/card";
+import { BitcoinBalance } from "../../components/BitcoinBalance";
 import { Link } from "react-router";
-import { Button } from "./ui/button";
+import { Button } from "../../components/ui/button";
 import { FormProvider, useForm } from "react-hook-form";
-import { FormInput } from "./form/FormInput";
-import { useXverseConnect, useXverseWallet } from "./Wallet/XverseWallet/useWallet";
+import { FormInput } from "../../components/form/FormInput";
+import { useXverseConnect, useXverseWallet } from "../../components/Wallet/XverseWallet/useWallet";
 import { useContext, useEffect, useState } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
-import { FormNumericInput } from "./form/FormNumericInput";
+import { FormNumericInput } from "../../components/form/FormNumericInput";
 import { NumericFormat } from "react-number-format";
 import { BTC, formatBTC, parseBTC } from "~/lib/denoms";
 import { nBTCMintTx } from "~/lib/nbtc";
 import { useToast } from "~/hooks/use-toast";
-import { Modal } from "./ui/dialog";
 import { Check } from "lucide-react";
 import { classNames } from "~/util/tailwind";
 import { isValidSuiAddress } from "@mysten/sui/utils";
 import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import { useNetworkVariables } from "~/networkConfig";
+import { Modal } from "~/components/ui/dialog";
 
 interface TransactionStatusProps {
 	SuiAddress: string;
@@ -93,14 +93,14 @@ const PERCENTAGES = [
 
 function Percentage({ onChange }: { onChange: (value: number) => void }) {
 	return (
-		<div className="flex justify-between space-x-2 mb-4">
+		<div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
 			{PERCENTAGES.map(({ id, value }) => (
 				<Button
 					type="button"
 					key={id}
 					onClick={() => onChange(value)}
 					variant="ghost"
-					className="bg-azure-10 w-full flex-1 flex"
+					className="bg-azure-10 w-full text-sm sm:text-base"
 				>
 					{value}%
 				</Button>
@@ -181,10 +181,10 @@ export function MintBTC() {
 				onSubmit={handleSubmit(async (form) => {
 					handlenBTCMintTx({ ...form });
 				})}
-				className="w-full md:w-1/2"
+				className="w-full max-w-lg"
 			>
-				<Card>
-					<CardContent className="p-6 rounded-lg text-white flex flex-col bg-azure-10">
+				<Card className="w-full">
+					<CardContent className="p-4 sm:p-6 rounded-lg text-white flex flex-col bg-azure-10 space-y-4">
 						{isBitCoinWalletConnected && walletBalance && (
 							<BitcoinBalance availableBalance={walletBalance} />
 						)}
@@ -192,7 +192,7 @@ export function MintBTC() {
 							required
 							name="numberOfBTC"
 							placeholder="Enter number of BTC"
-							className="h-16"
+							className="h-12 sm:h-16"
 							inputMode="decimal"
 							decimalScale={BTC}
 							allowNegative={false}
@@ -224,7 +224,7 @@ export function MintBTC() {
 							required
 							name="suiAddress"
 							placeholder="Enter destination Sui Address..."
-							className="h-16"
+							className="h-12 sm:h-16"
 							createEmptySpace
 							rules={{
 								validate: {
