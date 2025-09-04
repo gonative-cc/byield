@@ -5,7 +5,7 @@ import {
 	useCurrentAccount,
 	useSignTransaction,
 } from "@mysten/dapp-kit";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { KioskClient, Network, KioskTransaction } from "@mysten/kiosk";
 
 import { Countdown } from "~/components/ui/countdown";
@@ -43,21 +43,23 @@ function MintInfoItem({ title, value, isLastItem = false }: MintInfoItemProps) {
 interface MintActionProps {
 	isWinner: boolean;
 	doRefund: DoRefund;
+	hasMinted: boolean;
 }
 
-function MintAction({ isWinner, doRefund }: MintActionProps) {
+function MintAction({ isWinner, doRefund, hasMinted }: MintActionProps) {
 	const { beelieversAuction, beelieversMint } = useNetworkVariables();
-	const { mutate: signAndExecTx, isPending } = useSignAndExecuteTransaction();
+	const { mutate: signAndExecTx, isPending: isRefundPending } = useSignAndExecuteTransaction();
 	const { mutateAsync: signTransaction } = useSignTransaction();
 	const { network, client } = useSuiClientContext();
 	const account = useCurrentAccount();
 
 	const signAndExecuteTransaction = async (transaction: Transaction) => {
+		const chain = account?.chains?.[0];
 		const { bytes, signature } = await signTransaction({
 			transaction,
-			// TODO: probably there is a way without hardcoding the "sui:" prefix
-			chain: "sui:" + network,
+			chain,
 		});
+		console.log("chain", chain);
 
 		return await client.executeTransactionBlock({
 			transactionBlock: bytes,
@@ -70,13 +72,90 @@ function MintAction({ isWinner, doRefund }: MintActionProps) {
 		kioskId: string;
 		kioskCapId: string;
 		address: string;
+		isPersonal?: boolean;
 	} | null>(null);
+
+	const [isMinting, setIsMinting] = useState(false);
+
+	const kioskClient = new KioskClient({
+		client: client as any,
+		network: network,
+	});
+
+	const storeKioskInfo = (address: string, kioskId: string, kioskCapId: string) => {
+		const kioskData = {
+			kioskId,
+			kioskCapId,
+			address,
+			isPersonal: false,
+		};
+		localStorage.setItem(`kioskInfo-${address}`, JSON.stringify(kioskData));
+		setKioskInfo(kioskData);
+	};
+
+	const getStoredKioskInfo = (address: string) => {
+		const storedData = localStorage.getItem(`kioskInfo-${address}`);
+		if (storedData) {
+			const parsedData = JSON.parse(storedData);
+			if (parsedData.address === address) {
+				return parsedData;
+			}
+		}
+		return null;
+	};
+	const verifyKiosk = async (kioskId: string, kioskCapId: string) => {
+		try {
+			const kioskObject = await client.getObject({
+				id: kioskId,
+				options: { showContent: true },
+			});
+			const capObject = await client.getObject({
+				id: kioskCapId,
+				options: { showContent: true },
+			});
+			return kioskObject.data && capObject.data;
+		} catch (error) {
+			console.error("Error verifying kiosk:", error);
+			return false;
+		}
+	};
+	useEffect(() => {
+		const initializeKioskInfo = async () => {
+			if (!account) return;
+			const stored = getStoredKioskInfo(account.address);
+			if (stored) {
+				const isValid = await verifyKiosk(stored.kioskId, stored.kioskCapId);
+				if (isValid) {
+					setKioskInfo(stored);
+					return;
+				} else {
+					localStorage.removeItem(`kioskInfo-${account.address}`);
+				}
+			}
+			try {
+				const { kioskOwnerCaps } = await kioskClient.getOwnedKiosks({ address: account.address });
+
+				if (kioskOwnerCaps && kioskOwnerCaps.length > 0) {
+					const nonPersonalKiosk = kioskOwnerCaps.find((kiosk) => !kiosk.isPersonal);
+
+					if (nonPersonalKiosk) {
+						storeKioskInfo(account.address, nonPersonalKiosk.kioskId, nonPersonalKiosk.objectId);
+					}
+				}
+			} catch (error) {
+				console.error("Error fetching kiosks from network:", error);
+			}
+		};
+
+		initializeKioskInfo();
+	}, [account]);
 
 	const handleMintNFT = async () => {
 		if (!account) return;
 		let kioskId, kioskCapId;
 
 		try {
+			setIsMinting(true);
 			if (!kioskInfo) {
 				toast({
 					title: "Creating Kiosk object",
@@ -84,7 +163,7 @@ function MintAction({ isWinner, doRefund }: MintActionProps) {
 					description: "Kiosk is used to store NFT",
 				});
 
-				const kioskTx = createKioskTx(client, account.address);
+				const kioskTx = createKioskTx(client, account.address, network);
 				const result = await signAndExecuteTransaction(kioskTx);
 				console.log("create kiosk tx ID:", result.digest);
 
@@ -105,7 +184,7 @@ function MintAction({ isWinner, doRefund }: MintActionProps) {
 				console.log(">>> kiosk effects", result.effects?.created);
 				console.log(">>> kioskId", kioskId, kioskCapId);
 
-				setKioskInfo({ kioskId, kioskCapId, address: account.address });
+				storeKioskInfo(account.address, kioskId, kioskCapId);
 			} else {
 				kioskId = kioskInfo.kioskId;
 				kioskCapId = kioskInfo.kioskCapId;
@@ -128,6 +207,8 @@ function MintAction({ isWinner, doRefund }: MintActionProps) {
 				description: (error as Error).message || "An error occurred during minting",
 				variant: "destructive",
 			});
+		} finally {
+			setIsMinting(false);
 		}
 	};
 
@@ -169,7 +250,7 @@ function MintAction({ isWinner, doRefund }: MintActionProps) {
 							variant: "destructive",
 						});
 					},
-				},
+				}
 			);
 		} catch (error) {
 			console.error("Claim tx error:", error);
@@ -181,18 +262,18 @@ function MintAction({ isWinner, doRefund }: MintActionProps) {
 		}
 	};
 
-	// NOTE: we don't need to check account here - isWinner already has that check.
-	const canMint = isWinner && beelieversMint.mintStart <= +new Date();
+	const isAnyActionPending = isRefundPending || isMinting;
 
-	// TODO, below in isLoading (both buttons), use a correct state
+	// NOTE: we don't need to check account here - isWinner already has that check.
+	const canMint = isWinner && beelieversMint.mintStart <= +new Date() && !hasMinted;
 
 	return (
 		<div className="flex flex-col sm:flex-row gap-4">
 			{canMint && (
 				<Button
 					type="button"
-					disabled={isPending}
-					isLoading={isPending}
+					disabled={isAnyActionPending}
+					isLoading={isMinting}
 					size="lg"
 					className="flex-1"
 					onClick={handleMintNFT}
@@ -200,13 +281,18 @@ function MintAction({ isWinner, doRefund }: MintActionProps) {
 					🐝 Mint
 				</Button>
 			)}
+			{hasMinted && (
+				<div className="flex-1 text-center p-3 bg-primary/10 rounded-lg border border-primary/20">
+					<span className="text-primary font-semibold">✅ Already Minted</span>
+				</div>
+			)}
 			{doRefund === DoRefund.NoBoosted &&
 				"You have nothing to withdraw because you are a winner and your bid is below (due to boost) or at the Mint Price"}
 			{doRefund === DoRefund.Yes && (
 				<Button
 					type="button"
-					disabled={isPending}
-					isLoading={isPending}
+					disabled={isAnyActionPending}
+					isLoading={isRefundPending}
 					size="lg"
 					variant="outline"
 					className="flex-1"
@@ -235,6 +321,39 @@ interface MintInfoProps {
 
 export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auctionSize } }: MintInfoProps) {
 	const { beelieversMint } = useNetworkVariables();
+	const { client } = useSuiClientContext();
+	const account = useCurrentAccount();
+	const [hasMinted, setHasMinted] = useState(false);
+
+	// Check if user has already minted
+	const checkHasMinted = useCallback(async () => {
+		if (!account || !beelieversMint.packageId) return;
+
+		try {
+			const txb = new Transaction();
+			txb.moveCall({
+				target: `${beelieversMint.packageId}::mint::has_minted_public`,
+				arguments: [txb.object(beelieversMint.collectionId), txb.pure.address(account.address)],
+			});
+
+			const result = await client.devInspectTransactionBlock({
+				sender: account.address,
+				transactionBlock: txb,
+			});
+
+			const hasAlreadyMinted = result.results?.[0]?.returnValues?.[0]?.[0]?.[0] === 1;
+			setHasMinted(hasAlreadyMinted);
+		} catch (error) {
+			console.error("Error checking mint status:", error);
+			setHasMinted(false);
+		}
+	}, [account, client, beelieversMint]);
+
+	useEffect(() => {
+		if (account) {
+			checkHasMinted();
+		}
+	}, [account, checkHasMinted]);
 
 	if (user === null) {
 		return <p className="text-xl">Connect to your wallet to see minting info</p>;
@@ -288,11 +407,15 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 							<MintInfoItem
 								title="Auction Status:"
 								value={isWinner ? "🎉 Winner" : "❌ Not in top 5810"}
+							/>
+							<MintInfoItem
+								title="Mint Status:"
+								value={hasMinted ? "✅ Already Minted" : "⏳ Not Minted"}
 								isLastItem
 							/>
 						</div>
 					</div>
-					<MintAction isWinner={isWinner} doRefund={doRefund} />
+					<MintAction isWinner={isWinner} doRefund={doRefund} hasMinted={hasMinted} />
 				</div>
 			</CardContent>
 		</Card>
@@ -308,7 +431,7 @@ type RefundCallTargets = {
 
 const createWithdrawTxn = async (
 	senderAddress: string,
-	{ packageId, module, withdrawFunction, auctionId }: RefundCallTargets,
+	{ packageId, module, withdrawFunction, auctionId }: RefundCallTargets
 ): Promise<Transaction> => {
 	const txn = new Transaction();
 	txn.setSender(senderAddress);
@@ -323,6 +446,7 @@ interface MintCfg {
 	packageId: string;
 	collectionId: string;
 	transferPolicyId: string;
+	//Change this when deploying to mainnet
 	mintStart: 1756899768721;
 }
 
@@ -330,18 +454,16 @@ interface MintCfg {
 
 function createMintTx(kioskId: string, kioskCapId: string, mintCfg: MintCfg, auctionId: string): Transaction {
 	const tx = new Transaction();
-	// TODO: no need for payment - in new API we removed it.
-	const [paymentCoin] = tx.splitCoins(tx.gas, [tx.pure.u64(0)]);
-	console.log("payment coin", paymentCoin);
+
+	// We need a payment coin even if mint_price is 0 (it will be destroyed)
+	const [paymentCoin] = tx.splitCoins(tx.gas, [tx.pure.u64(1)]); // Use 1 MIST
+
 	tx.moveCall({
 		target: `${mintCfg.packageId}::mint::mint`,
 		arguments: [
 			tx.object(mintCfg.collectionId),
-			// TODO: in next iteration this must be removed (we updated API, but we need to deploy it)
 			paymentCoin,
 			tx.object(mintCfg.transferPolicyId),
-			// TODO: random ID and clock ID is const. Probably it's defined in the SDK - so let's
-			// check if it's there (you can ask Vu), otherwise, define it in app/lib/suiobj.ts (new file)
 			tx.object(SUI_RANDOM_OBJECT_ID),
 			tx.object(SUI_CLOCK_OBJECT_ID),
 			tx.object(auctionId),
@@ -352,12 +474,10 @@ function createMintTx(kioskId: string, kioskCapId: string, mintCfg: MintCfg, auc
 	return tx;
 }
 
-function createKioskTx(client: SuiClient, userAddr: string): Transaction {
+function createKioskTx(client: SuiClient, userAddr: string, network: Network): Transaction {
 	const kioskClient = new KioskClient({
-		// TODO: Remove this type casting once @mysten library version conflicts are resolved
-		client: client as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-		// TODO: use network from a config
-		network: Network.TESTNET,
+		client: client as any,
+		network: network,
 	});
 
 	const tx = new Transaction();
