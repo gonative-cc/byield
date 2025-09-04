@@ -22,6 +22,8 @@ import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
 import { parseTxError } from "~/lib/suierr";
 import { ExternalLink } from "lucide-react";
 
+import { mkSuiVisionUrl, NftDisplay } from "./nft";
+
 interface MintInfoItemProps {
 	title: string;
 	value: string;
@@ -40,12 +42,6 @@ function MintInfoItem({ title, value, isLastItem = false }: MintInfoItemProps) {
 			<div className="text-xl font-bold text-primary">{value}</div>
 		</div>
 	);
-}
-
-interface MintActionProps {
-	isWinner: boolean;
-	doRefund: DoRefund;
-	hasMinted: boolean;
 }
 
 const extractNftIdFromResult = (result: SuiTransactionBlockResponse, kioskId?: string): string | null => {
@@ -90,14 +86,8 @@ const extractNftIdFromResult = (result: SuiTransactionBlockResponse, kioskId?: s
 	}
 };
 
-const getSuiVisionUrl = (objectId: string, network: string): string => {
-	// TODO: let's define it in contracts-*.json, next to the `accountExplorer`.
-	const baseUrl = network === "mainnet" ? "https://suivision.xyz" : "https://testnet.suivision.xyz";
-	return `${baseUrl}/object/${objectId}`;
-};
-
 const createNftSuccessToast = (nftId: string, network: string) => {
-	const suiVisionUrl = getSuiVisionUrl(nftId, network);
+	const suiVisionUrl = mkSuiVisionUrl(nftId, network);
 
 	return {
 		title: "Minting Successful! 🎉",
@@ -119,181 +109,46 @@ const createNftSuccessToast = (nftId: string, network: string) => {
 	};
 };
 
-interface NftMetadata {
-	id: string;
-	name: string;
-	image_url: string;
-	token_id: string;
-	attributes: {
-		fields: {
-			contents: Array<{
-				fields: {
-					key: string;
-					value: string;
-				};
-			}>;
-		};
-	};
-	badges: string[];
+async function signAndExecTx(
+	transaction: Transaction,
+	client: SuiClient,
+	signer: (Transaction) => { bytes: string; signature: string },
+): Promise<SuiTransactionBlockResponse> {
+	// TODO: verify if we are using the right chain here (if we switch to mainnet if this is correct)
+	const chain = account?.chains?.[0];
+	const { bytes, signature } = await signer({ transaction, chain });
+
+	return await client.executeTransactionBlock({
+		transactionBlock: bytes,
+		signature,
+		options: { showEffects: true, showInput: true },
+	});
 }
 
-// TODO: move to a new file together with NFTDisplay
-const mkWalrusImageUrl = (imageUrl: string): string => {
-	if (imageUrl.startsWith("http")) {
-		return imageUrl;
-	}
-	return `https://walrus.tusky.io/${imageUrl}`;
-};
-
-const getAttributeValue = (attributes: NftMetadata["attributes"], key: string): string => {
-	const attr = attributes.fields.contents.find((item) => item.fields.key === key);
-	return attr?.fields.value || "";
-};
-
-interface NftDisplayProps {
-	nftId: string;
-	network: string;
-	metadata?: NftMetadata | null;
+interface KioskInfo {
+	kioskId: string;
+	kioskCapId: string;
+	address: string;
+	isPersonal?: boolean;
 }
 
-// TODO: let's move to ./nft.tsx
-function NftDisplay({ nftId, network, metadata }: NftDisplayProps) {
-	const imageUrl = metadata?.image_url ? mkWalrusImageUrl(metadata.image_url) : null;
-	const nftType = metadata ? getAttributeValue(metadata.attributes, "Type") : "";
-	const mythicName = metadata ? getAttributeValue(metadata.attributes, "Mythic Name") : "";
-	const background = metadata ? getAttributeValue(metadata.attributes, "Background") : "";
-
-	return (
-		<div className="mt-4 p-4 bg-gradient-to-r from-primary/10 to-orange-400/10 rounded-lg border border-primary/20">
-			<div className="flex items-start gap-4">
-				<div className="flex-shrink-0">
-					{imageUrl ? (
-						<a
-							href={imageUrl}
-							target="_blank"
-							rel="noopener noreferrer"
-							className="block hover:opacity-80 transition-opacity cursor-pointer"
-							title="Click to view full-size image"
-						>
-							<img
-								src={imageUrl}
-								alt={metadata?.name || "Beeliever NFT"}
-								className="w-20 h-20 rounded-lg border-2 border-primary/20 object-cover hover:border-primary/40 transition-colors"
-								onError={(e) => {
-									e.currentTarget.style.display = "none";
-									const fallback = e.currentTarget.parentElement
-										?.nextElementSibling as HTMLElement;
-									if (fallback) fallback.classList.remove("hidden");
-								}}
-							/>
-						</a>
-					) : null}
-					<div
-						className={`w-20 h-20 rounded-lg bg-primary/20 flex items-center justify-center text-2xl ${
-							imageUrl ? "hidden" : ""
-						}`}
-					>
-						🐝
-					</div>
-				</div>
-
-				<div className="flex-1">
-					<div className="space-y-4">
-						<h4 className="font-semibold text-primary flex items-center gap-2">
-							🎉 {metadata?.name || "Beeliever NFT"} Minted!
-						</h4>
-
-						<div className="space-y-2">
-							{nftType && (
-								<div className="flex items-center gap-2">
-									<span
-										className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full ${
-											nftType === "Mythic"
-												? "bg-gradient-to-r from-yellow-400/20 to-orange-400/20 text-yellow-400 border border-yellow-400/30"
-												: "bg-primary/20 text-primary border border-primary/30"
-										}`}
-									>
-										{nftType === "Mythic" ? "✨" : "🐝"} {nftType}
-									</span>
-									{mythicName && (
-										<span className="text-xs text-muted-foreground">{mythicName}</span>
-									)}
-								</div>
-							)}
-
-							{background && (
-								<div className="text-xs text-muted-foreground">Background: {background}</div>
-							)}
-
-							{metadata?.badges && metadata.badges.length > 0 && (
-								<div className="flex flex-wrap gap-1">
-									{metadata.badges.map((badge, index) => (
-										<span
-											key={index}
-											className="text-xs px-2 py-1 bg-blue-500/20 text-blue-400 rounded-full border border-blue-400/30"
-										>
-											🏆 {badge}
-										</span>
-									))}
-								</div>
-							)}
-
-							<div className="text-xs text-muted-foreground">
-								Token #{metadata?.token_id} • Object ID: {nftId}
-							</div>
-						</div>
-
-						{/* Move the View NFT button to bottom and fix styling */}
-						<div className="pt-2">
-							<a
-								href={getSuiVisionUrl(nftId, network)}
-								target="_blank"
-								rel="noopener noreferrer"
-								className="inline-flex items-center gap-2 px-4 py-2 bg-primary/90 text-white border border-white/10 rounded-lg hover:bg-primary transition-colors font-medium text-sm shadow-[inset_0_4px_10px_0_rgba(255,255,255,0.25),inset_0_-4px_10px_0_rgba(255,255,255,0.15)]"
-							>
-								<ExternalLink size={16} />
-								View on SuiVision
-							</a>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	);
+interface MintActionProps {
+	isWinner: boolean;
+	doRefund: DoRefund;
+	hasMinted: boolean;
+	setNftId: (string) => void;
 }
 
-function MintAction({ isWinner, doRefund, hasMinted }: MintActionProps) {
+function MintAction({ isWinner, doRefund, hasMinted, setNftId }: MintActionProps) {
 	const { beelieversAuction, beelieversMint } = useNetworkVariables();
-	const { mutate: signAndExecTx, isPending: isRefundPending } = useSignAndExecuteTransaction();
+	const { mutate: signAndExecTxAction, isPending: isRefundPending } = useSignAndExecuteTransaction();
 	const { mutateAsync: signTransaction } = useSignTransaction();
 	const { network, client } = useSuiClientContext();
 	const account = useCurrentAccount();
 
-	const signAndExecuteTransaction = async (transaction: Transaction) => {
-		const chain = account?.chains?.[0];
-		const { bytes, signature } = await signTransaction({
-			transaction,
-			chain,
-		});
-		console.log("chain", chain);
-
-		return await client.executeTransactionBlock({
-			transactionBlock: bytes,
-			signature,
-			options: { showEffects: true, showInput: true },
-		});
-	};
-
-	const [kioskInfo, setKioskInfo] = useState<{
-		kioskId: string;
-		kioskCapId: string;
-		address: string;
-		isPersonal?: boolean;
-	} | null>(null);
+	const [kioskInfo, setKioskInfo] = useState<KioskInfo | null>(null);
 
 	const [isMinting, setIsMinting] = useState(false);
-	const [mintedNftId, setMintedNftId] = useState<string | null>(null);
-	const [nftMetadata, setNftMetadata] = useState<NftMetadata | null>(null);
 
 	const storeKioskInfo = (address: string, kioskId: string, kioskCapId: string) => {
 		const kioskData = {
@@ -306,7 +161,7 @@ function MintAction({ isWinner, doRefund, hasMinted }: MintActionProps) {
 		setKioskInfo(kioskData);
 	};
 
-	const getStoredKioskInfo = (address: string) => {
+	const getStoredKioskInfo = (address: string): KioskInfo | null => {
 		const storedData = localStorage.getItem(`kioskInfo-${address}`);
 		if (storedData) {
 			const parsedData = JSON.parse(storedData);
@@ -368,32 +223,6 @@ function MintAction({ isWinner, doRefund, hasMinted }: MintActionProps) {
 		initializeKioskInfo();
 	}, [account, network]);
 
-	// TODO: move to ./nft.tsx
-	const fetchNftMetadata = async (client: SuiClient, nftId: string): Promise<NftMetadata | null> => {
-		try {
-			const nftObject = await client.getObject({
-				id: nftId,
-				options: { showContent: true },
-			});
-
-			if (nftObject.data?.content && "fields" in nftObject.data.content) {
-				const fields = nftObject.data.content.fields as any;
-				return {
-					id: nftId,
-					name: fields.name || "Beeliever NFT",
-					image_url: fields.image_url || "",
-					token_id: fields.token_id || "0",
-					attributes: fields.attributes || { fields: { contents: [] } },
-					badges: fields.badges || [],
-				};
-			}
-			return null;
-		} catch (error) {
-			console.error("Error fetching NFT metadata:", error);
-			return null;
-		}
-	};
-
 	const handleMintNFT = async () => {
 		if (!account) return;
 		let kioskId, kioskCapId;
@@ -408,7 +237,7 @@ function MintAction({ isWinner, doRefund, hasMinted }: MintActionProps) {
 				});
 
 				const kioskTx = createKioskTx(client, account.address, network);
-				const result = await signAndExecuteTransaction(kioskTx);
+				const result = await signAndExecTx(kioskTx, client, signTransaction);
 				console.log("create kiosk tx ID:", result.digest);
 
 				const effects = result.effects;
@@ -436,16 +265,12 @@ function MintAction({ isWinner, doRefund, hasMinted }: MintActionProps) {
 			toast({ title: "Minting NFT", variant: "info" });
 
 			const tx = createMintTx(kioskId, kioskCapId, beelieversMint, beelieversAuction.auctionId);
-			const result = await signAndExecuteTransaction(tx);
+			const result = await signAndExecTx(tx);
 			console.log(">>> mint result", result.digest, result.errors);
 
 			const nftId = extractNftIdFromResult(result, kioskId);
 			if (nftId) {
-				setMintedNftId(nftId);
-
-				const metadata = await fetchNftMetadata(client, nftId);
-				setNftMetadata(metadata);
-
+				setNftId(nftId);
 				toast(createNftSuccessToast(nftId, network));
 			} else {
 				toast({
@@ -476,7 +301,7 @@ function MintAction({ isWinner, doRefund, hasMinted }: MintActionProps) {
 		}
 		try {
 			const transaction = await createWithdrawTxn(account.address, beelieversAuction);
-			signAndExecTx(
+			signAndExecTxAction(
 				{ transaction },
 				{
 					onSuccess: async (result) => {
@@ -538,9 +363,6 @@ function MintAction({ isWinner, doRefund, hasMinted }: MintActionProps) {
 					🐝 Mint
 				</Button>
 			)}
-
-			{mintedNftId && <NftDisplay nftId={mintedNftId} network={network} metadata={nftMetadata} />}
-
 			{doRefund === DoRefund.NoBoosted &&
 				"You have nothing to withdraw because you are a winner and your bid is below (due to boost) or at the Mint Price"}
 			{doRefund === DoRefund.Yes && (
@@ -579,6 +401,7 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 	const { client } = useSuiClientContext();
 	const account = useCurrentAccount();
 	const [hasMinted, setHasMinted] = useState(false);
+	const [nftId, setNftId] = useState<string | null>(null);
 
 	useEffect(() => {
 		if (!account) return;
@@ -641,12 +464,19 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 							/>
 							<MintInfoItem
 								title="Mint Status:"
-								value={hasMinted ? "✅ Already Minted" : "⏳ Not Minted"}
+								value={hasMinted ? "✅ Minted" : "⏳ Not Minted"}
 								isLastItem
 							/>
 						</div>
 					</div>
-					<MintAction isWinner={isWinner} doRefund={doRefund} hasMinted={hasMinted} />
+					{nftId && <NftDisplay nftId={nftId} />}
+
+					<MintAction
+						isWinner={isWinner}
+						doRefund={doRefund}
+						hasMinted={hasMinted}
+						setNftId={setNftId}
+					/>
 				</div>
 			</CardContent>
 		</Card>
@@ -773,6 +603,3 @@ async function queryHasMinted(addr: string, client: SuiClient, cfg: MintCfg): Pr
 		return false;
 	}
 }
-
-// Export the NftDisplay component and NftMetadata interface for testing
-export { NftDisplay, type NftMetadata };
