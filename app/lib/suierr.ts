@@ -1,7 +1,7 @@
 import { extractFirstInteger } from "./parser";
 
 export interface MoveAbort {
-	funName: string;
+	funName?: string;
 	errCode?: number;
 }
 
@@ -9,11 +9,19 @@ export interface MoveAbort {
 // - empty string if err is not defined
 // - original err if MoveAbort is not present
 // - parsed Error code and function name if MoveAbort is detected
-export function parseMoveAbortErr(err: string): MoveAbort | unknown {
+export function parseTxError(err: string): MoveAbort | string | unknown {
 	// example error:
 	// MoveAbort(MoveLocation { module: ModuleId { address: 3064d43ee6cc4d703d4c10089786f0ae805b24d2d031326520131d78667ffc2c, name: Identifier("mint") }, function: 27, instruction: 73, function_name: Some("mint") }, 4)
 
 	if (!err) return undefined;
+
+	const trpcErr = "TRPCClientError: ";
+	const userErr = "TRPCClientError: User";
+	const userErrIdx = err.indexOf(userErr);
+	if (userErrIdx >= 0) {
+		return err.slice(userErrIdx + trpcErr.length);
+	}
+
 	const abortIdx = err.indexOf("MoveAbort");
 	if (abortIdx < 0) return undefined;
 

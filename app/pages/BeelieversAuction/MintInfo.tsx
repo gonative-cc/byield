@@ -19,7 +19,7 @@ import { AuctionAccountType, type AuctionInfo, type User } from "~/server/Beelie
 import type { SuiClient } from "@mysten/sui/client";
 import { SUI_RANDOM_OBJECT_ID } from "~/lib/suienv";
 import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
-import { parseMoveAbortErr } from "~/lib/suierr";
+import { parseTxError } from "~/lib/suierr";
 
 interface MintInfoItemProps {
 	title: string;
@@ -79,7 +79,7 @@ function MintAction({ isWinner, doRefund, hasMinted }: MintActionProps) {
 	const [isMinting, setIsMinting] = useState(false);
 
 	const kioskClient = new KioskClient({
-		client: client as any,
+		client: client,
 		network: network,
 	});
 
@@ -255,7 +255,7 @@ function MintAction({ isWinner, doRefund, hasMinted }: MintActionProps) {
 							variant: "destructive",
 						});
 					},
-				}
+				},
 			);
 		} catch (error) {
 			console.error("Claim tx error:", error);
@@ -436,7 +436,7 @@ type RefundCallTargets = {
 
 const createWithdrawTxn = async (
 	senderAddress: string,
-	{ packageId, module, withdrawFunction, auctionId }: RefundCallTargets
+	{ packageId, module, withdrawFunction, auctionId }: RefundCallTargets,
 ): Promise<Transaction> => {
 	const txn = new Transaction();
 	txn.setSender(senderAddress);
@@ -481,7 +481,7 @@ function createMintTx(kioskId: string, kioskCapId: string, mintCfg: MintCfg, auc
 
 function createKioskTx(client: SuiClient, userAddr: string, network: Network): Transaction {
 	const kioskClient = new KioskClient({
-		client: client as any,
+		client: client,
 		network: network,
 	});
 
@@ -497,11 +497,13 @@ function createKioskTx(client: SuiClient, userAddr: string, network: Network): T
 }
 
 export function formatSuiErr(err: string): string {
-	const moveAbort = parseMoveAbortErr(err);
-	if (!moveAbort) return "Sui tx failed, unknown error";
+	const txErr = parseTxError(err);
+	if (!txErr) return "Sui tx failed, unknown error";
+
+	if (typeof txErr === "string") return txErr;
 
 	let reason = "unknown";
-	switch (moveAbort.errCode) {
+	switch (txErr.errCode) {
 		case 1: {
 			reason = "all NFTs are alaready minted";
 			break;
@@ -524,5 +526,5 @@ export function formatSuiErr(err: string): string {
 		}
 	}
 
-	return `Tx aborted, function: ${moveAbort.funName} reason: "${reason}"`;
+	return `Tx aborted, function: ${txErr.funName} reason: "${reason}"`;
 }
