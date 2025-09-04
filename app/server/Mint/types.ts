@@ -1,9 +1,9 @@
 export enum MintingTxStatus {
-	MINED = "MINED",
+	MINTED = "MINED",
 	FAILED = "FAILED",
-	PENDING = "PENDING",
 	REORG = "REORG",
 	CONFIRMING = "CONFIRMING",
+	BROADCASTED = "BROADCASTED",
 }
 
 export interface MintTransaction {
@@ -13,4 +13,5 @@ export interface MintTransaction {
 	suiAddress: string;
 	suiTxId: string;
 	timestamp: number;
+	numberOfConfirmation: number;
 }

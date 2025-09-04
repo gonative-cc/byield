@@ -3,12 +3,9 @@ import { Table } from "~/components/ui/table";
 import { Tooltip } from "~/components/ui/tooltip";
 import { trimAddress } from "~/components/Wallet/walletHelper";
 import { formatBTC } from "~/lib/denoms";
-import type { MintTransaction } from "~/server/Mint/types";
+import { type MintTransaction } from "~/server/Mint/types";
 import { Info } from "lucide-react";
-
-interface MintBTCTableProps {
-	data: MintTransaction[];
-}
+import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 
 function MintTableTooltip({ tooltip, label }: { tooltip: string; label: string }) {
 	return (
@@ -25,7 +22,7 @@ const createColumns = (): Column<MintTransaction>[] => [
 	{
 		Header: () => (
 			<MintTableTooltip
-				label="BitCoin Tx ID"
+				label="Bitcoin Tx ID"
 				tooltip="The Bitcoin transaction ID that initiated the mint process"
 			/>
 		),
@@ -91,6 +88,10 @@ const createColumns = (): Column<MintTransaction>[] => [
 		),
 	},
 ];
+
+interface MintBTCTableProps {
+	data: MintTransaction[];
+}
 
 export function MintBTCTable({ data }: MintBTCTableProps) {
 	const columns = createColumns();
