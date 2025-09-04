@@ -20,6 +20,7 @@ import type { SuiClient } from "@mysten/sui/client";
 import { SUI_RANDOM_OBJECT_ID } from "~/lib/suienv";
 import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
 import { parseMoveAbortErr } from "~/lib/suierr";
+import { ExternalLink } from "lucide-react";
 
 interface MintInfoItemProps {
 	title: string;
@@ -45,6 +46,189 @@ interface MintActionProps {
 	isWinner: boolean;
 	doRefund: DoRefund;
 	hasMinted: boolean;
+}
+
+const extractNftIdFromResult = (result: any, kioskId?: string): string | null => {
+	try {
+		console.log(">>> Parsing transaction result:", result);
+
+		if (result.events) {
+			console.log(">>> Events:", result.events);
+			for (const event of result.events) {
+				console.log(">>> Event type:", event.type);
+
+				if (event.type.includes("::mint::NFTMinted")) {
+					console.log(">>> Found NFTMinted event:", event);
+
+					if (event.parsedJson?.nft_id) {
+						console.log(">>> Extracted NFT ID from event:", event.parsedJson.nft_id);
+						return event.parsedJson.nft_id;
+					}
+				}
+			}
+		}
+
+		if (result.effects?.created) {
+			console.log(">>> Created objects:", result.effects.created);
+			for (const obj of result.effects.created) {
+				const owner = obj.owner as { Shared?: unknown; AddressOwner?: string; ObjectOwner?: string };
+
+				if (owner.ObjectOwner) {
+					console.log(">>> Found potential NFT object:", obj.reference.objectId);
+					if (obj.reference.objectId !== kioskId) {
+						return obj.reference.objectId;
+					}
+				}
+			}
+		}
+
+		console.log(">>> No NFT ID found in transaction result");
+		return null;
+	} catch (error) {
+		console.error("Error extracting NFT ID:", error);
+		return null;
+	}
+};
+
+const getSuiVisionUrl = (objectId: string, network: string): string => {
+	const baseUrl = network === "mainnet" ? "https://suivision.xyz" : "https://testnet.suivision.xyz";
+	return `${baseUrl}/object/${objectId}`;
+};
+
+const createNftSuccessToast = (nftId: string, network: string) => {
+	const suiVisionUrl = getSuiVisionUrl(nftId, network);
+
+	return {
+		title: "Minting Successful! 🎉",
+		description: (
+			<div className="space-y-2">
+				<p>Successfully minted Beeliever NFT</p>
+				<a
+					href={suiVisionUrl}
+					target="_blank"
+					rel="noopener noreferrer"
+					className="inline-flex items-center gap-1 text-primary hover:underline font-medium"
+				>
+					<ExternalLink size={16} />
+					View NFT on SuiVision
+				</a>
+			</div>
+		),
+		duration: 10000, 
+	};
+};
+
+interface NftDisplayProps {
+	nftId: string;
+	network: string;
+}
+
+function NftDisplay({ nftId, network, metadata }: NftDisplayProps) {
+	const imageUrl = metadata?.image_url ? getWalrusImageUrl(metadata.image_url) : null;
+	const nftType = metadata ? getAttributeValue(metadata.attributes, "Type") : "";
+	const mythicName = metadata ? getAttributeValue(metadata.attributes, "Mythic Name") : "";
+	const background = metadata ? getAttributeValue(metadata.attributes, "Background") : "";
+
+	return (
+		<div className="mt-4 p-4 bg-gradient-to-r from-primary/10 to-orange-400/10 rounded-lg border border-primary/20">
+			<div className="flex items-start gap-4">
+				<div className="flex-shrink-0">
+					{imageUrl ? (
+						<a
+							href={imageUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="block hover:opacity-80 transition-opacity cursor-pointer"
+							title="Click to view full-size image"
+						>
+							<img
+								src={imageUrl}
+								alt={metadata?.name || "Beeliever NFT"}
+								className="w-20 h-20 rounded-lg border-2 border-primary/20 object-cover hover:border-primary/40 transition-colors"
+								onError={(e) => {
+									e.currentTarget.style.display = "none";
+									const fallback = e.currentTarget.parentElement
+										?.nextElementSibling as HTMLElement;
+									if (fallback) fallback.classList.remove("hidden");
+								}}
+							/>
+						</a>
+					) : null}
+					<div
+						className={`w-20 h-20 rounded-lg bg-primary/20 flex items-center justify-center text-2xl ${
+							imageUrl ? "hidden" : ""
+						}`}
+					>
+						🐝
+					</div>
+				</div>
+
+				<div className="flex-1">
+					<div className="flex items-center justify-between">
+						<div className="flex-1">
+							<h4 className="font-semibold text-primary flex items-center gap-2">
+								🎉 {metadata?.name || "Beeliever NFT"} Minted!
+							</h4>
+
+							<div className="mt-2 space-y-2">
+								{nftType && (
+									<div className="flex items-center gap-2">
+										<span
+											className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full ${
+												nftType === "Mythic"
+													? "bg-gradient-to-r from-yellow-400/20 to-orange-400/20 text-yellow-400 border border-yellow-400/30"
+													: "bg-primary/20 text-primary border border-primary/30"
+											}`}
+										>
+											{nftType === "Mythic" ? "✨" : "🐝"} {nftType}
+										</span>
+										{mythicName && (
+											<span className="text-xs text-muted-foreground">
+												{mythicName}
+											</span>
+										)}
+									</div>
+								)}
+
+								{background && (
+									<div className="text-xs text-muted-foreground">
+										Background: {background}
+									</div>
+								)}
+
+								{metadata?.badges && metadata.badges.length > 0 && (
+									<div className="flex flex-wrap gap-1">
+										{metadata.badges.map((badge, index) => (
+											<span
+												key={index}
+												className="text-xs px-2 py-1 bg-blue-500/20 text-blue-400 rounded-full border border-blue-400/30"
+											>
+												🏆 {badge}
+											</span>
+										))}
+									</div>
+								)}
+
+								<div className="text-xs text-muted-foreground">
+									Token #{metadata?.token_id} • Object ID: {nftId}
+								</div>
+							</div>
+						</div>
+
+						<a
+							href={getSuiVisionUrl(nftId, network)}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
+						>
+							<ExternalLink size={16} />
+							View NFT
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
 }
 
 function MintAction({ isWinner, doRefund, hasMinted }: MintActionProps) {
@@ -77,6 +261,7 @@ function MintAction({ isWinner, doRefund, hasMinted }: MintActionProps) {
 	} | null>(null);
 
 	const [isMinting, setIsMinting] = useState(false);
+	const [mintedNftId, setMintedNftId] = useState<string | null>(null);
 
 	const kioskClient = new KioskClient({
 		client: client as any,
@@ -197,10 +382,18 @@ function MintAction({ isWinner, doRefund, hasMinted }: MintActionProps) {
 			const result = await signAndExecuteTransaction(tx);
 			console.log(">>> mint result", result.digest, result.errors);
 
-			toast({
-				title: "Minting Successful",
-				description: "Successfully minted Beeliever NFT",
-			});
+			const nftId = extractNftIdFromResult(result, kioskId);
+			console.log(">>> extracted NFT ID:", nftId);
+
+			if (nftId) {
+				setMintedNftId(nftId);
+				toast(createNftSuccessToast(nftId, network));
+			} else {
+				toast({
+					title: "Minting Successful",
+					description: "Successfully minted Beeliever NFT",
+				});
+			}
 		} catch (error) {
 			console.error("Error minting:", error);
 
@@ -286,6 +479,9 @@ function MintAction({ isWinner, doRefund, hasMinted }: MintActionProps) {
 					🐝 Mint
 				</Button>
 			)}
+
+			{mintedNftId && <NftDisplay nftId={mintedNftId} network={network} />}
+
 			{hasMinted && (
 				<div className="flex-1 text-center p-3 bg-primary/10 rounded-lg border border-primary/20">
 					<span className="text-primary font-semibold">✅ Already Minted</span>
