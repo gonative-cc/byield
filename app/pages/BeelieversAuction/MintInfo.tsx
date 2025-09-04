@@ -360,8 +360,7 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 	}
 
 	const currentBidInMist = BigInt(user.amount);
-	//const isWinner = user.rank !== null && user.rank < _auctionSize;
-	const isWinner = true;
+	const isWinner = user.rank !== null && user.rank < _auctionSize;
 	const boosted = user.wlStatus > AuctionAccountType.DEFAULT;
 	let doRefund: DoRefund = DoRefund.No;
 	if (user.amount > 0) {
