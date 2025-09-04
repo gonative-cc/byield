@@ -29,9 +29,8 @@ async function fetchNftMetadata(client: SuiClient, nftId: string): Promise<NftMe
 		});
 
 		if (nftObject.data?.content && "fields" in nftObject.data.content) {
-			// TODO: try to use NftMetadata directly here
-			/* eslint-disable @typescript-eslint/no-explicit-any */
-			const fields = nftObject.data.content.fields as any;
+			// @ts-expect-error fields is of type MoveStruct which is a variant
+			const fields = nftObject.data.content.fields as NftMetadata;
 			return {
 				id: nftId,
 				name: fields.name || "Beeliever NFT",
