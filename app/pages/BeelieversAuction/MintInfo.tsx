@@ -78,10 +78,7 @@ function MintAction({ isWinner, doRefund, hasMinted }: MintActionProps) {
 
 	const [isMinting, setIsMinting] = useState(false);
 
-	const kioskClient = new KioskClient({
-		client: client,
-		network: network,
-	});
+	const kioskClient = new KioskClient({ client, network });
 
 	const storeKioskInfo = (address: string, kioskId: string, kioskCapId: string) => {
 		const kioskData = {
@@ -104,6 +101,7 @@ function MintAction({ isWinner, doRefund, hasMinted }: MintActionProps) {
 		}
 		return null;
 	};
+
 	const verifyKiosk = async (kioskId: string, kioskCapId: string) => {
 		try {
 			const kioskObject = await client.getObject({
@@ -120,7 +118,9 @@ function MintAction({ isWinner, doRefund, hasMinted }: MintActionProps) {
 			return false;
 		}
 	};
+
 	useEffect(() => {
+		// TODO: move outside (together with other helper functions), ideally to other file: ./kiosk.ts
 		const initializeKioskInfo = async () => {
 			if (!account) return;
 			const stored = getStoredKioskInfo(account.address);
@@ -149,7 +149,7 @@ function MintAction({ isWinner, doRefund, hasMinted }: MintActionProps) {
 		};
 
 		initializeKioskInfo();
-	}, [account]);
+	}, [account, kioskClient]);
 
 	const handleMintNFT = async () => {
 		if (!account) return;
