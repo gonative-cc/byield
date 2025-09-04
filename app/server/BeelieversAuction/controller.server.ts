@@ -35,11 +35,11 @@ export default class Controller {
 		this.isProduction = isProductionMode();
 		if (this.isProduction) {
 			this.suiNet = "mainnet";
-			this.auctionPkgId = suiMainNetConfig.beelieversAuction.packageId;
+			this.auctionPkgId = suiMainNetConfig.auctionBidApi.packageId;
 			this.fallbackIndexerUrl = "https://sui-mainnet-endpoint.blockvision.org/";
 		} else {
 			this.suiNet = "testnet";
-			this.auctionPkgId = suiTestNetConfig.beelieversAuction.packageId;
+			this.auctionPkgId = suiTestNetConfig.auctionBidApi.packageId;
 			this.fallbackIndexerUrl = "https://sui-testnet-endpoint.blockvision.org/";
 		}
 		if (!this.auctionPkgId || !this.fallbackIndexerUrl) {
