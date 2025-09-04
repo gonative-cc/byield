@@ -19,6 +19,7 @@ import { AuctionAccountType, type AuctionInfo, type User } from "~/server/Beelie
 import type { SuiClient } from "@mysten/sui/client";
 import { SUI_RANDOM_OBJECT_ID } from "~/lib/suienv";
 import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
+import { parseMoveAbortErr } from "~/lib/suierr";
 
 interface MintInfoItemProps {
 	title: string;
@@ -202,9 +203,13 @@ function MintAction({ isWinner, doRefund, hasMinted }: MintActionProps) {
 			});
 		} catch (error) {
 			console.error("Error minting:", error);
+
+			let msg = "An error occurred during minting";
+			const maybeErr = (error as Error).message;
+			if (maybeErr) msg = formatSuiErr(maybeErr);
 			toast({
 				title: "Minting Error",
-				description: (error as Error).message || "An error occurred during minting",
+				description: msg,
 				variant: "destructive",
 			});
 		} finally {
@@ -489,4 +494,35 @@ function createKioskTx(client: SuiClient, userAddr: string, network: Network): T
 	kioskTx.shareAndTransferCap(userAddr);
 	kioskTx.finalize();
 	return tx;
+}
+
+export function formatSuiErr(err: string): string {
+	const moveAbort = parseMoveAbortErr(err);
+	if (!moveAbort) return "Sui tx failed, unknown error";
+
+	let reason = "unknown";
+	switch (moveAbort.errCode) {
+		case 1: {
+			reason = "all NFTs are alaready minted";
+			break;
+		}
+		case 2: {
+			reason = "minting not active";
+			break;
+		}
+		case 3: {
+			reason = "unauthorized: user didn't win the auction";
+			break;
+		}
+		case 4: {
+			reason = "user already minted";
+			break;
+		}
+		case 10: {
+			reason = "tx provided wrong auction contract for verification";
+			break;
+		}
+	}
+
+	return `Tx aborted, function: ${moveAbort.funName} reason: "${reason}"`;
 }
