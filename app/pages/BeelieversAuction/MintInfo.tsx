@@ -283,7 +283,7 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId }: MintActionProps
 
 			let msg = "An error occurred during minting";
 			const maybeErr = (error as Error).message;
-			if (maybeErr) msg = formatSuiErr(maybeErr);
+			if (maybeErr) msg = formatSuiMintErr(maybeErr);
 			toast({
 				title: "Minting Error",
 				description: msg,
@@ -550,7 +550,7 @@ function createKioskTx(client: SuiClient, userAddr: string, network: Network): T
 	return tx;
 }
 
-export function formatSuiErr(err: string): string {
+export function formatSuiMintErr(err: string): string {
 	const txErr = parseTxError(err);
 	if (!txErr) return "Sui tx failed, unknown error";
 
