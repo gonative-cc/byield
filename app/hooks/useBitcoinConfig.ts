@@ -10,7 +10,7 @@ interface NetworkConfig {
 }
 
 const getBitcoinNetworkConfig: Record<BitcoinNetworkType, NetworkConfig> = {
-	// regtest is devnet config
+	// regtest is our Devnet for testnet-v2 config
 	Regtest: {
 		variables: {
 			...devnetConfig,
