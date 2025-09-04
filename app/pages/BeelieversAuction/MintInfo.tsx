@@ -291,6 +291,7 @@ function MintAction({ isWinner, doRefund, hasMinted }: MintActionProps) {
 	const [isMinting, setIsMinting] = useState(false);
 	const [mintedNftId, setMintedNftId] = useState<string | null>(null);
 	const [nftMetadata, setNftMetadata] = useState<NftMetadata | null>(null);
+	const [persistedNftId, setPersistedNftId] = useState<string | null>(null);
 
 	const kioskClient = new KioskClient({
 		client: client as any,
@@ -518,8 +519,118 @@ function MintAction({ isWinner, doRefund, hasMinted }: MintActionProps) {
 
 	const isAnyActionPending = isRefundPending || isMinting;
 
-	// NOTE: we don't need to check account here - isWinner already has that check.
 	const canMint = isWinner && beelieversMint.mintStart <= +new Date() && !hasMinted;
+
+	const getNftFromKiosk = async (
+		client: any,
+		kioskId: string,
+		packageId: string
+	): Promise<string | null> => {
+		try {
+			console.log(">>> Checking kiosk for NFTs:", kioskId);
+
+			const kiosk = await client.getObject({
+				id: kioskId,
+				options: { showContent: true },
+			});
+
+			if (kiosk.data?.content && "fields" in kiosk.data.content) {
+				const fields = kiosk.data.content.fields as any;
+
+				if (fields.items && fields.items.fields && fields.items.fields.contents) {
+					const items = fields.items.fields.contents;
+					console.log(">>> Kiosk items:", items);
+
+					for (const item of items) {
+						if (item.fields && item.fields.value) {
+							const nftId = item.fields.value;
+
+							const nftObject = await client.getObject({
+								id: nftId,
+								options: { showType: true, showContent: true },
+							});
+
+							if (nftObject.data?.type?.includes(packageId)) {
+								console.log(">>> Found Beeliever NFT in kiosk:", nftId);
+								return nftId;
+							}
+						}
+					}
+				}
+			}
+
+			console.log(">>> No Beeliever NFTs found in kiosk");
+			return null;
+		} catch (error) {
+			console.error("Error checking kiosk for NFTs:", error);
+			return null;
+		}
+	};
+
+	const queryNftsByAddress = async (
+		client: any,
+		address: string,
+		packageId: string
+	): Promise<string | null> => {
+		try {
+			console.log(">>> Querying NFTs by address:", address);
+
+			const objects = await client.getOwnedObjects({
+				owner: address,
+				filter: {
+					StructType: `${packageId}::mint::BeelieverNFT`,
+				},
+				options: { showContent: true, showType: true },
+			});
+
+			console.log(">>> Found NFTs by address:", objects.data);
+
+			if (objects.data && objects.data.length > 0) {
+				const nftId = objects.data[0].data?.objectId;
+				if (nftId) {
+					console.log(">>> Found Beeliever NFT by address query:", nftId);
+					return nftId;
+				}
+			}
+
+			return null;
+		} catch (error) {
+			console.error("Error querying NFTs by address:", error);
+			return null;
+		}
+	};
+
+	const checkForPersistedNft = async () => {
+		if (!account || !beelieversMint.packageId) return;
+
+		console.log(">>> Checking for persisted NFT after page reload");
+
+		if (kioskInfo) {
+			const nftFromKiosk = await getNftFromKiosk(client, kioskInfo.kioskId, beelieversMint.packageId);
+			if (nftFromKiosk) {
+				setPersistedNftId(nftFromKiosk);
+				const metadata = await fetchNftMetadata(client, nftFromKiosk);
+				setNftMetadata(metadata);
+				return;
+			}
+		}
+
+		const nftByAddress = await queryNftsByAddress(client, account.address, beelieversMint.packageId);
+		if (nftByAddress) {
+			setPersistedNftId(nftByAddress);
+			const metadata = await fetchNftMetadata(client, nftByAddress);
+			setNftMetadata(metadata);
+			return;
+		}
+
+		console.log(">>> No persisted NFT found");
+	};
+
+	useEffect(() => {
+		if (account && kioskInfo && beelieversMint.packageId && !mintedNftId && !persistedNftId) {
+			checkForPersistedNft();
+		}
+	}, [account, kioskInfo, beelieversMint.packageId, mintedNftId, persistedNftId]);
 
 	return (
 		<div className="flex flex-col sm:flex-row gap-4">
@@ -536,7 +647,9 @@ function MintAction({ isWinner, doRefund, hasMinted }: MintActionProps) {
 				</Button>
 			)}
 
-			{mintedNftId && <NftDisplay nftId={mintedNftId} network={network} metadata={nftMetadata} />}
+			{(mintedNftId || persistedNftId) && (
+				<NftDisplay nftId={mintedNftId || persistedNftId!} network={network} metadata={nftMetadata} />
+			)}
 
 			{hasMinted && (
 				<div className="flex-1 text-center p-3 bg-primary/10 rounded-lg border border-primary/20">
