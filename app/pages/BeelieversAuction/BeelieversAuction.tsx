@@ -37,12 +37,10 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 	const raffle: QueryRaffleResp = raffleFetcher.data ?? null;
 	const auctionState = getAuctionState(info.startsAt, info.endsAt, info.clearingPrice);
 
-	console.log(">>>> raffle", raffle);
 	console.log(">>>> user", user);
 
 	for (const l of leaderboard) {
 		if (sortAndCheckDuplicate(l.badges)) {
-			console.log(">>>> leader ", l);
 			l.badges = removeDuplicates(l.badges);
 		}
 	}
