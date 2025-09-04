@@ -195,66 +195,63 @@ function NftDisplay({ nftId, network, metadata }: NftDisplayProps) {
 				</div>
 
 				<div className="flex-1">
-					<div className="flex items-center justify-between">
-						<div className="flex-1">
-							<h4 className="font-semibold text-primary flex items-center gap-2">
-								🎉 {metadata?.name || "Beeliever NFT"} Minted!
-							</h4>
+					<div className="space-y-4">
+						<h4 className="font-semibold text-primary flex items-center gap-2">
+							🎉 {metadata?.name || "Beeliever NFT"} Minted!
+						</h4>
 
-							<div className="mt-2 space-y-2">
-								{nftType && (
-									<div className="flex items-center gap-2">
-										<span
-											className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full ${
-												nftType === "Mythic"
-													? "bg-gradient-to-r from-yellow-400/20 to-orange-400/20 text-yellow-400 border border-yellow-400/30"
-													: "bg-primary/20 text-primary border border-primary/30"
-											}`}
-										>
-											{nftType === "Mythic" ? "✨" : "🐝"} {nftType}
-										</span>
-										{mythicName && (
-											<span className="text-xs text-muted-foreground">
-												{mythicName}
-											</span>
-										)}
-									</div>
-								)}
-
-								{background && (
-									<div className="text-xs text-muted-foreground">
-										Background: {background}
-									</div>
-								)}
-
-								{metadata?.badges && metadata.badges.length > 0 && (
-									<div className="flex flex-wrap gap-1">
-										{metadata.badges.map((badge, index) => (
-											<span
-												key={index}
-												className="text-xs px-2 py-1 bg-blue-500/20 text-blue-400 rounded-full border border-blue-400/30"
-											>
-												🏆 {badge}
-											</span>
-										))}
-									</div>
-								)}
-
-								<div className="text-xs text-muted-foreground">
-									Token #{metadata?.token_id} • Object ID: {nftId}
+						<div className="space-y-2">
+							{nftType && (
+								<div className="flex items-center gap-2">
+									<span
+										className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full ${
+											nftType === "Mythic"
+												? "bg-gradient-to-r from-yellow-400/20 to-orange-400/20 text-yellow-400 border border-yellow-400/30"
+												: "bg-primary/20 text-primary border border-primary/30"
+										}`}
+									>
+										{nftType === "Mythic" ? "✨" : "🐝"} {nftType}
+									</span>
+									{mythicName && (
+										<span className="text-xs text-muted-foreground">{mythicName}</span>
+									)}
 								</div>
+							)}
+
+							{background && (
+								<div className="text-xs text-muted-foreground">Background: {background}</div>
+							)}
+
+							{metadata?.badges && metadata.badges.length > 0 && (
+								<div className="flex flex-wrap gap-1">
+									{metadata.badges.map((badge, index) => (
+										<span
+											key={index}
+											className="text-xs px-2 py-1 bg-blue-500/20 text-blue-400 rounded-full border border-blue-400/30"
+										>
+											🏆 {badge}
+										</span>
+									))}
+								</div>
+							)}
+
+							<div className="text-xs text-muted-foreground">
+								Token #{metadata?.token_id} • Object ID: {nftId}
 							</div>
 						</div>
 
-						<a
-							href={getSuiVisionUrl(nftId, network)}
-							target="_blank"
-							rel="noopener noreferrer"
-							className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
-						>
-							<ExternalLink size={16} />
-							View NFT
-						</a>
+						{/* Move the View NFT button to bottom and fix styling */}
+						<div className="pt-2">
+							<a
+								href={getSuiVisionUrl(nftId, network)}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="inline-flex items-center gap-2 px-4 py-2 bg-primary/90 text-white border border-white/10 rounded-lg hover:bg-primary transition-colors font-medium text-sm shadow-[inset_0_4px_10px_0_rgba(255,255,255,0.25),inset_0_-4px_10px_0_rgba(255,255,255,0.15)]"
+							>
+								<ExternalLink size={16} />
+								View on SuiVision
+							</a>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -753,3 +750,6 @@ export function formatSuiErr(err: string): string {
 
 	return `Tx aborted, function: ${moveAbort.funName} reason: "${reason}"`;
 }
+
+// Export the NftDisplay component and NftMetadata interface for testing
+export { NftDisplay, type NftMetadata };
