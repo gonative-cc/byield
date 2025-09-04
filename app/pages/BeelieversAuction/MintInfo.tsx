@@ -295,8 +295,6 @@ function MintAction({ isWinner, doRefund, hasMinted }: MintActionProps) {
 	const [mintedNftId, setMintedNftId] = useState<string | null>(null);
 	const [nftMetadata, setNftMetadata] = useState<NftMetadata | null>(null);
 
-	const kioskClient = new KioskClient({ client, network });
-
 	const storeKioskInfo = (address: string, kioskId: string, kioskCapId: string) => {
 		const kioskData = {
 			kioskId,
@@ -341,15 +339,17 @@ function MintAction({ isWinner, doRefund, hasMinted }: MintActionProps) {
 		const initializeKioskInfo = async () => {
 			if (!account) return;
 			const stored = getStoredKioskInfo(account.address);
+			console.log("stored kiosk", stored);
 			if (stored) {
 				const isValid = await verifyKiosk(stored.kioskId, stored.kioskCapId);
 				if (isValid) {
 					setKioskInfo(stored);
 					return;
-				} else {
-					localStorage.removeItem(`kioskInfo-${account.address}`);
 				}
+				localStorage.removeItem(`kioskInfo-${account.address}`);
 			}
+
+			const kioskClient = new KioskClient({ client, network });
 			try {
 				const { kioskOwnerCaps } = await kioskClient.getOwnedKiosks({ address: account.address });
 
@@ -366,7 +366,7 @@ function MintAction({ isWinner, doRefund, hasMinted }: MintActionProps) {
 		};
 
 		initializeKioskInfo();
-	}, [account, kioskClient]);
+	}, [account, network]);
 
 	// TODO: move to ./nft.tsx
 	const fetchNftMetadata = async (client: SuiClient, nftId: string): Promise<NftMetadata | null> => {
