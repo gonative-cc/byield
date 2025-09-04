@@ -91,6 +91,7 @@ const extractNftIdFromResult = (result: SuiTransactionBlockResponse, kioskId?: s
 };
 
 const getSuiVisionUrl = (objectId: string, network: string): string => {
+	// TODO: let's define it in contracts-*.json, next to the `accountExplorer`.
 	const baseUrl = network === "mainnet" ? "https://suivision.xyz" : "https://testnet.suivision.xyz";
 	return `${baseUrl}/object/${objectId}`;
 };
@@ -136,7 +137,8 @@ interface NftMetadata {
 	badges: string[];
 }
 
-const getWalrusImageUrl = (imageUrl: string): string => {
+// TODO: move to a new file together with NFTDisplay
+const mkWalrusImageUrl = (imageUrl: string): string => {
 	if (imageUrl.startsWith("http")) {
 		return imageUrl;
 	}
@@ -154,8 +156,9 @@ interface NftDisplayProps {
 	metadata?: NftMetadata | null;
 }
 
+// TODO: let's move to ./nft.tsx
 function NftDisplay({ nftId, network, metadata }: NftDisplayProps) {
-	const imageUrl = metadata?.image_url ? getWalrusImageUrl(metadata.image_url) : null;
+	const imageUrl = metadata?.image_url ? mkWalrusImageUrl(metadata.image_url) : null;
 	const nftType = metadata ? getAttributeValue(metadata.attributes, "Type") : "";
 	const mythicName = metadata ? getAttributeValue(metadata.attributes, "Mythic Name") : "";
 	const background = metadata ? getAttributeValue(metadata.attributes, "Background") : "";
@@ -365,6 +368,7 @@ function MintAction({ isWinner, doRefund, hasMinted }: MintActionProps) {
 		initializeKioskInfo();
 	}, [account, kioskClient]);
 
+	// TODO: move to ./nft.tsx
 	const fetchNftMetadata = async (client: SuiClient, nftId: string): Promise<NftMetadata | null> => {
 		try {
 			const nftObject = await client.getObject({
@@ -421,7 +425,6 @@ function MintAction({ isWinner, doRefund, hasMinted }: MintActionProps) {
 				if (!kioskId || !kioskCapId) {
 					throw new Error("Failed to retrieve kiosk or kiosk cap ID");
 				}
-				console.log(">>> kiosk effects", result.effects?.created);
 				console.log(">>> kioskId", kioskId, kioskCapId);
 
 				storeKioskInfo(account.address, kioskId, kioskCapId);
@@ -677,8 +680,6 @@ interface MintCfg {
 	//Change this when deploying to mainnet
 	mintStart: 1756899768721;
 }
-
-// TODO: move to app/lib/suienv.ts
 
 function createMintTx(kioskId: string, kioskCapId: string, mintCfg: MintCfg, auctionId: string): Transaction {
 	const tx = new Transaction();
