@@ -1,4 +1,4 @@
-export enum BitcoinTransactionStatus {
+export enum MintingTxStatus {
 	SUCCESS = "SUCCESS",
 	FAILED = "FAILED",
 	PENDING = "PENDING",
@@ -7,8 +7,8 @@ export enum BitcoinTransactionStatus {
 export interface MintTransaction {
 	bitcoinTxId: string;
 	amountInSatoshi: number;
-	status: BitcoinTransactionStatus;
+	status: MintingTxStatus;
 	suiAddress: string;
-	SUITxId: string;
+	suiTxId: string;
 	timestamp: number;
 }

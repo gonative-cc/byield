@@ -10,14 +10,14 @@ interface MintBTCTableProps {
 
 const createColumns = (): Column<MintTransaction>[] => [
 	{
-		Header: "BitCoin Transaction ID",
+		Header: "BitCoin Tx ID",
 		accessor: "bitcoinTxId",
 		Cell: ({ value }: CellProps<MintTransaction>) => (
 			<div className="flex items-center gap-2 font-semibold">{trimAddress(value)}</div>
 		),
 	},
 	{
-		Header: "💰 Amount",
+		Header: "Amount",
 		accessor: "amountInSatoshi",
 		Cell: ({ row }: CellProps<MintTransaction>) => (
 			<div className="flex items-center space-x-2 font-semibold">
@@ -31,7 +31,7 @@ const createColumns = (): Column<MintTransaction>[] => [
 		accessor: "status",
 	},
 	{
-		Header: "Destination Address",
+		Header: "Sui Destination Address",
 		accessor: "suiAddress",
 		Cell: ({ row }: CellProps<MintTransaction>) => (
 			<div className="flex items-center space-x-2 font-mono">
@@ -40,11 +40,11 @@ const createColumns = (): Column<MintTransaction>[] => [
 		),
 	},
 	{
-		Header: "SUI Transaction ID",
-		accessor: "SUITxId",
+		Header: "Sui Tx ID",
+		accessor: "suiTxId",
 		Cell: ({ row }: CellProps<MintTransaction>) => (
 			<div className="flex items-center space-x-2 font-mono">
-				<span className="font-mono text-sm">{trimAddress(row.original.SUITxId)}</span>
+				<span className="font-mono text-sm">{trimAddress(row.original.suiTxId)}</span>
 			</div>
 		),
 	},
@@ -64,9 +64,14 @@ export function MintBTCTable({ data }: MintBTCTableProps) {
 
 	return (
 		<div className="w-full space-y-4">
-			<div className="overflow-x-auto">
-				<Table columns={columns} data={data} />
-			</div>
+			<Table
+				columns={columns}
+				data={data}
+				header={{
+					icon: "₿",
+					title: "nBTC Mint Transactions",
+				}}
+			/>
 		</div>
 	);
 }
