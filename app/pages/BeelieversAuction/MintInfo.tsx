@@ -1,7 +1,7 @@
 import { Transaction } from "@mysten/sui/transactions";
 import {
 	useSignAndExecuteTransaction,
-	useSuiClient,
+	useSuiClientContext,
 	useCurrentAccount,
 	useSignTransaction,
 } from "@mysten/dapp-kit";
@@ -16,6 +16,7 @@ import { classNames } from "~/util/tailwind";
 import { toast } from "~/hooks/use-toast";
 import { useNetworkVariables } from "~/networkConfig";
 import { AuctionAccountType, type AuctionInfo, type User } from "~/server/BeelieversAuction/types";
+import type { SuiClient } from "@mysten/sui/client";
 
 // SUI system object constants
 const SUI_RANDOM_ID = "0x8";
@@ -79,16 +80,17 @@ interface MintActionProps {
 
 function MintAction({ isWinner, doRefund, clearingPrice }: MintActionProps) {
 	const { beelieversAuction, beelieversMint } = useNetworkVariables();
-	const { mutate: signAndExecTx, isPending: isRefundPending } = useSignAndExecuteTransaction();
+	const { mutate: signAndExecTx, isPending } = useSignAndExecuteTransaction();
 	const { mutateAsync: signTransaction } = useSignTransaction();
-	const client = useSuiClient();
+	const { network, client } = useSuiClientContext();
 	const account = useCurrentAccount();
 	const mintPackageId = beelieversMint.packageId;
 
 	const signAndExecuteTransaction = async (transaction: Transaction) => {
 		const { bytes, signature } = await signTransaction({
 			transaction,
-			chain: "sui:testnet",
+			// TODO: probably there is a way without hardcoding the "sui:" prefix
+			chain: "sui:" + network,
 		});
 
 		return await client.executeTransactionBlock({
@@ -98,55 +100,31 @@ function MintAction({ isWinner, doRefund, clearingPrice }: MintActionProps) {
 		});
 	};
 
-	const [isMinting, setIsMinting] = useState(false);
 	const [kioskInfo, setKioskInfo] = useState<{
 		kioskId: string;
 		kioskCapId: string;
 		address: string;
 	} | null>(null);
 
-	const kioskClient = new KioskClient({
-		// TODO: Remove this type casting once @mysten library version conflicts are resolved
-		client: client as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-		network: Network.TESTNET,
-	});
-
-	const mintNFT = async () => {
+	const handleMintNFT = async () => {
 		if (!account) return;
 		try {
-			setIsMinting(true);
 			let kioskId, kioskCapId;
 
 			if (!kioskInfo) {
-				const tx = new Transaction();
-				const kioskTx = new KioskTransaction({
-					// TODO: Remove this type casting once @mysten library version conflicts are resolved
-					transaction: tx as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-					kioskClient,
-				});
-				kioskTx.create();
-				kioskTx.shareAndTransferCap(account.address);
-				kioskTx.finalize();
-
-				const { bytes, signature } = await signTransaction({
-					transaction: tx,
-					chain: "sui:testnet",
+				toast({
+					title: "Creating Kiosk object",
+					variant: "info",
+					description: "Kiosk is used to store NFT",
 				});
 
-				const result = await client.executeTransactionBlock({
-					transactionBlock: bytes,
-					signature,
-					options: { showEffects: true, showInput: true, showRawEffects: true },
-				});
+				const kioskTx = createKioskTx(client, account.address);
+				const result = await signAndExecuteTransaction(kioskTx);
+				console.log("create kiosk tx ID:", result.digest);
 
-				await new Promise((resolve) => setTimeout(resolve, 5000));
-				const txBlock = await client.getTransactionBlock({
-					digest: result.digest,
-					options: { showEffects: true, showInput: true },
-				});
-
-				if (txBlock.effects && txBlock.effects.created) {
-					txBlock.effects.created.forEach((obj) => {
+				const effects = result.effects;
+				if (effects?.created) {
+					effects.created.forEach((obj) => {
 						const owner = obj.owner as { Shared?: unknown; AddressOwner?: string };
 						if (owner.Shared) {
 							kioskId = obj.reference.objectId;
@@ -155,10 +133,11 @@ function MintAction({ isWinner, doRefund, clearingPrice }: MintActionProps) {
 						}
 					});
 				}
-
 				if (!kioskId || !kioskCapId) {
 					throw new Error("Failed to retrieve kiosk or kiosk cap ID");
 				}
+				console.log(">>> kiosk effects", result.effects?.created);
+				console.log(">>> kioskId", kioskId, kioskCapId);
 
 				setKioskInfo({ kioskId, kioskCapId, address: account.address });
 			} else {
@@ -166,15 +145,11 @@ function MintAction({ isWinner, doRefund, clearingPrice }: MintActionProps) {
 				kioskCapId = kioskInfo.kioskCapId;
 			}
 
-			const tx = createMintTransaction(
-				mintPackageId,
-				beelieversMint.collectionId,
-				beelieversMint.transferPolicyId,
-				beelieversAuction.auctionId,
-				kioskId,
-				kioskCapId,
-			);
-			await signAndExecuteTransaction(tx);
+			toast({ title: "Minting NFT", variant: "info" });
+
+			const tx = createMintTransaction(kioskId, kioskCapId, beelieversMint);
+			const result = await signAndExecuteTransaction(tx);
+			console.log(">>> mint result", result.digest, result.errors);
 
 			toast({
 				title: "Minting Successful",
@@ -187,8 +162,6 @@ function MintAction({ isWinner, doRefund, clearingPrice }: MintActionProps) {
 				description: (error as Error).message || "An error occurred during minting",
 				variant: "destructive",
 			});
-		} finally {
-			setIsMinting(false);
 		}
 	};
 
@@ -242,9 +215,10 @@ function MintAction({ isWinner, doRefund, clearingPrice }: MintActionProps) {
 		}
 	};
 
-	const isPending = isRefundPending || isMinting;
 	// NOTE: we don't need to check account here - isWinner already has that check.
 	const canMint = isWinner && beelieversMint.mintStart <= +new Date();
+
+	// TODO, below in isLoading (both buttons), use a correct state
 
 	return (
 		<div className="flex flex-col sm:flex-row gap-4">
@@ -252,10 +226,10 @@ function MintAction({ isWinner, doRefund, clearingPrice }: MintActionProps) {
 				<Button
 					type="button"
 					disabled={isPending}
-					isLoading={isMinting}
+					isLoading={isPending}
 					size="lg"
 					className="flex-1"
-					onClick={mintNFT}
+					onClick={handleMintNFT}
 				>
 					🐝 Mint
 				</Button>
@@ -266,7 +240,7 @@ function MintAction({ isWinner, doRefund, clearingPrice }: MintActionProps) {
 				<Button
 					type="button"
 					disabled={isPending}
-					isLoading={isRefundPending}
+					isLoading={isPending}
 					size="lg"
 					variant="outline"
 					className="flex-1"
@@ -301,8 +275,7 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 	}
 
 	const currentBidInMist = BigInt(user.amount);
-	// TESTING: Force winner status to test minting on testnet deployment
-	const isWinner = true; // user.rank !== null && user.rank < _auctionSize;
+	const isWinner = user.rank !== null && user.rank < _auctionSize;
 	const boosted = user.wlStatus > AuctionAccountType.DEFAULT;
 	let doRefund: DoRefund = DoRefund.No;
 	if (user.amount > 0) {
@@ -312,6 +285,8 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 				? DoRefund.NoBoosted
 				: DoRefund.Yes;
 	}
+
+	const bidLabel = boosted ? "Your Bid (5% boosted)" : "";
 
 	return (
 		<Card className="w-full lg:w-[85%] xl:w-[75%] shadow-2xl border-primary/30 hover:border-primary/50 transition-all duration-300 hover:shadow-primary/10">
@@ -341,7 +316,7 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 								value={formatSUI(String(clearingPrice)) + " SUI"}
 							/>
 							<MintInfoItem
-								title={`Your Bid ${boosted ? "(5% boosted)" : ""}:`}
+								title={bidLabel}
 								value={formatSUI(String(currentBidInMist)) + " SUI"}
 							/>
 							<MintInfoItem
@@ -381,3 +356,56 @@ const createWithdrawTxn = async (
 	});
 	return txn;
 };
+
+interface MintCfg {
+	packageId: string;
+	collectionId: string;
+	transferPolicyId: string;
+	auctionObjectId: string;
+	randomId: string;
+	clockId: string;
+	mintStart: 1756899768721;
+}
+
+function createMintTransaction(kioskId: string, kioskCapId: string, mintCfg: MintCfg): Transaction {
+	const tx = new Transaction();
+	// TODO: no need for payment - in new API we removed it.
+	const [paymentCoin] = tx.splitCoins(tx.gas, [tx.pure.u64(0)]);
+	console.log("payment coin", paymentCoin);
+	tx.moveCall({
+		target: `${mintCfg.packageId}::mint::mint`,
+		arguments: [
+			tx.object(mintCfg.collectionId),
+			// TODO: in next iteration this must be removed (we updated API, but we need to deploy it)
+			paymentCoin,
+			tx.object(mintCfg.transferPolicyId),
+			// TODO: random ID and clock ID is const. Probably it's defined in the SDK - so let's
+			// check if it's there (you can ask Vu), otherwise, define it in app/lib/suiobj.ts (new file)
+			tx.object(mintCfg.randomId),
+			tx.object(mintCfg.clockId),
+			tx.object(mintCfg.auctionObjectId),
+			tx.object(kioskId),
+			tx.object(kioskCapId),
+		],
+	});
+	return tx;
+}
+
+function createKioskTx(client: SuiClient, userAddr: string): Transaction {
+	const kioskClient = new KioskClient({
+		// TODO: Remove this type casting once @mysten library version conflicts are resolved
+		client: client as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+		// TODO: use network from a config
+		network: Network.TESTNET,
+	});
+
+	const tx = new Transaction();
+	const kioskTx = new KioskTransaction({
+		transaction: tx,
+		kioskClient,
+	});
+	kioskTx.create();
+	kioskTx.shareAndTransferCap(userAddr);
+	kioskTx.finalize();
+	return tx;
+}
