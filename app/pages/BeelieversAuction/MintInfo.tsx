@@ -252,7 +252,7 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 				: DoRefund.Yes;
 	}
 
-	const bidLabel = boosted ? "Your Bid (5% boosted)" : "";
+	const bidLabel = boosted ? "Your Bid (5% boosted)" : "Your Bid";
 
 	return (
 		<Card className="w-full lg:w-[85%] xl:w-[75%] shadow-2xl border-primary/30 hover:border-primary/50 transition-all duration-300 hover:shadow-primary/10">
