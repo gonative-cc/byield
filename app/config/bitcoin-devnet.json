@@ -1,5 +1,6 @@
 {
 	"bitcoinBroadcastLink": "",
+	"confirmationThreshold": 6,
 	"nBTC": {
 		"depositAddress": "tb1qjgqhst2hlgjkh36pg6r3hdnz7zvurafe9h5lkx"
 	}

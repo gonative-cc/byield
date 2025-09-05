@@ -70,13 +70,17 @@ const TableRows = <T extends object>({
 	});
 
 interface TableProps<T extends object> {
+	header?: {
+		icon?: string;
+		title?: string;
+	};
 	columns: Column<T>[];
 	data: T[];
 	className?: string;
 	getRowProps?: (row: Row<T>) => { className?: string };
 }
 
-export const Table = <T extends object>({ columns, data, className, getRowProps }: TableProps<T>) => {
+export const Table = <T extends object>({ header, columns, data, className, getRowProps }: TableProps<T>) => {
 	const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<T>({
 		columns,
 		data,
@@ -96,27 +100,45 @@ export const Table = <T extends object>({ columns, data, className, getRowProps 
 	);
 
 	return (
-		<div
-			className={twMerge(
-				"w-full overflow-hidden rounded-2xl shadow-2xl border border-primary/10",
-				className,
-			)}
-		>
-			<div className="overflow-x-auto">
-				<table
-					{...getTableProps()}
-					className="w-full text-left bg-gradient-to-br from-azure-10 via-azure-15 to-azure-20 min-w-[600px]"
-				>
-					<TableHead headerGroups={headerGroups} />
-					<tbody {...getTableBodyProps()}>
-						{isTableEmpty ? (
-							renderNoDataMessage
-						) : (
-							<TableRows rows={rows} prepareRow={prepareRow} getRowProps={getRowProps} />
+		<>
+			{header && (
+				<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-2 pt-4">
+					<div className="flex items-center gap-3">
+						{header.icon && (
+							<div className="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-orange-400 flex items-center justify-center">
+								<span className="text-xl">{header.icon}</span>
+							</div>
 						)}
-					</tbody>
-				</table>
+						{header.title && (
+							<div>
+								<h2 className="text-2xl font-bold text-primary">{header.title}</h2>
+							</div>
+						)}
+					</div>
+				</div>
+			)}
+			<div
+				className={twMerge(
+					"w-full overflow-hidden rounded-2xl shadow-2xl border border-primary/10",
+					className,
+				)}
+			>
+				<div className="overflow-x-auto">
+					<table
+						{...getTableProps()}
+						className="w-full text-left bg-gradient-to-br from-azure-10 via-azure-15 to-azure-20 min-w-[600px]"
+					>
+						<TableHead headerGroups={headerGroups} />
+						<tbody {...getTableBodyProps()}>
+							{isTableEmpty ? (
+								renderNoDataMessage
+							) : (
+								<TableRows rows={rows} prepareRow={prepareRow} getRowProps={getRowProps} />
+							)}
+						</tbody>
+					</table>
+				</div>
 			</div>
-		</div>
+		</>
 	);
 };
