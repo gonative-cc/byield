@@ -3,6 +3,7 @@ import { useSuiClientContext } from "@mysten/dapp-kit";
 import type { SuiClient } from "@mysten/sui/client";
 import { ExternalLink } from "lucide-react";
 import { trimAddress } from "~/components/Wallet/walletHelper";
+import { Button } from "~/components/ui/button";
 
 interface NftMetadata {
 	id: string;
@@ -112,7 +113,7 @@ export function NftDisplay({ nftId }: NftDisplayProps) {
 							>
 								{nftType === "Mythic" ? "✨ " : "🐝 "}
 								{nftType}
-								{mythicName ? ": " + mythicName : ""}
+								{mythicName ? ": " + mythicName : metadata.name}
 							</span>
 						)}
 						<span className="text-sm text-muted-foreground">Object ID: {trimAddress(nftId)}</span>
@@ -142,15 +143,12 @@ export function NftDisplay({ nftId }: NftDisplayProps) {
 						)}
 					</div>
 
-					<div className="pt-2">
-						<a
-							href={mkSuiVisionUrl(nftId, network)}
-							target="_blank"
-							rel="noopener noreferrer"
-							className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 text-sm"
-						>
-							<ExternalLink size={16} />
-							View on SuiVision
+					<div className="pt-2 justify-center w-full flex">
+						<a href={mkSuiVisionUrl(nftId, network)} target="_blank" rel="noopener noreferrer">
+							<Button layout="oneLine">
+								<ExternalLink size={16} />
+								View on SuiVision
+							</Button>
 						</a>
 					</div>
 				</div>
