@@ -78,7 +78,7 @@ const createColumns = (): Column<MintTransaction>[] => [
 		),
 	},
 	{
-		Header: () => <MintTableTooltip label="Timestamp" tooltip="When the transaction was created" />,
+		Header: () => <MintTableTooltip label="Date" tooltip="When the transaction was created" />,
 		accessor: "timestamp",
 		Cell: ({ row }: CellProps<MintTransaction>) => (
 			<div className="flex items-center space-x-2 font-mono">
