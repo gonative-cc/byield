@@ -3,8 +3,9 @@ import { Table } from "~/components/ui/table";
 import { Tooltip } from "~/components/ui/tooltip";
 import { trimAddress } from "~/components/Wallet/walletHelper";
 import { formatBTC } from "~/lib/denoms";
-import { type MintTransaction } from "~/server/Mint/types";
+import { MintingTxStatus, type MintTransaction } from "~/server/Mint/types";
 import { Info } from "lucide-react";
+import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 
 function MintTableTooltip({ tooltip, label }: { tooltip: string; label: string }) {
 	return (
@@ -17,7 +18,7 @@ function MintTableTooltip({ tooltip, label }: { tooltip: string; label: string }
 	);
 }
 
-const createColumns = (): Column<MintTransaction>[] => [
+const createColumns = (confirmationThreshold: number): Column<MintTransaction>[] => [
 	{
 		Header: () => (
 			<MintTableTooltip
@@ -47,6 +48,16 @@ const createColumns = (): Column<MintTransaction>[] => [
 	{
 		Header: () => <MintTableTooltip label="Status" tooltip="Current status of the mint transaction" />,
 		accessor: "status",
+		Cell: ({ row }: CellProps<MintTransaction>) =>
+			row.original.status === MintingTxStatus.CONFIRMING ? (
+				<div className="flex items-center space-x-2 font-semibold">
+					<span className="text-primary">
+						{row.original.status} ({row.original.numberOfConfirmation / confirmationThreshold})
+					</span>
+				</div>
+			) : (
+				<span>{row.original.status}</span>
+			),
 	},
 	{
 		Header: () => (
@@ -93,7 +104,8 @@ interface MintBTCTableProps {
 }
 
 export function MintBTCTable({ data }: MintBTCTableProps) {
-	const columns = createColumns();
+	const { confirmationThreshold } = useBitcoinConfig();
+	const columns = createColumns(confirmationThreshold);
 
 	return (
 		<div className="w-full space-y-4">
