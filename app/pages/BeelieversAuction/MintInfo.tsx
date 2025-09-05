@@ -22,7 +22,15 @@ import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
 import { parseTxError } from "~/lib/suierr";
 import { ExternalLink } from "lucide-react";
 
-import { mkSuiVisionUrl, NftDisplay } from "./nft";
+import {
+	mkSuiVisionUrl,
+	NftDisplay,
+	findExistingNft,
+	storeNftId,
+	getStoredNftId,
+	queryNftFromKiosk,
+	queryNftByModule,
+} from "./nft";
 import type { KioskInfo } from "./kiosk";
 import { storeKioskInfo, initializeKioskInfo, createKioskTx } from "./kiosk";
 
@@ -328,15 +336,68 @@ interface MintInfoProps {
 
 export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auctionSize } }: MintInfoProps) {
 	const { beelieversMint } = useNetworkVariables();
-	const { client } = useSuiClientContext();
+	const { client, network } = useSuiClientContext();
 	const account = useCurrentAccount();
 	const [hasMinted, setHasMinted] = useState(false);
 	const [nftId, setNftId] = useState<string | null>(null);
+	const [isLoadingExistingNft, setIsLoadingExistingNft] = useState(false);
 
 	useEffect(() => {
 		if (!account) return;
+
+		const checkExistingNft = async () => {
+			setIsLoadingExistingNft(true);
+
+			const storedNftId = getStoredNftId(account.address);
+			if (storedNftId) {
+				try {
+					const nftObject = await client.getObject({
+						id: storedNftId,
+						options: { showContent: true, showOwner: true },
+					});
+
+					if (nftObject.data) {
+						setNftId(storedNftId);
+						setIsLoadingExistingNft(false);
+						return;
+					}
+				} catch (error) {
+					console.error("Stored NFT no longer valid:", error);
+					localStorage.removeItem(`nftId-${account.address}`);
+				}
+			}
+
+			try {
+				const kioskInfo = await initializeKioskInfo(account.address, client, network as Network);
+
+				const existingNftId = await findExistingNft(
+					account.address,
+					client,
+					kioskInfo?.kioskId || null,
+					beelieversMint.packageId,
+				);
+
+				if (existingNftId) {
+					setNftId(existingNftId);
+					storeNftId(account.address, existingNftId);
+				}
+			} catch (error) {
+				console.error("Error checking for existing NFT:", error);
+			}
+
+			setIsLoadingExistingNft(false);
+		};
+
+		checkExistingNft();
 		queryHasMinted(account.address, client, beelieversMint).then(setHasMinted);
-	}, [account, client, beelieversMint]);
+	}, [account, client, beelieversMint, network]);
+
+	const handleSetNftId = (newNftId: string) => {
+		setNftId(newNftId);
+		if (account) {
+			storeNftId(account.address, newNftId);
+		}
+	};
 
 	if (user === null) {
 		return <p className="text-xl">Connect to your wallet to see minting info</p>;
@@ -349,7 +410,6 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 	let doRefund: DoRefund = DoRefund.No;
 	if (user.amount > 0) {
 		doRefund =
-			// apply boost to see if there is anything to withdraw in case he is a winner.
 			isWinner && Math.round(user.amount / 1.05) <= Number(clearingPrice)
 				? DoRefund.NoBoosted
 				: DoRefund.Yes;
@@ -394,18 +454,31 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 							/>
 							<MintInfoItem
 								title="Mint Status:"
-								value={hasMinted ? "✅ Minted" : "⏳ Not Minted"}
+								value={
+									isLoadingExistingNft
+										? "Checking..."
+										: nftId
+											? "NFT Found"
+											: hasMinted
+												? "Minted"
+												: "Not Minted"
+								}
 								isLastItem
 							/>
 						</div>
 					</div>
+
+					{isLoadingExistingNft && (
+						<div className="text-center text-muted-foreground">Checking for existing NFTs...</div>
+					)}
+
 					{nftId && <NftDisplay nftId={nftId} />}
 
 					<MintAction
 						isWinner={isWinner}
 						doRefund={doRefund}
-						hasMinted={hasMinted}
-						setNftId={setNftId}
+						hasMinted={hasMinted || !!nftId}
+						setNftId={handleSetNftId}
 					/>
 				</div>
 			</CardContent>
