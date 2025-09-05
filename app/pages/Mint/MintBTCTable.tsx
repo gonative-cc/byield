@@ -6,6 +6,7 @@ import { formatBTC } from "~/lib/denoms";
 import { MintingTxStatus, type MintTransaction } from "~/server/Mint/types";
 import { Info } from "lucide-react";
 import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
+import { CopyButton } from "~/components/ui/CopyButton";
 
 function MintTableTooltip({ tooltip, label }: { tooltip: string; label: string }) {
 	return (
@@ -31,6 +32,7 @@ const createColumns = (confirmationThreshold: number): Column<MintTransaction>[]
 			<Tooltip tooltip={value}>
 				<div className="flex items-center gap-2 font-semibold cursor-pointer">
 					{trimAddress(value)}
+					<CopyButton text={value} />
 				</div>
 			</Tooltip>
 		),
@@ -71,6 +73,7 @@ const createColumns = (confirmationThreshold: number): Column<MintTransaction>[]
 			<Tooltip tooltip={row.original.suiAddress}>
 				<div className="flex items-center space-x-2 font-mono cursor-pointer">
 					<span className="font-mono text-sm">{trimAddress(row.original.suiAddress)}</span>
+					<CopyButton text={row.original.suiAddress} />
 				</div>
 			</Tooltip>
 		),
@@ -84,6 +87,7 @@ const createColumns = (confirmationThreshold: number): Column<MintTransaction>[]
 			<Tooltip tooltip={row.original.suiTxId}>
 				<div className="flex items-center space-x-2 font-mono cursor-pointer">
 					<span className="font-mono text-sm">{trimAddress(row.original.suiTxId)}</span>
+					<CopyButton text={row.original.suiTxId} />
 				</div>
 			</Tooltip>
 		),
