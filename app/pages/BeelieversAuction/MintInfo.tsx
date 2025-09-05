@@ -111,6 +111,17 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 				transactionBlock: await tx.build({ client }),
 			});
 
+			const tx = createMintTx(kioskId, kioskCapId, beelieversMint, beelieversAuction.auctionId);
+
+			// Set sender before dry run check
+			tx.setSender(account.address);
+
+			// Do dry run check BEFORE sending to wallet
+			console.log("Running pre-transaction validation...");
+			await client.dryRunTransactionBlock({
+				transactionBlock: await tx.build({ client }),
+			});
+
 			toast({ title: "Minting NFT", variant: "info" });
 
 			const result = await signAndExecTx(tx, client, signTransaction);
