@@ -21,8 +21,7 @@ import { SUI_RANDOM_OBJECT_ID } from "~/lib/suienv";
 import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
 import { parseTxError } from "~/lib/suierr";
 import { ExternalLink } from "lucide-react";
-
-import { mkSuiVisionUrl, NftDisplay } from "./nft";
+import { mkSuiVisionUrl, NftDisplay, findExistingNft } from "./nft";
 
 interface MintInfoItemProps {
 	title: string;
@@ -401,25 +400,31 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 	const { client } = useSuiClientContext();
 	const account = useCurrentAccount();
 	const [hasMinted, setHasMinted] = useState(false);
-	// TODO: Ravindra, after testing NFT display, the default value here should be null
-	const [nftId, setNftId] = useState<string | null>(
-		"0xe86131a6240d56c9d24532e4277ede8b1bd7fb350b764b97bc970c1c26eaf773",
-	); //null);
-
-	// TODO: Ravindra: update the icon in this toast and remove this example code
-	useEffect(() => {
-		toast({
-			title: "Creating Kiosk object",
-			variant: "info",
-			description: "Kiosk is used to store NFT",
-		});
-	});
+	const [kioskInfo, setKioskInfo] = useState<KioskInfo | null>(null);
+	const [nftId, setNftId] = useState<string | null>(null);
 
 	useEffect(() => {
-		if (!account) return;
+		const checkMintStatus = async () => {
+			if (!account) return;
 
-		queryHasMinted(account.address, client, beelieversMint).then(setHasMinted);
-	}, [account, client, beelieversMint]);
+			const hasMintedResult = await queryHasMinted(account.address, client, beelieversMint);
+			setHasMinted(!!hasMintedResult);
+
+			if (hasMintedResult) {
+				const existingNftId = await findExistingNft(
+					account.address,
+					client,
+					kioskInfo?.kioskId || null,
+					beelieversMint.packageId,
+				);
+				if (existingNftId) {
+					setNftId(existingNftId);
+				}
+			}
+		};
+
+		checkMintStatus();
+	}, [account, client, beelieversMint, kioskInfo]);
 
 	if (user === null) {
 		return <p className="text-xl">Connect to your wallet to see minting info</p>;
@@ -614,4 +619,20 @@ async function queryHasMinted(addr: string, client: SuiClient, cfg: MintCfg): Pr
 		console.error("Error checking mint status:", error);
 		return false;
 	}
+}
+
+if (typeof window !== "undefined") {
+	window.testNftDetection = async (account, client, beelieversMint) => {
+		if (!account?.address) {
+			console.log("No account connected");
+			return;
+		}
+
+		console.log("🧪 Testing NFT detection...");
+
+		// Import the function from nft.tsx
+		const { queryNftByModule } = await import("./nft");
+		const nftByModule = await queryNftByModule(account.address, client, beelieversMint.packageId);
+		console.log("NFT by module:", nftByModule);
+	};
 }
