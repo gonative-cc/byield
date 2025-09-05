@@ -22,7 +22,7 @@ import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
 import { parseTxError } from "~/lib/suierr";
 import { ExternalLink } from "lucide-react";
 
-import { mkSuiVisionUrl, NftDisplay } from "./nft";
+import { mkSuiVisionUrl, NftDisplay, findExistingNft } from "./nft";
 import type { KioskInfo } from "./kiosk";
 import { storeKioskInfo, initializeKioskInfo, createKioskTx } from "./kiosk";
 
@@ -331,12 +331,31 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 	const { client } = useSuiClientContext();
 	const account = useCurrentAccount();
 	const [hasMinted, setHasMinted] = useState(false);
+	const [kioskInfo, setKioskInfo] = useState<KioskInfo | null>(null);
 	const [nftId, setNftId] = useState<string | null>(null);
 
 	useEffect(() => {
-		if (!account) return;
-		queryHasMinted(account.address, client, beelieversMint).then(setHasMinted);
-	}, [account, client, beelieversMint]);
+		const checkMintStatus = async () => {
+			if (!account) return;
+
+			const hasMintedResult = await queryHasMinted(account.address, client, beelieversMint);
+			setHasMinted(!!hasMintedResult);
+
+			if (hasMintedResult) {
+				const existingNftId = await findExistingNft(
+					account.address,
+					client,
+					kioskInfo?.kioskId || null,
+					beelieversMint.packageId,
+				);
+				if (existingNftId) {
+					setNftId(existingNftId);
+				}
+			}
+		};
+
+		checkMintStatus();
+	}, [account, client, beelieversMint, kioskInfo]);
 
 	if (user === null) {
 		return <p className="text-xl">Connect to your wallet to see minting info</p>;
@@ -358,17 +377,21 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 	const bidLabel = boosted ? "Your Bid (5% boosted)" : "Your Bid";
 
 	return (
-		<Card className="w-full lg:w-[85%] xl:w-[75%] shadow-2xl border-primary/30 hover:border-primary/50 transition-all duration-300 hover:shadow-primary/10">
-			<CardContent className="p-4 lg:p-8 rounded-lg text-white flex flex-col lg:flex-row gap-8 lg:gap-12 bg-gradient-to-br from-azure-25 via-azure-20 to-azure-15">
-				<div className="flex-shrink-0 flex justify-center lg:justify-start">
-					<div className="animate-float">
-						<div className="absolute inset-0 bg-primary/20 rounded-xl blur-xl"></div>
-						<img
-							src="/assets/bee/bee-with-gonative.webp"
-							alt="bee-with-gonative"
-							className="relative rounded-xl w-64 h-64 lg:w-72 lg:h-72 object-cover border-2 border-primary/30"
-						/>
-					</div>
+		<Card className="lg:w-[85%] xl:w-[75%] w-full shadow-2xl border-primary/30 hover:border-primary/50 transition-all duration-300 hover:shadow-primary/10">
+			<CardContent className="p-4 lg:p-8 rounded-lg text-white flex flex-col xl:flex-row gap-6 sm:gap-8 lg:gap-12 bg-gradient-to-br from-azure-25 via-azure-20 to-azure-15">
+				<div className="flex-shrink-0 flex justify-center xl:justify-start w-full xl:w-auto">
+					{nftId ? (
+						<NftDisplay nftId={nftId} />
+					) : (
+						<div className="animate-float">
+							<div className="absolute inset-0 bg-primary/20 rounded-xl blur-xl"></div>
+							<img
+								src="/assets/bee/beeliever-unknown.webp"
+								alt="bee-with-gonative"
+								className="rounded-xl w-64 h-64 lg:w-72 lg:h-72 object-cover border-2 border-primary/30"
+							/>
+						</div>
+					)}
 				</div>
 				<div className="flex flex-col w-full justify-between gap-8">
 					<div className="space-y-4">
@@ -399,7 +422,6 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 							/>
 						</div>
 					</div>
-					{nftId && <NftDisplay nftId={nftId} />}
 
 					<MintAction
 						isWinner={isWinner}
@@ -514,4 +536,20 @@ async function queryHasMinted(addr: string, client: SuiClient, cfg: MintCfg): Pr
 		console.error("Error checking mint status:", error);
 		return false;
 	}
+}
+
+if (typeof window !== "undefined") {
+	window.testNftDetection = async (account, client, beelieversMint) => {
+		if (!account?.address) {
+			console.log("No account connected");
+			return;
+		}
+
+		console.log("🧪 Testing NFT detection...");
+
+		// Import the function from nft.tsx
+		const { queryNftByModule } = await import("./nft");
+		const nftByModule = await queryNftByModule(account.address, client, beelieversMint.packageId);
+		console.log("NFT by module:", nftByModule);
+	};
 }
