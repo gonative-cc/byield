@@ -445,17 +445,21 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 	const bidLabel = boosted ? "Your Bid (5% boosted)" : "Your Bid";
 
 	return (
-		<Card className="w-full lg:w-[85%] xl:w-[75%] shadow-2xl border-primary/30 hover:border-primary/50 transition-all duration-300 hover:shadow-primary/10">
-			<CardContent className="p-4 lg:p-8 rounded-lg text-white flex flex-col lg:flex-row gap-8 lg:gap-12 bg-gradient-to-br from-azure-25 via-azure-20 to-azure-15">
-				<div className="flex-shrink-0 flex justify-center lg:justify-start">
-					<div className="animate-float">
-						<div className="absolute inset-0 bg-primary/20 rounded-xl blur-xl"></div>
-						<img
-							src="/assets/bee/beeliever-unknown.webp"
-							alt="bee-with-gonative"
-							className="relative rounded-xl w-64 h-64 lg:w-72 lg:h-72 object-cover border-2 border-primary/30"
-						/>
-					</div>
+		<Card className="lg:w-[85%] xl:w-[75%] w-full shadow-2xl border-primary/30 hover:border-primary/50 transition-all duration-300 hover:shadow-primary/10">
+			<CardContent className="p-4 lg:p-8 rounded-lg text-white flex flex-col xl:flex-row gap-6 sm:gap-8 lg:gap-12 bg-gradient-to-br from-azure-25 via-azure-20 to-azure-15">
+				<div className="flex-shrink-0 flex justify-center xl:justify-start w-full xl:w-auto">
+					{nftId ? (
+						<NftDisplay nftId={nftId} />
+					) : (
+						<div className="animate-float">
+							<div className="absolute inset-0 bg-primary/20 rounded-xl blur-xl"></div>
+							<img
+								src="/assets/bee/beeliever-unknown.webp"
+								alt="bee-with-gonative"
+								className="rounded-xl w-64 h-64 lg:w-72 lg:h-72 object-cover border-2 border-primary/30"
+							/>
+						</div>
+					)}
 				</div>
 				<div className="flex flex-col w-full justify-between gap-8">
 					<div className="space-y-4">
@@ -486,7 +490,6 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 							/>
 						</div>
 					</div>
-					{nftId && <NftDisplay nftId={nftId} />}
 
 					<MintAction
 						isWinner={isWinner}

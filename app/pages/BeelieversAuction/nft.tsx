@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useSuiClientContext } from "@mysten/dapp-kit";
 import type { SuiClient } from "@mysten/sui/client";
 import { ExternalLink } from "lucide-react";
+import { trimAddress } from "~/components/Wallet/walletHelper";
 
 interface NftMetadata {
 	id: string;
@@ -69,98 +70,88 @@ export function NftDisplay({ nftId }: NftDisplayProps) {
 	const background = getAttributeValue(metadata.attributes, "Background");
 
 	return (
-		<div className="mt-4 p-4 bg-gradient-to-r from-primary/10 to-orange-400/10 rounded-lg border border-primary/20">
-			<div className="flex items-start gap-4">
-				<div className="flex-shrink-0">
-					{imageUrl ? (
-						<a
-							href={imageUrl}
-							target="_blank"
-							rel="noopener noreferrer"
-							className="block hover:opacity-80 transition-opacity cursor-pointer"
-							title="Click to view full-size image"
-						>
-							<img
-								src={imageUrl}
-								alt={metadata.name || "Beeliever NFT"}
-								className="w-20 h-20 rounded-lg border-2 border-primary/20 object-cover hover:border-primary/40 transition-colors"
-								onError={(e) => {
-									e.currentTarget.style.display = "none";
-									const fallback = e.currentTarget.parentElement
-										?.nextElementSibling as HTMLElement;
-									if (fallback) fallback.classList.remove("hidden");
-								}}
-							/>
-						</a>
-					) : null}
-					<div
-						className={`w-20 h-20 rounded-lg bg-primary/20 flex items-center justify-center text-2xl ${
-							imageUrl ? "hidden" : ""
-						}`}
+		<div className="md:min-w-xs w-full md:max-w-xs p-6 bg-gradient-to-br from-primary/5 to-yellow-400/5 rounded-2xl">
+			<div className="flex flex-col items-center gap-4">
+				{imageUrl ? (
+					<a
+						href={imageUrl}
+						target="_blank"
+						rel="noopener noreferrer"
+						className="block rounded-2xl hover:scale-105 transition-transform"
+						title="Click to view full-size image"
 					>
+						<img
+							src={imageUrl}
+							alt={metadata.name || "Beeliever NFT"}
+							className="w-32 h-32 object-cover border-2 border-primary/20 rounded-2xl"
+							onError={(e) => {
+								e.currentTarget.style.display = "none";
+								const fallback = e.currentTarget.parentElement
+									?.nextElementSibling as HTMLElement;
+								if (fallback) fallback.classList.remove("hidden");
+							}}
+						/>
+					</a>
+				) : (
+					<div className="w-32 h-32 rounded-2xl bg-gradient-to-br from-primary/20 to-orange-400/20 flex items-center justify-center text-4xl border-2 border-primary/20">
 						🐝
 					</div>
-				</div>
+				)}
 
-				<div className="flex-1">
-					<div className="space-y-4">
-						<h4 className="font-semibold text-primary flex items-center gap-2">
-							🎉 {metadata.name || "Beeliever NFT"} Minted!
-						</h4>
+				<div className="w-full space-y-3 text-center">
+					<div className="flex flex-col gap-2">
+						<span className="text-xl font-bold text-primary">Your NFT!</span>
+						<span className="text-sm text-muted-foreground">Beeliever #{metadata.token_id}</span>
+						{nftType && (
+							<span
+								className={`flex justify-center px-2 py-1 text-sm rounded-full ${
+									nftType === "Mythic"
+										? "bg-yellow-400/20 text-yellow-400 border border-yellow-400/30"
+										: "bg-primary/20 text-primary border border-primary/30"
+								}`}
+							>
+								{nftType === "Mythic" ? "✨ " : "🐝 "}
+								{nftType}
+								{mythicName ? ": " + mythicName : ""}
+							</span>
+						)}
+						<span className="text-sm text-muted-foreground">Object ID: {trimAddress(nftId)}</span>
+					</div>
+					<div className="space-y-3">
+						{background && (
+							<div className="text-sm">
+								<span className="text-muted-foreground">Background: </span>
+								{background}
+							</div>
+						)}
 
-						<div className="space-y-2">
-							{nftType && (
-								<div className="flex items-center gap-2">
-									<span
-										className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full ${
-											nftType === "Mythic"
-												? "bg-gradient-to-r from-yellow-400/20 to-orange-400/20 text-yellow-400 border border-yellow-400/30"
-												: "bg-primary/20 text-primary border border-primary/30"
-										}`}
-									>
-										{nftType === "Mythic" ? "✨" : "🐝"} {nftType}
-									</span>
-									{mythicName && (
-										<span className="text-xs text-muted-foreground">{mythicName}</span>
-									)}
-								</div>
-							)}
-
-							{background && (
-								<div className="text-xs text-muted-foreground">Background: {background}</div>
-							)}
-
-							{metadata.badges && metadata.badges.length > 0 && (
-								<div className="flex flex-wrap gap-1">
+						{metadata.badges && metadata.badges.length > 0 && (
+							<>
+								<span className="text-sm text-muted-foreground">Badges:</span>
+								<div className="flex flex-wrap justify-center gap-2 mt-2">
 									{metadata.badges.map((badge, index) => (
 										<span
 											key={index}
-											className="text-xs px-2 py-1 bg-blue-500/20 text-blue-400 rounded-full border border-blue-400/30"
+											className="text-sm px-2 py-1 bg-blue-500/20 text-blue-400 rounded-full border border-blue-400/30"
 										>
 											{badge}
 										</span>
 									))}
 								</div>
-							)}
+							</>
+						)}
+					</div>
 
-							<div className="text-xs text-muted-foreground">
-								Beeliever #{metadata.token_id} <br />
-								Object ID: {nftId}
-							</div>
-						</div>
-
-						{/* Move the View NFT button to bottom and fix styling */}
-						<div className="pt-2">
-							<a
-								href={mkSuiVisionUrl(nftId, network)}
-								target="_blank"
-								rel="noopener noreferrer"
-								className="inline-flex items-center gap-2 px-4 py-2 bg-primary/90 text-white border border-white/10 rounded-lg hover:bg-primary transition-colors font-medium text-sm shadow-[inset_0_4px_10px_0_rgba(255,255,255,0.25),inset_0_-4px_10px_0_rgba(255,255,255,0.15)]"
-							>
-								<ExternalLink size={16} />
-								View on SuiVision
-							</a>
-						</div>
+					<div className="pt-2">
+						<a
+							href={mkSuiVisionUrl(nftId, network)}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 text-sm"
+						>
+							<ExternalLink size={16} />
+							View on SuiVision
+						</a>
 					</div>
 				</div>
 			</div>
