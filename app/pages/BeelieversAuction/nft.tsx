@@ -201,7 +201,11 @@ export const queryNftFromKiosk = async (kioskId: string, client: SuiClient): Pro
 				});
 
 				if (itemObject.data?.type?.includes("mint::")) {
-					return obj.objectId;
+					if (itemObject.data.content && "fields" in itemObject.data.content) {
+						const fields = itemObject.data.content.fields;
+						return fields.id?.id || fields.object_id || obj.objectId;
+					}
+					return obj.objectId; // Fallback to dynamic field ID if content parsing fails
 				}
 			}
 		}
