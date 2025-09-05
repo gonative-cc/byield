@@ -12,7 +12,7 @@ export interface UseCoinBalanceResult {
 
 // coin address default to 0x2::sui::SUI if not specified.
 export function useCoinBalance(coinAddr?: string): UseCoinBalanceResult {
-	const { NBTC_COIN_TYPE } = useNetworkVariables();
+	const { nbtcPkgId } = useNetworkVariables();
 	const suiClient = useSuiClient();
 	const account = useCurrentAccount();
 
@@ -37,7 +37,7 @@ export function useCoinBalance(coinAddr?: string): UseCoinBalanceResult {
 
 			const result = await suiClient.getBalance({
 				owner: account.address,
-				coinType: coinAddr || NBTC_COIN_TYPE,
+				coinType: coinAddr || nbtcPkgId,
 			});
 
 			setBalance(result);
