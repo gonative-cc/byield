@@ -401,7 +401,19 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 	const { client } = useSuiClientContext();
 	const account = useCurrentAccount();
 	const [hasMinted, setHasMinted] = useState(false);
-	const [nftId, setNftId] = useState<string | null>(null);
+	// TODO: Ravindra, after testing NFT display, the default value here should be null
+	const [nftId, setNftId] = useState<string | null>(
+		"0xe86131a6240d56c9d24532e4277ede8b1bd7fb350b764b97bc970c1c26eaf773",
+	); //null);
+
+	// TODO: Ravindra: update the icon in this toast and remove this example code
+	useEffect(() => {
+		toast({
+			title: "Creating Kiosk object",
+			variant: "info",
+			description: "Kiosk is used to store NFT",
+		});
+	});
 
 	useEffect(() => {
 		if (!account) return;
@@ -434,7 +446,7 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 					<div className="animate-float">
 						<div className="absolute inset-0 bg-primary/20 rounded-xl blur-xl"></div>
 						<img
-							src="/assets/bee/bee-with-gonative.webp"
+							src="/assets/bee/beeliever-unknown.webp"
 							alt="bee-with-gonative"
 							className="relative rounded-xl w-64 h-64 lg:w-72 lg:h-72 object-cover border-2 border-primary/30"
 						/>
