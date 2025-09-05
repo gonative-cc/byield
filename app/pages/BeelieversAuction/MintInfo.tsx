@@ -198,9 +198,19 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId }: MintActionProps
 				kioskCapId = kioskInfo.kioskCapId;
 			}
 
+			const tx = createMintTx(kioskId, kioskCapId, beelieversMint, beelieversAuction.auctionId);
+
+			// Set sender before dry run check
+			tx.setSender(account.address);
+
+			// Do dry run check BEFORE sending to wallet
+			console.log("Running pre-transaction validation...");
+			await client.dryRunTransactionBlock({
+				transactionBlock: await tx.build({ client }),
+			});
+
 			toast({ title: "Minting NFT", variant: "info" });
 
-			const tx = createMintTx(kioskId, kioskCapId, beelieversMint, beelieversAuction.auctionId);
 			const result = await signAndExecTx(tx, client, signTransaction);
 			console.log(">>> mint result", result.digest, result.errors);
 
@@ -217,9 +227,14 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId }: MintActionProps
 		} catch (error) {
 			console.error("Error minting:", error);
 
+			if (handleDryRunError(error as Error)) {
+				return;
+			}
+
 			let msg = "An error occurred during minting";
 			const maybeErr = (error as Error).message;
 			if (maybeErr) msg = formatSuiMintErr(maybeErr);
+
 			toast({
 				title: "Minting Error",
 				description: msg,
@@ -522,3 +537,39 @@ async function queryHasMinted(addr: string, client: SuiClient, cfg: MintCfg): Pr
 		return false;
 	}
 }
+
+const handleDryRunError = (error: Error): boolean => {
+	const errorMessage = error.message;
+
+	if (errorMessage.includes("Dry run failed") || errorMessage.includes("MoveAbort")) {
+		console.error("Dry run failed:", errorMessage);
+
+		let userMessage = "Transaction simulation failed. Please check your inputs and try again.";
+
+		const parsedError = parseTxError(errorMessage);
+		if (parsedError && typeof parsedError === "object") {
+			userMessage = formatSuiMintErr(errorMessage);
+		} else if (typeof parsedError === "string") {
+			userMessage = parsedError;
+		}
+
+		toast({
+			title: "Transaction Check Failed",
+			description: (
+				<div className="space-y-2">
+					<p className="font-medium">⚠️ Pre-transaction validation failed</p>
+					<p className="text-sm">{userMessage}</p>
+					<p className="text-xs text-muted-foreground">
+						This transaction would likely fail. Please review your inputs before proceeding.
+					</p>
+				</div>
+			),
+			variant: "destructive",
+			duration: 8000,
+		});
+
+		return true;
+	}
+
+	return false;
+};
