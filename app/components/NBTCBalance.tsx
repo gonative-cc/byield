@@ -8,7 +8,7 @@ interface NBTCBalanceProps {
 
 export function NBTCBalance({ balance }: NBTCBalanceProps) {
 	return (
-		<div className="flex items-center gap-4 bg-white-3 p-3.5 rounded-2xl">
+		<div className="flex items-center gap-4 bg-gray-800 p-3.5 rounded-2xl">
 			<NBTCIcon prefix="" className="mr-0" />
 			<div className="flex flex-col gap-1">
 				<span>Your nBTC Balance</span>

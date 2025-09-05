@@ -36,6 +36,26 @@ function AvailableWallets() {
 	const wallets = useWallets();
 	const { mutate: connect } = useConnectWallet();
 
+	// WalletWithRequiredFeatures export is not available from @mysten/dapp-kit
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const walletConnectClick = (installedWallet: any) => {
+		connect(
+			{ wallet: installedWallet },
+			{
+				// TODO: onSuccess is not getting triggered. Have to check with SUI community.
+				onSuccess: () => handleWalletConnect(Wallets.SuiWallet, true),
+				onError: () =>
+					toast({
+						title: "Sui Wallet Connect",
+						description: `Failed to connect ${installedWallet.name}`,
+						variant: "destructive",
+					}),
+			},
+		);
+		// TODO: onSuccess is not getting triggered. Have to check with SUI community.
+		handleWalletConnect(Wallets.SuiWallet, true);
+	};
+
 	// Find Slush and Phantom wallets
 	const slushWallet = wallets.find((w) => w.name === "Slush");
 	const phantomWallet = wallets.find((w) => w.name === "Phantom");
@@ -71,20 +91,7 @@ function AvailableWallets() {
 						<Button
 							variant="ghost"
 							type="button"
-							onClick={() => {
-								connect(
-									{ wallet: installedWallet },
-									{
-										onSuccess: () => handleWalletConnect(Wallets.SuiWallet, true),
-										onError: () =>
-											toast({
-												title: "Sui Wallet Connect",
-												description: `Failed to connect ${installedWallet.name}`,
-												variant: "destructive",
-											}),
-									},
-								);
-							}}
+							onClick={walletConnectClick}
 							className="justify-between flex w-full text-primary h-16"
 						>
 							<img
@@ -110,22 +117,7 @@ function AvailableWallets() {
 					<Button
 						variant="ghost"
 						type="button"
-						onClick={() =>
-							connect(
-								{ wallet },
-								{
-									onSuccess: () => handleWalletConnect(Wallets.SuiWallet, true),
-									onError: (error) => {
-										console.error(`Failed to connect wallet ${wallet.name}`, error);
-										toast({
-											title: "Sui Wallet Connect",
-											description: `Failed to connect wallet ${wallet.name}`,
-											variant: "destructive",
-										});
-									},
-								},
-							)
-						}
+						onClick={walletConnectClick}
 						className="justify-between flex w-full text-primary h-16"
 					>
 						<img src={wallet.icon} alt={wallet.name} width={40} height={40} />
@@ -145,7 +137,7 @@ export function SuiModal({ label = "Connect Sui Wallet" }: SuiModalProps) {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<Button type="button" layout="oneLine">
+				<Button type="button" layout="oneLine" className="w-full md:w-fit">
 					<Wallet /> {label}
 				</Button>
 			</DialogTrigger>

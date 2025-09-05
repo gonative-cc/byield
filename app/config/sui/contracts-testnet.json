@@ -12,5 +12,7 @@
 		"bidEndpoint": "bid",
 		"withdrawFunction": "withdraw",
 		"auctionId": "0xfda0a2182a1fe1bd620c461a89177802616c3c72ab5ab7f28044b8d393243a7f"
-	}
+	},
+	"accountExplorer": "https://suiscan.xyz/testnet/account/",
+	"nbtcPkgId": "0x5419f6e223f18a9141e91a42286f2783eee27bf2667422c2100afc7b2296731b::nbtc::NBTC"
 }

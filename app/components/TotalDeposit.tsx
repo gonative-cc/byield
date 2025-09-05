@@ -9,7 +9,6 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { action } from "../config/market.json";
 import { formatNBTC } from "~/lib/denoms";
-import { NBTC_COIN_TYPE } from "~/lib/nbtc";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 
 enum MarketIntegration {
@@ -127,14 +126,12 @@ function DepositCard({ title, value }: DepositData) {
 }
 
 export function TotalDeposit() {
-	const { balance: nbtcBalance } = useCoinBalance(NBTC_COIN_TYPE);
+	const { balance: nbtcBalance } = useCoinBalance();
 
 	return (
 		<div className="flex flex-col gap-10 w-full">
 			<div className="flex justify-between w-full gap-4">
-				{nbtcBalance && (
-					<DepositCard id="nbtc-balance" title="nBTC Balance" value={formatNBTC(nbtcBalance)} />
-				)}
+				<DepositCard id="nbtc-balance" title="nBTC Balance" value={formatNBTC(nbtcBalance)} />
 			</div>
 			<div className="flex flex-col gap-4">
 				<div className="flex justify-between items-center w-full">

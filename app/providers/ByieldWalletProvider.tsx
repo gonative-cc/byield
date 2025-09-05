@@ -65,7 +65,7 @@ export const ByieldWalletProvider = ({ children }: { children: ReactNode }) => {
 			[Wallets.Xverse]: isBitcoinWalletActive,
 		}));
 		setIsLoading(() => false);
-	}, [isBitcoinWalletActive, isSuiWalletActive, isModalHidden]);
+	}, []);
 
 	useEffect(() => {
 		const updateModalVisibility = () => {

@@ -13,7 +13,8 @@ export async function loader({ params, context, request }: Route.LoaderArgs): Pr
 	const env = context.cloudflare.env;
 	const ctrl = new Controller(env.BeelieversNFT, env.BeelieversD1);
 	const url = new URL(request.url);
-	// TODO: add user param
+	// TODO: set user address to the params
+	// Probably we can use https://reactrouter.com/start/framework/route-module#unstable_clientmiddleware
 	// const suiAddress = url.searchParams.get("suiAddress") ?? undefined;
 	console.log(">>>>> Page Loader handler - params:", params, "url:", url.href);
 	return await ctrl.loadPageData();
@@ -26,14 +27,11 @@ export async function action({ request, context }: Route.ActionArgs) {
 	return ctrl.handleJsonRPC(request);
 }
 
-export default function BeelieversAuctionPage() {
+export default function BeelieversAuctionPage({ loaderData }: Route.ComponentProps) {
 	const { network } = useSuiClientContext();
 	const { mutate: disconnect } = useDisconnectWallet();
 	const isTestnet = network === "testnet";
-	// TODO: this page get reloaded when we already have account data, so let's try to pass the account
-	// as an argument to the loader somehow. Could be through the URL query.
-	const pageData = useLoaderData<typeof loader>();
-	if (!pageData || pageData?.error) {
+	if (!loaderData || loaderData?.error) {
 		throw Error("Couldn't load the auction data");
 	}
 
@@ -48,7 +46,7 @@ export default function BeelieversAuctionPage() {
 		<div className="bg-gradient-to-br from-background via-azure-20 to-azure-25 p-4 sm:p-6 lg:p-8">
 			<div className="flex justify-center">
 				<div className="w-full max-w-7xl animate-in fade-in-0 duration-700">
-					<BeelieversAuction info={pageData.details} leaderboard={pageData.leaderboard} />
+					<BeelieversAuction info={loaderData.details} leaderboard={loaderData.leaderboard} />
 				</div>
 			</div>
 		</div>
