@@ -1,5 +1,5 @@
 export enum MintingTxStatus {
-	MINTED = "MINED",
+	MINTED = "MINTED",
 	FAILED = "FAILED",
 	REORG = "REORG",
 	CONFIRMING = "CONFIRMING",
