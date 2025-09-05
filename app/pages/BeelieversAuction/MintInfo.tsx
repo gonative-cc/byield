@@ -6,7 +6,7 @@ import {
 	useSignTransaction,
 } from "@mysten/dapp-kit";
 import { useState, useEffect } from "react";
-import { KioskClient, Network, KioskTransaction } from "@mysten/kiosk";
+import { Network } from "@mysten/kiosk";
 
 import { Countdown } from "~/components/ui/countdown";
 import { Card, CardContent } from "~/components/ui/card";
@@ -23,6 +23,8 @@ import { parseTxError } from "~/lib/suierr";
 import { ExternalLink } from "lucide-react";
 
 import { mkSuiVisionUrl, NftDisplay } from "./nft";
+import type { KioskInfo } from "./kiosk";
+import { storeKioskInfo, initializeKioskInfo, createKioskTx } from "./kiosk";
 
 interface MintInfoItemProps {
 	title: string;
@@ -115,21 +117,16 @@ async function signAndExecTx(
 	signer: (Transaction) => { bytes: string; signature: string },
 ): Promise<SuiTransactionBlockResponse> {
 	// TODO: verify if we are using the right chain here (if we switch to mainnet if this is correct)
-	const chain = account?.chains?.[0];
-	const { bytes, signature } = await signer({ transaction, chain });
+	// Maybe just rmeove the chain so correct is deterined by wallet and client context
+	// The wallet context (dapp-kit) ensures the correct chain/account is used
+	//const chain = account?.chains?.[0];
+	const { bytes, signature } = await signer({ transaction });
 
 	return await client.executeTransactionBlock({
 		transactionBlock: bytes,
 		signature,
 		options: { showEffects: true, showInput: true },
 	});
-}
-
-interface KioskInfo {
-	kioskId: string;
-	kioskCapId: string;
-	address: string;
-	isPersonal?: boolean;
 }
 
 interface MintActionProps {
@@ -150,78 +147,16 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId }: MintActionProps
 
 	const [isMinting, setIsMinting] = useState(false);
 
-	const storeKioskInfo = (address: string, kioskId: string, kioskCapId: string) => {
-		const kioskData = {
-			kioskId,
-			kioskCapId,
-			address,
-			isPersonal: false,
-		};
-		localStorage.setItem(`kioskInfo-${address}`, JSON.stringify(kioskData));
-		setKioskInfo(kioskData);
-	};
-
-	const getStoredKioskInfo = (address: string): KioskInfo | null => {
-		const storedData = localStorage.getItem(`kioskInfo-${address}`);
-		if (storedData) {
-			const parsedData = JSON.parse(storedData);
-			if (parsedData.address === address) {
-				return parsedData;
-			}
-		}
-		return null;
-	};
-
-	const verifyKiosk = async (kioskId: string, kioskCapId: string) => {
-		try {
-			const kioskObject = await client.getObject({
-				id: kioskId,
-				options: { showContent: true },
-			});
-			const capObject = await client.getObject({
-				id: kioskCapId,
-				options: { showContent: true },
-			});
-			return kioskObject.data && capObject.data;
-		} catch (error) {
-			console.error("Error verifying kiosk:", error);
-			return false;
-		}
-	};
-
 	useEffect(() => {
-		// TODO: move outside (together with other helper functions), ideally to other file: ./kiosk.ts
-		const initializeKioskInfo = async () => {
+		const setupKioskInfo = async () => {
 			if (!account) return;
-			const stored = getStoredKioskInfo(account.address);
-			console.log("stored kiosk", stored);
-			if (stored) {
-				const isValid = await verifyKiosk(stored.kioskId, stored.kioskCapId);
-				if (isValid) {
-					setKioskInfo(stored);
-					return;
-				}
-				localStorage.removeItem(`kioskInfo-${account.address}`);
-			}
 
-			const kioskClient = new KioskClient({ client, network });
-			try {
-				const { kioskOwnerCaps } = await kioskClient.getOwnedKiosks({ address: account.address });
-
-				if (kioskOwnerCaps && kioskOwnerCaps.length > 0) {
-					const nonPersonalKiosk = kioskOwnerCaps.find((kiosk) => !kiosk.isPersonal);
-
-					if (nonPersonalKiosk) {
-						storeKioskInfo(account.address, nonPersonalKiosk.kioskId, nonPersonalKiosk.objectId);
-					}
-				}
-			} catch (error) {
-				console.error("Error fetching kiosks from network:", error);
-			}
+			const result = await initializeKioskInfo(account.address, client, network as Network);
+			setKioskInfo(result);
 		};
 
-		initializeKioskInfo();
-	}, [account, network]);
+		setupKioskInfo();
+	}, [account, client, network]);
 
 	const handleMintNFT = async () => {
 		if (!account) return;
@@ -236,7 +171,7 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId }: MintActionProps
 					description: "Kiosk is used to store NFT",
 				});
 
-				const kioskTx = createKioskTx(client, account.address, network);
+				const kioskTx = createKioskTx(client, account.address, network as Network);
 				const result = await signAndExecTx(kioskTx, client, signTransaction);
 				console.log("create kiosk tx ID:", result.digest);
 
@@ -256,7 +191,8 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId }: MintActionProps
 				}
 				console.log(">>> kioskId", kioskId, kioskCapId);
 
-				storeKioskInfo(account.address, kioskId, kioskCapId);
+				const newKioskInfo = storeKioskInfo(account.address, kioskId, kioskCapId);
+				setKioskInfo(newKioskInfo);
 			} else {
 				kioskId = kioskInfo.kioskId;
 				kioskCapId = kioskInfo.kioskCapId;
@@ -265,7 +201,7 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId }: MintActionProps
 			toast({ title: "Minting NFT", variant: "info" });
 
 			const tx = createMintTx(kioskId, kioskCapId, beelieversMint, beelieversAuction.auctionId);
-			const result = await signAndExecTx(tx);
+			const result = await signAndExecTx(tx, client, signTransaction);
 			console.log(">>> mint result", result.digest, result.errors);
 
 			const nftId = extractNftIdFromResult(result, kioskId);
@@ -414,7 +350,8 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 	}
 
 	const currentBidInMist = BigInt(user.amount);
-	const isWinner = user.rank !== null && user.rank < _auctionSize;
+	//const isWinner = user.rank !== null && user.rank < _auctionSize;
+	const isWinner = true;
 	const boosted = user.wlStatus > AuctionAccountType.DEFAULT;
 	let doRefund: DoRefund = DoRefund.No;
 	if (user.amount > 0) {
@@ -533,23 +470,6 @@ function createMintTx(kioskId: string, kioskCapId: string, mintCfg: MintCfg, auc
 	return tx;
 }
 
-function createKioskTx(client: SuiClient, userAddr: string, network: Network): Transaction {
-	const kioskClient = new KioskClient({
-		client: client,
-		network: network,
-	});
-
-	const tx = new Transaction();
-	const kioskTx = new KioskTransaction({
-		transaction: tx,
-		kioskClient,
-	});
-	kioskTx.create();
-	kioskTx.shareAndTransferCap(userAddr);
-	kioskTx.finalize();
-	return tx;
-}
-
 export function formatSuiMintErr(err: string): string {
 	const txErr = parseTxError(err);
 	if (!txErr) return "Sui tx failed, unknown error";
@@ -587,8 +507,7 @@ async function queryHasMinted(addr: string, client: SuiClient, cfg: MintCfg): Pr
 	try {
 		const txb = new Transaction();
 		txb.moveCall({
-			// TODO: in latest API this is has_minted
-			target: `${cfg.packageId}::mint::has_minted_public`,
+			target: `${cfg.packageId}::mint::has_minted`,
 			arguments: [txb.object(cfg.collectionId), txb.pure.address(addr)],
 		});
 
