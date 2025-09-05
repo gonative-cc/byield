@@ -3,7 +3,7 @@
 	"license": "MPL-2.0",
 	"private": true,
 	"type": "module",
-	"packageManager": "pnpm@10.14.0",
+	"packageManager": "pnpm@10.15.1",
 	"scripts": {
 		"prepare": "cd .git/hooks; ln -s -f ../../contrib/git-hooks/pre-commit ./",
 		"postinstall": "pnpm run cf-typegen",
