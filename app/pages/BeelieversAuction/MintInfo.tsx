@@ -148,14 +148,8 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId }: MintActionProps
 	const [isMinting, setIsMinting] = useState(false);
 
 	useEffect(() => {
-		const setupKioskInfo = async () => {
-			if (!account) return;
-
-			const result = await initializeKioskInfo(account.address, client, network as Network);
-			setKioskInfo(result);
-		};
-
-		setupKioskInfo();
+		if (!account) return;
+		initializeKioskInfo(account.address, client, network as Network).then(setKioskInfo);
 	}, [account, client, network]);
 
 	const handleMintNFT = async () => {
@@ -341,7 +335,6 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 
 	useEffect(() => {
 		if (!account) return;
-
 		queryHasMinted(account.address, client, beelieversMint).then(setHasMinted);
 	}, [account, client, beelieversMint]);
 
