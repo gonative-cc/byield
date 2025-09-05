@@ -3,7 +3,6 @@ import { Card, CardContent } from "~/components/ui/card";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
-import { NBTC_COIN_TYPE } from "~/lib/nbtc";
 import { NBTCBalance } from "~/components/NBTCBalance";
 import { Instructions } from "./Instructions";
 import { BuyNBTCTabContent } from "./BuyNBTCTabContent";
@@ -17,7 +16,7 @@ export function BuyNBTC() {
 	const { mutate: disconnect } = useDisconnectWallet();
 
 	// TODO: it doesn't get automatically refresehed
-	const { balance: nBTCBalance } = useCoinBalance(NBTC_COIN_TYPE);
+	const { balance: nBTCBalance } = useCoinBalance();
 	const { isWalletConnected, suiAddr } = useContext(WalletContext);
 	const isSuiWalletConnected = isWalletConnected(Wallets.SuiWallet);
 	const transactionHistoryLink = `https://suiscan.xyz/testnet/account/${suiAddr}/tx-blocks`;
