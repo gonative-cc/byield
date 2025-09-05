@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useSuiClientContext } from "@mysten/dapp-kit";
 import type { SuiClient } from "@mysten/sui/client";
 import { ExternalLink } from "lucide-react";
+import { trimAddress } from "~/components/Wallet/walletHelper";
 
 interface NftMetadata {
 	id: string;
@@ -185,3 +186,82 @@ function getAttributeValue(attributes: NftMetadata["attributes"], key: string): 
 	const attr = attributes.fields.contents.find((item) => item.fields.key === key);
 	return attr?.fields.value || "";
 }
+
+export const queryNftFromKiosk = async (kioskId: string, client: SuiClient): Promise<string | null> => {
+	try {
+		const kioskObjects = await client.getDynamicFields({
+			parentId: kioskId,
+		});
+
+		for (const obj of kioskObjects.data) {
+			if (obj.name.type.includes("Item")) {
+				const itemObject = await client.getObject({
+					id: obj.objectId,
+					options: { showContent: true, showType: true },
+				});
+
+				if (itemObject.data?.type?.includes("mint::")) {
+					return obj.objectId;
+				}
+			}
+		}
+		return null;
+	} catch (error) {
+		console.error("Error querying NFT from kiosk:", error);
+		return null;
+	}
+};
+
+export const queryNftByModule = async (
+	address: string,
+	client: SuiClient,
+	packageId: string,
+): Promise<string | null> => {
+	try {
+		const ownedObjects = await client.getOwnedObjects({
+			owner: address,
+			filter: {
+				StructType: `${packageId}::mint::BeelieverNFT`,
+			},
+			options: {
+				showType: true,
+				showContent: true,
+			},
+		});
+
+		if (ownedObjects.data.length > 0) {
+			return ownedObjects.data[0].data?.objectId || null;
+		}
+
+		return null;
+	} catch (error) {
+		console.error("Error querying NFT by module:", error);
+		return null;
+	}
+};
+
+export const findExistingNft = async (
+	address: string,
+	client: SuiClient,
+	kioskId: string | null,
+	packageId: string,
+): Promise<string | null> => {
+	if (kioskId) {
+		const nftFromKiosk = await queryNftFromKiosk(kioskId, client);
+		if (nftFromKiosk) return nftFromKiosk;
+	}
+
+	return await queryNftByModule(address, client, packageId);
+};
+
+export const storeNftId = (address: string, nftId: string): void => {
+	localStorage.setItem(`nftId-${address}`, nftId);
+};
+
+export const getStoredNftId = (address: string): string | null => {
+	return localStorage.getItem(`nftId-${address}`);
+};
+
+export const removeStoredNftId = (address: string): void => {
+	localStorage.removeItem(`nftId-${address}`);
+};
