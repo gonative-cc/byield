@@ -8,7 +8,7 @@ import { Button } from "~/components/ui/button";
 interface NftMetadata {
 	id: string;
 	name: string;
-	image_url: string;
+	image_id: string;
 	token_id: string;
 	attributes: {
 		fields: {
@@ -36,7 +36,7 @@ async function fetchNftMetadata(client: SuiClient, nftId: string): Promise<NftMe
 			return {
 				id: nftId,
 				name: fields.name || "Beeliever NFT",
-				image_url: fields.image_url || "",
+				image_id: fields.image_id || "",
 				token_id: fields.token_id || "0",
 				attributes: fields.attributes || { fields: { contents: [] } },
 				badges: fields.badges || [],
@@ -65,7 +65,7 @@ export function NftDisplay({ nftId }: NftDisplayProps) {
 
 	if (!metadata) return;
 
-	const imageUrl = mkWalrusImageUrl(metadata.image_url);
+	const imageUrl = mkWalrusImageUrl(metadata.image_id);
 	const nftType = getAttributeValue(metadata.attributes, "Type");
 	const mythicName = getAttributeValue(metadata.attributes, "Mythic Name");
 	const background = getAttributeValue(metadata.attributes, "Background");

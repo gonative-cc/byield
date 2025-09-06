@@ -466,14 +466,10 @@ interface MintCfg {
 function createMintTx(kioskId: string, kioskCapId: string, mintCfg: MintCfg, auctionId: string): Transaction {
 	const tx = new Transaction();
 
-	// We need a payment coin even if mint_price is 0 (it will be destroyed)
-	const [paymentCoin] = tx.splitCoins(tx.gas, [tx.pure.u64(1)]); // Use 1 MIST
-
 	tx.moveCall({
 		target: `${mintCfg.packageId}::mint::mint`,
 		arguments: [
 			tx.object(mintCfg.collectionId),
-			paymentCoin,
 			tx.object(mintCfg.transferPolicyId),
 			tx.object(SUI_RANDOM_OBJECT_ID),
 			tx.object(SUI_CLOCK_OBJECT_ID),
@@ -538,6 +534,7 @@ async function queryHasMinted(addr: string, client: SuiClient, cfg: MintCfg): Pr
 	}
 }
 
+// TODO: this should be removed
 if (typeof window !== "undefined") {
 	window.testNftDetection = async (account, client, beelieversMint) => {
 		if (!account?.address) {
