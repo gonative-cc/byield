@@ -14,9 +14,9 @@
 		"withdrawFunction": "withdraw"
 	},
 	"beelieversMint": {
-		"packageId": "0xae0aab765399e42c536b26ee8044efbcdfd4346926a88b26847bf5541cde45ed",
-		"collectionId": "0x565d980198d3bd1ec33107110ccc5ad448dacb19f1495da313cb015971bcd146",
-		"transferPolicyId": "0x23039cf016e97829afb865ba1db63e342914c11eca76f87cd4b3d3b4e8e63741",
+		"packageId": "0x55be1b4afbbb00a24ac3a6353f1dadf28c5ab756db6e54d7d3ae5a0b7e88d5e9",
+		"collectionId": "0xe007c02191ef3a3022adda1ad18dca149bcf676db5112746ed40e8de12bde718",
+		"transferPolicyId": "0x7daca888ce6a93d0b24f685e1f652b587faefb8e80d9badcbf19cf09bf844941",
 		"mintStart": 1756899768721
 	},
 	"accountExplorer": "https://suiscan.xyz/testnet/account/"
