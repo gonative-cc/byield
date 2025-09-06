@@ -231,22 +231,20 @@ export const queryNftByModule = async (
 export const findExistingNft = async (
 	address: string,
 	client: SuiClient,
-	kioskId: string | null,
-	packageId: string,
+	mintPkgId: string,
+	kioskId?: string,
 ): Promise<string | null> => {
-	console.log("%%% checking NFT in kiosk", kioskId);
 	if (kioskId) {
 		const nftFromKiosk = await queryNftFromKiosk(kioskId, client);
 		if (nftFromKiosk) return nftFromKiosk;
 	}
 
-	return await queryNftByModule(address, client, packageId);
+	return await queryNftByModule(address, client, mintPkgId);
 };
 
 export function findNftInTxResult(result: SuiTransactionBlockResponse, kioskId?: string): string | null {
 	try {
 		if (result.events) {
-			console.log(">>> Events:", result.events);
 			for (const event of result.events) {
 				console.log(">>> Event type:", event.type);
 

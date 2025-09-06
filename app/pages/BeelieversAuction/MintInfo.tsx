@@ -75,15 +75,16 @@ interface MintActionProps {
 	doRefund: DoRefund;
 	hasMinted: boolean;
 	setNftId: (nft_id: string) => void;
+	kiosk: KioskInfo | null;
+	setKiosk: (ki: KioskInfo) => void;
 }
 
-function MintAction({ isWinner, doRefund, hasMinted, setNftId }: MintActionProps) {
+function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }: MintActionProps) {
 	const { beelieversAuction, beelieversMint } = useNetworkVariables();
 	const { mutate: signAndExecTxAction, isPending: isRefundPending } = useSignAndExecuteTransaction();
 	const { mutateAsync: signTransaction } = useSignTransaction();
 	const { network, client } = useSuiClientContext();
 	const account = useCurrentAccount();
-	const [kioskInfo, setKioskInfo] = useState<KioskInfo | null>(null);
 	const [isMinting, setIsMinting] = useState(false);
 
 	// TODO: remove
@@ -96,21 +97,16 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId }: MintActionProps
 	// 	return setnft();
 	// }, []);
 
-	useEffect(() => {
-		if (!account) return;
-		initializeKioskInfo(account.address, client, network as Network).then(setKioskInfo);
-	}, [account, client, network]);
-
 	const handleMintNFT = async () => {
 		if (!account) return;
 		let kioskId, kioskCapId;
-		let kioskInfo2 = kioskInfo;
+		let kioskInfo2 = kiosk;
 
 		try {
 			setIsMinting(true);
 			if (!kioskInfo2) {
-				kioskInfo2 = await createKiosk(account.address, client, network, signAndExecTx);
-				setKioskInfo(kioskInfo2);
+				kioskInfo2 = await createKiosk(account.address, client, network, signTransaction);
+				setKiosk(kioskInfo2);
 			}
 			kioskId = kioskInfo2.kioskId;
 			kioskCapId = kioskInfo2.kioskCapId;
@@ -119,7 +115,10 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId }: MintActionProps
 
 			const tx = createMintTx(kioskId, kioskCapId, beelieversMint, beelieversAuction.auctionId);
 			const result = await signAndExecTx(tx, client, signTransaction);
-			console.log(">>> mint result", result.digest, result.errors);
+			console.log(">>> Mint tx:", result.digest);
+			if (result.errors) {
+				console.log(">>> Mint FAILED", result.errors);
+			}
 
 			const nftId = findNftInTxResult(result, kioskId);
 			if (nftId) {
@@ -248,26 +247,30 @@ interface MintInfoProps {
 
 export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auctionSize } }: MintInfoProps) {
 	const { beelieversMint } = useNetworkVariables();
-	const { client } = useSuiClientContext();
+	const { client, network } = useSuiClientContext();
 	const account = useCurrentAccount();
 	const [hasMinted, setHasMinted] = useState(false);
 	const [nftId, setNftId] = useState<string | null>(null);
-	 
-	const [kioskInfo, setKioskInfo] = useState<KioskInfo | null>(null);  
+
+	const [kiosk, setKiosk] = useState<KioskInfo | null>(null);
+	const userAddr = account?.address || null;
 
 	useEffect(() => {
-		const checkMintStatus = async () => {
-			if (!account) return;
+		const initialize = async () => {
+			if (!userAddr) return;
 
-			const hasMinted = await queryHasMinted(account.address, client, beelieversMint);
+			const hasMinted = await queryHasMinted(userAddr, client, beelieversMint);
 			setHasMinted(hasMinted);
+
+			const kiosk = await initializeKioskInfo(userAddr, client, network);
+			setKiosk(kiosk);
 
 			if (hasMinted) {
 				const existingNftId = await findExistingNft(
-					account.address,
+					userAddr,
 					client,
-					kioskInfo?.kioskId || null,
 					beelieversMint.packageId,
+					kiosk?.kioskId,
 				);
 				if (existingNftId) {
 					setNftId(existingNftId);
@@ -275,8 +278,8 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 			}
 		};
 
-		checkMintStatus();
-	}, [account, client, beelieversMint, kioskInfo]);
+		initialize();
+	}, [userAddr, client, beelieversMint]);
 
 	if (user === null) {
 		return <p className="text-xl">Connect to your wallet to see minting info</p>;
@@ -349,6 +352,8 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 						doRefund={doRefund}
 						hasMinted={hasMinted}
 						setNftId={setNftId}
+						kiosk={kiosk}
+						setKiosk={setKiosk}
 					/>
 				</div>
 			</CardContent>
