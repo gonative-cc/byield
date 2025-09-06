@@ -1,12 +1,14 @@
+import { useState, useEffect } from "react";
 import { Transaction } from "@mysten/sui/transactions";
+import type { SuiClient } from "@mysten/sui/client";
 import {
 	useSignAndExecuteTransaction,
 	useSuiClientContext,
 	useCurrentAccount,
 	useSignTransaction,
 } from "@mysten/dapp-kit";
-import { useState, useEffect } from "react";
 import { Network } from "@mysten/kiosk";
+import { ExternalLink } from "lucide-react";
 
 import { Countdown } from "~/components/ui/countdown";
 import { Card, CardContent } from "~/components/ui/card";
@@ -16,15 +18,14 @@ import { classNames } from "~/util/tailwind";
 import { toast } from "~/hooks/use-toast";
 import { useNetworkVariables } from "~/networkConfig";
 import { AuctionAccountType, type AuctionInfo, type User } from "~/server/BeelieversAuction/types";
-import type { SuiClient, SuiTransactionBlockResponse } from "@mysten/sui/client";
-import { SUI_RANDOM_OBJECT_ID } from "~/lib/suienv";
+import { signAndExecTx, SUI_RANDOM_OBJECT_ID } from "~/lib/suienv";
 import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
 import { parseTxError } from "~/lib/suierr";
-import { ExternalLink } from "lucide-react";
 
-import { mkSuiVisionUrl, NftDisplay, findExistingNft } from "./nft";
+import { mkSuiVisionUrl, NftDisplay, findExistingNft, findNftInTxResult } from "./nft";
 import type { KioskInfo } from "./kiosk";
-import { storeKioskInfo, initializeKioskInfo, createKioskTx } from "./kiosk";
+import { initializeKioskInfo, createKiosk } from "./kiosk";
+import { delay } from "~/lib/batteries";
 
 interface MintInfoItemProps {
 	title: string;
@@ -45,48 +46,6 @@ function MintInfoItem({ title, value, isLastItem = false }: MintInfoItemProps) {
 		</div>
 	);
 }
-
-const extractNftIdFromResult = (result: SuiTransactionBlockResponse, kioskId?: string): string | null => {
-	try {
-		console.log(">>> Parsing transaction result:", result);
-
-		if (result.events) {
-			console.log(">>> Events:", result.events);
-			for (const event of result.events) {
-				console.log(">>> Event type:", event.type);
-
-				if (event.type.includes("::mint::NFTMinted")) {
-					console.log(">>> Found NFTMinted event:", event);
-
-					if (event.parsedJson?.nft_id) {
-						console.log(">>> Extracted NFT ID from event:", event.parsedJson.nft_id);
-						return event.parsedJson.nft_id;
-					}
-				}
-			}
-		}
-
-		if (result.effects?.created) {
-			console.log(">>> Created objects:", result.effects.created);
-			for (const obj of result.effects.created) {
-				const owner = obj.owner as { Shared?: unknown; AddressOwner?: string; ObjectOwner?: string };
-
-				if (owner.ObjectOwner) {
-					console.log(">>> Found potential NFT object:", obj.reference.objectId);
-					if (obj.reference.objectId !== kioskId) {
-						return obj.reference.objectId;
-					}
-				}
-			}
-		}
-
-		console.log(">>> No NFT ID found in transaction result");
-		return null;
-	} catch (error) {
-		console.error("Error extracting NFT ID:", error);
-		return null;
-	}
-};
 
 const createNftSuccessToast = (nftId: string, network: string) => {
 	const suiVisionUrl = mkSuiVisionUrl(nftId, network);
@@ -111,29 +70,11 @@ const createNftSuccessToast = (nftId: string, network: string) => {
 	};
 };
 
-async function signAndExecTx(
-	transaction: Transaction,
-	client: SuiClient,
-	signer: (Transaction) => { bytes: string; signature: string },
-): Promise<SuiTransactionBlockResponse> {
-	// TODO: verify if we are using the right chain here (if we switch to mainnet if this is correct)
-	// Maybe just rmeove the chain so correct is deterined by wallet and client context
-	// The wallet context (dapp-kit) ensures the correct chain/account is used
-	//const chain = account?.chains?.[0];
-	const { bytes, signature } = await signer({ transaction });
-
-	return await client.executeTransactionBlock({
-		transactionBlock: bytes,
-		signature,
-		options: { showEffects: true, showInput: true },
-	});
-}
-
 interface MintActionProps {
 	isWinner: boolean;
 	doRefund: DoRefund;
 	hasMinted: boolean;
-	setNftId: (string) => void;
+	setNftId: (nft_id: string) => void;
 }
 
 function MintAction({ isWinner, doRefund, hasMinted, setNftId }: MintActionProps) {
@@ -142,10 +83,18 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId }: MintActionProps
 	const { mutateAsync: signTransaction } = useSignTransaction();
 	const { network, client } = useSuiClientContext();
 	const account = useCurrentAccount();
-
 	const [kioskInfo, setKioskInfo] = useState<KioskInfo | null>(null);
-
 	const [isMinting, setIsMinting] = useState(false);
+
+	// TODO: remove
+	// useEffect(() => {
+	// 	const setnft = async () => {
+	// 		await delay(3000);
+	// 		console.log(">>> setting dummy nft");
+	// 		setNftId("0xa41b7e5f11fc7592974b3821e3d929c0ea154bf6a3e5a30f930de77cad88fada");
+	// 	};
+	// 	return setnft();
+	// }, []);
 
 	useEffect(() => {
 		if (!account) return;
@@ -155,42 +104,16 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId }: MintActionProps
 	const handleMintNFT = async () => {
 		if (!account) return;
 		let kioskId, kioskCapId;
+		let kioskInfo2 = kioskInfo;
 
 		try {
 			setIsMinting(true);
-			if (!kioskInfo) {
-				toast({
-					title: "Creating Kiosk object",
-					variant: "info",
-					description: "Kiosk is used to store NFT",
-				});
-
-				const kioskTx = createKioskTx(client, account.address, network as Network);
-				const result = await signAndExecTx(kioskTx, client, signTransaction);
-				console.log("create kiosk tx ID:", result.digest);
-
-				const effects = result.effects;
-				if (effects?.created) {
-					effects.created.forEach((obj) => {
-						const owner = obj.owner as { Shared?: unknown; AddressOwner?: string };
-						if (owner.Shared) {
-							kioskId = obj.reference.objectId;
-						} else if (owner.AddressOwner === account.address) {
-							kioskCapId = obj.reference.objectId;
-						}
-					});
-				}
-				if (!kioskId || !kioskCapId) {
-					throw new Error("Failed to retrieve kiosk or kiosk cap ID");
-				}
-				console.log(">>> kioskId", kioskId, kioskCapId);
-
-				const newKioskInfo = storeKioskInfo(account.address, kioskId, kioskCapId);
-				setKioskInfo(newKioskInfo);
-			} else {
-				kioskId = kioskInfo.kioskId;
-				kioskCapId = kioskInfo.kioskCapId;
+			if (!kioskInfo2) {
+				kioskInfo2 = await createKiosk(account.address, client, network, signAndExecTx);
+				setKioskInfo(kioskInfo2);
 			}
+			kioskId = kioskInfo2.kioskId;
+			kioskCapId = kioskInfo2.kioskCapId;
 
 			toast({ title: "Minting NFT", variant: "info" });
 
@@ -198,25 +121,22 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId }: MintActionProps
 			const result = await signAndExecTx(tx, client, signTransaction);
 			console.log(">>> mint result", result.digest, result.errors);
 
-			const nftId = extractNftIdFromResult(result, kioskId);
+			const nftId = findNftInTxResult(result, kioskId);
 			if (nftId) {
 				setNftId(nftId);
 				toast(createNftSuccessToast(nftId, network));
 			} else {
 				toast({
 					title: "Minting Successful",
-					description: "Successfully minted Beeliever NFT",
+					description: "Successfully minted Beeliever NFT. Check explorer to find your NFT",
 				});
 			}
 		} catch (error) {
 			console.error("Error minting:", error);
 
-			let msg = "An error occurred during minting";
-			const maybeErr = (error as Error).message;
-			if (maybeErr) msg = formatSuiMintErr(maybeErr);
 			toast({
 				title: "Minting Error",
-				description: msg,
+				description: formatSuiMintErr(error),
 				variant: "destructive",
 			});
 		} finally {
@@ -331,17 +251,18 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 	const { client } = useSuiClientContext();
 	const account = useCurrentAccount();
 	const [hasMinted, setHasMinted] = useState(false);
-	const [kioskInfo, setKioskInfo] = useState<KioskInfo | null>(null);
 	const [nftId, setNftId] = useState<string | null>(null);
+	 
+	const [kioskInfo, setKioskInfo] = useState<KioskInfo | null>(null);  
 
 	useEffect(() => {
 		const checkMintStatus = async () => {
 			if (!account) return;
 
-			const hasMintedResult = await queryHasMinted(account.address, client, beelieversMint);
-			setHasMinted(!!hasMintedResult);
+			const hasMinted = await queryHasMinted(account.address, client, beelieversMint);
+			setHasMinted(hasMinted);
 
-			if (hasMintedResult) {
+			if (hasMinted) {
 				const existingNftId = await findExistingNft(
 					account.address,
 					client,
@@ -481,10 +402,12 @@ function createMintTx(kioskId: string, kioskCapId: string, mintCfg: MintCfg, auc
 	return tx;
 }
 
-export function formatSuiMintErr(err: string): string {
-	const txErr = parseTxError(err);
-	if (!txErr) return "Sui tx failed, unknown error";
+export function formatSuiMintErr(error: unknown): string {
+	const errMsg = (error as Error).message;
+	if (!errMsg) return "An error occurred during minting";
 
+	const txErr = parseTxError(errMsg);
+	if (!txErr) return "Sui tx failed, unknown error";
 	if (typeof txErr === "string") return txErr;
 
 	let reason = "unknown";
@@ -514,7 +437,7 @@ export function formatSuiMintErr(err: string): string {
 	return `Tx aborted, function: ${txErr.funName} reason: "${reason}"`;
 }
 
-async function queryHasMinted(addr: string, client: SuiClient, cfg: MintCfg): Promise<boolean | undefined> {
+async function queryHasMinted(addr: string, client: SuiClient, cfg: MintCfg): Promise<boolean> {
 	try {
 		const txb = new Transaction();
 		txb.moveCall({
