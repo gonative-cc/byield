@@ -26,7 +26,6 @@ export async function createKiosk(
 	const kioskTx = createKioskTx(client, userAddr, network as Network);
 	const result = await signAndExecTx(kioskTx, client, signer);
 	let kioskId, kioskCapId;
-	console.log("create kiosk tx ID:", result.digest);
 
 	const effects = result.effects;
 	if (effects?.created) {
@@ -40,11 +39,17 @@ export async function createKiosk(
 		});
 	}
 	if (!kioskId || !kioskCapId) {
-		throw new Error("Failed to retrieve kiosk or kiosk cap ID");
+		throw new Error("Failed to retrieve kiosk or kiosk cap ID, tx ID:" + result.digest);
 	}
-	console.log(">>> kioskId", kioskId, kioskCapId);
+	console.log(
+		">>> Kiosk created, tx ID:",
+		result.digest,
+		"\nkiosk and kioskCap:",
+		kioskId,
+		kioskCapId,
+	);
 
-	return storeKioskInfo(address, kioskId, kioskCapId);
+	return storeKioskInfo(userAddr, kioskId, kioskCapId);
 }
 
 export const storeKioskInfo = (address: string, kioskId: string, kioskCapId: string): KioskInfo => {
