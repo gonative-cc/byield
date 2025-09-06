@@ -7,7 +7,6 @@ import {
 	useCurrentAccount,
 	useSignTransaction,
 } from "@mysten/dapp-kit";
-import { Network } from "@mysten/kiosk";
 import { ExternalLink } from "lucide-react";
 
 import { Countdown } from "~/components/ui/countdown";
@@ -25,7 +24,6 @@ import { parseTxError } from "~/lib/suierr";
 import { mkSuiVisionUrl, NftDisplay, findExistingNft, findNftInTxResult, queryNftFromKiosk } from "./nft";
 import type { KioskInfo } from "./kiosk";
 import { initializeKioskInfo, createKiosk } from "./kiosk";
-import { delay } from "~/lib/batteries";
 
 interface MintInfoItemProps {
 	title: string;
@@ -87,16 +85,6 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 	const account = useCurrentAccount();
 	const [isMinting, setIsMinting] = useState(false);
 
-	// TODO: remove
-	// useEffect(() => {
-	// 	const setnft = async () => {
-	// 		await delay(3000);
-	// 		console.log(">>> setting dummy nft");
-	// 		setNftId("0xa41b7e5f11fc7592974b3821e3d929c0ea154bf6a3e5a30f930de77cad88fada");
-	// 	};
-	// 	return setnft();
-	// }, []);
-
 	const handleMintNFT = async () => {
 		if (!account) return;
 		let kioskId, kioskCapId;
@@ -120,11 +108,12 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 				console.log(">>> Mint FAILED", result.errors);
 			}
 
-			const nftId = findNftInTxResult(result, kioskId);
+			const nftId = findNftInTxResult(result);
 			if (nftId) {
 				setNftId(nftId);
 				toast(createNftSuccessToast(nftId, network));
 			} else {
+				console.log("nft not found in tx result, checking querying indexer with kiosk");
 				const nftFromKiosk = await queryNftFromKiosk(kioskId, client);
 				if (nftFromKiosk) {
 					setNftId(nftFromKiosk);
@@ -270,12 +259,6 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 				return;
 			}
 
-			console.log(">>> MintInfo: Initializing for address:", userAddr);
-
-			setKiosk(null);
-			setNftId(null);
-			setHasMinted(false);
-
 			const hasMinted = await queryHasMinted(userAddr, client, beelieversMint);
 			setHasMinted(hasMinted);
 
@@ -304,9 +287,7 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 		return <p className="text-xl">Connect to your wallet to see minting info</p>;
 	}
 
-	const currentBidInMist = BigInt(user.amount);
-	//const isWinner = user.rank !== null && user.rank < _auctionSize;
-	const isWinner = true;
+	const isWinner = user.rank !== null && user.rank < _auctionSize;
 	const boosted = user.wlStatus > AuctionAccountType.DEFAULT;
 	let doRefund: DoRefund = DoRefund.No;
 	if (user.amount > 0) {
@@ -318,6 +299,7 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 	}
 
 	const bidLabel = boosted ? "Your Bid (5% boosted)" : "Your Bid";
+	const mintStarted = beelieversMint.mintStart <= +new Date();
 
 	return (
 		<Card className="lg:w-[85%] xl:w-[75%] w-full shadow-2xl border-primary/30 hover:border-primary/50 transition-all duration-300 hover:shadow-primary/10">
@@ -340,20 +322,19 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 					<div className="space-y-4">
 						<h3 className="text-xl lg:text-2xl font-bold text-primary">Mint Details</h3>
 						<div className="p-4 bg-primary/15 rounded-xl border border-primary/30 backdrop-blur-sm space-y-4">
-							<div className="px-4 py-2 bg-primary/10 rounded-lg border border-primary/20 font-semibold text-primary">
-								<span className="text-2xl">⏰</span>
-								<span className="text-sm"> Minting starts in </span>
-								<Countdown targetTime={beelieversMint.mintStart} />
-							</div>
+							{mintStarted && (
+								<div className="px-4 py-2 bg-primary/10 rounded-lg border border-primary/20 font-semibold text-primary">
+									<span className="text-2xl">⏰</span>
+									<span className="text-sm"> Minting starts in </span>
+									<Countdown targetTime={beelieversMint.mintStart} />
+								</div>
+							)}
 
 							<MintInfoItem
 								title="Mint Price:"
-								value={formatSUI(String(clearingPrice)) + " SUI"}
+								value={clearingPrice ? formatSUI(clearingPrice) + " SUI" : ""}
 							/>
-							<MintInfoItem
-								title={bidLabel}
-								value={formatSUI(String(currentBidInMist)) + " SUI"}
-							/>
+							<MintInfoItem title={bidLabel} value={formatSUI(user.amount) + " SUI"} />
 							<MintInfoItem
 								title="Auction Status:"
 								value={isWinner ? "🎉 Winner" : "❌ Not in top 5810"}

@@ -38,7 +38,7 @@ const createColumns = (): Column<Bidder>[] => [
 		Cell: ({ row }: CellProps<Bidder>) => (
 			<div className="flex items-center space-x-2 font-semibold">
 				<SUIIcon prefix="" className="h-5 w-5 text-primary" />
-				<span className="text-primary">{formatSUI(String(row.original.amount))}</span>
+				<span className="text-primary">{formatSUI(row.original.amount)}</span>
 				<span className="text-muted-foreground text-sm">SUI</span>
 			</div>
 		),
