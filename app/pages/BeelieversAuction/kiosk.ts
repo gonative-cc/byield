@@ -24,7 +24,7 @@ export async function createKiosk(
 	});
 
 	const kioskTx = createKioskTx(client, userAddr, network as Network);
-	const result = await signAndExecTx(kioskTx, client, signer);
+	const result = await signAndExecTx(kioskTx, client, signer, { showEffects: true });
 	let kioskId, kioskCapId;
 
 	const effects = result.effects;
