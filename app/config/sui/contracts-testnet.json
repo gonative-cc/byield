@@ -6,9 +6,6 @@
 		"buyNBTCFunction": "buy_nbtc",
 		"sellNBTCFunction": "sell_nbtc"
 	},
-	"auctionBidApi": {
-		"packageId": "0xdbf3aaf553b3bc58d2e726d12424eb0ebb761ae62285a55b52011e40653bd4c8"
-	},
 	"beelieversAuction": {
 		"packageId": "0x749993f86193ec6314993b4988f4f7d03df7c74a68b4a8f78cc32f605284da8d",
 		"auctionId": "0x60f6241088efad8dea782dfbf0071aaf58cb1baa60388f4b5e66959f7eec7ef6",

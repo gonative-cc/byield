@@ -6,9 +6,6 @@
 		"buyNBTCFunction": "",
 		"sellNBTCFunction": ""
 	},
-	"auctionBidApi": {
-		"packageId": "0xff4982cd449809676699d1a52c5562fc15b9b92cb41bde5f8845a14647186704"
-	},
 	"beelieversAuction": {
 		"packageId": "0xff4982cd449809676699d1a52c5562fc15b9b92cb41bde5f8845a14647186704",
 		"module": "auction",
