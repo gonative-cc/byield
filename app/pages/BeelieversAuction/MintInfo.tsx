@@ -24,6 +24,7 @@ import { parseTxError } from "~/lib/suierr";
 import { mkSuiVisionUrl, NftDisplay, findExistingNft, findNftInTxResult, queryNftFromKiosk } from "./nft";
 import type { KioskInfo } from "./kiosk";
 import { initializeKioskInfo, createKiosk } from "./kiosk";
+import { delay } from "~/lib/batteries";
 
 interface MintInfoItemProps {
 	title: string;
@@ -109,6 +110,7 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 			}
 
 			const nftId = findNftInTxResult(result);
+			await delay(1400); // we need to delay a bit to make sure indexers will get the data
 			if (nftId) {
 				setNftId(nftId);
 				toast(createNftSuccessToast(nftId, network));
@@ -188,10 +190,9 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 		}
 	};
 
-	const isAnyActionPending = isRefundPending || isMinting;
-
 	// NOTE: we don't need to check account here - isWinner already has that check.
 	const canMint = isWinner && beelieversMint.mintStart <= +new Date() && !hasMinted;
+	const isAnyActionPending = isRefundPending || isMinting;
 
 	return (
 		<div className="flex flex-col sm:flex-row gap-4">
@@ -322,7 +323,7 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 					<div className="space-y-4">
 						<h3 className="text-xl lg:text-2xl font-bold text-primary">Mint Details</h3>
 						<div className="p-4 bg-primary/15 rounded-xl border border-primary/30 backdrop-blur-sm space-y-4">
-							{mintStarted && (
+							{!mintStarted && (
 								<div className="px-4 py-2 bg-primary/10 rounded-lg border border-primary/20 font-semibold text-primary">
 									<span className="text-2xl">⏰</span>
 									<span className="text-sm"> Minting starts in </span>
@@ -389,7 +390,7 @@ interface MintCfg {
 	collectionId: string;
 	transferPolicyId: string;
 	//Change this when deploying to mainnet
-	mintStart: 1756899768721;
+	mintStart: 1756899768721 | 1757192400000;
 }
 
 function createMintTx(kioskId: string, kioskCapId: string, mintCfg: MintCfg, auctionId: string): Transaction {
