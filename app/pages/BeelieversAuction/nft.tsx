@@ -33,7 +33,8 @@ async function fetchNftMetadata(client: SuiClient, nftId: string): Promise<NftMe
 		if (nftObject.data?.content && "fields" in nftObject.data.content) {
 			// @ts-expect-error fields is of type MoveStruct which is a variant
 			const fields = nftObject.data.content.fields as NftMetadata;
-			return {
+
+			const metadata = {
 				id: nftId,
 				name: fields.name || "Beeliever NFT",
 				image_id: fields.image_id || "",
@@ -41,10 +42,12 @@ async function fetchNftMetadata(client: SuiClient, nftId: string): Promise<NftMe
 				attributes: fields.attributes || { fields: { contents: [] } },
 				badges: fields.badges || [],
 			};
+
+			return metadata;
 		}
 		return null;
 	} catch (error) {
-		console.error("Error fetching NFT metadata:", error);
+		console.error(">>> fetchNftMetadata: Error fetching NFT metadata:", error);
 		return null;
 	}
 }
@@ -88,7 +91,7 @@ export function NftDisplay({ nftId }: NftDisplayProps) {
 						<img
 							src={imageUrl}
 							alt={metadata.name || "Beeliever NFT"}
-							className="object-cover border-2 border-primary/20 rounded-2xl"
+							className="w-48 h-48 object-cover border-2 border-primary/20 rounded-2xl"
 							onError={(e) => {
 								e.currentTarget.style.display = "none";
 								const fallback = e.currentTarget.parentElement
@@ -98,7 +101,7 @@ export function NftDisplay({ nftId }: NftDisplayProps) {
 						/>
 					</a>
 				) : (
-					<div className="w-32 h-32 rounded-2xl bg-gradient-to-br from-primary/20 to-orange-400/20 flex items-center justify-center text-4xl border-2 border-primary/20">
+					<div className="w-48 h-48 rounded-2xl bg-gradient-to-br from-primary/20 to-orange-400/20 flex items-center justify-center text-6xl border-2 border-primary/20">
 						🐝
 					</div>
 				)}
@@ -171,7 +174,9 @@ export const queryNftFromKiosk = async (kioskId: string, client: SuiClient): Pro
 				});
 
 				if (itemObject.data?.type?.includes("mint::")) {
-					return obj.objectId;
+					if (itemObject.data.content && "fields" in itemObject.data.content) {
+						return obj.objectId;
+					}
 				}
 			}
 		}
@@ -233,29 +238,19 @@ export function findNftInTxResult(result: SuiTransactionBlockResponse, kioskId?:
 				if (event.type.includes("::mint::NFTMinted")) {
 					console.log(">>> Found NFTMinted event:", event);
 
-					if (event.parsedJson?.nft_id) {
-						console.log(">>> Extracted NFT ID from event:", event.parsedJson.nft_id);
-						return event.parsedJson.nft_id;
+					if (
+						event.parsedJson &&
+						typeof event.parsedJson === "object" &&
+						"nft_id" in event.parsedJson
+					) {
+						const nftId = (event.parsedJson as { nft_id: string }).nft_id;
+						console.log(">>> Extracted NFT ID from event:", nftId);
+						return nftId;
 					}
 				}
 			}
 		}
-
-		if (result.effects?.created) {
-			console.log(">>> Created objects:", result.effects.created);
-			for (const obj of result.effects.created) {
-				const owner = obj.owner as { Shared?: unknown; AddressOwner?: string; ObjectOwner?: string };
-
-				if (owner.ObjectOwner) {
-					console.log(">>> Found potential NFT object in creaetd objects:", obj.reference.objectId);
-					if (obj.reference.objectId !== kioskId) {
-						return obj.reference.objectId;
-					}
-				}
-			}
-		}
-
-		console.log(">>> No NFT ID found in transaction result");
+		console.log(">>> No NFTMinted event found - NFT is likely stored in kiosk");
 		return null;
 	} catch (error) {
 		console.error("Error extracting NFT ID:", error);
