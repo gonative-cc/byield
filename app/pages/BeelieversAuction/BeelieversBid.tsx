@@ -43,7 +43,7 @@ function NewTotalBidAmount({ currentBidInMist, additionalBidInSUI, entryBidMist 
 		<div className="p-3 bg-primary/10 rounded-lg border border-primary/20">
 			<div className="flex justify-between items-center mb-2">
 				<span className="text-sm text-muted-foreground">New total bid amount:</span>
-				<div className="text-lg font-semibold text-primary">{formatSUI(String(newTotal))} SUI</div>
+				<div className="text-lg font-semibold text-primary">{formatSUI(newTotal)} SUI</div>
 			</div>
 			{moreBidNeeded > 0 && (
 				<div className="flex justify-between items-center">
@@ -103,11 +103,11 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 			{
 				onSuccess: async (result, _variables) => {
 					console.log(
-						">>>> onsuccess, digest: ",
+						">>>> Bid tx submitted, digest: ",
 						result.digest,
 						"\n tx data:",
 						result.bytes,
-						"\nsignature",
+						"\n signature",
 						result.signature,
 					);
 
@@ -291,7 +291,7 @@ function validateBidAmount(val: string, hasUserBidBefore: boolean) {
 	if (mistAmount < 1e6) {
 		return "minimum amount: 0.001";
 	}
-	// TODO: testing - change to 1e9
+	// TODO: use config and change to 1e9
 	if (!hasUserBidBefore && mistAmount < 1e7) {
 		return "First-time bidders must bid at least 1 SUI";
 	}
