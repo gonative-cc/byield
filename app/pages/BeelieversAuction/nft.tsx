@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSuiClientContext } from "@mysten/dapp-kit";
-import type { SuiClient } from "@mysten/sui/client";
+import type { SuiClient, SuiTransactionBlockResponse } from "@mysten/sui/client";
 import { ExternalLink } from "lucide-react";
 import { trimAddress } from "~/components/Wallet/walletHelper";
 import { Button } from "~/components/ui/button";
@@ -234,6 +234,7 @@ export const findExistingNft = async (
 	kioskId: string | null,
 	packageId: string,
 ): Promise<string | null> => {
+	console.log("%%% checking NFT in kiosk", kioskId);
 	if (kioskId) {
 		const nftFromKiosk = await queryNftFromKiosk(kioskId, client);
 		if (nftFromKiosk) return nftFromKiosk;
@@ -241,3 +242,43 @@ export const findExistingNft = async (
 
 	return await queryNftByModule(address, client, packageId);
 };
+
+export function findNftInTxResult(result: SuiTransactionBlockResponse, kioskId?: string): string | null {
+	try {
+		if (result.events) {
+			console.log(">>> Events:", result.events);
+			for (const event of result.events) {
+				console.log(">>> Event type:", event.type);
+
+				if (event.type.includes("::mint::NFTMinted")) {
+					console.log(">>> Found NFTMinted event:", event);
+
+					if (event.parsedJson?.nft_id) {
+						console.log(">>> Extracted NFT ID from event:", event.parsedJson.nft_id);
+						return event.parsedJson.nft_id;
+					}
+				}
+			}
+		}
+
+		if (result.effects?.created) {
+			console.log(">>> Created objects:", result.effects.created);
+			for (const obj of result.effects.created) {
+				const owner = obj.owner as { Shared?: unknown; AddressOwner?: string; ObjectOwner?: string };
+
+				if (owner.ObjectOwner) {
+					console.log(">>> Found potential NFT object in creaetd objects:", obj.reference.objectId);
+					if (obj.reference.objectId !== kioskId) {
+						return obj.reference.objectId;
+					}
+				}
+			}
+		}
+
+		console.log(">>> No NFT ID found in transaction result");
+		return null;
+	} catch (error) {
+		console.error("Error extracting NFT ID:", error);
+		return null;
+	}
+}
