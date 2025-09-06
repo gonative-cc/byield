@@ -22,7 +22,7 @@ import { signAndExecTx, SUI_RANDOM_OBJECT_ID } from "~/lib/suienv";
 import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
 import { parseTxError } from "~/lib/suierr";
 
-import { mkSuiVisionUrl, NftDisplay, findExistingNft, findNftInTxResult } from "./nft";
+import { mkSuiVisionUrl, NftDisplay, findExistingNft, findNftInTxResult, queryNftFromKiosk } from "./nft";
 import type { KioskInfo } from "./kiosk";
 import { initializeKioskInfo, createKiosk } from "./kiosk";
 import { delay } from "~/lib/batteries";
@@ -125,10 +125,16 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 				setNftId(nftId);
 				toast(createNftSuccessToast(nftId, network));
 			} else {
-				toast({
-					title: "Minting Successful",
-					description: "Successfully minted Beeliever NFT. Check explorer to find your NFT",
-				});
+				const nftFromKiosk = await queryNftFromKiosk(kioskId, client);
+				if (nftFromKiosk) {
+					setNftId(nftFromKiosk);
+					toast(createNftSuccessToast(nftFromKiosk, network));
+				} else {
+					toast({
+						title: "Minting Successful",
+						description: "Successfully minted Beeliever NFT. Check explorer to find your NFT",
+					});
+				}
 			}
 		} catch (error) {
 			console.error("Error minting:", error);
@@ -257,13 +263,25 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 
 	useEffect(() => {
 		const initialize = async () => {
-			if (!userAddr) return;
+			if (!userAddr) {
+				setKiosk(null);
+				setNftId(null);
+				setHasMinted(false);
+				return;
+			}
+
+			console.log(">>> MintInfo: Initializing for address:", userAddr);
+
+			setKiosk(null);
+			setNftId(null);
+			setHasMinted(false);
 
 			const hasMinted = await queryHasMinted(userAddr, client, beelieversMint);
 			setHasMinted(hasMinted);
 
 			const kiosk = await initializeKioskInfo(userAddr, client, network);
 			setKiosk(kiosk);
+			console.log(">>> MintInfo: Loaded kiosk for address:", userAddr, kiosk);
 
 			if (hasMinted) {
 				const existingNftId = await findExistingNft(
@@ -274,12 +292,13 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 				);
 				if (existingNftId) {
 					setNftId(existingNftId);
+					console.log(">>> MintInfo: Found existing NFT for address:", userAddr, existingNftId);
 				}
 			}
 		};
 
 		initialize();
-	}, [userAddr, client, beelieversMint]);
+	}, [userAddr, client, beelieversMint, network]);
 
 	if (user === null) {
 		return <p className="text-xl">Connect to your wallet to see minting info</p>;
