@@ -160,7 +160,11 @@ function getAttributeValue(attributes: NftMetadata["attributes"], key: string): 
 	return attr?.fields.value || "";
 }
 
-export const queryNftFromKiosk = async (kioskId: string, client: SuiClient): Promise<string | null> => {
+export async function queryNftFromKiosk(
+	kioskId: string,
+	packageId: string,
+	client: SuiClient,
+): Promise<string | null> {
 	try {
 		const kioskObjects = await client.getDynamicFields({
 			parentId: kioskId,
@@ -173,7 +177,7 @@ export const queryNftFromKiosk = async (kioskId: string, client: SuiClient): Pro
 					options: { showContent: true, showType: true },
 				});
 
-				if (itemObject.data?.type?.includes("mint::")) {
+				if (itemObject.data?.type?.includes(packageId + "::mint::BeelieverNFT")) {
 					if (itemObject.data.content && "fields" in itemObject.data.content) {
 						console.log("found nft in kiosk", itemObject.data);
 						return obj.objectId;
@@ -186,18 +190,18 @@ export const queryNftFromKiosk = async (kioskId: string, client: SuiClient): Pro
 		console.error("Error querying NFT from kiosk:", error);
 		return null;
 	}
-};
+}
 
-export const queryNftByModule = async (
+export async function queryNftByModule(
 	address: string,
 	client: SuiClient,
 	packageId: string,
-): Promise<string | null> => {
+): Promise<string | null> {
 	try {
 		const ownedObjects = await client.getOwnedObjects({
 			owner: address,
 			filter: {
-				StructType: `${packageId}::mint::BeelieverNFT`,
+				StructType: packageId + "::mint::BeelieverNFT",
 			},
 			options: {
 				showType: true,
@@ -214,7 +218,7 @@ export const queryNftByModule = async (
 		console.error("Error querying NFT by module:", error);
 		return null;
 	}
-};
+}
 
 export const findExistingNft = async (
 	address: string,
@@ -223,7 +227,7 @@ export const findExistingNft = async (
 	kioskId?: string,
 ): Promise<string | null> => {
 	if (kioskId) {
-		const nftFromKiosk = await queryNftFromKiosk(kioskId, client);
+		const nftFromKiosk = await queryNftFromKiosk(kioskId, mintPkgId, client);
 		if (nftFromKiosk) return nftFromKiosk;
 	}
 
@@ -233,7 +237,7 @@ export const findExistingNft = async (
 export function findNftInTxResult(result: SuiTransactionBlockResponse): string | null {
 	try {
 		if (result.events) {
-			console.log(">>> Events:", result.events);
+			console.log(">>> Mint Events:", result.events);
 			for (const event of result.events) {
 				if (
 					event.type.includes("::mint::NFTMinted") &&

@@ -114,7 +114,7 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 				toast(createNftSuccessToast(nftId, network));
 			} else {
 				console.log("nft not found in tx result, checking querying indexer with kiosk");
-				const nftFromKiosk = await queryNftFromKiosk(kioskId, client);
+				const nftFromKiosk = await queryNftFromKiosk(kioskId, beelieversMint.packageId, client);
 				if (nftFromKiosk) {
 					setNftId(nftFromKiosk);
 					toast(createNftSuccessToast(nftFromKiosk, network));
@@ -351,7 +351,10 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 						isWinner={isWinner}
 						doRefund={doRefund}
 						hasMinted={hasMinted}
-						setNftId={setNftId}
+						setNftId={(nid) => {
+							setNftId(nid);
+							setHasMinted(true);
+						}}
 						kiosk={kiosk}
 						setKiosk={setKiosk}
 					/>
