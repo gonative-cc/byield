@@ -70,9 +70,13 @@ export function NftDisplay({ nftId }: NftDisplayProps) {
 	const mythicName = getAttributeValue(metadata.attributes, "Mythic Name");
 	const background = getAttributeValue(metadata.attributes, "Background");
 
+	const name = (nftType === "Mythic" ? "✨ " : "🐝 ") + nftType + ": " + (mythicName || metadata.name);
+	const nameCls = "font-bold my-2 text-base " + (nftType === "Mythic" ? "text-yellow-400" : "text-primary");
+
 	return (
 		<div className="md:min-w-xs w-full md:max-w-xs p-6 bg-gradient-to-br from-primary/5 to-yellow-400/5 rounded-2xl">
 			<div className="flex flex-col items-center gap-4">
+				<p className="text-xl font-bold text-primary">Your BTCFi Beeliever</p>
 				{imageUrl ? (
 					<a
 						href={imageUrl}
@@ -84,7 +88,7 @@ export function NftDisplay({ nftId }: NftDisplayProps) {
 						<img
 							src={imageUrl}
 							alt={metadata.name || "Beeliever NFT"}
-							className="w-32 h-32 object-cover border-2 border-primary/20 rounded-2xl"
+							className="object-cover border-2 border-primary/20 rounded-2xl"
 							onError={(e) => {
 								e.currentTarget.style.display = "none";
 								const fallback = e.currentTarget.parentElement
@@ -99,51 +103,29 @@ export function NftDisplay({ nftId }: NftDisplayProps) {
 					</div>
 				)}
 
-				<div className="w-full space-y-3 text-center">
-					<div className="flex flex-col gap-2">
-						<span className="text-xl font-bold text-primary">Your NFT!</span>
-						<span className="text-sm text-muted-foreground">Beeliever #{metadata.token_id}</span>
-						{nftType && (
-							<span
-								className={`flex justify-center px-2 py-1 text-sm rounded-full ${
-									nftType === "Mythic"
-										? "bg-yellow-400/20 text-yellow-400 border border-yellow-400/30"
-										: "bg-primary/20 text-primary border border-primary/30"
-								}`}
-							>
-								{nftType === "Mythic" ? "✨ " : "🐝 "}
-								{nftType}
-								{mythicName ? ": " + mythicName : metadata.name}
-							</span>
-						)}
-						<span className="text-sm text-muted-foreground">Object ID: {trimAddress(nftId)}</span>
-					</div>
-					<div className="space-y-3">
-						{background && (
-							<div className="text-sm">
-								<span className="text-muted-foreground">Background: </span>
-								{background}
+				<div className="w-full text-sm text-muted-foreground">
+					<p className={nameCls}>{name}</p>
+					<p>Beeliever #{metadata.token_id}</p>
+					<p>Object ID: {trimAddress(nftId)}</p>
+					{background && <p>Background: {background}</p>}
+
+					{metadata.badges && metadata.badges.length > 0 && (
+						<>
+							<p> Badges: </p>
+							<div className="flex flex-wrap justify-center gap-2 my-2">
+								{metadata.badges.map((badge, index) => (
+									<span
+										key={index}
+										className="px-2 py-1 bg-blue-500/20 text-blue-400 rounded-full border border-blue-400/30"
+									>
+										{badge}
+									</span>
+								))}
 							</div>
-						)}
+						</>
+					)}
 
-						{metadata.badges && metadata.badges.length > 0 && (
-							<>
-								<span className="text-sm text-muted-foreground">Badges:</span>
-								<div className="flex flex-wrap justify-center gap-2 mt-2">
-									{metadata.badges.map((badge, index) => (
-										<span
-											key={index}
-											className="text-sm px-2 py-1 bg-blue-500/20 text-blue-400 rounded-full border border-blue-400/30"
-										>
-											{badge}
-										</span>
-									))}
-								</div>
-							</>
-						)}
-					</div>
-
-					<div className="pt-2 justify-center w-full flex">
+					<div className="pt-2 justify-center w-full flex text-foreground">
 						<a href={mkSuiVisionUrl(nftId, network)} target="_blank" rel="noopener noreferrer">
 							<Button layout="oneLine">
 								<ExternalLink size={16} />
