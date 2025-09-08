@@ -57,14 +57,21 @@ export const ByieldWalletProvider = ({ children }: { children: ReactNode }) => {
 	const suiAddr = isSuiWalletActive ? currentAccount.address : null;
 
 	useEffect(() => {
-		setIsLoading(() => true);
-		// Update wallet states based on actual wallet connections
 		setConnectedWallets((prev) => ({
 			...prev,
 			[Wallets.SuiWallet]: isSuiWalletActive,
+		}));
+	}, [isSuiWalletActive]);
+
+	useEffect(() => {
+		setConnectedWallets((prev) => ({
+			...prev,
 			[Wallets.Xverse]: isBitcoinWalletActive,
 		}));
-		setIsLoading(() => false);
+	}, [isBitcoinWalletActive]);
+
+	useEffect(() => {
+		setIsLoading(false);
 	}, []);
 
 	useEffect(() => {

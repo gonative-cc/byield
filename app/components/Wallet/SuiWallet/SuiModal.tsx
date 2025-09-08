@@ -91,7 +91,7 @@ function AvailableWallets() {
 						<Button
 							variant="ghost"
 							type="button"
-							onClick={walletConnectClick}
+							onClick={() => walletConnectClick(installedWallet)}
 							className="justify-between flex w-full text-primary h-16"
 						>
 							<img
@@ -117,7 +117,7 @@ function AvailableWallets() {
 					<Button
 						variant="ghost"
 						type="button"
-						onClick={walletConnectClick}
+						onClick={() => walletConnectClick(wallet)}
 						className="justify-between flex w-full text-primary h-16"
 					>
 						<img src={wallet.icon} alt={wallet.name} width={40} height={40} />
