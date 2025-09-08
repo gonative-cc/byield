@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { useLocation } from "react-router";
-import { EllipsisVertical } from "lucide-react";
+import { Wallet } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { Skeleton } from "~/components/ui/skeleton";
@@ -39,9 +39,9 @@ function MobileWalletModal({ children }: { children: React.ReactNode }) {
 		<div className="md:hidden">
 			<Dialog>
 				<DialogTrigger asChild>
-					<Button variant="outline" size="sm" className="gap-2">
-						<span className="text-xs">Wallets</span>
-						<EllipsisVertical size={16} />
+					<Button variant="outline" size="sm" className="gap-2" layout="oneLine">
+						<Wallet />
+						<span className="text-xs">Wallet</span>
 					</Button>
 				</DialogTrigger>
 				<DialogContent className="sm:max-w-md">

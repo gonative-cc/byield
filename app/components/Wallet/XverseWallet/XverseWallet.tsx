@@ -83,7 +83,7 @@ export function XverseWallet() {
 
 	return (
 		<>
-			<div className="hidden w-full gap-2 items-center md:flex">
+			<div className="hidden gap-2 items-center md:flex">
 				<NetWorkOptions />
 				<Accounts />
 				{balance && (
