@@ -30,7 +30,7 @@ const createColumns = (): Column<Raffle>[] => [
 		accessor: "amount",
 		Cell: ({ row }: CellProps<Raffle>) => (
 			<div className="flex items-center space-x-2 font-semibold">
-				<span className="text-primary">{formatBTC(BigInt(row.original.amount || 0))}</span>
+				<span className="text-primary">{formatBTC(row.original.amount || 0)}</span>
 				<span className="text-muted-foreground text-sm">nBTC</span>
 			</div>
 		),
