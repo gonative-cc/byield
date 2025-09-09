@@ -100,9 +100,10 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 			kioskId = kioskInfo2.kioskId;
 			kioskCapId = kioskInfo2.kioskCapId;
 
+			const tx = createMintTx(kioskId, kioskCapId, beelieversMint, beelieversAuction.auctionId);
+
 			toast({ title: "Minting NFT", variant: "info" });
 
-			const tx = createMintTx(kioskId, kioskCapId, beelieversMint, beelieversAuction.auctionId);
 			const result = await signAndExecTx(tx, client, signTransaction);
 			console.log(">>> Mint tx:", result.digest);
 			if (result.errors) {
@@ -131,9 +132,11 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 		} catch (error) {
 			console.error("Error minting:", error);
 
+			const userMessage = handleMintError(error);
+
 			toast({
 				title: "Minting Error",
-				description: formatSuiMintErr(error),
+				description: userMessage,
 				variant: "destructive",
 			});
 		} finally {
@@ -231,6 +234,24 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 	);
 }
 
+function handleMintError(error: unknown): string {
+	const errorMessage = (error as Error).message;
+	let userMessage = "An error occurred during minting";
+
+	if (errorMessage) {
+		const parsedError = parseTxError(errorMessage);
+		if (parsedError && typeof parsedError === "object") {
+			userMessage = formatSuiMintErr(parsedError);
+		} else if (typeof parsedError === "string") {
+			userMessage = parsedError;
+		} else {
+			userMessage = formatSuiMintErr(error);
+		}
+	}
+
+	return userMessage;
+}
+
 enum DoRefund {
 	No = 0,
 	Yes = 1,
@@ -290,6 +311,7 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 	}
 
 	const isWinner = user.rank !== null && user.rank < _auctionSize;
+
 	const boosted = user.wlStatus > AuctionAccountType.DEFAULT;
 	let doRefund: DoRefund = DoRefund.No;
 	if (user.amount > 0) {
@@ -465,21 +487,4 @@ async function queryHasMinted(addr: string, client: SuiClient, cfg: MintCfg): Pr
 		console.error("Error checking mint status:", error);
 		return false;
 	}
-}
-
-// TODO: this should be removed
-if (typeof window !== "undefined") {
-	window.testNftDetection = async (account, client, beelieversMint) => {
-		if (!account?.address) {
-			console.log("No account connected");
-			return;
-		}
-
-		console.log("🧪 Testing NFT detection...");
-
-		// Import the function from nft.tsx
-		const { queryNftByModule } = await import("./nft");
-		const nftByModule = await queryNftByModule(account.address, client, beelieversMint.packageId);
-		console.log("NFT by module:", nftByModule);
-	};
 }
