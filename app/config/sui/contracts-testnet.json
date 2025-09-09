@@ -20,5 +20,8 @@
 		"mintStart": 1756899768721
 	},
 	"accountExplorer": "https://suiscan.xyz/testnet/account/",
-	"nbtcPkgId": "0x5419f6e223f18a9141e91a42286f2783eee27bf2667422c2100afc7b2296731b::nbtc::NBTC"
+	"nbtc": {
+		"coinType": "::nbtc::NBTC",
+		"pkgId": "0x5419f6e223f18a9141e91a42286f2783eee27bf2667422c2100afc7b2296731b"
+	}
 }

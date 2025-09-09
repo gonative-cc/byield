@@ -1,7 +1,6 @@
 import { useSuiClient, useCurrentAccount } from "@mysten/dapp-kit";
 import { useState, useEffect, useCallback } from "react";
 import { type CoinBalance } from "@mysten/sui/client";
-import { useNetworkVariables } from "~/networkConfig";
 
 export interface UseCoinBalanceResult {
 	balance: bigint;
@@ -10,9 +9,8 @@ export interface UseCoinBalanceResult {
 	refetch: () => void;
 }
 
-// coin address default to 0x2::sui::SUI if not specified.
+// Coin address is a coin package ID followed by the type. Default to 0x2::sui::SUI.
 export function useCoinBalance(coinAddr?: string): UseCoinBalanceResult {
-	const { nbtcPkgId } = useNetworkVariables();
 	const suiClient = useSuiClient();
 	const account = useCurrentAccount();
 
@@ -37,7 +35,7 @@ export function useCoinBalance(coinAddr?: string): UseCoinBalanceResult {
 
 			const result = await suiClient.getBalance({
 				owner: account.address,
-				coinType: coinAddr || nbtcPkgId,
+				coinType: coinAddr,
 			});
 
 			setBalance(result);

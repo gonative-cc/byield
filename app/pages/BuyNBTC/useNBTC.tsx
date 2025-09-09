@@ -20,15 +20,14 @@ type Targets = {
 	vaultId: string;
 };
 
-// get nBTC coins
-const getNBTCCoins = async (owner: string, client: SuiClient, nbtcPkgId: string): Promise<PaginatedCoins> => {
-	return await client.getCoins({
+async function getNBTCCoins(owner: string, client: SuiClient, nbtcCoin: string): Promise<PaginatedCoins> {
+	return client.getCoins({
 		owner,
-		coinType: nbtcPkgId,
+		coinType: nbtcCoin,
 	});
-};
+}
 
-const createNBTCTxn = async (
+async function createNBTCTxn(
 	senderAddress: string,
 	amount: bigint,
 	{ packageId, module, buyNBTCFunction, sellNBTCFunction, vaultId }: Targets,
@@ -36,8 +35,8 @@ const createNBTCTxn = async (
 	shouldBuy: boolean,
 	client: SuiClient,
 	nbtcBalance: bigint,
-	nbtcPkgId: string,
-): Promise<Transaction | null> => {
+	nbtcCoin: string,
+): Promise<Transaction | null> {
 	const txn = new Transaction();
 	txn.setSender(senderAddress);
 
@@ -49,7 +48,7 @@ const createNBTCTxn = async (
 			arguments: [txn.object(vaultId), coins],
 		});
 		// merge nbtc coins with the result coin
-		const nbtcCoins = await getNBTCCoins(senderAddress, client, nbtcPkgId);
+		const nbtcCoins = await getNBTCCoins(senderAddress, client, nbtcCoin);
 		const remainingCoins = nbtcCoins.data.map(({ coinObjectId }) => txn.object(coinObjectId));
 		if (remainingCoins.length > 0) txn.mergeCoins(resultCoin, remainingCoins);
 		// Check user have nBTC here, if yes, then we try to merge,
@@ -67,13 +66,13 @@ const createNBTCTxn = async (
 		}
 		resultCoin = txn.moveCall({
 			target: `${packageId}::${module}::${sellNBTCFunction}`,
-			arguments: [txn.object(vaultId), coinWithBalance({ balance: amount, type: nbtcPkgId })],
+			arguments: [txn.object(vaultId), coinWithBalance({ balance: amount, type: nbtcCoin })],
 		});
 		txn.mergeCoins(txn.gas, [txn.object(resultCoin)]);
 	}
 
 	return txn;
-};
+}
 
 interface UseNBTCReturn {
 	handleTransaction: (amount: bigint) => Promise<void>;
@@ -106,10 +105,12 @@ export const useBuySellNBTC = ({ variant }: NBTCProps): UseNBTCReturn => {
 	const client = useSuiClient();
 	const { isWalletConnected } = useContext(WalletContext);
 	const { trackEvent } = useGoogleAnalytics();
+	const { nbtcOTC, nbtc: nbtcCfg } = useNetworkVariables();
 	const isSuiWalletConnected = isWalletConnected(Wallets.SuiWallet);
-	const nbtcBalanceRes = useCoinBalance();
+
+	const nbtcCoin = nbtcCfg.pkgId + nbtcCfg.coinType;
+	const nbtcBalanceRes = useCoinBalance(nbtcCoin);
 	const suiBalanceRes = useCoinBalance();
-	const { nbtcOTC, nbtcPkgId } = useNetworkVariables();
 
 	const {
 		mutate: signAndExecuteTransaction,
@@ -151,7 +152,7 @@ export const useBuySellNBTC = ({ variant }: NBTCProps): UseNBTCReturn => {
 				shouldBuy,
 				client,
 				nbtcBalanceRes.balance,
-				nbtcPkgId,
+				nbtcCoin,
 			);
 			const label = variant === "BUY" ? `user tried to buy ${formatSUI(amount)} SUI` : "";
 			if (!transaction) {
@@ -191,7 +192,7 @@ export const useBuySellNBTC = ({ variant }: NBTCProps): UseNBTCReturn => {
 			shouldBuy,
 			client,
 			nbtcBalanceRes,
-			nbtcPkgId,
+			nbtcCoin,
 			signAndExecuteTransaction,
 			trackEvent,
 			suiBalanceRes,
