@@ -7,7 +7,7 @@ import {
 	ToastTitle,
 	ToastViewport,
 } from "~/components/ui/toast";
-import { CircleCheck, Info, TriangleAlert } from "lucide-react";
+import { CircleX, Info, TriangleAlert } from "lucide-react";
 
 interface ToastIconProps {
 	variant: "default" | "destructive" | "warning" | null | undefined;
@@ -16,11 +16,11 @@ interface ToastIconProps {
 function ToastIcon({ variant }: ToastIconProps) {
 	switch (variant) {
 		case "destructive":
-			return <Info className="rotate-180" />;
+			return <CircleX className="rotate-180" />;
 		case "warning":
 			return <TriangleAlert />;
 		default:
-			return <CircleCheck />;
+			return <Info className="rotate-180" />;
 	}
 }
 

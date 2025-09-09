@@ -37,12 +37,10 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 	const raffle: QueryRaffleResp = raffleFetcher.data ?? null;
 	const auctionState = getAuctionState(info.startsAt, info.endsAt, info.clearingPrice);
 
-	console.log(">>>> raffle", raffle);
 	console.log(">>>> user", user);
 
 	for (const l of leaderboard) {
 		if (sortAndCheckDuplicate(l.badges)) {
-			console.log(">>>> leader ", l);
 			l.badges = removeDuplicates(l.badges);
 		}
 	}
@@ -145,7 +143,7 @@ function RaffleResults({ raffle }: { raffle: QueryRaffleResp }) {
 			<section className="w-full mb-6">
 				<div className="text-xl font-bold text-primary group-hover:text-orange-400 transition-colors duration-300 mb-2">
 					<NBTCRaw className="inline mr-2 h-[1.1em] w-auto align-middle" /> Total winnings:{" "}
-					{formatSUI(BigInt(raffle.totalAmount))} nBTC
+					{formatSUI(raffle.totalAmount)} nBTC
 				</div>
 				This represents 10% of the{" "}
 				<a

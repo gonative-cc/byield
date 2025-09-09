@@ -18,7 +18,7 @@ export function parseBTC(amount: string): bigint {
 	return parse(amount, BTC);
 }
 
-export function formatAmount(amount: bigint, decimals: number): string {
+export function formatAmount(amount: number | bigint, decimals: number): string {
 	return formatUnits(amount, decimals);
 }
 
@@ -26,11 +26,11 @@ export function parseSUI(amount: string): bigint {
 	return parse(amount, SUI);
 }
 
-export function formatBTC(amount: bigint): string {
+export function formatBTC(amount: number | bigint): string {
 	return formatUnits(amount, BTC);
 }
 
-export function formatSUI(amount: bigint | string): string {
+export function formatSUI(amount: number | bigint | string): string {
 	return formatUnits(amount, SUI);
 }
 
@@ -38,6 +38,6 @@ export function parseNBTC(amount: string): bigint {
 	return parse(amount, NBTC);
 }
 
-export function formatNBTC(amount: bigint): string {
+export function formatNBTC(amount: number | bigint): string {
 	return formatUnits(amount, NBTC);
 }
