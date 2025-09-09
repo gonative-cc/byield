@@ -22,10 +22,11 @@ export default defineConfig({
 			define: {
 				global: "globalThis",
 			},
-			// Enable esbuild polyfill plugins
+			// Enable esbuild polyfill plugins for dynamic imports
 			plugins: [
 				NodeGlobalsPolyfillPlugin({
 					buffer: true,
+					process: false,
 				}),
 			],
 		},

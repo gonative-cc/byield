@@ -1,11 +1,10 @@
-import { opcodes, Psbt, script } from "bitcoinjs-lib";
 import Wallet from "sats-connect";
 import { type Address, type RpcResult } from "sats-connect";
 import { fetchUTXOs, fetchValidateAddress } from "~/api/btcrpc";
 import type { UTXO, ValidateAddressI } from "~/api/btcrpc";
-import { getBitcoinNetworkConfig } from "~/components/Wallet/XverseWallet/useWallet";
 import { toast } from "~/hooks/use-toast";
 import type { ExtendedBitcoinNetworkType } from "~/hooks/useBitcoinConfig";
+import { getBitcoinLib, getBitcoinNetworkConfig } from "./bitcoin-client";
 
 export const PRICE_PER_NBTC_IN_SUI = 25000n;
 const DUST_THRESHOLD_SATOSHI = 546;
@@ -18,7 +17,15 @@ export async function nBTCMintTx(
 	depositAddress: string,
 ): Promise<RpcResult<"signPsbt"> | undefined> {
 	try {
-		const network = getBitcoinNetworkConfig(bitcoinNetworkType);
+		// Guard against SSR
+		if (typeof window === "undefined") {
+			console.error("nBTCMintTx can only be called on client side");
+			return;
+		}
+
+		// Get bitcoinjs-lib dynamically
+		const { opcodes, Psbt, script } = await getBitcoinLib();
+		const network = await getBitcoinNetworkConfig(bitcoinNetworkType);
 
 		if (!network) {
 			console.error("network config not found");
