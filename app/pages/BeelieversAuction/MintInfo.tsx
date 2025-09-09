@@ -131,19 +131,7 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 		} catch (error) {
 			console.error("Error minting:", error);
 
-			const errorMessage = (error as Error).message;
-			let userMessage = "An error occurred during minting";
-
-			if (errorMessage) {
-				const parsedError = parseTxError(errorMessage);
-				if (parsedError && typeof parsedError === "object") {
-					userMessage = formatSuiMintErr(parsedError);
-				} else if (typeof parsedError === "string") {
-					userMessage = parsedError;
-				} else {
-					userMessage = formatSuiMintErr(error);
-				}
-			}
+			const userMessage = handleMintError(error);
 
 			toast({
 				title: "Minting Error",
@@ -243,6 +231,24 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 			)}
 		</div>
 	);
+}
+
+function handleMintError(error: unknown): string {
+	const errorMessage = (error as Error).message;
+	let userMessage = "An error occurred during minting";
+
+	if (errorMessage) {
+		const parsedError = parseTxError(errorMessage);
+		if (parsedError && typeof parsedError === "object") {
+			userMessage = formatSuiMintErr(parsedError);
+		} else if (typeof parsedError === "string") {
+			userMessage = parsedError;
+		} else {
+			userMessage = formatSuiMintErr(error);
+		}
+	}
+
+	return userMessage;
 }
 
 enum DoRefund {
