@@ -3,7 +3,6 @@ import { cloudflare } from "@cloudflare/vite-plugin";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
-import { NodeGlobalsPolyfillPlugin } from "@esbuild-plugins/node-globals-polyfill";
 
 export default defineConfig({
 	plugins: [
@@ -16,19 +15,7 @@ export default defineConfig({
 	build: {
 		minify: true,
 	},
-	optimizeDeps: {
-		esbuildOptions: {
-			// Node.js global to browser globalThis
-			define: {
-				global: "globalThis",
-			},
-			// Enable esbuild polyfill plugins for dynamic imports
-			plugins: [
-				NodeGlobalsPolyfillPlugin({
-					buffer: true,
-					process: false,
-				}),
-			],
-		},
+	define: {
+		global: "globalThis",
 	},
 });
