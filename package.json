@@ -3,17 +3,16 @@
 	"license": "MPL-2.0",
 	"private": true,
 	"type": "module",
-	"packageManager": "pnpm@10.15.1",
 	"scripts": {
 		"prepare": "cd .git/hooks; ln -s -f ../../contrib/git-hooks/pre-commit ./",
-		"postinstall": "pnpm run cf-typegen",
+		"postinstall": "bun run cf-typegen",
 		"cf-typegen": "wrangler types",
 		"build": "react-router build",
 		"build:dev": "react-router build --mode dev",
-		"deploy": "pnpm run build --mode dev && wrangler deploy",
-		"deploy:prod:legacy": "pnpm run build && wrangler deploy -c ./wrangler-prod.jsonc",
-		"deploy:prod": "pnpm run build && wrangler deploy -e prod",
-		"deploy:prod:ver": "pnpm run build && wrangler versions upload -c ./wrangler-prod.jsonc",
+		"deploy": "bun run build --mode dev && wrangler deploy",
+		"deploy:prod:legacy": "bun run build && wrangler deploy -c ./wrangler-prod.jsonc",
+		"deploy:prod": "bun run build && wrangler deploy -e prod",
+		"deploy:prod:ver": "bun run build && wrangler versions upload -c ./wrangler-prod.jsonc",
 		"preview": "vite preview",
 		"preview:wrangler": "wrangler dev",
 		"dev": "react-router dev",
@@ -93,9 +92,6 @@
 		"vite-tsconfig-paths": "^5.1.4",
 		"vitest": "^3.2.4",
 		"wrangler": "^4.35.0"
-	},
-	"engines": {
-		"node": ">=22.0.0"
 	},
 	"lint-staged": {
 		"*.{js,cjs,mjs,jsx,ts,tsx}": [
