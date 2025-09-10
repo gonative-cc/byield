@@ -1,5 +1,4 @@
 import { BeelieversAuction } from "~/pages/BeelieversAuction/BeelieversAuction";
-import { useLoaderData } from "react-router";
 import Controller from "~/server/BeelieversAuction/controller.server";
 import type { LoaderDataResp } from "~/server/BeelieversAuction/types";
 import type { Route } from "./+types/beelievers-auction";
@@ -13,7 +12,7 @@ export async function loader({ params, context, request }: Route.LoaderArgs): Pr
 	const env = context.cloudflare.env;
 	const ctrl = new Controller(env.BeelieversNFT, env.BeelieversD1);
 	const url = new URL(request.url);
-	// TODO: set user address to the params
+	// We can try to set user address to the params
 	// Probably we can use https://reactrouter.com/start/framework/route-module#unstable_clientmiddleware
 	// const suiAddress = url.searchParams.get("suiAddress") ?? undefined;
 	console.log(">>>>> Page Loader handler - params:", params, "url:", url.href);
