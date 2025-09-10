@@ -177,9 +177,12 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 					},
 					onError: (error) => {
 						console.error("Claim tx error:", error);
+
+						const userMessage = handleRefundError(error);
+
 						toast({
 							title: "Refund failed",
-							description: "Please try again later.\n" + error.message,
+							description: userMessage,
 							variant: "destructive",
 						});
 					},
@@ -187,9 +190,12 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 			);
 		} catch (error) {
 			console.error("Claim tx error:", error);
+
+			const userMessage = handleRefundError(error);
+
 			toast({
 				title: "Transaction error",
-				description: "Failed to create transaction.\n" + error,
+				description: userMessage,
 				variant: "destructive",
 			});
 		}
@@ -247,6 +253,24 @@ function handleMintError(error: unknown): string {
 			userMessage = parsedError;
 		} else {
 			userMessage = formatSuiMintErr(error);
+		}
+	}
+
+	return userMessage;
+}
+
+function handleRefundError(error: unknown): string {
+	const errorMessage = (error as Error).message;
+	let userMessage = "An error occurred during refund";
+
+	if (errorMessage) {
+		const parsedError = parseTxError(errorMessage);
+		if (parsedError && typeof parsedError === "object") {
+			userMessage = formatSuiRefundErr(parsedError);
+		} else if (typeof parsedError === "string") {
+			userMessage = parsedError;
+		} else {
+			userMessage = formatSuiRefundErr(error);
 		}
 	}
 
@@ -479,6 +503,49 @@ export function formatSuiMintErr(error: unknown): string {
 	}
 
 	return "An error occurred during minting";
+}
+
+export function formatSuiRefundErr(error: unknown): string {
+	// ENotFinalized = 4, ENoBidFound = 6, EInsufficientBidForWinner = 14, EPaused = 15
+	let errMsg: string;
+	if (typeof error === "string") {
+		errMsg = error;
+	} else {
+		errMsg = (error as Error).message;
+	}
+
+	if (!errMsg) return "An error occurred during refund";
+
+	const txErr = parseTxError(errMsg);
+	if (!txErr) return "Sui tx failed, unknown error";
+	if (typeof txErr === "string") return txErr;
+
+	if (typeof txErr === "object" && txErr !== null && "errCode" in txErr && "funName" in txErr) {
+		let reason = "unknown";
+
+		switch (txErr.errCode) {
+			case 4: {
+				reason = "auction not finalized yet";
+				break;
+			}
+			case 6: {
+				reason = "no bid found for this address";
+				break;
+			}
+			case 14: {
+				reason = "insufficient bid amount for winner";
+				break;
+			}
+			case 15: {
+				reason = "auction is paused";
+				break;
+			}
+		}
+
+		return `Tx aborted, function: ${txErr.funName} reason: "${reason}"`;
+	}
+
+	return "An error occurred during refund";
 }
 
 async function queryHasMinted(addr: string, client: SuiClient, cfg: MintCfg): Promise<boolean> {
