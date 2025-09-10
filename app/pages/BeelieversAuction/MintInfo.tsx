@@ -95,13 +95,7 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 		try {
 			setIsMinting(true);
 			if (!minterKiosk) {
-				minterKiosk = await createKiosk(
-					account.address,
-					client,
-					network as Network,
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-					signTransaction as any,
-				);
+				minterKiosk = await createKiosk(account.address, client, network as Network, signTransaction);
 				setKiosk(minterKiosk);
 			}
 			kioskId = minterKiosk.kioskId;
@@ -111,8 +105,7 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 
 			toast({ title: "Minting NFT", variant: "info" });
 
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			const result = await signAndExecTx(tx, client, signTransaction as any);
+			const result = await signAndExecTx(tx, client, signTransaction);
 			console.log(">>> Mint tx:", result.digest);
 			if (result.errors) {
 				console.error(">>> Mint FAILED", result.errors);
@@ -289,11 +282,9 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 				return;
 			}
 
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			const hasMinted = await queryHasMinted(userAddr, client, beelieversMint as any);
+			const hasMinted = await queryHasMinted(userAddr, client, beelieversMint);
 			setHasMinted(hasMinted);
 
-			 
 			const kiosk = await initializeKioskInfo(userAddr, client, network as Network);
 			setKiosk(kiosk);
 			console.log(">>> MintInfo: Loaded kiosk for address:", userAddr, kiosk);
