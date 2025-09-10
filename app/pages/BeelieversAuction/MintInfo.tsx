@@ -455,7 +455,7 @@ export function formatSuiMintErr(error: unknown): string {
 
 	if (typeof txErr === "object" && txErr !== null && "errCode" in txErr && "funName" in txErr) {
 		let reason = "unknown";
-		 
+
 		switch ((txErr as any).errCode) {
 			case 1: {
 				reason = "all NFTs are alaready minted";
@@ -479,7 +479,6 @@ export function formatSuiMintErr(error: unknown): string {
 			}
 		}
 
-		 
 		return `Tx aborted, function: ${(txErr as any).funName} reason: "${reason}"`;
 	}
 
