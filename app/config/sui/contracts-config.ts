@@ -88,6 +88,9 @@ export interface MoveCallCfg {
 	module: string;
 }
 
+// throws exception in pkgId or module is not set in cfg
 export function moveCallTarget(cfg: MoveCallCfg, funName: string): string {
+	if (!cfg.pkgId || !cfg.module)
+		throw Error("cfg: MoveCallCfg is not set, expect pkgId and module to be defined");
 	return `${cfg.pkgId}::${cfg.module}::${funName}`;
 }
