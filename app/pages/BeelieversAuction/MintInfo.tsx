@@ -95,7 +95,6 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 		try {
 			setIsMinting(true);
 			if (!kioskInfo2) {
-				 
 				kioskInfo2 = await createKiosk(
 					account.address,
 					client,
@@ -111,7 +110,6 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 
 			toast({ title: "Minting NFT", variant: "info" });
 
-			 
 			const result = await signAndExecTx(tx, client, signTransaction as any);
 			console.log(">>> Mint tx:", result.digest);
 			if (result.errors) {
@@ -289,11 +287,9 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 				return;
 			}
 
-			 
 			const hasMinted = await queryHasMinted(userAddr, client, beelieversMint as any);
 			setHasMinted(hasMinted);
 
-			 
 			const kiosk = await initializeKioskInfo(userAddr, client, network as any);
 			setKiosk(kiosk);
 			console.log(">>> MintInfo: Loaded kiosk for address:", userAddr, kiosk);
@@ -443,7 +439,14 @@ function createMintTx(kioskId: string, kioskCapId: string, mintCfg: MintCfg, auc
 }
 
 export function formatSuiMintErr(error: unknown): string {
-	const errMsg = (error as Error).message;
+	// Handle both string and Error object inputs
+	let errMsg: string;
+	if (typeof error === "string") {
+		errMsg = error;
+	} else {
+		errMsg = (error as Error).message;
+	}
+
 	if (!errMsg) return "An error occurred during minting";
 
 	const txErr = parseTxError(errMsg);
@@ -451,7 +454,6 @@ export function formatSuiMintErr(error: unknown): string {
 	if (typeof txErr === "string") return txErr;
 
 	if (typeof txErr === "object" && txErr !== null && "errCode" in txErr && "funName" in txErr) {
-		 
 		let reason = "unknown";
 		 
 		switch ((txErr as any).errCode) {
