@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Transaction } from "@mysten/sui/transactions";
 import type { SuiClient } from "@mysten/sui/client";
+import { Network } from "@mysten/kiosk";
 import {
 	useSignAndExecuteTransaction,
 	useSuiClientContext,
@@ -89,16 +90,16 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 	const handleMintNFT = async () => {
 		if (!account) return;
 		let kioskId, kioskCapId;
-		let kioskInfo2 = kiosk;
+		let minterKiosk = kiosk;
 
 		try {
 			setIsMinting(true);
-			if (!kioskInfo2) {
-				kioskInfo2 = await createKiosk(account.address, client, network, signTransaction);
-				setKiosk(kioskInfo2);
+			if (!minterKiosk) {
+				minterKiosk = await createKiosk(account.address, client, network as Network, signTransaction);
+				setKiosk(minterKiosk);
 			}
-			kioskId = kioskInfo2.kioskId;
-			kioskCapId = kioskInfo2.kioskCapId;
+			kioskId = minterKiosk.kioskId;
+			kioskCapId = minterKiosk.kioskCapId;
 
 			const tx = createMintTx(kioskId, kioskCapId, beelieversMint, beelieversAuction.auctionId);
 
@@ -107,7 +108,7 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 			const result = await signAndExecTx(tx, client, signTransaction);
 			console.log(">>> Mint tx:", result.digest);
 			if (result.errors) {
-				console.log(">>> Mint FAILED", result.errors);
+				console.error(">>> Mint FAILED", result.errors);
 			}
 
 			const nftId = findNftInTxResult(result);
@@ -285,7 +286,7 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 			const hasMinted = await queryHasMinted(userAddr, client, beelieversMint);
 			setHasMinted(hasMinted);
 
-			const kiosk = await initializeKioskInfo(userAddr, client, network);
+			const kiosk = await initializeKioskInfo(userAddr, client, network as Network);
 			setKiosk(kiosk);
 			console.log(">>> MintInfo: Loaded kiosk for address:", userAddr, kiosk);
 
@@ -311,7 +312,6 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 	}
 
 	const isWinner = user.rank !== null && user.rank < _auctionSize;
-
 	const boosted = user.wlStatus > AuctionAccountType.DEFAULT;
 	let doRefund: DoRefund = DoRefund.No;
 	if (user.amount > 0) {
@@ -413,7 +413,7 @@ interface MintCfg {
 	collectionId: string;
 	transferPolicyId: string;
 	//Change this when deploying to mainnet
-	mintStart: 1756899768721 | 1757192400000;
+	mintStart: number;
 }
 
 function createMintTx(kioskId: string, kioskCapId: string, mintCfg: MintCfg, auctionId: string): Transaction {
@@ -435,38 +435,50 @@ function createMintTx(kioskId: string, kioskCapId: string, mintCfg: MintCfg, auc
 }
 
 export function formatSuiMintErr(error: unknown): string {
-	const errMsg = (error as Error).message;
+	// Handle both string and Error object inputs
+	let errMsg: string;
+	if (typeof error === "string") {
+		errMsg = error;
+	} else {
+		errMsg = (error as Error).message;
+	}
+
 	if (!errMsg) return "An error occurred during minting";
 
 	const txErr = parseTxError(errMsg);
 	if (!txErr) return "Sui tx failed, unknown error";
 	if (typeof txErr === "string") return txErr;
 
-	let reason = "unknown";
-	switch (txErr.errCode) {
-		case 1: {
-			reason = "all NFTs are alaready minted";
-			break;
+	if (typeof txErr === "object" && txErr !== null && "errCode" in txErr && "funName" in txErr) {
+		let reason = "unknown";
+
+		switch (txErr.errCode) {
+			case 1: {
+				reason = "all NFTs are alaready minted";
+				break;
+			}
+			case 2: {
+				reason = "minting not active";
+				break;
+			}
+			case 3: {
+				reason = "unauthorized: user didn't win the auction";
+				break;
+			}
+			case 4: {
+				reason = "user already minted";
+				break;
+			}
+			case 10: {
+				reason = "tx provided wrong auction contract for verification";
+				break;
+			}
 		}
-		case 2: {
-			reason = "minting not active";
-			break;
-		}
-		case 3: {
-			reason = "unauthorized: user didn't win the auction";
-			break;
-		}
-		case 4: {
-			reason = "user already minted";
-			break;
-		}
-		case 10: {
-			reason = "tx provided wrong auction contract for verification";
-			break;
-		}
+
+		return `Tx aborted, function: ${txErr.funName} reason: "${reason}"`;
 	}
 
-	return `Tx aborted, function: ${txErr.funName} reason: "${reason}"`;
+	return "An error occurred during minting";
 }
 
 async function queryHasMinted(addr: string, client: SuiClient, cfg: MintCfg): Promise<boolean> {

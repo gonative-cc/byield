@@ -10,7 +10,7 @@ import {
 import { CircleX, Info, TriangleAlert } from "lucide-react";
 
 interface ToastIconProps {
-	variant: "default" | "destructive" | "warning" | null | undefined;
+	variant: "default" | "info" | "destructive" | "warning" | null | undefined;
 }
 
 function ToastIcon({ variant }: ToastIconProps) {
