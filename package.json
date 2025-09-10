@@ -27,9 +27,9 @@
 	"dependencies": {
 		"@esbuild-plugins/node-globals-polyfill": "^0.2.3",
 		"@ethersproject/units": "^5.8.0",
-		"@mysten/dapp-kit": "^0.17.6",
-		"@mysten/kiosk": "^0.12.26",
-		"@mysten/sui": "^1.37.6",
+		"@mysten/dapp-kit": "^0.18.0",
+		"@mysten/kiosk": "^0.13.0",
+		"@mysten/sui": "^1.38.0",
 		"@radix-ui/react-dialog": "^1.1.14",
 		"@radix-ui/react-popover": "^1.1.14",
 		"@radix-ui/react-select": "^2.2.5",
@@ -96,11 +96,6 @@
 	},
 	"engines": {
 		"node": ">=22.0.0"
-	},
-	"pnpm": {
-		"overrides": {
-			"@mysten/sui": "1.37.6"
-		}
 	},
 	"lint-staged": {
 		"*.{js,cjs,mjs,jsx,ts,tsx}": [

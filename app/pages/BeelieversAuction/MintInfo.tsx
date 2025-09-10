@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
 import { Transaction } from "@mysten/sui/transactions";
 import type { SuiClient } from "@mysten/sui/client";
@@ -90,30 +89,34 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 	const handleMintNFT = async () => {
 		if (!account) return;
 		let kioskId, kioskCapId;
-		let kioskInfo2 = kiosk;
+		let minterKiosk = kiosk;
 
 		try {
 			setIsMinting(true);
-			if (!kioskInfo2) {
-				kioskInfo2 = await createKiosk(
+			if (!minterKiosk) {
+				minterKiosk = await createKiosk(
 					account.address,
 					client,
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					network as any,
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					signTransaction as any,
 				);
-				setKiosk(kioskInfo2);
+				setKiosk(minterKiosk);
 			}
-			kioskId = kioskInfo2.kioskId;
-			kioskCapId = kioskInfo2.kioskCapId;
+			kioskId = minterKiosk.kioskId;
+			kioskCapId = minterKiosk.kioskCapId;
 
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const tx = createMintTx(kioskId, kioskCapId, beelieversMint as any, beelieversAuction.auctionId);
 
 			toast({ title: "Minting NFT", variant: "info" });
 
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const result = await signAndExecTx(tx, client, signTransaction as any);
 			console.log(">>> Mint tx:", result.digest);
 			if (result.errors) {
-				console.log(">>> Mint FAILED", result.errors);
+				console.error(">>> Mint FAILED", result.errors);
 			}
 
 			const nftId = findNftInTxResult(result);
@@ -287,9 +290,11 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 				return;
 			}
 
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const hasMinted = await queryHasMinted(userAddr, client, beelieversMint as any);
 			setHasMinted(hasMinted);
 
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const kiosk = await initializeKioskInfo(userAddr, client, network as any);
 			setKiosk(kiosk);
 			console.log(">>> MintInfo: Loaded kiosk for address:", userAddr, kiosk);
@@ -456,7 +461,7 @@ export function formatSuiMintErr(error: unknown): string {
 	if (typeof txErr === "object" && txErr !== null && "errCode" in txErr && "funName" in txErr) {
 		let reason = "unknown";
 
-		switch ((txErr as any).errCode) {
+		switch (txErr.errCode) {
 			case 1: {
 				reason = "all NFTs are alaready minted";
 				break;
@@ -479,7 +484,7 @@ export function formatSuiMintErr(error: unknown): string {
 			}
 		}
 
-		return `Tx aborted, function: ${(txErr as any).funName} reason: "${reason}"`;
+		return `Tx aborted, function: ${txErr.funName} reason: "${reason}"`;
 	}
 
 	return "An error occurred during minting";
