@@ -88,7 +88,7 @@ describe("findNftInTxResult", () => {
 			},
 		};
 
-		const nftId = findNftInTxResult(mockResult, kioskId);
+		const nftId = findNftInTxResult(mockResult);
 		expect(nftId).toBeNull();
 	});
 

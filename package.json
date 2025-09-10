@@ -97,6 +97,11 @@
 	"engines": {
 		"node": ">=22.0.0"
 	},
+	"pnpm": {
+		"overrides": {
+			"@mysten/sui": "1.37.6"
+		}
+	},
 	"lint-staged": {
 		"*.{js,cjs,mjs,jsx,ts,tsx}": [
 			"prettier --write --ignore-unknown",

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
 import { Transaction } from "@mysten/sui/transactions";
 import type { SuiClient } from "@mysten/sui/client";
@@ -94,24 +95,30 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 		try {
 			setIsMinting(true);
 			if (!kioskInfo2) {
-				kioskInfo2 = await createKiosk(account.address, client, network, signTransaction);
+				 
+				kioskInfo2 = await createKiosk(
+					account.address,
+					client,
+					network as any,
+					signTransaction as any,
+				);
 				setKiosk(kioskInfo2);
 			}
 			kioskId = kioskInfo2.kioskId;
 			kioskCapId = kioskInfo2.kioskCapId;
 
-			const tx = createMintTx(kioskId, kioskCapId, beelieversMint, beelieversAuction.auctionId);
+			const tx = createMintTx(kioskId, kioskCapId, beelieversMint as any, beelieversAuction.auctionId);
 
 			toast({ title: "Minting NFT", variant: "info" });
 
-			const result = await signAndExecTx(tx, client, signTransaction);
+			 
+			const result = await signAndExecTx(tx, client, signTransaction as any);
 			console.log(">>> Mint tx:", result.digest);
 			if (result.errors) {
 				console.log(">>> Mint FAILED", result.errors);
 			}
 
 			const nftId = findNftInTxResult(result);
-			// we need to delay a bit to make sure RPC nodes will get the data
 			await delay(1600);
 			if (nftId) {
 				setNftId(nftId);
@@ -282,10 +289,12 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 				return;
 			}
 
-			const hasMinted = await queryHasMinted(userAddr, client, beelieversMint);
+			 
+			const hasMinted = await queryHasMinted(userAddr, client, beelieversMint as any);
 			setHasMinted(hasMinted);
 
-			const kiosk = await initializeKioskInfo(userAddr, client, network);
+			 
+			const kiosk = await initializeKioskInfo(userAddr, client, network as any);
 			setKiosk(kiosk);
 			console.log(">>> MintInfo: Loaded kiosk for address:", userAddr, kiosk);
 
@@ -311,7 +320,6 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 	}
 
 	const isWinner = user.rank !== null && user.rank < _auctionSize;
-
 	const boosted = user.wlStatus > AuctionAccountType.DEFAULT;
 	let doRefund: DoRefund = DoRefund.No;
 	if (user.amount > 0) {
@@ -442,31 +450,38 @@ export function formatSuiMintErr(error: unknown): string {
 	if (!txErr) return "Sui tx failed, unknown error";
 	if (typeof txErr === "string") return txErr;
 
-	let reason = "unknown";
-	switch (txErr.errCode) {
-		case 1: {
-			reason = "all NFTs are alaready minted";
-			break;
+	if (typeof txErr === "object" && txErr !== null && "errCode" in txErr && "funName" in txErr) {
+		 
+		let reason = "unknown";
+		 
+		switch ((txErr as any).errCode) {
+			case 1: {
+				reason = "all NFTs are alaready minted";
+				break;
+			}
+			case 2: {
+				reason = "minting not active";
+				break;
+			}
+			case 3: {
+				reason = "unauthorized: user didn't win the auction";
+				break;
+			}
+			case 4: {
+				reason = "user already minted";
+				break;
+			}
+			case 10: {
+				reason = "tx provided wrong auction contract for verification";
+				break;
+			}
 		}
-		case 2: {
-			reason = "minting not active";
-			break;
-		}
-		case 3: {
-			reason = "unauthorized: user didn't win the auction";
-			break;
-		}
-		case 4: {
-			reason = "user already minted";
-			break;
-		}
-		case 10: {
-			reason = "tx provided wrong auction contract for verification";
-			break;
-		}
+
+		 
+		return `Tx aborted, function: ${(txErr as any).funName} reason: "${reason}"`;
 	}
 
-	return `Tx aborted, function: ${txErr.funName} reason: "${reason}"`;
+	return "An error occurred during minting";
 }
 
 async function queryHasMinted(addr: string, client: SuiClient, cfg: MintCfg): Promise<boolean> {

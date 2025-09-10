@@ -8,7 +8,10 @@ import type { Transaction } from "@mysten/sui/transactions";
 // Std Sui object addresses
 export const SUI_RANDOM_OBJECT_ID = "0x8";
 
-export type TxSigner = ({ transaction: Transaction }) => { bytes: string; signature: string };
+export type TxSigner = ({ transaction }: { transaction: Transaction }) => {
+	bytes: string;
+	signature: string;
+};
 
 const defaultExecOptions: SuiTransactionBlockResponseOptions = {
 	showEvents: true,
