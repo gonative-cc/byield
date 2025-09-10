@@ -66,7 +66,8 @@ export function formatSuiErr(
 	if (typeof txErr === "string") return txErr;
 
 	if (typeof txErr === "object" && txErr !== null && "errCode" in txErr && "funName" in txErr) {
-		const reason = errCodeFormatter(txErr.errCode || 0);
+		const errCode = typeof txErr.errCode === "number" ? txErr.errCode : 0;
+		const reason = errCodeFormatter(errCode);
 		return `Tx aborted, function: ${txErr.funName} reason: "${reason}"`;
 	}
 
