@@ -20,7 +20,7 @@ import { useNetworkVariables } from "~/networkConfig";
 import { AuctionAccountType, type AuctionInfo, type User } from "~/server/BeelieversAuction/types";
 import { signAndExecTx, SUI_RANDOM_OBJECT_ID } from "~/lib/suienv";
 import { formatSUI } from "~/lib/denoms";
-import { parseTxError } from "~/lib/suierr";
+import { parseTxError, formatSuiErr } from "~/lib/suierr";
 import type { BeelieversAuctionCfg, BeelieversMintCfg } from "~/config/sui/contracts-config";
 import { moveCallTarget } from "~/config/sui/contracts-config";
 import { delay } from "~/lib/batteries";
@@ -179,9 +179,10 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 					},
 					onError: (error) => {
 						console.error("Claim tx error:", error);
+
 						toast({
 							title: "Refund failed",
-							description: "Please try again later.\n" + error.message,
+							description: handleRefundError(error),
 							variant: "destructive",
 						});
 					},
@@ -189,9 +190,10 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 			);
 		} catch (error) {
 			console.error("Claim tx error:", error);
+
 			toast({
 				title: "Transaction error",
-				description: "Failed to create transaction.\n" + error,
+				description: handleRefundError(error),
 				variant: "destructive",
 			});
 		}
@@ -249,6 +251,24 @@ function handleMintError(error: unknown): string {
 			userMessage = parsedError;
 		} else {
 			userMessage = formatSuiMintErr(error);
+		}
+	}
+
+	return userMessage;
+}
+
+function handleRefundError(error: unknown): string {
+	const errorMessage = (error as Error).message;
+	let userMessage = "An error occurred during refund";
+
+	if (errorMessage) {
+		const parsedError = parseTxError(errorMessage);
+		if (parsedError && typeof parsedError === "object") {
+			userMessage = formatSuiRefundErr(parsedError);
+		} else if (typeof parsedError === "string") {
+			userMessage = parsedError;
+		} else {
+			userMessage = formatSuiRefundErr(error);
 		}
 	}
 
@@ -425,49 +445,48 @@ function createMintTx(
 
 export function formatSuiMintErr(error: unknown): string {
 	// Handle both string and Error object inputs
-	let errMsg: string;
-	if (typeof error === "string") {
-		errMsg = error;
-	} else {
-		errMsg = (error as Error).message;
-	}
-
-	if (!errMsg) return "An error occurred during minting";
-
-	const txErr = parseTxError(errMsg);
-	if (!txErr) return "Sui tx failed, unknown error";
-	if (typeof txErr === "string") return txErr;
-
-	if (typeof txErr === "object" && txErr !== null && "errCode" in txErr && "funName" in txErr) {
-		let reason = "unknown";
-
-		switch (txErr.errCode) {
-			case 1: {
-				reason = "all NFTs are alaready minted";
-				break;
+	return formatSuiErr(
+		error,
+		(errCode: number) => {
+			switch (errCode) {
+				case 1:
+					return "all NFTs are alaready minted";
+				case 2:
+					return "minting not active";
+				case 3:
+					return "unauthorized: user didn't win the auction";
+				case 4:
+					return "user already minted";
+				case 10:
+					return "tx provided wrong auction contract for verification";
+				default:
+					return "unknown";
 			}
-			case 2: {
-				reason = "minting not active";
-				break;
-			}
-			case 3: {
-				reason = "unauthorized: user didn't win the auction";
-				break;
-			}
-			case 4: {
-				reason = "user already minted";
-				break;
-			}
-			case 10: {
-				reason = "tx provided wrong auction contract for verification";
-				break;
-			}
-		}
+		},
+		"An error occurred during minting",
+	);
+}
 
-		return `Tx aborted, function: ${txErr.funName} reason: "${reason}"`;
-	}
-
-	return "An error occurred during minting";
+export function formatSuiRefundErr(error: unknown): string {
+	// ENotFinalized = 4, ENoBidFound = 6, EInsufficientBidForWinner = 14, EPaused = 15
+	return formatSuiErr(
+		error,
+		(errCode: number) => {
+			switch (errCode) {
+				case 4:
+					return "auction not finalized yet";
+				case 6:
+					return "no bid found for this address";
+				case 14:
+					return "insufficient bid amount for winner";
+				case 15:
+					return "auction is paused";
+				default:
+					return "unknown";
+			}
+		},
+		"An error occurred during refund",
+	);
 }
 
 async function queryHasMinted(addr: string, client: SuiClient, cfg: BeelieversMintCfg): Promise<boolean> {
