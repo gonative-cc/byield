@@ -20,7 +20,7 @@ jobs:
           # This is important to fetch the changes to the previous commit
           fetch-depth: 0
 
-      - name: Prettify code
+      - name: format
         uses: creyD/prettier_action@v4.6
         with:
           prettier_options: -c .
