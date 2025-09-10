@@ -10,8 +10,7 @@ import { fromBase64 } from "@mysten/utils";
 import { isProductionMode } from "~/lib/appenv";
 import { Auction, type BidResult } from "./auction.server";
 
-import suiTestNetConfig from "~/config/sui/contracts-testnet.json";
-import suiMainNetConfig from "~/config/sui/contracts-mainnet.json";
+import { mainnetCfg, testnetCfg } from "~/config/sui/contracts-config";
 
 const maxTxIdSize = 44;
 
@@ -35,11 +34,11 @@ export default class Controller {
 		this.isProduction = isProductionMode();
 		if (this.isProduction) {
 			this.suiNet = "mainnet";
-			this.auctionPkgId = suiMainNetConfig.beelieversAuction.packageId;
+			this.auctionPkgId = mainnetCfg.beelieversAuction.pkgId;
 			this.fallbackIndexerUrl = "https://sui-mainnet-endpoint.blockvision.org/";
 		} else {
 			this.suiNet = "testnet";
-			this.auctionPkgId = suiTestNetConfig.beelieversAuction.packageId;
+			this.auctionPkgId = testnetCfg.beelieversAuction.pkgId;
 			this.fallbackIndexerUrl = "https://sui-testnet-endpoint.blockvision.org/";
 		}
 		if (!this.auctionPkgId || !this.fallbackIndexerUrl) {

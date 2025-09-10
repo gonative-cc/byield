@@ -142,12 +142,14 @@ export function NftDisplay({ nftId }: NftDisplayProps) {
 	);
 }
 
+// TODO: move it to app/lib/suienv
 export function mkSuiVisionUrl(objectId: string, network: string): string {
 	// TODO: let's define it in contracts-*.json, next to the `accountExplorer`.
 	const baseUrl = network === "mainnet" ? "https://suivision.xyz" : "https://testnet.suivision.xyz";
 	return `${baseUrl}/object/${objectId}`;
 }
 
+// TODO: move it to app/lib/suienv
 function mkWalrusImageUrl(imageUrl: string): string {
 	if (imageUrl.startsWith("http")) {
 		return imageUrl;
@@ -160,16 +162,20 @@ function getAttributeValue(attributes: NftMetadata["attributes"], key: string): 
 	return attr?.fields.value || "";
 }
 
+function nFTType(pkgId: string): string {
+	return pkgId + "::mint::BeelieverNFT";
+}
+
 export async function queryNftFromKiosk(
 	kioskId: string,
-	packageId: string,
+	mintPkgId: string,
 	client: SuiClient,
 ): Promise<string | null> {
 	try {
 		const kioskObjects = await client.getDynamicFields({
 			parentId: kioskId,
 		});
-
+		const nftTypeName = nFTType(mintPkgId);
 		for (const obj of kioskObjects.data) {
 			if (obj.name.type.includes("Item")) {
 				const itemObject = await client.getObject({
@@ -177,7 +183,7 @@ export async function queryNftFromKiosk(
 					options: { showContent: true, showType: true },
 				});
 
-				if (itemObject.data?.type?.includes(packageId + "::mint::BeelieverNFT")) {
+				if (itemObject.data?.type?.includes(nftTypeName)) {
 					if (itemObject.data.content && "fields" in itemObject.data.content) {
 						console.log("found nft in kiosk", itemObject.data);
 						return obj.objectId;
@@ -195,14 +201,12 @@ export async function queryNftFromKiosk(
 export async function queryNftByModule(
 	address: string,
 	client: SuiClient,
-	packageId: string,
+	mintPkgId: string,
 ): Promise<string | null> {
 	try {
 		const ownedObjects = await client.getOwnedObjects({
 			owner: address,
-			filter: {
-				StructType: packageId + "::mint::BeelieverNFT",
-			},
+			filter: { StructType: nFTType(mintPkgId) },
 			options: {
 				showType: true,
 				showContent: true,
