@@ -1,5 +1,11 @@
 import { FormProvider, useForm } from "react-hook-form";
+import { useFetcher } from "react-router";
+import { LoaderCircle } from "lucide-react";
+import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
+import { Transaction } from "@mysten/sui/transactions";
+
 import { formatSUI, parseSUI, SUI } from "~/lib/denoms";
+import { delay } from "~/lib/batteries";
 import { Card, CardContent } from "~/components/ui/card";
 import { FormNumericInput } from "~/components/form/FormNumericInput";
 import { Button } from "~/components/ui/button";
@@ -7,16 +13,12 @@ import { FormInput } from "~/components/form/FormInput";
 import { SuiModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import type { User } from "~/server/BeelieversAuction/types";
 import { makeReq } from "~/server/BeelieversAuction/jsonrpc";
-import { useFetcher } from "react-router";
-import { Transaction } from "@mysten/sui/transactions";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { toast } from "~/hooks/use-toast";
 import { useNetworkVariables } from "~/networkConfig";
-import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
-import { LoaderCircle } from "lucide-react";
 import { SUIIcon } from "~/components/icons";
 
-import { delay } from "~/lib/batteries";
+import { moveCallTarget, type BeelieversAuctionCfg } from "~/config/sui/contracts-config";
 
 interface NewTotalBidAmountProps {
 	currentBidInMist: number;
@@ -259,24 +261,17 @@ function submitButton(isPending: boolean, hasUserBidBefore: boolean) {
 	);
 }
 
-type BidCallTargets = {
-	packageId: string;
-	module: string;
-	bidEndpoint: string;
-	auctionId: string;
-};
-
 const createBidTxn = async (
 	senderAddress: string,
 	amountMist: bigint,
-	{ packageId, module, bidEndpoint, auctionId }: BidCallTargets,
+	cfg: BeelieversAuctionCfg,
 ): Promise<Transaction> => {
 	const txn = new Transaction();
 	txn.setSender(senderAddress);
 	const [coin] = txn.splitCoins(txn.gas, [txn.pure.u64(amountMist)]);
 	txn.moveCall({
-		target: `${packageId}::${module}::${bidEndpoint}`,
-		arguments: [txn.object(auctionId), coin, txn.object.clock()],
+		target: moveCallTarget(cfg, "bid"),
+		arguments: [txn.object(cfg.auctionId), coin, txn.object.clock()],
 	});
 	return txn;
 };
