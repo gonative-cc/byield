@@ -112,6 +112,7 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 			}
 
 			const nftId = findNftInTxResult(result);
+			// we need to delay a bit to make sure RPC nodes will get the data
 			await delay(1600);
 			if (nftId) {
 				setNftId(nftId);
