@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Transaction } from "@mysten/sui/transactions";
 import type { SuiClient } from "@mysten/sui/client";
+import { Network } from "@mysten/kiosk";
 import {
 	useSignAndExecuteTransaction,
 	useSuiClientContext,
@@ -97,8 +98,7 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 				minterKiosk = await createKiosk(
 					account.address,
 					client,
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-					network as any,
+					network as Network,
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					signTransaction as any,
 				);
@@ -107,8 +107,7 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 			kioskId = minterKiosk.kioskId;
 			kioskCapId = minterKiosk.kioskCapId;
 
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			const tx = createMintTx(kioskId, kioskCapId, beelieversMint as any, beelieversAuction.auctionId);
+			const tx = createMintTx(kioskId, kioskCapId, beelieversMint, beelieversAuction.auctionId);
 
 			toast({ title: "Minting NFT", variant: "info" });
 
@@ -294,8 +293,8 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 			const hasMinted = await queryHasMinted(userAddr, client, beelieversMint as any);
 			setHasMinted(hasMinted);
 
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			const kiosk = await initializeKioskInfo(userAddr, client, network as any);
+			 
+			const kiosk = await initializeKioskInfo(userAddr, client, network as Network);
 			setKiosk(kiosk);
 			console.log(">>> MintInfo: Loaded kiosk for address:", userAddr, kiosk);
 
@@ -422,7 +421,7 @@ interface MintCfg {
 	collectionId: string;
 	transferPolicyId: string;
 	//Change this when deploying to mainnet
-	mintStart: 1756899768721 | 1757192400000;
+	mintStart: number;
 }
 
 function createMintTx(kioskId: string, kioskCapId: string, mintCfg: MintCfg, auctionId: string): Transaction {
