@@ -17,7 +17,7 @@ import { networks, type Network } from "bitcoinjs-lib";
 import { ExtendedBitcoinNetworkType } from "~/hooks/useBitcoinConfig";
 import { toast } from "~/hooks/use-toast";
 
-// change this based on your devenet network config
+// change this based on your devnet network config
 const devnetNetworkConfig = {
 	indexerUrl: "https://api-3.xverse.app",
 	rpcUrl: "http://localhost:18444",
