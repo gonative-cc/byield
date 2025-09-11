@@ -1,48 +1,56 @@
 import { useToast } from "~/hooks/use-toast";
-import {
-	Toast,
-	ToastClose,
-	ToastDescription,
-	ToastProvider,
-	ToastTitle,
-	ToastViewport,
-} from "~/components/ui/toast";
 import { CircleX, Info, TriangleAlert } from "lucide-react";
+import { Alert, Button, Toast } from "react-daisyui";
+import { cva } from "class-variance-authority";
+
+const toastVariants = cva("alert-outline", {
+	variants: {
+		variant: {
+			default: "",
+			info: "alert-info",
+			destructive: "alert-error",
+			warning: "alert-warning",
+		},
+	},
+	defaultVariants: {
+		variant: "default",
+	},
+});
 
 interface ToastIconProps {
-	variant: "default" | "info" | "destructive" | "warning" | null | undefined;
+	variant: "default" | "destructive" | "warning" | "info" | null | undefined;
 }
 
 function ToastIcon({ variant }: ToastIconProps) {
 	switch (variant) {
 		case "destructive":
-			return <CircleX className="rotate-180" />;
+			return <CircleX />;
 		case "warning":
 			return <TriangleAlert />;
 		default:
-			return <Info className="rotate-180" />;
+			return <Info />;
 	}
 }
 
 export function Toaster() {
-	const { toasts } = useToast();
+	const { toasts, dismiss } = useToast();
 
 	return (
-		<ToastProvider duration={Infinity}>
-			{toasts.map(function ({ id, title, description, action, variant, ...props }) {
-				return (
-					<Toast key={id} variant={variant} {...props}>
+		<Toast vertical="bottom" horizontal="end">
+			{toasts.map(({ id, title, description, variant }) => (
+				<div key={id} className={toastVariants({ variant })}>
+					<Alert>
 						<ToastIcon variant={variant} />
-						<div className="grid gap-1">
-							{title && <ToastTitle>{title}</ToastTitle>}
-							{description && <ToastDescription>{description}</ToastDescription>}
+						<div className="flex flex-col gap-2">
+							{title && <span>{title}</span>}
+							{description && <span>{description}</span>}
 						</div>
-						{action}
-						<ToastClose />
-					</Toast>
-				);
-			})}
-			<ToastViewport />
-		</ToastProvider>
+						<Button color="ghost" onClick={() => dismiss(id)}>
+							X
+						</Button>
+					</Alert>
+				</div>
+			))}
+		</Toast>
 	);
 }

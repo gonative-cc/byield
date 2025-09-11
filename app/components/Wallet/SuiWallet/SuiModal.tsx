@@ -11,9 +11,9 @@ import {
 import { useContext } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
-import { useToast } from "~/hooks/use-toast";
 import { Link } from "react-router";
 import { Wallet } from "lucide-react";
+import { toast } from "~/hooks/use-toast";
 
 interface InstallWalletProps {
 	link: string;
@@ -31,7 +31,6 @@ function InstallWallet({ link, name }: InstallWalletProps) {
 }
 
 function AvailableWallets() {
-	const { toast } = useToast();
 	const { handleWalletConnect } = useContext(WalletContext);
 	const wallets = useWallets();
 	const { mutate: connect } = useConnectWallet();

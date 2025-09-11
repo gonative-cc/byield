@@ -12,13 +12,13 @@ import { FormNumericInput } from "../../components/form/FormNumericInput";
 import { NumericFormat } from "react-number-format";
 import { BTC, formatBTC, parseBTC } from "~/lib/denoms";
 import { nBTCMintTx } from "~/lib/nbtc";
-import { useToast } from "~/hooks/use-toast";
 import { Check } from "lucide-react";
 import { classNames } from "~/util/tailwind";
 import { isValidSuiAddress } from "@mysten/sui/utils";
 import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import { useNetworkVariables } from "~/networkConfig";
 import { Modal } from "~/components/ui/dialog";
+import { toast } from "~/hooks/use-toast";
 
 interface TransactionStatusProps {
 	SuiAddress: string;
@@ -137,7 +137,6 @@ interface MintNBTCForm {
 }
 
 export function MintBTC() {
-	const { toast } = useToast();
 	const [txId, setTxId] = useState<string | undefined>(undefined);
 	const { connectWallet } = useXverseConnect();
 	const { balance: walletBalance, currentAddress, network } = useXverseWallet();
@@ -167,7 +166,6 @@ export function MintBTC() {
 				formatSuiAddress(suiAddress),
 				network,
 				bitcoinConfig.nBTC.depositAddress,
-				toast,
 			);
 			if (response && response.status === "success") {
 				setTxId(response.result.txid);
