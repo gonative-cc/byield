@@ -147,9 +147,6 @@ export function SuiModal({ label = "Connect Sui Wallet" }: SuiModalProps) {
 				</DialogHeader>
 				<DialogDescription>Please select a wallet to connect</DialogDescription>
 				<DialogDescription className="text-xs">
-					P.S: ZK Login / Outh (accounts that are created using e-mail) are not supported.
-				</DialogDescription>
-				<DialogDescription className="text-xs">
 					If you are accessing the app from mobile, please use wallet browser e.g Slush wallet
 					browser.
 				</DialogDescription>

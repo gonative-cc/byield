@@ -1,8 +1,9 @@
+import { useCallback, useContext } from "react";
 import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
 import type { SuiClient, PaginatedCoins } from "@mysten/sui/client";
 import { coinWithBalance, Transaction } from "@mysten/sui/transactions";
 import type { TransactionResult } from "@mysten/sui/transactions";
-import { useCallback, useContext } from "react";
+
 import { toast } from "~/hooks/use-toast";
 import type { ToastFunction } from "~/hooks/use-toast";
 import { formatSUI } from "~/lib/denoms";
@@ -12,13 +13,10 @@ import { useNetworkVariables } from "~/networkConfig";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
 
-type Targets = {
-	packageId: string;
-	module: string;
-	buyNBTCFunction: string;
-	sellNBTCFunction: string;
-	vaultId: string;
-};
+import { moveCallTarget, type NbtcOtcCfg } from "~/config/sui/contracts-config";
+
+const buyNBTCFunction = "buy_nbtc";
+const sellNBTCFunction = "sell_nbtc";
 
 async function getNBTCCoins(owner: string, client: SuiClient, nbtcCoin: string): Promise<PaginatedCoins> {
 	return client.getCoins({
@@ -30,7 +28,7 @@ async function getNBTCCoins(owner: string, client: SuiClient, nbtcCoin: string):
 async function createNBTCTxn(
 	senderAddress: string,
 	amount: bigint,
-	{ packageId, module, buyNBTCFunction, sellNBTCFunction, vaultId }: Targets,
+	nbtcOtcCfg: NbtcOtcCfg,
 	toast: ToastFunction,
 	shouldBuy: boolean,
 	client: SuiClient,
@@ -44,8 +42,8 @@ async function createNBTCTxn(
 	if (shouldBuy) {
 		const [coins] = txn.splitCoins(txn.gas, [txn.pure.u64(amount)]);
 		resultCoin = txn.moveCall({
-			target: `${packageId}::${module}::${buyNBTCFunction}`,
-			arguments: [txn.object(vaultId), coins],
+			target: moveCallTarget(nbtcOtcCfg, buyNBTCFunction),
+			arguments: [txn.object(nbtcOtcCfg.vaultId), coins],
 		});
 		// merge nbtc coins with the result coin
 		const nbtcCoins = await getNBTCCoins(senderAddress, client, nbtcCoin);
@@ -64,9 +62,10 @@ async function createNBTCTxn(
 			});
 			return null;
 		}
+		const coin = coinWithBalance({ balance: amount, type: nbtcCoin });
 		resultCoin = txn.moveCall({
-			target: `${packageId}::${module}::${sellNBTCFunction}`,
-			arguments: [txn.object(vaultId), coinWithBalance({ balance: amount, type: nbtcCoin })],
+			target: moveCallTarget(nbtcOtcCfg, sellNBTCFunction),
+			arguments: [txn.object(nbtcOtcCfg.vaultId), coin],
 		});
 		txn.mergeCoins(txn.gas, [txn.object(resultCoin)]);
 	}

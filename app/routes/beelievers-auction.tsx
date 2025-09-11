@@ -1,11 +1,12 @@
+import { useEffect } from "react";
+import { useDisconnectWallet, useSuiClientContext } from "@mysten/dapp-kit";
+
 import { BeelieversAuction } from "~/pages/BeelieversAuction/BeelieversAuction";
-import { useLoaderData } from "react-router";
 import Controller from "~/server/BeelieversAuction/controller.server";
 import type { LoaderDataResp } from "~/server/BeelieversAuction/types";
 import type { Route } from "./+types/beelievers-auction";
-import { useDisconnectWallet, useSuiClientContext } from "@mysten/dapp-kit";
-import { useEffect } from "react";
 import { isProductionMode } from "~/lib/appenv";
+import { toast } from "~/hooks/use-toast";
 
 // if we need to load something directly from the client (browser):
 // https://reactrouter.com/start/framework/data-loading#using-both-loaders
@@ -13,7 +14,7 @@ export async function loader({ params, context, request }: Route.LoaderArgs): Pr
 	const env = context.cloudflare.env;
 	const ctrl = new Controller(env.BeelieversNFT, env.BeelieversD1);
 	const url = new URL(request.url);
-	// TODO: set user address to the params
+	// We can try to set user address to the params
 	// Probably we can use https://reactrouter.com/start/framework/route-module#unstable_clientmiddleware
 	// const suiAddress = url.searchParams.get("suiAddress") ?? undefined;
 	console.log(">>>>> Page Loader handler - params:", params, "url:", url.href);
@@ -35,10 +36,10 @@ export default function BeelieversAuctionPage({ loaderData }: Route.ComponentPro
 		throw Error("Couldn't load the auction data");
 	}
 
-	// TODO: remove this after auction. enforce network change
 	useEffect(() => {
 		if (isProductionMode() && isTestnet) {
 			disconnect();
+			toast({ title: "Testnet is not supported. Switch to mainnet", variant: "warning" });
 		}
 	}, [disconnect, isTestnet]);
 
