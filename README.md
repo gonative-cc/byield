@@ -8,34 +8,35 @@ Dashboard for the Bitcoin Yield Hub and Native `nBTC`.
 
 ### Dependencies
 
-- node >= v22
-- pnpm >= 10.11
+- bun >= v1.2.20
 - proper editorconfig mode setup in your editor!
+
+Note: we use Bun instead of Node.js for JS and TS execution and package management.
 
 ### Quick Start
 
 - 📖 [Remix docs](https://remix.run/docs)
 - 📖 [Remix Cloudflare docs](https://remix.run/guides/vite#cloudflare)
 
-Run the dev server (using wrangler cloudflare framework as a backend):
+Run the dev server (using wrangler Cloudflare framework as a backend):
 
 ```sh
 # firstly install the latest dependencies
-pnpm install
-pnpm run dev
+bun install
+bun run dev
 ```
 
 Running:
 
 ```sh
-pnpm run build
-pnpm start
+bun run build
+bun start
 ```
 
 To apply migrations to the local cloudflare env:
 
 ```sh
-pnpm run db:migrate:local
+bun run db:migrate:local
 ```
 
 ## Typegen
@@ -43,7 +44,7 @@ pnpm run db:migrate:local
 Generate types for your Cloudflare bindings in `wrangler.toml`:
 
 ```sh
-pnpm run typegen
+bun run typegen
 ```
 
 You will need to rerun typegen whenever you make changes to `wrangler.toml`.
