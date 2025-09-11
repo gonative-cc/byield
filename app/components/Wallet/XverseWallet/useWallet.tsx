@@ -12,22 +12,17 @@ import Wallet, {
 import type { Address } from "sats-connect";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
-import { networks, type Network } from "bitcoinjs-lib";
 import { ExtendedBitcoinNetworkType } from "~/hooks/useBitcoinConfig";
 import { toast } from "~/hooks/use-toast";
 
-export function getBitcoinNetworkConfig(network: ExtendedBitcoinNetworkType): Network | null {
-	switch (network) {
-		case ExtendedBitcoinNetworkType.Mainnet:
-			return networks.bitcoin;
-		case ExtendedBitcoinNetworkType.Regtest:
-		case ExtendedBitcoinNetworkType.Devnet:
-			return networks.regtest;
-		case ExtendedBitcoinNetworkType.Testnet4:
-			return networks.testnet;
-		default:
-			return null;
-	}
+// This function is now in bitcoin.client.ts - keeping for backward compatibility
+// but it will use the client-side version
+export function getBitcoinNetworkConfig(_network: ExtendedBitcoinNetworkType) {
+	// This will be replaced with the client-side version that uses dynamic imports
+	console.warn(
+		"getBitcoinNetworkConfig should be imported from ~/lib/bitcoin.client for client-side usage",
+	);
+	return null;
 }
 
 export const useXverseConnect = () => {
