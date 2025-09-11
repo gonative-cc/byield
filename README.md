@@ -15,21 +15,20 @@ Note: we use Bun instead of Node.js for JS and TS execution and package manageme
 
 ### Quick Start
 
-- 📖 [Remix docs](https://remix.run/docs)
-- 📖 [Remix Cloudflare docs](https://remix.run/guides/vite#cloudflare)
+- 📖 [React Router docs](https://reactrouter.com/home)
 
 Run the dev server (using wrangler Cloudflare framework as a backend):
 
 ```sh
 # firstly install the latest dependencies
 bun install
-bun run dev
 ```
 
 Running:
 
 ```sh
-bun run build
+bun run dev
+# or:
 bun start
 ```
 
