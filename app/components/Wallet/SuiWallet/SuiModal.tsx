@@ -136,7 +136,7 @@ export function SuiModal({ label = "Connect Sui Wallet" }: SuiModalProps) {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<Button type="button" layout="oneLine" className="w-full md:w-fit">
+				<Button type="button" layout="oneLine">
 					<Wallet /> {label}
 				</Button>
 			</DialogTrigger>

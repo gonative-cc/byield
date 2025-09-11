@@ -8,6 +8,7 @@ import Wallet, {
 	getAddressesMethodName,
 	getBalanceMethodName,
 	getNetworkMethodName,
+	addNetworkMethodName,
 } from "sats-connect";
 import type { Address } from "sats-connect";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
@@ -15,6 +16,7 @@ import { Wallets } from "~/components/Wallet";
 import { networks, type Network } from "bitcoinjs-lib";
 import { ExtendedBitcoinNetworkType } from "~/hooks/useBitcoinConfig";
 import { toast } from "~/hooks/use-toast";
+import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 
 export function getBitcoinNetworkConfig(network: ExtendedBitcoinNetworkType): Network | null {
 	switch (network) {
@@ -73,6 +75,7 @@ export const useXverseConnect = () => {
 
 export const useXverseWallet = () => {
 	const { handleWalletConnect, isWalletConnected } = useContext(WalletContext);
+	const bitcoinConfig = useBitcoinConfig();
 	const isBitCoinWalletConnected = isWalletConnected(Wallets.Xverse);
 	const [addressInfo, setAddressInfo] = useState<Address[]>([]);
 	const [currentAddress, setCurrentAddress] = useState<Address | null>(null);
@@ -159,25 +162,63 @@ export const useXverseWallet = () => {
 		}
 	}, [handleWalletConnect]);
 
-	const switchNetwork = useCallback(async (newNetwork: ExtendedBitcoinNetworkType) => {
-		// Only switch if it's a valid BitcoinNetworkType (not Devnet)
-		if (newNetwork !== ExtendedBitcoinNetworkType.Devnet) {
-			const response = await Wallet.request(changeNetworkMethodName, {
-				name: newNetwork as unknown as BitcoinNetworkType,
+	const addDevnetNetwork = useCallback(async () => {
+		const name = ExtendedBitcoinNetworkType.Regtest;
+		const res = await Wallet.request(addNetworkMethodName, {
+			chain: "bitcoin",
+			name,
+			type: BitcoinNetworkType.Regtest,
+			indexerUrl: bitcoinConfig.indexerUrl,
+			rpcUrl: bitcoinConfig.rpcUrl,
+		});
+		if (res.status !== "success") {
+			console.error(res.error);
+			toast({
+				title: "Network",
+				description: `Failed to add Devnet network`,
+				variant: "destructive",
 			});
-			if (response.status === "success") setNetwork(newNetwork);
-			else {
-				toast({
-					title: "Network",
-					description: "Failed to switch network",
-					variant: "destructive",
-				});
-			}
-		} else {
-			// Handle Devnet case - just set the network state
-			setNetwork(newNetwork);
 		}
 	}, []);
+
+	const switchNetwork = useCallback(
+		async (newNetwork: ExtendedBitcoinNetworkType) => {
+			// Handle Devnet separately as it needs to be added first
+			if (newNetwork === ExtendedBitcoinNetworkType.Devnet) {
+				await addDevnetNetwork();
+				// Switch to Regtest after adding devnet
+				const response = await Wallet.request(changeNetworkMethodName, {
+					name: ExtendedBitcoinNetworkType.Regtest as unknown as BitcoinNetworkType,
+				});
+				if (response.status === "success") {
+					setNetwork(ExtendedBitcoinNetworkType.Devnet);
+				} else {
+					console.error("Failed to switch to Devnet network:", response.error);
+					toast({
+						title: "Network",
+						description: `Failed to switch to Devnet network`,
+						variant: "destructive",
+					});
+				}
+			} else {
+				// Handle other networks normally
+				const response = await Wallet.request(changeNetworkMethodName, {
+					name: newNetwork as unknown as BitcoinNetworkType,
+				});
+				if (response.status === "success") {
+					setNetwork(newNetwork);
+				} else {
+					console.error("Failed to switch network:", response.error);
+					toast({
+						title: "Network",
+						description: "Failed to switch network",
+						variant: "destructive",
+					});
+				}
+			}
+		},
+		[addDevnetNetwork],
+	);
 
 	return {
 		balance,

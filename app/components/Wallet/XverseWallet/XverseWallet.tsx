@@ -12,7 +12,7 @@ function NetWorkOptions() {
 	const bitcoinSupportedNetwork: Option[] = useMemo(
 		() => [
 			{ label: ExtendedBitcoinNetworkType.Testnet4, value: ExtendedBitcoinNetworkType.Testnet4 },
-			{ label: ExtendedBitcoinNetworkType.Regtest, value: ExtendedBitcoinNetworkType.Regtest },
+			{ label: ExtendedBitcoinNetworkType.Devnet, value: ExtendedBitcoinNetworkType.Regtest },
 			{ label: ExtendedBitcoinNetworkType.Mainnet, value: ExtendedBitcoinNetworkType.Mainnet },
 		],
 		[],
