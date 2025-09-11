@@ -16,12 +16,7 @@ import { Wallets } from "~/components/Wallet";
 import { networks, type Network } from "bitcoinjs-lib";
 import { ExtendedBitcoinNetworkType } from "~/hooks/useBitcoinConfig";
 import { toast } from "~/hooks/use-toast";
-
-// change this based on your devnet network config
-const devnetNetworkConfig = {
-	indexerUrl: "https://api-3.xverse.app",
-	rpcUrl: "http://localhost:18444",
-};
+import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 
 export function getBitcoinNetworkConfig(network: ExtendedBitcoinNetworkType): Network | null {
 	switch (network) {
@@ -80,6 +75,7 @@ export const useXverseConnect = () => {
 
 export const useXverseWallet = () => {
 	const { handleWalletConnect, isWalletConnected } = useContext(WalletContext);
+	const bitcoinConfig = useBitcoinConfig();
 	const isBitCoinWalletConnected = isWalletConnected(Wallets.Xverse);
 	const [addressInfo, setAddressInfo] = useState<Address[]>([]);
 	const [currentAddress, setCurrentAddress] = useState<Address | null>(null);
@@ -172,7 +168,8 @@ export const useXverseWallet = () => {
 			chain: "bitcoin",
 			name,
 			type: BitcoinNetworkType.Regtest,
-			...devnetNetworkConfig,
+			indexerUrl: bitcoinConfig.indexerUrl,
+			rpcUrl: bitcoinConfig.rpcUrl,
 		});
 		if (res.status !== "success") {
 			console.error(res.error);
