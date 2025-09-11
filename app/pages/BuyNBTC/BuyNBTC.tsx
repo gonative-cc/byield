@@ -10,7 +10,6 @@ import { SellNBTCTabContent } from "./SellNBTCTabContent";
 import { Tabs } from "~/components/ui/tabs";
 import { ArrowUpRight } from "lucide-react";
 import { useDisconnectWallet, useSuiClientContext } from "@mysten/dapp-kit";
-import { toast } from "~/hooks/use-toast";
 
 export function BuyNBTC() {
 	const { network } = useSuiClientContext();
@@ -29,7 +28,7 @@ export function BuyNBTC() {
 		if (isMainnet) {
 			disconnect();
 		}
-	}, [disconnect, isMainnet, toast]);
+	}, [disconnect, isMainnet]);
 
 	return (
 		<div className="flex flex-col items-center gap-8 px-2 pt-2">
@@ -64,16 +63,6 @@ export function BuyNBTC() {
 						Check Transaction History
 						<ArrowUpRight size="22" />
 					</a>
-					<button
-						onClick={() =>
-							toast({
-								title: "this is tile",
-								description: "this is a description",
-							})
-						}
-					>
-						test
-					</button>
 				</CardContent>
 			</Card>
 		</div>
