@@ -33,7 +33,7 @@ function NetWorkOptions() {
 
 	const { network, selectNetwork } = useSuiClientContext();
 	const handleChange = useCallback(
-		(value: SuiNetwork) => {
+		(value: string) => {
 			selectNetwork(value);
 		},
 		[selectNetwork],
@@ -55,8 +55,8 @@ function NetWorkOptions() {
 		<SelectInput
 			options={suiWalletNetworks}
 			placeholder="Select network"
-			onValueChange={handleChange}
-			value={network}
+			onValueChange={(value) => handleChange(value)}
+			defaultValue={network}
 			className="w-full md:w-1/4"
 		/>
 	);
@@ -86,7 +86,7 @@ function Accounts() {
 					},
 				);
 			}}
-			value={currentSelectedAccount?.address}
+			defaultValue={currentSelectedAccount?.address}
 			className="w-full md:w-1/4"
 		/>
 	);
