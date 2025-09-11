@@ -193,7 +193,7 @@ export const useXverseWallet = () => {
 				if (response.status === "success") {
 					setNetwork(ExtendedBitcoinNetworkType.Devnet);
 				} else {
-					console.error("Failed to switch to Devnet network:",response.error);
+					console.error("Failed to switch to Devnet network:", response.error);
 					toast({
 						title: "Network",
 						description: `Failed to switch to Devnet network`,
@@ -208,7 +208,7 @@ export const useXverseWallet = () => {
 				if (response.status === "success") {
 					setNetwork(newNetwork);
 				} else {
-					console.error("Failed to switch network:",response.error);
+					console.error("Failed to switch network:", response.error);
 					toast({
 						title: "Network",
 						description: "Failed to switch network",
