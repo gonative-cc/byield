@@ -5,7 +5,6 @@ import { coinWithBalance, Transaction } from "@mysten/sui/transactions";
 import type { TransactionResult } from "@mysten/sui/transactions";
 
 import { toast } from "~/hooks/use-toast";
-import type { ToastFunction } from "~/hooks/use-toast";
 import { formatSUI } from "~/lib/denoms";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { GA_EVENT_NAME, GA_CATEGORY, useGoogleAnalytics } from "~/lib/googleAnalytics";
@@ -29,7 +28,6 @@ async function createNBTCTxn(
 	senderAddress: string,
 	amount: bigint,
 	nbtcOtcCfg: NbtcOtcCfg,
-	toast: ToastFunction,
 	shouldBuy: boolean,
 	client: SuiClient,
 	nbtcBalance: bigint,
@@ -147,7 +145,6 @@ export const useBuySellNBTC = ({ variant }: NBTCProps): UseNBTCReturn => {
 				account.address,
 				amount,
 				nbtcOTC,
-				toast,
 				shouldBuy,
 				client,
 				nbtcBalanceRes.balance,
