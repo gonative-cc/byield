@@ -158,7 +158,8 @@ export const useXverseWallet = () => {
 			chain: "bitcoin",
 			name,
 			type: BitcoinNetworkType.Regtest,
-			...devnetNetworkConfig,
+			indexerUrl: bitcoinConfig.indexerUrl,
+			rpcUrl: bitcoinConfig.rpcUrl,
 		});
 		if (res.status !== "success") {
 			console.error(res.error);
