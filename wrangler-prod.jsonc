@@ -14,20 +14,20 @@
 	// }
 
 	"observability": {
-		"enabled": true
+		"enabled": true,
 	},
 	"compatibility_flags": ["nodejs_compat"],
 	"upload_source_maps": false,
 
 	"assets": {
 		// "directory": "./public"
-		"directory": "./build/client/"
+		"directory": "./build/client/",
 	},
 	"kv_namespaces": [
 		{
 			"binding": "BeelieversNFT",
-			"id": "fbf4b21d53784b3881d4b7e1503df23e"
-		}
+			"id": "fbf4b21d53784b3881d4b7e1503df23e",
+		},
 	],
 	"d1_databases": [
 		{
@@ -35,7 +35,7 @@
 			"database_name": "beelievers-prod",
 			"database_id": "f75ec68a-1df1-4a42-aeba-1d27875bf4e5",
 			"migrations_table": "migrations",
-			"migrations_dir": "./db/migrations/"
-		}
-	]
+			"migrations_dir": "./db/migrations/",
+		},
+	],
 }
