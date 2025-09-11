@@ -4,7 +4,7 @@ type ToasterToast = {
 	id: string;
 	title?: ReactNode;
 	description?: ReactNode;
-	variant?: "default" | "destructive" | "warning" | null | undefined;
+	variant?: "default" | "destructive" | "warning" | "info" | null;
 };
 
 let count = 0;

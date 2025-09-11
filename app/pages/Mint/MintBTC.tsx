@@ -166,7 +166,6 @@ export function MintBTC() {
 				formatSuiAddress(suiAddress),
 				network,
 				bitcoinConfig.nBTC.depositAddress,
-				toast,
 			);
 			if (response && response.status === "success") {
 				setTxId(response.result.txid);

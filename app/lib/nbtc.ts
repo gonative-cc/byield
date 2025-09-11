@@ -4,7 +4,7 @@ import { type Address, type RpcResult } from "sats-connect";
 import { fetchUTXOs, fetchValidateAddress } from "~/api/btcrpc";
 import type { UTXO, ValidateAddressI } from "~/api/btcrpc";
 import { getBitcoinNetworkConfig } from "~/components/Wallet/XverseWallet/useWallet";
-import type { ToastFunction } from "~/hooks/use-toast";
+import { toast } from "~/hooks/use-toast";
 import type { ExtendedBitcoinNetworkType } from "~/hooks/useBitcoinConfig";
 
 export const PRICE_PER_NBTC_IN_SUI = 25000n;
@@ -16,7 +16,6 @@ export async function nBTCMintTx(
 	opReturn: string,
 	bitcoinNetworkType: ExtendedBitcoinNetworkType,
 	depositAddress: string,
-	toast?: ToastFunction,
 ): Promise<RpcResult<"signPsbt"> | undefined> {
 	try {
 		const network = getBitcoinNetworkConfig(bitcoinNetworkType);
