@@ -8,46 +8,66 @@ Dashboard for the Bitcoin Yield Hub and Native `nBTC`.
 
 ### Dependencies
 
-- node >= v22
-- pnpm >= 10.11
-- proper editorconfig mode setup in your editor!
+- bun >= v1.2.20
+- proper EditorConfig mode setup in your editor!
+- `prettier` to format the code.
+
+Note: we use Bun instead of Node.js for JS and TS execution and package management.
 
 ### Quick Start
 
-- 📖 [Remix docs](https://remix.run/docs)
-- 📖 [Remix Cloudflare docs](https://remix.run/guides/vite#cloudflare)
+- 📖 [React Router docs](https://reactrouter.com/home)
 
-Run the dev server (using wrangler cloudflare framework as a backend):
+Run the dev server (using wrangler Cloudflare framework as a backend):
 
 ```sh
 # firstly install the latest dependencies
-pnpm install
-pnpm run dev
+bun install
 ```
 
 Running:
 
 ```sh
-pnpm run build
-pnpm start
+bun run dev
+# or:
+bun start
 ```
 
-To apply migrations to the local cloudflare env:
+To apply migrations to the local Cloudflare env:
 
 ```sh
-pnpm run db:migrate:local
+bun run db:migrate:local
 ```
 
-## Typegen
+## Contributing
 
-Generate types for your Cloudflare bindings in `wrangler.toml`:
+Participating in open source is often a highly collaborative experience. We’re encouraged to create in public view, and we’re incentivize to welcome contributions of all kinds from people around the world.
 
-```sh
-pnpm run typegen
-```
+Check out [contributing repo](https://github.com/gonative-cc/contributig) for our guidelines & policies for how to contribute. Note: we require DCO! Thank you to all those who have contributed!
+
+After cloning the repository, **make sure to run `make setup-hooks`.**
+
+### Development
+
+Run `bun run prepare` to install git hooks that will run on commit and code push.
 
 You will need to rerun typegen whenever you make changes to `wrangler.toml`.
 
-## Styling
+```sh
+bun run cf-typegen
+```
 
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever css framework you prefer. See the [Vite docs on css](https://vitejs.dev/guide/features.html#css) for more information.
+### Styling
+
+We are using [Tailwind CSS](https://tailwindcss.com/) and [DaisyUI](https://daisyui.com):
+
+- Don't create new styles.
+- Try to reuse the styles or update the theme in tailwind.css file.
+- Avoid creating unnecessary wrappers or components. DaisyUI with a properly configure theme should be enough.
+- Use [React DaisyUI](https://react.daisyui.com/) for reactive components.
+
+See also the [Vite docs on css](https://vitejs.dev/guide/features.html#css).
+
+## Security
+
+See [contributing repo](https://github.com/gonative-cc/contributig) for reporting security vulnerability or sharing a security feedback.
