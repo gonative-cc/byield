@@ -6,7 +6,6 @@ import { MintingTxStatus, type MintTransaction } from "~/server/Mint/types";
 import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import { CopyButton } from "~/components/ui/CopyButton";
 import { ExpandableTransactionDetails } from "~/components/ui/ExpandableTransactionDetails";
-import { Tooltip } from "~/components/ui/tooltip";
 
 interface MintBTCTableProps {
 	data: MintTransaction[];
@@ -46,7 +45,7 @@ export function MintBTCTable({ data }: MintBTCTableProps) {
 	};
 
 	return (
-		<div className="w-full space-y-4">
+		<div className="w-full space-y-4 relative z-0">
 			{/* Header */}
 			<div className="flex items-center gap-3 px-2 pt-4">
 				<div className="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-orange-400 flex items-center justify-center">
@@ -56,68 +55,81 @@ export function MintBTCTable({ data }: MintBTCTableProps) {
 			</div>
 
 			{/* DaisyUI Table */}
-			<div className="overflow-x-auto bg-base-100 rounded-2xl shadow-2xl border border-primary/10 relative">
-				<table className="table table-zebra w-full">
+			<div
+				className="overflow-x-auto bg-base-100 rounded-2xl shadow-2xl border border-primary/10 relative"
+				style={{ overflow: "visible" }}
+			>
+				<table className="table table-zebra w-full relative z-0">
 					{/* Table Head */}
-					<thead className="bg-gradient-to-r from-primary/10 to-primary/20 relative">
+					<thead className="bg-gradient-to-r from-primary/10 to-primary/20 relative z-10">
 						<tr className="text-base-content/80 font-semibold">
 							<th className="text-left">
 								<div className="flex items-center gap-2">
 									Bitcoin TX
-									<Tooltip tooltip="The Bitcoin transaction ID that initiated the mint process">
+									<div
+										className="tooltip tooltip-top"
+										data-tip="The Bitcoin transaction ID that initiated the mint process"
+									>
 										<Info
 											size="16"
 											className="text-primary hover:text-orange-400 transition-colors cursor-help"
 										/>
-									</Tooltip>
+									</div>
 								</div>
 							</th>
 							<th className="text-left">
 								<div className="flex items-center gap-2">
 									Amount
-									<Tooltip tooltip="The amount of Bitcoin being minted in BTC">
+									<div
+										className="tooltip tooltip-top"
+										data-tip="The amount of Bitcoin being minted in BTC"
+									>
 										<Info
 											size="16"
 											className="text-primary hover:text-orange-400 transition-colors cursor-help"
 										/>
-									</Tooltip>
+									</div>
 								</div>
 							</th>
 							<th className="text-left">
 								<div className="flex items-center gap-2">
 									Recipient
-									<Tooltip tooltip="The destination address for the nBTC tokens">
+									<div
+										className="tooltip tooltip-top"
+										data-tip="The destination address for the nBTC tokens"
+									>
 										<Info
 											size="16"
 											className="text-primary hover:text-orange-400 transition-colors cursor-help"
 										/>
-									</Tooltip>
+									</div>
 								</div>
 							</th>
 							<th className="text-left">
 								<div className="flex items-center gap-2">
 									Status
-									<Tooltip tooltip="Current status of the mint transaction">
+									<div
+										className="tooltip tooltip-top"
+										data-tip="Current status of the mint transaction"
+									>
 										<Info
 											size="16"
 											className="text-primary hover:text-orange-400 transition-colors cursor-help"
 										/>
-									</Tooltip>
+									</div>
 								</div>
 							</th>
 							<th className="text-center">
 								<div className="flex items-center justify-center gap-2">
 									Details
-									<div className="relative group">
+									<div
+										className="tooltip tooltip-left"
+										data-tip="Click to expand transaction details"
+									>
 										<Info
 											size="16"
 											className="text-primary hover:text-orange-400 transition-colors cursor-help"
 										/>
-										<div className="absolute top-full right-0 mt-2 w-max z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-											<div className="bg-gray-800 text-white text-sm rounded py-1 px-2 whitespace-nowrap">
-												Click to expand transaction details
-											</div>
-										</div>
 									</div>
 								</div>
 							</th>
@@ -150,12 +162,15 @@ export function MintBTCTable({ data }: MintBTCTableProps) {
 										>
 											{/* Bitcoin TX */}
 											<td>
-												<Tooltip tooltip={transaction.bitcoinTxId}>
+												<div
+													className="tooltip tooltip-bottom"
+													data-tip={transaction.bitcoinTxId}
+												>
 													<div className="flex items-center gap-2 font-semibold cursor-pointer">
 														{trimAddress(transaction.bitcoinTxId)}
 														<CopyButton text={transaction.bitcoinTxId} />
 													</div>
-												</Tooltip>
+												</div>
 											</td>
 
 											{/* Amount */}
@@ -170,8 +185,9 @@ export function MintBTCTable({ data }: MintBTCTableProps) {
 
 											{/* Recipient */}
 											<td>
-												<Tooltip
-													tooltip={transaction.recipient || transaction.suiAddress}
+												<div
+													className="tooltip tooltip-bottom"
+													data-tip={transaction.recipient || transaction.suiAddress}
 												>
 													<div className="flex items-center space-x-2 font-mono cursor-pointer">
 														<span className="font-mono text-sm">
@@ -187,7 +203,7 @@ export function MintBTCTable({ data }: MintBTCTableProps) {
 															}
 														/>
 													</div>
-												</Tooltip>
+												</div>
 											</td>
 
 											{/* Status */}
