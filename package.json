@@ -84,7 +84,7 @@
 		"globals": "^16.3.0",
 		"jiti": "^2.5.1",
 		"jsdom": "^26.1.0",
-		"lint-staged": "^15.5.2",
+		"lint-staged": "^16.1.6",
 		"miniflare": "^4.20250816.0",
 		"postcss": "^8.5.6",
 		"tailwindcss": "^4.1.11",
