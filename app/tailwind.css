@@ -73,7 +73,7 @@
   --color-secondary: oklch(0% 0 0);
   --color-secondary-content: oklch(100% 0 0);
   --color-accent: rgba(39, 39, 42, 1);
-  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-accent-content: oklch(97% 0.013 17.38);
   --color-neutral: oklch(12% 0.042 264.695);
   --color-neutral-content: oklch(98% 0.003 247.858);
   --color-info: oklch(70% 0.165 254.624);
@@ -82,8 +82,8 @@
   --color-success-content: oklch(26% 0.065 152.934);
   --color-warning: oklch(82% 0.189 84.429);
   --color-warning-content: oklch(27% 0.077 45.635);
-  --color-error: oklch(71% 0.202 349.761);
-  --color-error-content: oklch(28% 0.109 3.907);
+  --color-error: oklch(50% 0.213 27.518);
+  --color-error-content: oklch(97% 0.013 17.38);
   --radius-selector: 1rem;
   --radius-field: 2rem;
   --radius-box: 0.5rem;
