@@ -14,6 +14,4 @@ export default defineConfig({
 	build: {
 		minify: true,
 	},
-	// Removed NodeGlobalsPolyfillPlugin since bitcoinjs-lib now uses dynamic imports
-	// This prevents global scope pollution during SSR
 });

@@ -15,10 +15,7 @@ import { Wallets } from "~/components/Wallet";
 import { ExtendedBitcoinNetworkType } from "~/hooks/useBitcoinConfig";
 import { toast } from "~/hooks/use-toast";
 
-// This function is now in bitcoin.client.ts - keeping for backward compatibility
-// but it will use the client-side version
 export function getBitcoinNetworkConfig(_network: ExtendedBitcoinNetworkType) {
-	// This will be replaced with the client-side version that uses dynamic imports
 	console.warn(
 		"getBitcoinNetworkConfig should be imported from ~/lib/bitcoin.client for client-side usage",
 	);
