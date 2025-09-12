@@ -1,7 +1,7 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { Link } from "react-router";
+import { Button } from "react-daisyui";
 
 export function Instructions() {
 	const account = useCurrentAccount();
@@ -21,7 +21,7 @@ export function Instructions() {
 									to={`https://faucet.sui.io/?network=testnet&address=${account?.address}`}
 									rel="noreferrer"
 								>
-									<Button type="button" variant="link" className="p-0 text-base">
+									<Button type="button" variant="link">
 										Request Sui Tokens from faucet.
 									</Button>
 								</Link>
@@ -33,7 +33,7 @@ export function Instructions() {
 									to="https://docs.sui.io/guides/developer/getting-started/get-coins"
 									rel="noreferrer"
 								>
-									<Button type="button" variant="link" className="p-0 text-base">
+									<Button type="button" variant="link">
 										alternative faucets.
 									</Button>
 								</Link>

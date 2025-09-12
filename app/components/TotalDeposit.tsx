@@ -5,11 +5,10 @@ import type { Column, CellProps } from "react-table";
 import { Link } from "react-router";
 import { SelectInput } from "./ui/select";
 import { Input } from "./ui/input";
-import { Button } from "./ui/button";
 import { action } from "../config/market.json";
 import { formatNBTC } from "~/lib/denoms";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
-import { Badge } from "react-daisyui";
+import { Badge, Button } from "react-daisyui";
 
 enum MarketIntegration {
 	TURBOS = "TURBOS",
@@ -101,10 +100,10 @@ export const columns: Column<DApp>[] = [
 			return (
 				<div className="flex space-x-2">
 					<Link to={action.trade} target="_blank">
-						<Button variant="secondary">Trade nBTC</Button>
+						<Button color="secondary">Trade nBTC</Button>
 					</Link>
 					<Link to={action.deposit} target="_blank">
-						<Button variant="ghost">Deposit</Button>
+						<Button color="primary">Deposit</Button>
 					</Link>
 				</div>
 			);

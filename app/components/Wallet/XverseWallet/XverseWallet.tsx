@@ -1,11 +1,11 @@
 import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
-import { Button } from "../../ui/button";
 import { type Option, SelectInput } from "../../ui/select";
 import { useMemo } from "react";
 import { trimAddress } from "../walletHelper";
 import { NumericFormat } from "react-number-format";
 import { formatBTC } from "~/lib/denoms";
 import { ExtendedBitcoinNetworkType } from "~/hooks/useBitcoinConfig";
+import { Button } from "react-daisyui";
 
 function NetWorkOptions() {
 	const { network, switchNetwork } = useXverseWallet();
@@ -71,7 +71,9 @@ function XverseWalletMobileView() {
 						/>
 					</p>
 				)}
-				<Button onClick={disconnectWallet}>Disconnect</Button>
+				<Button color="primary" onClick={disconnectWallet}>
+					Disconnect
+				</Button>
 			</div>
 		</div>
 	);
@@ -94,7 +96,7 @@ export function XverseWallet() {
 						className="shrink-0"
 					/>
 				)}
-				<Button onClick={disconnectWallet} size="sm">
+				<Button color="primary" onClick={disconnectWallet} size="sm">
 					Disconnect
 				</Button>
 			</div>

@@ -1,5 +1,4 @@
 import { useConnectWallet, useWallets } from "@mysten/dapp-kit";
-import { Button } from "../../ui/button";
 import {
 	DialogHeader,
 	Dialog,
@@ -14,6 +13,7 @@ import { Wallets } from "~/components/Wallet";
 import { Link } from "react-router";
 import { Wallet } from "lucide-react";
 import { toast } from "~/hooks/use-toast";
+import { Button } from "react-daisyui";
 
 interface InstallWalletProps {
 	link: string;
@@ -88,10 +88,9 @@ function AvailableWallets() {
 				{installedWallet && (
 					<div className="flex gap-2 w-full">
 						<Button
-							variant="ghost"
 							type="button"
 							onClick={() => walletConnectClick(installedWallet)}
-							className="justify-between flex w-full text-primary h-16"
+							className="justify-between flex rounded-none w-full text-primary h-16"
 						>
 							<img
 								src={installedWallet.icon}
@@ -114,7 +113,7 @@ function AvailableWallets() {
 			{wallets.map((wallet) => (
 				<div key={wallet.name} className="flex justify-center w-full">
 					<Button
-						variant="ghost"
+						variant="outline"
 						type="button"
 						onClick={() => walletConnectClick(wallet)}
 						className="justify-between flex w-full text-primary h-16"
@@ -136,8 +135,10 @@ export function SuiModal({ label = "Connect Sui Wallet" }: SuiModalProps) {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<Button type="button" layout="oneLine" className="w-full md:w-fit">
-					<Wallet /> {label}
+				<Button color="primary" className="w-full md:w-fit">
+					<div className="flex gap-2 items-center">
+						<Wallet /> {label}
+					</div>
 				</Button>
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-[425px]">

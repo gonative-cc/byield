@@ -1,7 +1,6 @@
 import { Card, CardContent } from "../../components/ui/card";
 import { BitcoinBalance } from "../../components/BitcoinBalance";
 import { Link } from "react-router";
-import { Button } from "../../components/ui/button";
 import { FormProvider, useForm } from "react-hook-form";
 import { FormInput } from "../../components/form/FormInput";
 import { useXverseConnect, useXverseWallet } from "../../components/Wallet/XverseWallet/useWallet";
@@ -18,7 +17,7 @@ import { isValidSuiAddress } from "@mysten/sui/utils";
 import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import { useNetworkVariables } from "~/networkConfig";
 import { Modal } from "~/components/ui/dialog";
-import { toast } from "~/hooks/use-toast";
+import { Button } from "react-daisyui";
 
 interface TransactionStatusProps {
 	SuiAddress: string;
@@ -99,7 +98,6 @@ function Percentage({ onChange }: { onChange: (value: number) => void }) {
 					type="button"
 					key={id}
 					onClick={() => onChange(value)}
-					variant="ghost"
 					className="bg-azure-10 w-full text-sm sm:text-base"
 				>
 					{value}%
