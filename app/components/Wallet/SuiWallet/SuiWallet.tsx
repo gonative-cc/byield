@@ -56,7 +56,7 @@ function NetWorkOptions() {
 			options={suiWalletNetworks}
 			placeholder="Select network"
 			onValueChange={(value) => handleChange(value)}
-			defaultValue={network}
+			value={network}
 			className="w-full md:w-1/4"
 		/>
 	);
@@ -86,7 +86,7 @@ function Accounts() {
 					},
 				);
 			}}
-			defaultValue={currentSelectedAccount?.address}
+			value={currentSelectedAccount?.address}
 			className="w-full md:w-1/4"
 		/>
 	);
