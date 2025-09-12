@@ -12,23 +12,8 @@ import Wallet, {
 import type { Address } from "sats-connect";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
-import { networks, type Network } from "bitcoinjs-lib";
 import { ExtendedBitcoinNetworkType } from "~/hooks/useBitcoinConfig";
 import { toast } from "~/hooks/use-toast";
-
-export function getBitcoinNetworkConfig(network: ExtendedBitcoinNetworkType): Network | null {
-	switch (network) {
-		case ExtendedBitcoinNetworkType.Mainnet:
-			return networks.bitcoin;
-		case ExtendedBitcoinNetworkType.Regtest:
-		case ExtendedBitcoinNetworkType.Devnet:
-			return networks.regtest;
-		case ExtendedBitcoinNetworkType.Testnet4:
-			return networks.testnet;
-		default:
-			return null;
-	}
-}
 
 export const useXverseConnect = () => {
 	const { handleWalletConnect, toggleBitcoinModal } = useContext(WalletContext);

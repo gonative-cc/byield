@@ -1,9 +1,13 @@
-import { opcodes, Psbt, script } from "bitcoinjs-lib";
 import Wallet from "sats-connect";
 import { type Address, type RpcResult } from "sats-connect";
 import { fetchUTXOs, fetchValidateAddress } from "~/api/btcrpc";
 import type { UTXO, ValidateAddressI } from "~/api/btcrpc";
-import { getBitcoinNetworkConfig } from "~/components/Wallet/XverseWallet/useWallet";
+import {
+	getBitcoinNetworkConfig,
+	createPsbt,
+	compileScript,
+	getOpReturnOpcode,
+} from "./bitcoin.client";
 import { toast } from "~/hooks/use-toast";
 import type { ExtendedBitcoinNetworkType } from "~/hooks/useBitcoinConfig";
 
@@ -18,7 +22,7 @@ export async function nBTCMintTx(
 	depositAddress: string,
 ): Promise<RpcResult<"signPsbt"> | undefined> {
 	try {
-		const network = getBitcoinNetworkConfig(bitcoinNetworkType);
+		const network = await getBitcoinNetworkConfig(bitcoinNetworkType);
 
 		if (!network) {
 			console.error("network config not found");
@@ -71,7 +75,7 @@ export async function nBTCMintTx(
 			return;
 		}
 
-		const psbt = new Psbt({ network });
+		const psbt = await createPsbt(network);
 
 		psbt.addInput({
 			hash: utxos[0].txid,
@@ -100,7 +104,8 @@ export async function nBTCMintTx(
 			return;
 		}
 
-		const opReturnScript = script.compile([opcodes.OP_RETURN, opReturnData]);
+		const OP_RETURN = await getOpReturnOpcode();
+		const opReturnScript = await compileScript([OP_RETURN, opReturnData]);
 		psbt.addOutput({
 			script: opReturnScript,
 			value: 0,
