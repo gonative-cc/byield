@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from "react";
 import { ArrowDown } from "lucide-react";
-import { Button } from "~/components/ui/button";
+import { Button } from "react-daisyui";
 import { FormProvider, useForm } from "react-hook-form";
 import { SuiModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import { formatSUI, parseSUI, SUI } from "~/lib/denoms";
@@ -129,7 +129,7 @@ export function BuyNBTCTabContent() {
 				<ArrowDown className="text-primary justify-center w-full flex mb-2 p-0 m-0" />
 				<YouReceive isSuiWalletConnected={isSuiWalletConnected} mistAmount={mistAmount} />
 				{isSuiWalletConnected ? (
-					<Button type="submit" disabled={isPending} isLoading={isPending}>
+					<Button type="submit" disabled={isPending} loading={isPending}>
 						Buy
 					</Button>
 				) : (

@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { ArrowDown, ChevronRight } from "lucide-react";
-import { Button } from "~/components/ui/button";
+import { Button } from "react-daisyui";
 import { SuiModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import { Modal } from "~/components/ui/dialog";
 import { TransactionStatus } from "./TransactionStatus";
@@ -139,9 +139,11 @@ export function SellNBTCTabContent() {
 					</span>
 				</div>
 				{isSuiWalletConnected ? (
-					<Button type="submit" disabled={isPending} isLoading={isPending} layout="oneLine">
-						Sell nBTC
-						<ChevronRight />
+					<Button type="submit" disabled={isPending} loading={isPending}>
+						<div className="flex w-full gap-2 items-center">
+							Sell nBTC
+							<ChevronRight />
+						</div>
 					</Button>
 				) : (
 					<SuiModal />

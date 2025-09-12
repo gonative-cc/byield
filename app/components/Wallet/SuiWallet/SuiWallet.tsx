@@ -6,7 +6,6 @@ import {
 	useSwitchAccount,
 } from "@mysten/dapp-kit";
 import { SelectInput, type Option } from "../../ui/select";
-import { Button } from "../../ui/button";
 import { useCallback, useContext, useMemo } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
@@ -16,6 +15,7 @@ import { NumericFormat } from "react-number-format";
 import { formatSUI } from "~/lib/denoms";
 import { useLocation } from "react-router";
 import { isProductionMode } from "~/lib/appenv";
+import { Button } from "react-daisyui";
 
 enum SuiNetwork {
 	TestNet = "testnet",
@@ -114,6 +114,7 @@ function SuiWalletMobileView() {
 					/>
 				</p>
 				<Button
+					color="primary"
 					onClick={() => {
 						disconnect();
 						handleWalletConnect(Wallets.SuiWallet, false);
@@ -144,6 +145,7 @@ export function SuiWallet() {
 					className="shrink-0"
 				/>
 				<Button
+					color="primary"
 					onClick={() => {
 						disconnect();
 						handleWalletConnect(Wallets.SuiWallet, false);

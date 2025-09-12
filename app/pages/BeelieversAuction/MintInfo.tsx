@@ -13,7 +13,7 @@ import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
 
 import { Countdown } from "~/components/ui/countdown";
 import { Card, CardContent } from "~/components/ui/card";
-import { Button } from "~/components/ui/button";
+import { Button } from "react-daisyui";
 import { classNames } from "~/util/tailwind";
 import { toast } from "~/hooks/use-toast";
 import { useNetworkVariables } from "~/networkConfig";
@@ -209,7 +209,8 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 				<Button
 					type="button"
 					disabled={isAnyActionPending}
-					isLoading={isMinting}
+					loading={isMinting}
+					color="primary"
 					size="lg"
 					className="flex-1"
 					onClick={handleMintNFT}
@@ -223,7 +224,8 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 				<Button
 					type="button"
 					disabled={isAnyActionPending}
-					isLoading={isRefundPending}
+					color="primary"
+					loading={isRefundPending}
 					size="lg"
 					variant="outline"
 					className="flex-1"
