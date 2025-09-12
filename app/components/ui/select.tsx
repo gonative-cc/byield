@@ -10,16 +10,16 @@ interface SelectInputProps {
 	placeholder?: string;
 	onValueChange?: (value: string) => void;
 	className?: string;
-	defaultValue?: string;
+	value?: string;
 }
 
-export function SelectInput({ options, defaultValue, placeholder, onValueChange }: SelectInputProps) {
-	const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+export function SelectInput({ options, value, placeholder, onValueChange }: SelectInputProps) {
+	const handleOnChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		if (onValueChange) onValueChange(event.target.value);
 	};
 
 	return (
-		<DaisyUISelect value={defaultValue || "default"} onChange={handleOnChange}>
+		<DaisyUISelect value={value || "default"} onChange={handleOnChange}>
 			<>
 				{placeholder && (
 					<DaisyUISelect.Option value="default" disabled>

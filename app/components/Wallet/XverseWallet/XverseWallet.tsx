@@ -23,7 +23,7 @@ function NetWorkOptions() {
 			options={bitcoinSupportedNetwork}
 			onValueChange={(value) => switchNetwork(value as ExtendedBitcoinNetworkType)}
 			placeholder="Select network"
-			defaultValue={network}
+			value={network}
 			className="w-full md:w-auto"
 		/>
 	);
@@ -44,7 +44,7 @@ function Accounts() {
 				const account = addressInfo.find((a) => a.address === address);
 				if (account) setCurrentAddress(account);
 			}}
-			defaultValue={currentAddress?.address}
+			value={currentAddress?.address}
 			className="w-full md:w-auto"
 		/>
 	);
