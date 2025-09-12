@@ -15,13 +15,6 @@ import { Wallets } from "~/components/Wallet";
 import { ExtendedBitcoinNetworkType } from "~/hooks/useBitcoinConfig";
 import { toast } from "~/hooks/use-toast";
 
-export function getBitcoinNetworkConfig(_network: ExtendedBitcoinNetworkType) {
-	console.warn(
-		"getBitcoinNetworkConfig should be imported from ~/lib/bitcoin.client for client-side usage",
-	);
-	return null;
-}
-
 export const useXverseConnect = () => {
 	const { handleWalletConnect, toggleBitcoinModal } = useContext(WalletContext);
 
