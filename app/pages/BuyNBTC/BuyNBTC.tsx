@@ -7,9 +7,9 @@ import { NBTCBalance } from "~/components/NBTCBalance";
 import { Instructions } from "./Instructions";
 import { BuyNBTCTabContent } from "./BuyNBTCTabContent";
 import { SellNBTCTabContent } from "./SellNBTCTabContent";
-import { Tabs } from "~/components/ui/tabs";
 import { ArrowUpRight } from "lucide-react";
 import { useDisconnectWallet, useSuiClientContext } from "@mysten/dapp-kit";
+import { Tabs } from "react-daisyui";
 
 export function BuyNBTC() {
 	const { network } = useSuiClientContext();
@@ -40,20 +40,14 @@ export function BuyNBTC() {
 				<CardContent className="p-6 rounded-lg text-white flex flex-col gap-4 bg-azure-10">
 					{isSuiWalletConnected && <NBTCBalance balance={nBTCBalance} />}
 					<Instructions />
-					<Tabs
-						tabs={[
-							{
-								value: "buy",
-								label: "Buy",
-								content: <BuyNBTCTabContent />,
-							},
-							{
-								value: "sell",
-								label: "Sell",
-								content: <SellNBTCTabContent />,
-							},
-						]}
-					/>
+					<Tabs>
+						<Tabs.RadioTab name="buy_sell_nbtc" color="primary" label="Buy" defaultChecked={true}>
+							<BuyNBTCTabContent />
+						</Tabs.RadioTab>
+						<Tabs.RadioTab name="buy_sell_nbtc" label="Sell" color="primary">
+							<SellNBTCTabContent />
+						</Tabs.RadioTab>
+					</Tabs>
 					<a
 						href={transactionHistoryLink}
 						target="_blank"

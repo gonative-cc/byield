@@ -2,7 +2,6 @@ import { Zap } from "lucide-react";
 import { Card, CardContent } from "./ui/card";
 import { Table } from "./ui/table";
 import type { Column, CellProps } from "react-table";
-import { Badge } from "./ui/badge";
 import { Link } from "react-router";
 import { SelectInput } from "./ui/select";
 import { Input } from "./ui/input";
@@ -10,6 +9,7 @@ import { Button } from "./ui/button";
 import { action } from "../config/market.json";
 import { formatNBTC } from "~/lib/denoms";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
+import { Badge } from "react-daisyui";
 
 enum MarketIntegration {
 	TURBOS = "TURBOS",
@@ -59,7 +59,7 @@ export const columns: Column<DApp>[] = [
 		accessor: "type",
 		Cell: ({ row }: CellProps<DApp>) => (
 			<div className="flex space-x-2">
-				<Badge variant="secondary">{row.original.type}</Badge>
+				<Badge color="primary">{row.original.type}</Badge>
 			</div>
 		),
 	},
