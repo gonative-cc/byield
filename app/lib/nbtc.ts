@@ -6,9 +6,21 @@ import type { UTXO, ValidateAddressI } from "~/api/btcrpc";
 import { getBitcoinNetworkConfig } from "~/components/Wallet/XverseWallet/useWallet";
 import { toast } from "~/hooks/use-toast";
 import type { ExtendedBitcoinNetworkType } from "~/hooks/useBitcoinConfig";
+import { Buffer } from "buffer";
 
 export const PRICE_PER_NBTC_IN_SUI = 25000n;
 const DUST_THRESHOLD_SATOSHI = 546;
+
+export interface TransactionDetails {
+	fee: number;
+	inputAmount: number;
+	outputAmount: number;
+	changeAmount: number;
+}
+
+export type MintTxResult = RpcResult<"signPsbt"> & {
+	transactionDetails?: TransactionDetails;
+};
 
 export async function nBTCMintTx(
 	bitcoinAddress: Address,
@@ -16,7 +28,7 @@ export async function nBTCMintTx(
 	opReturn: string,
 	bitcoinNetworkType: ExtendedBitcoinNetworkType,
 	depositAddress: string,
-): Promise<RpcResult<"signPsbt"> | undefined> {
+): Promise<MintTxResult | undefined> {
 	try {
 		const network = getBitcoinNetworkConfig(bitcoinNetworkType);
 
@@ -134,8 +146,22 @@ export async function nBTCMintTx(
 				variant: "destructive",
 			});
 			console.error("Transaction failed:", response);
+			return response;
 		}
-		return response;
+
+		// Calculate actual fee used
+		const actualFee = totalAvailable - mintAmountInSatoshi - changeAmount;
+
+		// Return enhanced response with transaction details
+		return {
+			...response,
+			transactionDetails: {
+				fee: actualFee,
+				inputAmount: totalAvailable,
+				outputAmount: mintAmountInSatoshi,
+				changeAmount: changeAmount > dustThreshold ? changeAmount : 0,
+			},
+		};
 	} catch (error) {
 		console.error("nBTC Mint Transaction Error:", error);
 		toast?.({

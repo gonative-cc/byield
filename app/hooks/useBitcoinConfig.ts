@@ -28,14 +28,20 @@ const getBitcoinNetworkConfig: Record<ExtendedBitcoinNetworkType, NetworkConfig>
 		},
 	},
 	Testnet: {
-		variables: {},
+		variables: {
+			...devnetConfig, // Use devnet config for testnet
+		},
 	},
 	Testnet4: {
-		variables: {},
+		variables: {
+			...devnetConfig, // Use devnet config for testnet4
+		},
 	},
 	// Regtest is localnet
 	Regtest: {
-		variables: {},
+		variables: {
+			...devnetConfig, // Use devnet config for regtest
+		},
 	},
 };
 

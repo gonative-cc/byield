@@ -11,7 +11,7 @@ import { Wallets } from "~/components/Wallet";
 import { FormNumericInput } from "../../components/form/FormNumericInput";
 import { NumericFormat } from "react-number-format";
 import { BTC, formatBTC, parseBTC } from "~/lib/denoms";
-import { nBTCMintTx } from "~/lib/nbtc";
+import { nBTCMintTx, type MintTxResult } from "~/lib/nbtc";
 import { Check } from "lucide-react";
 import { classNames } from "~/util/tailwind";
 import { isValidSuiAddress } from "@mysten/sui/utils";
@@ -24,9 +24,10 @@ interface TransactionStatusProps {
 	SuiAddress: string;
 	txId: string;
 	handleRetry: () => void;
+	transactionFees?: number;
 }
 
-function TransactionStatus({ SuiAddress, txId, handleRetry }: TransactionStatusProps) {
+function TransactionStatus({ SuiAddress, txId, handleRetry, transactionFees }: TransactionStatusProps) {
 	const { accountExplorer } = useNetworkVariables();
 	const bitcoinConfig = useBitcoinConfig();
 	const bitcoinBroadcastLink = `${bitcoinConfig.bitcoinBroadcastLink}${txId}`;
@@ -59,6 +60,10 @@ function TransactionStatus({ SuiAddress, txId, handleRetry }: TransactionStatusP
 					Explore SUI coins
 				</Link>
 			</div>
+
+			{transactionFees && (
+				<div className="text-sm text-gray-400">Transaction Fee: {transactionFees} satoshis</div>
+			)}
 
 			<Button onClick={handleRetry}>Ok</Button>
 		</div>
@@ -138,6 +143,7 @@ interface MintNBTCForm {
 
 export function MintBTC() {
 	const [txId, setTxId] = useState<string | undefined>(undefined);
+	const [transactionFees, setTransactionFees] = useState<number | undefined>(undefined);
 	const { connectWallet } = useXverseConnect();
 	const { balance: walletBalance, currentAddress, network } = useXverseWallet();
 	const { isWalletConnected, suiAddr } = useContext(WalletContext);
@@ -160,6 +166,15 @@ export function MintBTC() {
 
 	const handlenBTCMintTx = async ({ numberOfBTC, suiAddress }: MintNBTCForm) => {
 		if (currentAddress) {
+			if (!bitcoinConfig?.nBTC?.depositAddress) {
+				toast?.({
+					title: "Configuration Error",
+					description: "Bitcoin deposit address not configured for this network",
+					variant: "destructive",
+				});
+				return;
+			}
+
 			const response = await nBTCMintTx(
 				currentAddress,
 				Number(parseBTC(numberOfBTC)),
@@ -169,6 +184,21 @@ export function MintBTC() {
 			);
 			if (response && response.status === "success") {
 				setTxId(response.result.txid);
+				// Capture real transaction fees
+				const mintTxResponse = response as MintTxResult;
+				if (mintTxResponse.transactionDetails) {
+					setTransactionFees(mintTxResponse.transactionDetails.fee);
+					console.log("🎯 REAL TRANSACTION FEES CALCULATED:");
+					console.log("Fee:", mintTxResponse.transactionDetails.fee, "satoshis");
+					console.log("Input amount:", mintTxResponse.transactionDetails.inputAmount, "satoshis");
+					console.log("Output amount:", mintTxResponse.transactionDetails.outputAmount, "satoshis");
+					console.log("Change amount:", mintTxResponse.transactionDetails.changeAmount, "satoshis");
+					console.log("Calculation: Fee = Input - Output - Change");
+					console.log(
+						`Calculation: ${mintTxResponse.transactionDetails.fee} = ${mintTxResponse.transactionDetails.inputAmount} - ${mintTxResponse.transactionDetails.outputAmount} - ${mintTxResponse.transactionDetails.changeAmount}`,
+					);
+					console.log("Full transaction details:", mintTxResponse.transactionDetails);
+				}
 			}
 		}
 	};
@@ -246,12 +276,19 @@ export function MintBTC() {
 							<Modal
 								title={"Mint BTC Transaction Status"}
 								open
-								handleClose={() => setTxId(() => undefined)}
+								handleClose={() => {
+									setTxId(() => undefined);
+									setTransactionFees(undefined);
+								}}
 							>
 								<TransactionStatus
-									handleRetry={() => setTxId(() => undefined)}
+									handleRetry={() => {
+										setTxId(() => undefined);
+										setTransactionFees(undefined);
+									}}
 									txId={txId}
 									SuiAddress={SuiAddress}
+									transactionFees={transactionFees}
 								/>
 							</Modal>
 						)}
