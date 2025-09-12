@@ -83,6 +83,36 @@ export const testnetCfg: ContractsCfg = {
 	},
 };
 
+// Localnet configuration for development
+// To use localnet:
+// 1. Start your local Sui network: `sui start --with-faucet --force-regenesis`
+// 2. Deploy your contracts to localnet
+// 3. Fill in the package IDs and object IDs below with your local deployment values
+export const localnetCfg: ContractsCfg = {
+	explorer: "http://localhost:9123",
+	accountExplorer: "http://localhost:9123/account/",
+	nbtcOTC: {
+		pkgId: "",
+		vaultId: "",
+		module: "nbtc_swap",
+	},
+	beelieversAuction: {
+		pkgId: "",
+		auctionId: "",
+		module: "auction",
+	},
+	beelieversMint: {
+		pkgId: "",
+		collectionId: "",
+		transferPolicyId: "",
+		mintStart: Date.now(),
+	},
+	nbtc: {
+		coinType: "::nbtc::NBTC",
+		pkgId: "",
+	},
+};
+
 export interface MoveCallCfg {
 	pkgId: string;
 	module: string;
