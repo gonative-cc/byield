@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Card, CardContent } from "~/components/ui/card";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
@@ -9,11 +9,12 @@ import { BuyNBTCTabContent } from "./BuyNBTCTabContent";
 import { SellNBTCTabContent } from "./SellNBTCTabContent";
 import { ArrowUpRight } from "lucide-react";
 import { useDisconnectWallet, useSuiClientContext } from "@mysten/dapp-kit";
-import { Tabs } from "react-daisyui";
+import { classNames } from "~/util/tailwind";
 
 export function BuyNBTC() {
 	const { network } = useSuiClientContext();
 	const { mutate: disconnect } = useDisconnectWallet();
+	const [activeTab, setActiveTab] = useState<"BUY" | "SELL">("BUY");
 
 	// TODO: it doesn't get automatically refresehed
 	const { balance: nBTCBalance } = useCoinBalance();
@@ -40,23 +41,47 @@ export function BuyNBTC() {
 				<CardContent className="p-6 rounded-lg text-white flex flex-col gap-4 bg-azure-10">
 					{isSuiWalletConnected && <NBTCBalance balance={nBTCBalance} />}
 					<Instructions />
-					<Tabs>
-						<Tabs.RadioTab name="buy_sell_nbtc" color="primary" label="Buy" defaultChecked={true}>
-							<BuyNBTCTabContent />
-						</Tabs.RadioTab>
-						<Tabs.RadioTab name="buy_sell_nbtc" label="Sell" color="primary">
-							<SellNBTCTabContent />
-						</Tabs.RadioTab>
-					</Tabs>
-					<a
-						href={transactionHistoryLink}
-						target="_blank"
-						rel="noreferrer"
-						className="flex gap-1 items-center text-primary hover:underline"
-					>
-						Check Transaction History
-						<ArrowUpRight size="22" />
-					</a>
+					<div role="tablist" className="tabs tabs-boxed bg-azure-15 rounded-full p-2 w-fit">
+						<button
+							type="button"
+							role="tab"
+							className={classNames({
+								"tab rounded-full": true,
+								"tab-active bg-primary text-white": activeTab === "BUY",
+							})}
+							onClick={() => setActiveTab("BUY")}
+							aria-selected={activeTab === "BUY"}
+						>
+							Buy
+						</button>
+						<button
+							type="button"
+							role="tab"
+							className={classNames({
+								"tab rounded-full": true,
+								"tab-active bg-primary text-white": activeTab === "SELL",
+							})}
+							onClick={() => setActiveTab("SELL")}
+							aria-selected={activeTab === "SELL"}
+						>
+							Sell
+						</button>
+					</div>
+					<div className="">
+						{activeTab === "BUY" ? <BuyNBTCTabContent /> : <SellNBTCTabContent />}
+					</div>
+
+					{isSuiWalletConnected && (
+						<a
+							href={transactionHistoryLink}
+							target="_blank"
+							rel="noreferrer"
+							className="flex gap-1 items-center text-primary hover:underline"
+						>
+							Check Transaction History
+							<ArrowUpRight size="22" />
+						</a>
+					)}
 				</CardContent>
 			</Card>
 		</div>
