@@ -58,7 +58,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<SideBarProvider>
 					<div className="flex w-full">
 						<SideBar />
-						<div className="flex flex-col gap-2 w-full">
+						<div className="flex flex-col gap-2 w-full max-w-full">
 							<NativeApp>
 								<NavBar />
 								{children}
@@ -96,7 +96,7 @@ function NativeApp({ children }: { children: React.ReactNode }) {
 
 	return (
 		<>
-			<div className="flex flex-col min-h-screen gap-4">
+			<div className="flex flex-col min-h-screen w-full gap-4">
 				<QueryClientProvider client={queryClient}>
 					<SuiClientProvider networks={networkConfig} network={network}>
 						<SuiWalletProvider autoConnect>
