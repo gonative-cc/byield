@@ -37,7 +37,7 @@ export function BuyNBTC() {
 				Native enables <span className="text-2xl text-primary md:text-3xl">BTCFi</span> in the{" "}
 				<span className="text-2xl text-primary md:text-3xl">Web3 native</span> way!
 			</p>
-			<Card>
+			<Card className="max-w-lg">
 				<CardContent className="p-6 rounded-lg text-white flex flex-col gap-4 bg-azure-10">
 					{isSuiWalletConnected && <NBTCBalance balance={nBTCBalance} />}
 					<Instructions />
