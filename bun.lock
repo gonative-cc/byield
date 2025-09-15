@@ -13,7 +13,7 @@
         "@radix-ui/react-select": "^2.2.5",
         "@radix-ui/react-slot": "^1.2.3",
         "@react-router/cloudflare": "^7.6.3",
-        "@react-router/remix-routes-option-adapter": "^7.7.1",
+        "@react-router/remix-routes-option-adapter": "^7.9.1",
         "@tanstack/react-query": "^5.81.5",
         "@types/react-table": "^7.7.20",
         "axios": "^1.10.0",
@@ -448,7 +448,7 @@
 
     "@react-router/node": ["@react-router/node@7.8.2", "", { "dependencies": { "@mjackson/node-fetch-server": "^0.2.0" }, "peerDependencies": { "react-router": "7.8.2", "typescript": "^5.1.0" }, "optionalPeers": ["typescript"] }, "sha512-FNepNg4Aya6V0ZxD/+uObtqxtMXcsBGa0ax9PznUh5qr8g4M6Xo9IN+soLb1tghz6iS/F9djFyhJ/lDkF77dEw=="],
 
-    "@react-router/remix-routes-option-adapter": ["@react-router/remix-routes-option-adapter@7.8.2", "", { "peerDependencies": { "@react-router/dev": "^7.8.2", "typescript": "^5.1.0" }, "optionalPeers": ["typescript"] }, "sha512-0h7p0F0E0dpnhg5MP4AiEJOINH9yNRm58kIyoBgHnmQmjho6I++dx6Reho9MaH2VaiW/ChK0+34LwdbPGaMaQw=="],
+    "@react-router/remix-routes-option-adapter": ["@react-router/remix-routes-option-adapter@7.9.1", "", { "peerDependencies": { "@react-router/dev": "^7.9.1", "typescript": "^5.1.0" }, "optionalPeers": ["typescript"] }, "sha512-Cd+zF6z789cp3U5TpITCohGU9zXr8TuReZhDVWPGzeGCeVlZSY+GRMxLRFySDCPBi9KZTRsSQN4Wc0MCNUwLYA=="],
 
     "@remix-run/node-fetch-server": ["@remix-run/node-fetch-server@0.8.0", "", {}, "sha512-8/sKegb4HrM6IdcQeU0KPhj9VOHm5SUqswJDHuMCS3mwbr/NRx078QDbySmn0xslahvvZoOENd7EnK40kWKxkg=="],
 
