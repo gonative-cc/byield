@@ -7,6 +7,9 @@ export const SUI = 9; // SUI -> mist decimals
 export const NBTC = 8; // NBTC decimals
 export const USDC = 6;
 
+// Auction constants
+export const MINIMUM_FIRST_BID_MIST = 1e9; // 1 SUI in mist for first-time bidders
+
 // throws error when amount decimals are bigger then `decimals` or when amount is not a proper
 // numeric string
 export function parse(amount: string, decimals: number): bigint {

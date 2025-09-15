@@ -4,7 +4,7 @@ import { LoaderCircle } from "lucide-react";
 import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
 
-import { formatSUI, parseSUI, SUI } from "~/lib/denoms";
+import { formatSUI, parseSUI, SUI, MINIMUM_FIRST_BID_MIST } from "~/lib/denoms";
 import { delay } from "~/lib/batteries";
 import { Card, CardContent } from "~/components/ui/card";
 import { FormNumericInput } from "~/components/form/FormNumericInput";
@@ -91,9 +91,6 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 			note: "",
 		},
 	});
-
-	// TODO: remove WalletContext usage, use useCurrentAccount() or useSuiClient() instead!
-	// const { suiAddr } = useContext(WalletContext);
 
 	if (account === null) return <SuiModal />;
 
@@ -286,8 +283,7 @@ function validateBidAmount(val: string, hasUserBidBefore: boolean) {
 	if (mistAmount < 1e6) {
 		return "minimum amount: 0.001";
 	}
-	// TODO: use config and change to 1e9
-	if (!hasUserBidBefore && mistAmount < 1e7) {
+	if (!hasUserBidBefore && mistAmount < MINIMUM_FIRST_BID_MIST) {
 		return "First-time bidders must bid at least 1 SUI";
 	}
 
