@@ -9,7 +9,6 @@ import { BuyNBTCTabContent } from "./BuyNBTCTabContent";
 import { SellNBTCTabContent } from "./SellNBTCTabContent";
 import { ArrowUpRight } from "lucide-react";
 import { useDisconnectWallet, useSuiClientContext } from "@mysten/dapp-kit";
-import { Tabs } from "react-daisyui";
 
 export function BuyNBTC() {
 	const { network } = useSuiClientContext();
@@ -30,6 +29,20 @@ export function BuyNBTC() {
 		}
 	}, [disconnect, isMainnet]);
 
+	const renderBuyNBTCTabs = () => (
+		<div className="tabs tabs-lift text-primary">
+			<input type="radio" name="buy_nbtc_tabs" className="tab" aria-label="Buy" />
+			<div className="tab-content bg-base-100 border-base-300 p-6">
+				<BuyNBTCTabContent />
+			</div>
+
+			<input type="radio" name="buy_nbtc_tabs" className="tab" aria-label="Sell" defaultChecked />
+			<div className="tab-content bg-base-100 border-base-300 p-6">
+				<SellNBTCTabContent />
+			</div>
+		</div>
+	);
+
 	return (
 		<div className="flex flex-col items-center gap-8 px-2 pt-2">
 			<p className="md:text-3xl text-2xl text-center font-semibold max-w-96">
@@ -40,14 +53,7 @@ export function BuyNBTC() {
 				<CardContent className="p-6 rounded-lg text-white flex flex-col gap-4 bg-azure-10">
 					{isSuiWalletConnected && <NBTCBalance balance={nBTCBalance} />}
 					<Instructions />
-					<Tabs>
-						<Tabs.RadioTab name="buy_sell_nbtc" color="primary" label="Buy" defaultChecked={true}>
-							<BuyNBTCTabContent />
-						</Tabs.RadioTab>
-						<Tabs.RadioTab name="buy_sell_nbtc" label="Sell" color="primary">
-							<SellNBTCTabContent />
-						</Tabs.RadioTab>
-					</Tabs>
+					{renderBuyNBTCTabs()}
 					<a
 						href={transactionHistoryLink}
 						target="_blank"
