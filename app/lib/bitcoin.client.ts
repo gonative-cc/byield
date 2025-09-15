@@ -1,5 +1,5 @@
 import type { Network } from "bitcoinjs-lib";
-import { BitcoinNetworkType } from "sats-connect";
+import { ExtendedBitcoinNetworkType } from "~/hooks/useBitcoinConfig";
 
 /**
  * Dynamic import for bitcoinjs-lib to avoid SSR issues.
@@ -21,16 +21,17 @@ export async function getBitcoinLib() {
 }
 
 export async function getBitcoinNetworkConfig(
-	network: BitcoinNetworkType,
+	network: ExtendedBitcoinNetworkType,
 ): Promise<Network | null> {
 	const bitcoinjs = await getBitcoinLib();
 
 	switch (network) {
-		case BitcoinNetworkType.Mainnet:
+		case ExtendedBitcoinNetworkType.Mainnet:
 			return bitcoinjs.networks.bitcoin;
-		case BitcoinNetworkType.Regtest:
+		case ExtendedBitcoinNetworkType.Regtest:
+		case ExtendedBitcoinNetworkType.Devnet:
 			return bitcoinjs.networks.regtest;
-		case BitcoinNetworkType.Testnet4:
+		case ExtendedBitcoinNetworkType.Testnet4:
 			return bitcoinjs.networks.testnet;
 		default:
 			return null;
