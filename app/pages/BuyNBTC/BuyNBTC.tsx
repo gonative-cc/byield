@@ -1,5 +1,5 @@
-import { useContext, useEffect } from "react";
-import { Card, CardContent } from "~/components/ui/card";
+import { useContext, useEffect, useState } from "react";
+import { Card } from "react-daisyui";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
@@ -35,9 +35,8 @@ export function BuyNBTC() {
 				Native enables <span className="text-2xl text-primary md:text-3xl">BTCFi</span> in the{" "}
 				<span className="text-2xl text-primary md:text-3xl">Web3 native</span> way!
 			</p>
-			{/* TODO: George, probably we should remove the classes in the card */}
-			<Card className="max-w-lg w-full">
-				<CardContent className="p-6 rounded-lg text-white flex flex-col gap-4 bg-azure-10">
+			<Card className="max-w-lg w-full card-border border rounded-lg">
+				<Card.Body className="p-6 rounded-lg text-white flex flex-col gap-4 bg-azure-10">
 					{isSuiWalletConnected && <NBTCBalance balance={nBTCBalance} />}
 					<Instructions />
 					<BuyNBTCTabs />
@@ -52,7 +51,7 @@ export function BuyNBTC() {
 							<ArrowUpRight size="22" />
 						</a>
 					)}
-				</CardContent>
+				</Card.Body>
 			</Card>
 		</div>
 	);

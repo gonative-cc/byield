@@ -1,4 +1,4 @@
-import { Card, CardContent } from "../../components/ui/card";
+import { Card } from "react-daisyui";
 import { BitcoinBalance } from "../../components/BitcoinBalance";
 import { FormProvider, useForm } from "react-hook-form";
 import { FormInput } from "../../components/form/FormInput";
@@ -104,7 +104,7 @@ interface FeeProps {
 function Fee({ feeInSatoshi, youReceive }: FeeProps) {
 	return (
 		<Card className="p-4 bg-azure-10 rounded-2xl h-24">
-			<CardContent className="flex flex-col justify-between h-full p-0">
+			<Card.Body className="flex flex-col justify-between h-full p-0">
 				<div className="flex justify-between">
 					<p className="text-gray-400">Fixed Fee</p>
 					<NumericFormat displayType="text" value={formatBTC(feeInSatoshi)} suffix=" Satoshi" />
@@ -113,7 +113,7 @@ function Fee({ feeInSatoshi, youReceive }: FeeProps) {
 					<p className="text-gray-400">You Receive</p>
 					<NumericFormat displayType="text" value={youReceive} suffix=" nBTC" />
 				</div>
-			</CardContent>
+			</Card.Body>
 		</Card>
 	);
 }
@@ -169,7 +169,7 @@ export function MintBTC() {
 				className="w-full"
 			>
 				<Card className="w-full">
-					<CardContent className="p-4 sm:p-6 rounded-lg text-white flex flex-col bg-azure-10 space-y-4">
+					<Card.Body className="p-4 sm:p-6 rounded-lg text-white flex flex-col bg-azure-10 space-y-4">
 						{isBitCoinWalletConnected && walletBalance && (
 							<BitcoinBalance availableBalance={walletBalance} />
 						)}
@@ -247,7 +247,7 @@ export function MintBTC() {
 								/>
 							</Modal>
 						)}
-					</CardContent>
+					</Card.Body>
 				</Card>
 			</form>
 		</FormProvider>
