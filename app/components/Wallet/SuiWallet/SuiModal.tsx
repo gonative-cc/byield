@@ -1,5 +1,4 @@
 import { useConnectWallet, useWallets } from "@mysten/dapp-kit";
-import { Button } from "../../ui/button";
 import {
 	DialogHeader,
 	Dialog,
@@ -23,9 +22,7 @@ interface InstallWalletProps {
 function InstallWallet({ link, name }: InstallWalletProps) {
 	return (
 		<Link target="_blank" to={link} rel="noreferrer" className="m-0 p-0">
-			<Button type="button" variant="link" className="p-0 m-0">
-				Install {name}
-			</Button>
+			<button className="btn btn-primary btn-link p-0 m-0">Install {name}</button>
 		</Link>
 	);
 }
@@ -87,11 +84,9 @@ function AvailableWallets() {
 			<div className="flex flex-col gap-2">
 				{installedWallet && (
 					<div className="flex gap-2 w-full">
-						<Button
-							variant="ghost"
-							type="button"
+						<button
 							onClick={() => walletConnectClick(installedWallet)}
-							className="justify-between flex w-full text-primary h-16"
+							className="btn btn-primary btn-ghost justify-between flex rounded-none w-full h-16"
 						>
 							<img
 								src={installedWallet.icon}
@@ -100,7 +95,7 @@ function AvailableWallets() {
 								height={20}
 							/>
 							{installedWallet.name}
-						</Button>
+						</button>
 					</div>
 				)}
 				{otherWalletLink}
@@ -113,15 +108,13 @@ function AvailableWallets() {
 		<div className="flex flex-col gap-2">
 			{wallets.map((wallet) => (
 				<div key={wallet.name} className="flex justify-center w-full">
-					<Button
-						variant="ghost"
-						type="button"
+					<button
 						onClick={() => walletConnectClick(wallet)}
-						className="justify-between flex w-full text-primary h-16"
+						className="btn btn-primary btn-ghost justify-between flex w-full h-16"
 					>
 						<img src={wallet.icon} alt={wallet.name} width={40} height={40} />
 						{wallet.name}
-					</Button>
+					</button>
 				</div>
 			))}
 		</div>
@@ -136,9 +129,11 @@ export function SuiModal({ label = "Connect Sui Wallet" }: SuiModalProps) {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<Button type="button" layout="oneLine" className="w-full md:w-fit">
-					<Wallet /> {label}
-				</Button>
+				<button className="btn btn-primary md:w-auto w-full">
+					<div className="flex gap-2 items-center">
+						<Wallet /> {label}
+					</div>
+				</button>
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-[425px]">
 				<DialogHeader>

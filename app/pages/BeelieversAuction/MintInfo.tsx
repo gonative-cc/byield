@@ -13,7 +13,6 @@ import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
 
 import { Countdown } from "~/components/ui/countdown";
 import { Card, CardContent } from "~/components/ui/card";
-import { Button } from "~/components/ui/button";
 import { classNames } from "~/util/tailwind";
 import { toast } from "~/hooks/use-toast";
 import { useNetworkVariables } from "~/networkConfig";
@@ -207,34 +206,29 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 	return (
 		<div className="flex flex-col sm:flex-row gap-4">
 			{canMint && (
-				<Button
-					type="button"
+				<button
 					disabled={isAnyActionPending}
-					isLoading={isMinting}
-					size="lg"
-					className="flex-1"
+					className="btn btn-primary btn-lg flex-1"
 					onClick={handleMintNFT}
 				>
+					{isMinting && <span className="loading loading-spinner"></span>}
 					🐝 Mint
-				</Button>
+				</button>
 			)}
 			{doRefund === DoRefund.NoBoosted &&
 				"You have nothing to withdraw because you are a winner and your bid is below (due to boost) or at the Mint Price"}
 			{doRefund === DoRefund.Yes && (
-				<Button
-					type="button"
+				<button
 					disabled={isAnyActionPending}
-					isLoading={isRefundPending}
-					size="lg"
-					variant="outline"
-					className="flex-1"
+					className="btn btn-primary btn-outline btn-lg flex-1"
 					onClick={handleRefund}
 				>
+					{isRefundPending && <span className="loading loading-spinner"></span>}
 					💰 Refund
 					<div className="text-small text-muted-foreground">
 						NOTE: if you already claimed refund, subsequent claim will fail
 					</div>
-				</Button>
+				</button>
 			)}
 		</div>
 	);

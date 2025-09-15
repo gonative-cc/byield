@@ -1,6 +1,5 @@
 import { Check, CircleX } from "lucide-react";
 import { classNames } from "~/util/tailwind";
-import { Button } from "~/components/ui/button";
 import { Link } from "react-router";
 
 interface TransactionStatusProps {
@@ -52,7 +51,9 @@ export function TransactionStatus({ isSuccess, txnId, handleRetry }: Transaction
 					</Link>
 				)}
 			</div>
-			<Button onClick={handleRetry}>{isSuccess ? "Ok" : "Retry"}</Button>
+			<button onClick={handleRetry} className="btn btn-primary">
+				{isSuccess ? "Ok" : "Retry"}
+			</button>
 		</div>
 	);
 }

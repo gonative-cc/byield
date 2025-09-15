@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import { useLocation } from "react-router";
 import { Wallet } from "lucide-react";
-import { Button } from "~/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { Skeleton } from "~/components/ui/skeleton";
 import { XverseWallet } from "./Wallet/XverseWallet/XverseWallet";
@@ -39,10 +38,12 @@ function MobileWalletModal({ children }: { children: React.ReactNode }) {
 		<div className="md:hidden">
 			<Dialog>
 				<DialogTrigger asChild>
-					<Button variant="outline" size="sm" className="gap-2" layout="oneLine">
-						<Wallet />
-						<span className="text-xs">Wallet</span>
-					</Button>
+					<button className="btn btn-primary btn-outline btn-sm gap-2">
+						<div className="flex gap-2 items-center">
+							<Wallet />
+							<span className="text-xs">Wallet</span>
+						</div>
+					</button>
 				</DialogTrigger>
 				<DialogContent className="sm:max-w-md">
 					<div className="space-y-4">{children}</div>
@@ -74,9 +75,9 @@ export function SelectWallet({ isProductionMode }: SelectWalletProps) {
 		(isBitcoinConnected ? (
 			<XverseWallet />
 		) : (
-			<Button type="button" onClick={connectWallet} className="md:w-auto w-full">
+			<button onClick={connectWallet} className="btn btn-primary md:w-auto w-full">
 				Connect Bitcoin Wallet
-			</Button>
+			</button>
 		));
 
 	const suiWallet = shouldShowSUIWallet && (isSuiConnected ? <SuiWallet /> : <SuiModal />);

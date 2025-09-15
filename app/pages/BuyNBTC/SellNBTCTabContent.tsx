@@ -1,6 +1,5 @@
 import { useCallback } from "react";
 import { ArrowDown, ChevronRight } from "lucide-react";
-import { Button } from "~/components/ui/button";
 import { SuiModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import { Modal } from "~/components/ui/dialog";
 import { TransactionStatus } from "./TransactionStatus";
@@ -25,14 +24,12 @@ function NBTCRightAdornment({ maxNBTCAmount, onMaxClick }: NBTCRightAdornmentPro
 			{maxNBTCAmount > 0 && (
 				<div className="flex items-center gap-2">
 					<p className="text-xs whitespace-nowrap">Balance: {totalNBTCBalance} nBTC</p>
-					<Button
-						variant="link"
-						type="button"
+					<button
 						onClick={() => onMaxClick(totalNBTCBalance)}
-						className="text-xs w-fit p-0 pr-2 h-fit"
+						className="btn btn-primary btn-link text-xs w-fit p-0 pr-2 h-fit"
 					>
 						Max
-					</Button>
+					</button>
 				</div>
 			)}
 			<NBTCIcon
@@ -139,10 +136,13 @@ export function SellNBTCTabContent() {
 					</span>
 				</div>
 				{isSuiWalletConnected ? (
-					<Button type="submit" disabled={isPending} isLoading={isPending} layout="oneLine">
-						Sell nBTC
-						<ChevronRight />
-					</Button>
+					<button type="submit" disabled={isPending} className="btn btn-primary">
+						<div className="flex w-full gap-2 items-center">
+							{isPending && <span className="loading loading-spinner"></span>}
+							Sell nBTC
+							<ChevronRight />
+						</div>
+					</button>
 				) : (
 					<SuiModal />
 				)}

@@ -5,7 +5,6 @@ import type { Column, CellProps } from "react-table";
 import { Link } from "react-router";
 import { SelectInput } from "./ui/select";
 import { Input } from "./ui/input";
-import { Button } from "./ui/button";
 import { action } from "../config/market.json";
 import { formatNBTC } from "~/lib/denoms";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
@@ -100,10 +99,10 @@ export const columns: Column<DApp>[] = [
 			return (
 				<div className="flex space-x-2">
 					<Link to={action.trade} target="_blank">
-						<Button variant="secondary">Trade nBTC</Button>
+						<button className="btn btn-secondary">Trade nBTC</button>
 					</Link>
 					<Link to={action.deposit} target="_blank">
-						<Button variant="ghost">Deposit</Button>
+						<button className="btn btn-primary">Deposit</button>
 					</Link>
 				</div>
 			);

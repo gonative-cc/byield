@@ -1,4 +1,3 @@
-import { Button } from "~/components/ui/button";
 import footerConfig from "~/config/footer.json";
 
 interface TwitterShareButtonProps {
@@ -11,10 +10,12 @@ export function TwitterShareButton({ shareContent }: TwitterShareButtonProps) {
 
 	return (
 		<a href={`https://twitter.com/intent/tweet?text=${text}`} target="_blank" rel="noreferrer">
-			<Button variant="outline" size="sm">
-				<img src={twitterIcon} alt="X" width={24} height={24} />
-				Share on X
-			</Button>
+			<button className="btn btn-primary btn-outline btn-sm">
+				<div className="flex items-center gap-2">
+					<img src={twitterIcon} alt="X" width={24} height={24} />
+					Share on X
+				</div>
+			</button>
 		</a>
 	);
 }
