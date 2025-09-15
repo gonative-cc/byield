@@ -1,7 +1,16 @@
 import type { Network } from "bitcoinjs-lib";
 import { ExtendedBitcoinNetworkType } from "~/hooks/useBitcoinConfig";
 
-// Dynamic import for bitcoinjs-lib to avoid SSR issues
+/**
+ * Dynamic import for bitcoinjs-lib to avoid SSR issues.
+ *
+ * The bitcoinjs-lib library depends on Node.js APIs (Buffer, crypto) that aren't available
+ * during server-side rendering in Cloudflare Workers. Dynamic imports ensure the library
+ * is only loaded client-side when actually needed, preventing SSR build failures.
+ *
+ * This approach replaces the previous polyfill strategy that used @esbuild-plugins/node-globals-polyfill.
+ * See: https://github.com/gonative-cc/byield/issues/335
+ */
 let bitcoinLib: typeof import("bitcoinjs-lib") | null = null;
 
 export async function getBitcoinLib() {
