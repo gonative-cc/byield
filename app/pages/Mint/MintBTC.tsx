@@ -11,7 +11,7 @@ import { Wallets } from "~/components/Wallet";
 import { FormNumericInput } from "../../components/form/FormNumericInput";
 import { NumericFormat } from "react-number-format";
 import { BTC, formatBTC, parseBTC } from "~/lib/denoms";
-import { nBTCMintTx } from "~/lib/nbtc";
+import { nBTCMintTx, MINT_NBTC_ACTION, createOpReturnScript } from "~/lib/nbtc";
 import { Check } from "lucide-react";
 import { classNames } from "~/util/tailwind";
 import { isValidSuiAddress } from "@mysten/sui/utils";
@@ -65,12 +65,7 @@ function TransactionStatus({ SuiAddress, txId, handleRetry }: TransactionStatusP
 	);
 }
 
-function formatSuiAddress(suiAddress: string) {
-	if (suiAddress.toLowerCase().startsWith("0x")) {
-		return suiAddress.substring(2);
-	}
-	return suiAddress;
-}
+// Removed formatSuiAddressForMint function using createOpReturnScript from nbtc.ts
 
 const PERCENTAGES = [
 	{
@@ -163,7 +158,7 @@ export function MintBTC() {
 			const response = await nBTCMintTx(
 				currentAddress,
 				Number(parseBTC(numberOfBTC)),
-				formatSuiAddress(suiAddress),
+				createOpReturnScript(MINT_NBTC_ACTION, suiAddress),
 				network,
 				bitcoinConfig.nBTC.depositAddress,
 			);

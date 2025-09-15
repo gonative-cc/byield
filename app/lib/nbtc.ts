@@ -1,6 +1,7 @@
 import { opcodes, Psbt, script } from "bitcoinjs-lib";
 import Wallet from "sats-connect";
 import { type Address, type RpcResult } from "sats-connect";
+import { isValidSuiAddress } from "@mysten/sui/utils";
 import { fetchUTXOs, fetchValidateAddress } from "~/api/btcrpc";
 import type { UTXO, ValidateAddressI } from "~/api/btcrpc";
 import { getBitcoinNetworkConfig } from "~/components/Wallet/XverseWallet/useWallet";
@@ -9,6 +10,25 @@ import type { ExtendedBitcoinNetworkType } from "~/hooks/useBitcoinConfig";
 
 export const PRICE_PER_NBTC_IN_SUI = 25000n;
 const DUST_THRESHOLD_SATOSHI = 546;
+
+// OP_RETURN script action types
+export const MINT_NBTC_ACTION = "0";
+export const FUTURE_ACTION = "1";
+
+/**
+ * Creates an OP_RETURN script string for Bitcoin transactions
+ * Format: [action_type] [sui_address]
+ *
+ * @param actionType - '0' for mint nBTC action, '1' for future actions
+ * @param suiAddress - Full SUI address with 0x prefix
+ * @returns OP_RETURN script string (action type + space + full SUI address)
+ */
+export function createOpReturnScript(
+	actionType: typeof MINT_NBTC_ACTION | typeof FUTURE_ACTION,
+	suiAddress: string,
+): string {
+	return `${actionType} ${suiAddress}`;
+}
 
 export async function nBTCMintTx(
 	bitcoinAddress: Address,
@@ -89,12 +109,39 @@ export async function nBTCMintTx(
 
 		let opReturnData: Buffer;
 		try {
-			opReturnData = Buffer.from(opReturn, "hex");
+			if (opReturn.length < 3) {
+				throw new Error("OP_RETURN data is too short");
+			}
+
+			const parts = opReturn.split(" ");
+			if (parts.length !== 2) {
+				throw new Error(
+					"Invalid OP_RETURN format. Expected format: '[action_type] [sui_address]'",
+				);
+			}
+
+			const actionType = parts[0];
+			const suiAddress = parts[1];
+
+			if (actionType !== MINT_NBTC_ACTION && actionType !== FUTURE_ACTION) {
+				throw new Error(
+					`Invalid action type: ${actionType}. Must be '${MINT_NBTC_ACTION}' for mint or '${FUTURE_ACTION}' for future actions`,
+				);
+			}
+
+			if (!isValidSuiAddress(suiAddress)) {
+				throw new Error(`Invalid SUI address: ${suiAddress}`);
+			}
+
+			const actionTypeByte = Buffer.from([parseInt(actionType, 10)]);
+			const suiAddressBuffer = Buffer.from(suiAddress, "utf8");
+			opReturnData = Buffer.concat([actionTypeByte, suiAddressBuffer]);
 		} catch (error) {
 			console.error("Invalid OP_RETURN data:", error);
 			toast?.({
-				title: "Invalid Data",
-				description: "Invalid OP_RETURN data format.",
+				title: "Invalid OP_RETURN Data",
+				description:
+					error instanceof Error ? error.message : "Invalid OP_RETURN data format.",
 				variant: "destructive",
 			});
 			return;
