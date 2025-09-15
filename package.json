@@ -28,7 +28,7 @@
 		"@esbuild-plugins/node-globals-polyfill": "^0.2.3",
 		"@ethersproject/units": "^5.8.0",
 		"@mysten/dapp-kit": "^0.18.0",
-		"@mysten/kiosk": "^0.13.0",
+		"@mysten/kiosk": "^0.13.1",
 		"@mysten/sui": "^1.38.0",
 		"@radix-ui/react-dialog": "^1.1.14",
 		"@radix-ui/react-slot": "^1.2.3",
