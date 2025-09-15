@@ -18,14 +18,14 @@ import { classNames } from "~/util/tailwind";
 import { toast } from "~/hooks/use-toast";
 import { useNetworkVariables } from "~/networkConfig";
 import { AuctionAccountType, type AuctionInfo, type User } from "~/server/BeelieversAuction/types";
-import { signAndExecTx, SUI_RANDOM_OBJECT_ID } from "~/lib/suienv";
+import { signAndExecTx, SUI_RANDOM_OBJECT_ID, mkSuiVisionUrl } from "~/lib/suienv";
 import { formatSUI } from "~/lib/denoms";
 import { parseTxError, formatSuiErr } from "~/lib/suierr";
-import type { BeelieversAuctionCfg, BeelieversMintCfg } from "~/config/sui/contracts-config";
+import type { BeelieversAuctionCfg, BeelieversMintCfg, ContractsCfg } from "~/config/sui/contracts-config";
 import { moveCallTarget } from "~/config/sui/contracts-config";
 import { delay } from "~/lib/batteries";
 
-import { mkSuiVisionUrl, NftDisplay, findExistingNft, findNftInTxResult, queryNftFromKiosk } from "./nft";
+import { NftDisplay, findExistingNft, findNftInTxResult, queryNftFromKiosk } from "./nft";
 import type { KioskInfo } from "./kiosk";
 import { initializeKioskInfo, createKiosk } from "./kiosk";
 
@@ -49,8 +49,8 @@ function MintInfoItem({ title, value, isLastItem = false }: MintInfoItemProps) {
 	);
 }
 
-const createNftSuccessToast = (nftId: string, network: string) => {
-	const suiVisionUrl = mkSuiVisionUrl(nftId, network);
+const createNftSuccessToast = (nftId: string, contractsConfig: ContractsCfg) => {
+	const suiVisionUrl = mkSuiVisionUrl(nftId, contractsConfig);
 
 	return {
 		title: "Minting Successful! 🎉",
@@ -82,7 +82,8 @@ interface MintActionProps {
 }
 
 function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }: MintActionProps) {
-	const { beelieversAuction, beelieversMint } = useNetworkVariables();
+	const contractsConfig = useNetworkVariables();
+	const { beelieversAuction, beelieversMint } = contractsConfig;
 	const { mutate: signAndExecTxAction, isPending: isRefundPending } = useSignAndExecuteTransaction();
 	const { mutateAsync: signTransaction } = useSignTransaction();
 	const { network, client } = useSuiClientContext();
@@ -118,13 +119,13 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 			await delay(1600);
 			if (nftId) {
 				setNftId(nftId);
-				toast(createNftSuccessToast(nftId, network));
+				toast(createNftSuccessToast(nftId, contractsConfig));
 			} else {
 				console.log("nft not found in tx result, checking querying indexer with kiosk");
 				const nftFromKiosk = await queryNftFromKiosk(kioskId, beelieversMint.pkgId, client);
 				if (nftFromKiosk) {
 					setNftId(nftFromKiosk);
-					toast(createNftSuccessToast(nftFromKiosk, network));
+					toast(createNftSuccessToast(nftFromKiosk, contractsConfig));
 				} else {
 					toast({
 						title: "Minting Successful",
