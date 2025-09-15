@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { trimAddress } from "../walletHelper";
 import { NumericFormat } from "react-number-format";
 import { formatBTC } from "~/lib/denoms";
+import { useLocation } from "react-router";
 import { ExtendedBitcoinNetworkType } from "~/hooks/useBitcoinConfig";
 import { CopyButton } from "~/components/ui/CopyButton";
 

@@ -61,6 +61,11 @@ const getBitcoinNetworkConfig: Record<ExtendedBitcoinNetworkType, NetworkConfig>
 			...devnetConfig, // Use devnet config for regtest
 		},
 	},
+	Devnet: {
+		variables: {
+			...devnetConfig, // Use devnet config for devnet
+		},
+	},
 };
 
 export function useBitcoinConfig(): BitcoinNetworkVariables {
