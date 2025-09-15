@@ -21,7 +21,7 @@ function NetWorkOptions() {
 	return (
 		<SelectInput
 			options={bitcoinSupportedNetwork}
-			onValueChange={switchNetwork}
+			onValueChange={(value) => switchNetwork(value as ExtendedBitcoinNetworkType)}
 			placeholder="Select network"
 			value={network}
 			className="w-full md:w-auto"
