@@ -4,7 +4,7 @@ import { LoaderCircle } from "lucide-react";
 import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
 
-import { formatSUI, parseSUI, SUI, MINIMUM_FIRST_BID_MIST } from "~/lib/denoms";
+import { formatSUI, parseSUI, SUI } from "~/lib/denoms";
 import { delay } from "~/lib/batteries";
 import { Card, CardContent } from "~/components/ui/card";
 import { FormNumericInput } from "~/components/form/FormNumericInput";
@@ -20,6 +20,7 @@ import { SUIIcon } from "~/components/icons";
 
 import { moveCallTarget, type BeelieversAuctionCfg } from "~/config/sui/contracts-config";
 
+const MINIMUM_FIRST_BID_MIST = 1e9;
 interface NewTotalBidAmountProps {
 	currentBidInMist: number;
 	entryBidMist: number;
