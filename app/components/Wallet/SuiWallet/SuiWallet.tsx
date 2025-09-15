@@ -18,11 +18,13 @@ import { useLocation } from "react-router";
 import { isProductionMode } from "~/lib/appenv";
 
 enum SuiNetwork {
+	LocalNet = "localnet",
 	TestNet = "testnet",
 	MainNet = "mainnet",
 }
 
 const SuiNetworkLabel: Record<SuiNetwork, string> = {
+	[SuiNetwork.LocalNet]: "Localnet",
 	[SuiNetwork.TestNet]: "Testnet",
 	[SuiNetwork.MainNet]: "Mainnet",
 };
@@ -41,22 +43,34 @@ function NetWorkOptions() {
 
 	// TODO: remove this after auction. enforce network change
 	const isAuctionPathname = pathname === "/beelievers-auction" && isProductionMode();
-	const networks = useMemo(
-		() =>
-			isAuctionPathname
-				? [{ label: SuiNetworkLabel[SuiNetwork.MainNet], value: SuiNetwork.MainNet }]
-				: [{ label: SuiNetworkLabel[SuiNetwork.TestNet], value: SuiNetwork.TestNet }],
-		[isAuctionPathname],
-	);
+	const isDevMode = !isProductionMode();
+
+	const networks = useMemo(() => {
+		if (isAuctionPathname) {
+			return [{ label: SuiNetworkLabel[SuiNetwork.MainNet], value: SuiNetwork.MainNet }];
+		}
+
+		const baseNetworks = [{ label: SuiNetworkLabel[SuiNetwork.TestNet], value: SuiNetwork.TestNet }];
+
+		// Add localnet option in dev mode
+		if (isDevMode) {
+			baseNetworks.unshift({ label: SuiNetworkLabel[SuiNetwork.LocalNet], value: SuiNetwork.LocalNet });
+		}
+
+		return baseNetworks;
+	}, [isAuctionPathname, isDevMode]);
 
 	const suiWalletNetworks: Option[] = useMemo(() => networks, [networks]);
+
+	// Ensure we always have a defined value to prevent uncontrolled/controlled switching
+	const currentNetwork = network || (isDevMode ? SuiNetwork.LocalNet : SuiNetwork.TestNet);
 
 	return (
 		<SelectInput
 			options={suiWalletNetworks}
 			placeholder="Select network"
 			onValueChange={handleChange}
-			value={network}
+			value={currentNetwork}
 			className="w-full md:w-1/4"
 		/>
 	);
