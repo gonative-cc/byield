@@ -20,6 +20,7 @@ import { SUIIcon } from "~/components/icons";
 
 import { moveCallTarget, type BeelieversAuctionCfg } from "~/config/sui/contracts-config";
 
+const MINIMUM_FIRST_BID_MIST = 1e9;
 interface NewTotalBidAmountProps {
 	currentBidInMist: number;
 	entryBidMist: number;
@@ -91,9 +92,6 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 			note: "",
 		},
 	});
-
-	// TODO: remove WalletContext usage, use useCurrentAccount() or useSuiClient() instead!
-	// const { suiAddr } = useContext(WalletContext);
 
 	if (account === null) return <SuiModal />;
 
@@ -286,8 +284,7 @@ function validateBidAmount(val: string, hasUserBidBefore: boolean) {
 	if (mistAmount < 1e6) {
 		return "minimum amount: 0.001";
 	}
-	// TODO: use config and change to 1e9
-	if (!hasUserBidBefore && mistAmount < 1e7) {
+	if (!hasUserBidBefore && mistAmount < MINIMUM_FIRST_BID_MIST) {
 		return "First-time bidders must bid at least 1 SUI";
 	}
 
