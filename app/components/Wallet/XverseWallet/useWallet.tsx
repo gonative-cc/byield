@@ -15,6 +15,21 @@ import { Wallets } from "~/components/Wallet";
 import { ExtendedBitcoinNetworkType } from "~/hooks/useBitcoinConfig";
 import { toast } from "~/hooks/use-toast";
 
+export function getBitcoinNetworkConfig(network: ExtendedBitcoinNetworkType): Network | null {
+	switch (network) {
+		case ExtendedBitcoinNetworkType.Mainnet:
+			return networks.bitcoin;
+		case ExtendedBitcoinNetworkType.Regtest:
+		case ExtendedBitcoinNetworkType.Devnet:
+			return networks.regtest;
+		case ExtendedBitcoinNetworkType.Testnet4:
+		case ExtendedBitcoinNetworkType.TestnetV2:
+			return networks.testnet;
+		default:
+			return null;
+	}
+}
+
 export const useXverseConnect = () => {
 	const { handleWalletConnect, toggleBitcoinModal } = useContext(WalletContext);
 
@@ -62,8 +77,8 @@ export const useXverseWallet = () => {
 	const [addressInfo, setAddressInfo] = useState<Address[]>([]);
 	const [currentAddress, setCurrentAddress] = useState<Address | null>(null);
 	const [balance, setBalance] = useState<string>();
-	// TODO: Default bitcoin network on connection is Testnet4
-	const [network, setNetwork] = useState<ExtendedBitcoinNetworkType>(ExtendedBitcoinNetworkType.Testnet4);
+	// TODO: Default bitcoin network on connection is TestnetV2 (with indexer)
+	const [network, setNetwork] = useState<ExtendedBitcoinNetworkType>(ExtendedBitcoinNetworkType.TestnetV2);
 
 	const getBalance = useCallback(async () => {
 		try {
@@ -100,9 +115,14 @@ export const useXverseWallet = () => {
 
 	const getNetworkStatus = useCallback(async () => {
 		const response = await Wallet.request(getNetworkMethodName, null);
+		console.log("🔍 Current wallet network response:", response);
+
 		if (response.status === "success") {
-			setNetwork(response.result.bitcoin.name as unknown as ExtendedBitcoinNetworkType);
+			const walletNetwork = response.result.bitcoin.name as unknown as ExtendedBitcoinNetworkType;
+			console.log("🔍 Current wallet network:", walletNetwork);
+			setNetwork(walletNetwork);
 		} else {
+			console.error("❌ Failed to get network status:", response);
 			toast({
 				title: "Network",
 				description: "Failed to get network status",
@@ -144,25 +164,79 @@ export const useXverseWallet = () => {
 		}
 	}, [handleWalletConnect]);
 
-	const switchNetwork = useCallback(async (newNetwork: ExtendedBitcoinNetworkType) => {
-		// Only switch if it's a valid BitcoinNetworkType (not Devnet)
-		if (newNetwork !== ExtendedBitcoinNetworkType.Devnet) {
-			const response = await Wallet.request(changeNetworkMethodName, {
-				name: newNetwork as unknown as BitcoinNetworkType,
-			});
-			if (response.status === "success") setNetwork(newNetwork);
-			else {
+	const switchNetwork = useCallback(
+		async (newNetwork: ExtendedBitcoinNetworkType) => {
+			// Map our custom networks to actual Bitcoin wallet networks
+			const getWalletNetwork = (network: ExtendedBitcoinNetworkType): BitcoinNetworkType | null => {
+				switch (network) {
+					case ExtendedBitcoinNetworkType.Mainnet:
+						return "Mainnet" as BitcoinNetworkType;
+					case ExtendedBitcoinNetworkType.Testnet4:
+					case ExtendedBitcoinNetworkType.TestnetV2: // TestnetV2 uses Testnet wallet network
+						// Try "Testnet" instead of "Testnet4" - Xverse might use the older naming
+						return "Testnet" as BitcoinNetworkType;
+					case ExtendedBitcoinNetworkType.Regtest:
+						return "Regtest" as BitcoinNetworkType;
+					case ExtendedBitcoinNetworkType.Devnet:
+					default:
+						return null; // Custom networks don't switch wallet
+				}
+			};
+
+			const walletNetwork = getWalletNetwork(newNetwork);
+
+			if (walletNetwork) {
+				try {
+					console.log(
+						`🔄 Attempting to switch wallet to: ${walletNetwork} (for app network: ${newNetwork})`,
+					);
+					console.log("🔍 Current network state:", network);
+
+					const response = await Wallet.request(changeNetworkMethodName, {
+						name: walletNetwork,
+					});
+
+					console.log("🔍 Wallet response:", response);
+					if (response.status === "error") {
+						console.error("🔍 Wallet error details:", response.error);
+						console.error("🔍 Full error object:", JSON.stringify(response.error, null, 2));
+					}
+
+					if (response.status === "success") {
+						setNetwork(newNetwork);
+						toast({
+							title: "Network Switched",
+							description: `Switched to ${newNetwork}${newNetwork === ExtendedBitcoinNetworkType.TestnetV2 ? " (using Testnet4 wallet)" : ""}`,
+							variant: "default",
+						});
+					} else {
+						console.error("❌ Wallet network switch failed:", response);
+						toast({
+							title: "Network Switch Failed",
+							description: `Failed to switch wallet network: ${response.error?.message || "Unknown error"}`,
+							variant: "destructive",
+						});
+					}
+				} catch (error) {
+					console.error("❌ Network switch error:", error);
+					toast({
+						title: "Network Switch Error",
+						description: `Error switching wallet network: ${error instanceof Error ? error.message : "Unknown error"}`,
+						variant: "destructive",
+					});
+				}
+			} else {
+				// Handle custom networks (Devnet, etc.) - just set the app state
+				setNetwork(newNetwork);
 				toast({
-					title: "Network",
-					description: "Failed to switch network",
-					variant: "destructive",
+					title: "Network Selected",
+					description: `Selected ${newNetwork} (app-only configuration)`,
+					variant: "default",
 				});
 			}
-		} else {
-			// Handle Devnet case - just set the network state
-			setNetwork(newNetwork);
-		}
-	}, []);
+		},
+		[network],
+	);
 
 	return {
 		balance,

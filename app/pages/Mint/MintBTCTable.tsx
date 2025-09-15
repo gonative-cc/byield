@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { ChevronDown, ChevronRight, Info } from "lucide-react";
 import { trimAddress } from "~/components/Wallet/walletHelper";
 import { formatBTC } from "~/lib/denoms";
@@ -12,7 +12,8 @@ interface MintBTCTableProps {
 }
 
 export function MintBTCTable({ data }: MintBTCTableProps) {
-	const { confirmationThreshold } = useBitcoinConfig();
+	const bitcoinConfig = useBitcoinConfig();
+	const confirmationThreshold = bitcoinConfig?.confirmationThreshold || 6;
 	const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
 	const toggleRowExpansion = (bitcoinTxId: string) => {
@@ -153,10 +154,9 @@ export function MintBTCTable({ data }: MintBTCTableProps) {
 							data.map((transaction, index) => {
 								const isExpanded = expandedRows.has(transaction.bitcoinTxId);
 								return (
-									<>
+									<React.Fragment key={transaction.bitcoinTxId}>
 										{/* Main Row */}
 										<tr
-											key={transaction.bitcoinTxId}
 											className="hover:bg-primary/5 transition-all duration-200 animate-in slide-in-from-left-2"
 											style={{ animationDelay: `${index * 50}ms` }}
 										>
@@ -241,7 +241,7 @@ export function MintBTCTable({ data }: MintBTCTableProps) {
 												</td>
 											</tr>
 										)}
-									</>
+									</React.Fragment>
 								);
 							})
 						)}

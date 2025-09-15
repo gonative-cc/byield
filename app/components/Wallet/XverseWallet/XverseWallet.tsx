@@ -10,9 +10,10 @@ function NetWorkOptions() {
 	const { network, switchNetwork } = useXverseWallet();
 	const bitcoinSupportedNetwork: Option[] = useMemo(
 		() => [
-			{ label: ExtendedBitcoinNetworkType.Testnet4, value: ExtendedBitcoinNetworkType.Testnet4 },
-			{ label: ExtendedBitcoinNetworkType.Regtest, value: ExtendedBitcoinNetworkType.Regtest },
-			{ label: ExtendedBitcoinNetworkType.Mainnet, value: ExtendedBitcoinNetworkType.Mainnet },
+			{ label: "TestnetV2 (indexer + Testnet4)", value: ExtendedBitcoinNetworkType.TestnetV2 },
+			{ label: "Testnet4", value: ExtendedBitcoinNetworkType.Testnet4 },
+			{ label: "Regtest", value: ExtendedBitcoinNetworkType.Regtest },
+			{ label: "Mainnet", value: ExtendedBitcoinNetworkType.Mainnet },
 		],
 		[],
 	);

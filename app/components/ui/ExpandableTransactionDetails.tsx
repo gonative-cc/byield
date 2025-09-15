@@ -1,14 +1,16 @@
 import { Info } from "lucide-react";
 import { MintingTxStatus, type MintTransaction } from "~/server/Mint/types";
 import { AnimatedHourglass } from "./AnimatedHourglass";
-import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
+import { useBitcoinConfig, type BitcoinConfigBase } from "~/hooks/useBitcoinConfig";
 
 interface ExpandableTransactionDetailsProps {
 	transaction: MintTransaction;
 }
 
 export function ExpandableTransactionDetails({ transaction }: ExpandableTransactionDetailsProps) {
-	const { confirmationThreshold } = useBitcoinConfig();
+	const bitcoinConfig = useBitcoinConfig();
+	const confirmationThreshold = bitcoinConfig?.confirmationThreshold || 6;
+	const blockTime = (bitcoinConfig as BitcoinConfigBase)?.blockTime || 600; // Default 10 minutes in seconds
 	const operationDate = new Date(transaction.operationStartDate || transaction.timestamp);
 
 	const getStatusIcon = (status: MintingTxStatus) => {
@@ -106,7 +108,7 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 					<span>
 						Bitcoin requires confirmations to ensure that a transaction is final and irreversible,
 						preventing double-spending. Confirmation is a Bitcoin Block minted after that
-						transaction. 1 bitcoin block takes about 10min.
+						transaction. 1 bitcoin block takes about {blockTime / 60} minutes.
 					</span>
 				</div>
 

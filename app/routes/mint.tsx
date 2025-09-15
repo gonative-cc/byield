@@ -1,6 +1,7 @@
 import { MintBTC } from "~/pages/Mint/MintBTC";
 import { MintBTCTable } from "~/pages/Mint/MintBTCTable";
 import { MintingTxStatus, type MintTransaction } from "~/server/Mint/types";
+import { useMintTransactions } from "~/hooks/useMintTransactions";
 
 // TODO: mocked mint tx data with realistic fees (calculated from actual transaction parameters)
 const data: MintTransaction[] = [
@@ -96,6 +97,11 @@ const data: MintTransaction[] = [
 ];
 
 export default function Mint() {
+	const { transactions, isLoading, error, refetch } = useMintTransactions();
+
+	// Fallback to mock data if indexer is not available or no real data
+	const displayData = transactions.length > 0 ? transactions : data;
+
 	return (
 		<div className="mx-auto px-4 py-4 space-y-6">
 			<div className="text-center space-y-2">
@@ -109,7 +115,41 @@ export default function Mint() {
 			<div className="flex justify-center">
 				<MintBTC />
 			</div>
-			<MintBTCTable data={data} />
+
+			{/* Show loading state */}
+			{isLoading && transactions.length === 0 && (
+				<div className="text-center py-8">
+					<div className="loading loading-spinner loading-lg text-primary"></div>
+					<p className="mt-2 text-base-content/60">Loading transactions from indexer...</p>
+				</div>
+			)}
+
+			{/* Show error with retry option */}
+			{error && (
+				<div className="alert alert-warning">
+					<div className="flex items-center justify-between w-full">
+						<span>⚠️ Failed to load real-time data: {error}</span>
+						<button onClick={refetch} className="btn btn-sm btn-outline">
+							Retry
+						</button>
+					</div>
+				</div>
+			)}
+
+			{/* Show data source indicator */}
+			<div className="text-center text-sm text-base-content/60">
+				{transactions.length > 0 ? (
+					<span className="inline-flex items-center gap-2">
+						🔴 Live data from indexer
+						<span className="loading loading-spinner loading-xs"></span>
+						(updates every 15s)
+					</span>
+				) : (
+					<span>📋 Showing mock data (indexer not available)</span>
+				)}
+			</div>
+
+			<MintBTCTable data={displayData} />
 		</div>
 	);
 }
