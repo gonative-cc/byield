@@ -92,9 +92,10 @@ function Accounts() {
 	);
 }
 
-function SuiWalletMobileView({ balance }: { balance: bigint }) {
+function SuiWalletMobileView() {
 	const { mutate: disconnect } = useDisconnectWallet();
 	const { handleWalletConnect } = useContext(WalletContext);
+	const { balance } = useCoinBalance();
 
 	return (
 		<div className="flex w-full flex-col gap-4 items-center md:hidden">
@@ -152,7 +153,7 @@ export function SuiWallet() {
 				</Button>
 			</div>
 			{/* handles below md screen sizes */}
-			<SuiWalletMobileView balance={balance} />
+			<SuiWalletMobileView />
 		</>
 	);
 }
