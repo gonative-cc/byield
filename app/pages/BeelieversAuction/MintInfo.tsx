@@ -334,7 +334,7 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 		return <p className="text-xl">Connect to your wallet to see minting info</p>;
 	}
 
-	const isWinner = user.rank !== null && user.rank < _auctionSize;
+	const isWinner = user.rank !== null && user.rank <= _auctionSize;
 	const boosted = user.wlStatus > AuctionAccountType.DEFAULT;
 	let doRefund: DoRefund = DoRefund.No;
 	if (user.amount > 0) {
