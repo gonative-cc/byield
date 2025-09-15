@@ -15,6 +15,7 @@ import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
 import { ExtendedBitcoinNetworkType } from "~/hooks/useBitcoinConfig";
 import { toast } from "~/hooks/use-toast";
+import devnetConfig from "~/config/bitcoin-devnet.json";
 
 export const useXverseConnect = () => {
 	const { handleWalletConnect, toggleBitcoinModal } = useContext(WalletContext);
@@ -158,8 +159,8 @@ export const useXverseWallet = () => {
 			chain: "bitcoin",
 			name,
 			type: BitcoinNetworkType.Regtest,
-			indexerUrl: bitcoinConfig.indexerUrl,
-			rpcUrl: bitcoinConfig.rpcUrl,
+			indexerUrl: devnetConfig.indexerUrl,
+			rpcUrl: devnetConfig.rpcUrl,
 		});
 		if (res.status !== "success") {
 			console.error(res.error);
