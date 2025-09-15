@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import Wallet, {
 	AddressPurpose,
 	BitcoinNetworkType,
@@ -14,21 +14,6 @@ import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
 import { ExtendedBitcoinNetworkType } from "~/hooks/useBitcoinConfig";
 import { toast } from "~/hooks/use-toast";
-
-export function getBitcoinNetworkConfig(network: ExtendedBitcoinNetworkType): Network | null {
-	switch (network) {
-		case ExtendedBitcoinNetworkType.Mainnet:
-			return networks.bitcoin;
-		case ExtendedBitcoinNetworkType.Regtest:
-		case ExtendedBitcoinNetworkType.Devnet:
-			return networks.regtest;
-		case ExtendedBitcoinNetworkType.Testnet4:
-		case ExtendedBitcoinNetworkType.TestnetV2:
-			return networks.testnet;
-		default:
-			return null;
-	}
-}
 
 export const useXverseConnect = () => {
 	const { handleWalletConnect, toggleBitcoinModal } = useContext(WalletContext);
@@ -79,18 +64,22 @@ export const useXverseWallet = () => {
 	const [balance, setBalance] = useState<string>();
 	// TODO: Default bitcoin network on connection is TestnetV2 (with indexer)
 	const [network, setNetwork] = useState<ExtendedBitcoinNetworkType>(ExtendedBitcoinNetworkType.TestnetV2);
+	const hasFetchedBalanceSuccessfullyRef = useRef<boolean>(false);
 
 	const getBalance = useCallback(async () => {
 		try {
 			const response = await Wallet.request(getBalanceMethodName, null);
 			if (response.status === "success") {
 				setBalance(response.result.total);
+				hasFetchedBalanceSuccessfullyRef.current = true;
 			} else {
-				toast({
-					title: "Balance",
-					description: "Failed to get the balance",
-					variant: "destructive",
-				});
+				if (!hasFetchedBalanceSuccessfullyRef.current) {
+					toast({
+						title: "Balance",
+						description: "Failed to get the balance",
+						variant: "destructive",
+					});
+				}
 			}
 		} catch (err) {
 			console.log(err);
@@ -141,10 +130,12 @@ export const useXverseWallet = () => {
 				setAddressInfo([]);
 				setCurrentAddress(null);
 				setBalance(undefined);
+				// Reset session success marker on disconnect
+				hasFetchedBalanceSuccessfullyRef.current = false;
 			}
 		}
 		getWalletStatus();
-	}, [getAddresses, getBalance, getNetworkStatus, isBitCoinWalletConnected, network]);
+	}, [getAddresses, getBalance, getNetworkStatus, isBitCoinWalletConnected, network, currentAddress]);
 
 	const disconnectWallet = useCallback(async () => {
 		try {
@@ -244,6 +235,7 @@ export const useXverseWallet = () => {
 		currentAddress,
 		addressInfo,
 		setCurrentAddress,
+		refreshBalance: getBalance,
 		disconnectWallet,
 		switchNetwork,
 	};
