@@ -33,7 +33,7 @@ function NetWorkOptions() {
 
 	const { network, selectNetwork } = useSuiClientContext();
 	const handleChange = useCallback(
-		(value: string) => {
+		(value: SuiNetwork) => {
 			selectNetwork(value);
 		},
 		[selectNetwork],
@@ -41,7 +41,7 @@ function NetWorkOptions() {
 
 	// TODO: remove this after auction. enforce network change
 	const isAuctionPathname = pathname === "/beelievers-auction" && isProductionMode();
-	const networks = useMemo(
+	const suiNetworks: Option<SuiNetwork>[] = useMemo(
 		() =>
 			isAuctionPathname
 				? [{ label: SuiNetworkLabel[SuiNetwork.MainNet], value: SuiNetwork.MainNet }]
@@ -49,14 +49,12 @@ function NetWorkOptions() {
 		[isAuctionPathname],
 	);
 
-	const suiWalletNetworks: Option[] = useMemo(() => networks, [networks]);
-
 	return (
 		<SelectInput
-			options={suiWalletNetworks}
+			options={suiNetworks}
 			placeholder="Select network"
-			onValueChange={(value) => handleChange(value)}
-			value={network}
+			onValueChange={(value: SuiNetwork) => handleChange(value)}
+			value={network as SuiNetwork}
 			className="w-full md:w-1/4"
 		/>
 	);

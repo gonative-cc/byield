@@ -1,43 +1,54 @@
-import { Select as DaisyUISelect } from "react-daisyui";
-
-interface Option {
+interface Option<T = string> {
 	label: string;
-	value: string;
+	value: T;
 }
 
-interface SelectInputProps {
-	options: Option[];
+interface SelectInputProps<T = string> {
+	options: Option<T>[];
 	placeholder?: string;
-	onValueChange?: (value: string) => void;
+	onValueChange?: (value: T) => void;
 	className?: string;
-	value?: string;
+	value?: T;
 }
 
-export function SelectInput({ options, value, placeholder, onValueChange }: SelectInputProps) {
+function isOptionValueNumberOrString<T>(value: T) {
+	return typeof value === "number" || typeof value === "string";
+}
+
+function SelectInput<T = string>({ options, value, placeholder, onValueChange }: SelectInputProps<T>) {
 	const handleOnChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-		if (onValueChange) onValueChange(event.target.value);
+		if (onValueChange) {
+			const selectedOption = options.find((opt) =>
+				isOptionValueNumberOrString(opt.value) ? opt.value : opt.value === event.target.value,
+			);
+			if (selectedOption) onValueChange(selectedOption.value);
+		}
 	};
 
+	const defaultValue = isOptionValueNumberOrString(value) ? value : String(value);
+	const isThereOptions = options.length;
+
 	return (
-		<DaisyUISelect value={value || "default"} onChange={handleOnChange}>
-			<>
-				{placeholder && (
-					<DaisyUISelect.Option value="default" disabled>
-						{placeholder}
-					</DaisyUISelect.Option>
-				)}
-				{options?.map(({ value, label }) => (
-					<DaisyUISelect.Option
-						key={value}
-						value={value}
-						className="text-white md:text-base text-sm"
+		<select value={defaultValue || "default"} onChange={handleOnChange} className="select">
+			{placeholder && (
+				<option value="default" disabled>
+					{placeholder}
+				</option>
+			)}
+			{isThereOptions ? (
+				options?.map(({ value: optionValue, label }) => (
+					<option
+						key={String(optionValue)}
+						value={isOptionValueNumberOrString(optionValue) ? optionValue : String(optionValue)}
 					>
 						{label}
-					</DaisyUISelect.Option>
-				))}
-			</>
-		</DaisyUISelect>
+					</option>
+				))
+			) : (
+				<option disabled>No options available</option>
+			)}
+		</select>
 	);
 }
 
-export type { Option };
+export { type Option, SelectInput };
