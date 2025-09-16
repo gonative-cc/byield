@@ -12,7 +12,6 @@ import {
 import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
 
 import { Countdown } from "~/components/ui/countdown";
-import { Card } from "react-daisyui";
 import { classNames } from "~/util/tailwind";
 import { toast } from "~/hooks/use-toast";
 import { useNetworkVariables } from "~/networkConfig";
@@ -344,8 +343,8 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 	const mintStarted = beelieversMint.mintStart <= +new Date();
 
 	return (
-		<Card className="lg:w-[85%] xl:w-[75%] w-full shadow-2xl card-border border transition-all duration-300 hover:shadow-primary/10">
-			<Card.Body className="p-4 lg:p-8 rounded-lg text-white flex flex-col xl:flex-row gap-6 sm:gap-8 lg:gap-12 bg-gradient-to-br from-azure-25 via-azure-20 to-azure-15">
+		<div className="card lg:w-[85%] xl:w-[75%] w-full shadow-2xl card-border border transition-all duration-300 hover:shadow-primary/10">
+			<div className="card-body p-4 lg:p-8 rounded-lg text-white flex flex-col xl:flex-row gap-6 sm:gap-8 lg:gap-12 bg-gradient-to-br from-azure-25 via-azure-20 to-azure-15">
 				<div className="flex-shrink-0 flex justify-center xl:justify-start w-full xl:w-auto">
 					{nftId ? (
 						<NftDisplay nftId={nftId} />
@@ -401,8 +400,8 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 						setKiosk={setKiosk}
 					/>
 				</div>
-			</Card.Body>
-		</Card>
+			</div>
+		</div>
 	);
 }
 

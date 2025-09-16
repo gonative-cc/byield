@@ -6,7 +6,6 @@ import { Transaction } from "@mysten/sui/transactions";
 
 import { formatSUI, parseSUI, SUI } from "~/lib/denoms";
 import { delay } from "~/lib/batteries";
-import { Card } from "react-daisyui";
 import { FormNumericInput } from "~/components/form/FormNumericInput";
 import { FormInput } from "~/components/form/FormInput";
 import { SuiModal } from "~/components/Wallet/SuiWallet/SuiModal";
@@ -155,8 +154,8 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 		<FormProvider {...bidForm}>
 			<form onSubmit={onSubmit} className="flex justify-center w-full">
 				<div className="w-full lg:w-2/3 xl:w-1/2 space-y-6">
-					<Card className="shadow-2xl card-border border transition-all duration-300 animate-in slide-in-from-bottom-2 duration-700">
-						<Card.Body className="p-6 lg:p-8 rounded-lg text-white flex flex-col w-full gap-6 bg-gradient-to-br from-azure-10 via-azure-15 to-azure-20">
+					<div className="card shadow-2xl card-border border transition-all duration-300 animate-in slide-in-from-bottom-2 duration-700">
+						<div className="card-body p-6 lg:p-8 rounded-lg text-white flex flex-col w-full gap-6 bg-gradient-to-br from-azure-10 via-azure-15 to-azure-20">
 							<div className="flex items-center justify-between">
 								<div className="flex items-center gap-3">
 									<div className="w-12 h-12 rounded-full bg-gradient-to-r from-primary to-orange-400 flex items-center justify-center animate-pulse-glow">
@@ -231,8 +230,8 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 								</div>
 								{submitButton(isPending, hasUserBidBefore)}
 							</div>
-						</Card.Body>
-					</Card>
+						</div>
+					</div>
 				</div>
 			</form>
 		</FormProvider>
