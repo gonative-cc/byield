@@ -39,11 +39,11 @@ export function BuyNBTC() {
 				<CardContent className="p-6 rounded-lg text-white flex flex-col gap-4 bg-azure-10">
 					{isSuiWalletConnected && <NBTCBalance balance={nBTCBalance} />}
 					<Instructions />
-					<div className="tabs tabs-border bg-azure-10">
+					<div className="tabs tabs-boxed bg-azure-10 rounded-full p-1">
 						<input
 							type="radio"
 							name="tab_nbtc_buy_sell"
-							className="tab"
+							className="tab tab-lg rounded-full checked:bg-primary"
 							aria-label="Buy"
 							defaultChecked
 						/>
@@ -51,7 +51,12 @@ export function BuyNBTC() {
 							<BuyNBTCTabContent />
 						</div>
 
-						<input type="radio" name="tab_nbtc_buy_sell" className="tab" aria-label="Sell" />
+						<input
+							type="radio"
+							name="tab_nbtc_buy_sell"
+							className="tab tab-lg rounded-full checked:bg-primary"
+							aria-label="Sell"
+						/>
 						<div className="tab-content py-6">
 							<SellNBTCTabContent />
 						</div>
