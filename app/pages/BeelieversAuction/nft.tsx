@@ -131,12 +131,14 @@ export function NftDisplay({ nftId }: NftDisplayProps) {
 					)}
 
 					<div className="pt-3 justify-center w-full flex text-foreground">
-						<a href={mkSuiVisionUrl(nftId, contractsConfig)} target="_blank" rel="noopener noreferrer">
+						<a
+							href={mkSuiVisionUrl(nftId, contractsConfig)}
+							target="_blank"
+							rel="noopener noreferrer"
+						>
 							<button className="btn btn-primary">
-								<div className="flex gap-2 items-center">
-									<ExternalLink size={16} />
-									View on SuiVision
-								</div>
+								<ExternalLink size={16} />
+								View on SuiVision
 							</button>
 						</a>
 					</div>

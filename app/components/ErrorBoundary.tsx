@@ -31,10 +31,8 @@ export function ErrorBoundary() {
 						</button>
 					</Link>
 					<button onClick={handleRefresh} className="btn btn-primary">
-						<div className="flex gap-2 items-center">
-							<RefreshCw />
-							Retry
-						</div>
+						<RefreshCw />
+						Retry
 					</button>
 				</div>
 			</CardContent>
@@ -55,10 +53,8 @@ export function ErrorBoundary() {
 				</p>
 				<div className="flex gap-2 justify-center">
 					<button onClick={handleRefresh} className="btn btn-primary">
-						<div className="flex gap-2 items-center">
-							<RefreshCw />
-							Retry
-						</div>
+						<RefreshCw />
+						Retry
 					</button>
 				</div>
 			</CardContent>

@@ -127,7 +127,7 @@ export function BuyNBTCTabContent() {
 				<YouReceive isSuiWalletConnected={isSuiWalletConnected} mistAmount={mistAmount} />
 				{isSuiWalletConnected ? (
 					<button className="btn btn-primary" type="submit" disabled={isPending}>
-						{isPending && <span className="loading loading-spinner"></span>}
+						{isPending && <span className="loading loading-spinner" />}
 						Buy
 					</button>
 				) : (

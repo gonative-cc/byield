@@ -29,14 +29,14 @@ export function TransactionStatus({ isSuccess, txnId, handleRetry }: Transaction
 						<p className="text-sm leading-relaxed">
 							If you want to increase your chances to be whitelisted for BTCFi Beelievers NFT,
 							please fill this{" "}
-							<Link
+							<a
 								target="_blank"
-								to="https://forms.gle/Hu4WUSfgQkp1xsyNA"
+								href="https://forms.gle/Hu4WUSfgQkp1xsyNA"
 								rel="noreferrer"
-								className="text-primary underline"
+								className="text-primary btn-link"
 							>
 								form.
-							</Link>
+							</a>
 						</p>
 					</div>
 				)}

@@ -1,6 +1,5 @@
 import { Card, CardContent } from "../../components/ui/card";
 import { BitcoinBalance } from "../../components/BitcoinBalance";
-import { Link } from "react-router";
 import { FormProvider, useForm } from "react-hook-form";
 import { FormInput } from "../../components/form/FormInput";
 import { useXverseConnect, useXverseWallet } from "../../components/Wallet/XverseWallet/useWallet";
@@ -40,22 +39,22 @@ function TransactionStatus({ SuiAddress, txId, handleRetry }: TransactionStatusP
 					size={30}
 				/>{" "}
 				Success
-				<Link
+				<a
 					target="_blank"
-					to={bitcoinBroadcastLink}
+					href={bitcoinBroadcastLink}
 					rel="noreferrer"
-					className="underline text-primary"
+					className="text-primary btn btn-link"
 				>
 					Track bitcoin transaction confirmation in explorer
-				</Link>
-				<Link
+				</a>
+				<a
 					target="_blank"
-					to={suiScanExplorerLink}
+					href={suiScanExplorerLink}
 					rel="noreferrer"
-					className="underline text-primary"
+					className="text-primary btn btn-link"
 				>
 					Explore SUI coins
-				</Link>
+				</a>
 			</div>
 
 			<button className="btn btn-primary" onClick={handleRetry}>

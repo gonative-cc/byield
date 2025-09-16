@@ -39,10 +39,7 @@ function MobileWalletModal({ children }: { children: React.ReactNode }) {
 			<Dialog>
 				<DialogTrigger asChild>
 					<button className="btn btn-primary btn-outline btn-sm gap-2">
-						<div className="flex gap-2 items-center">
-							<Wallet />
-							<span className="text-xs">Wallet</span>
-						</div>
+						<Wallet /> Wallet
 					</button>
 				</DialogTrigger>
 				<DialogContent className="sm:max-w-md">

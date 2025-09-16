@@ -10,7 +10,6 @@ import {
 import { useContext } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
-import { Link } from "react-router";
 import { Wallet } from "lucide-react";
 import { toast } from "~/hooks/use-toast";
 
@@ -21,9 +20,9 @@ interface InstallWalletProps {
 
 function InstallWallet({ link, name }: InstallWalletProps) {
 	return (
-		<Link target="_blank" to={link} rel="noreferrer" className="m-0 p-0">
-			<button className="btn btn-primary btn-link p-0 m-0">Install {name}</button>
-		</Link>
+		<a target="_blank" href={link} rel="noreferrer" className="btn btn-primary btn-link p-0 m-0">
+			Install {name}
+		</a>
 	);
 }
 
@@ -130,9 +129,7 @@ export function SuiModal({ label = "Connect Sui Wallet" }: SuiModalProps) {
 		<Dialog>
 			<DialogTrigger asChild>
 				<button className="btn btn-primary md:w-auto w-full">
-					<div className="flex gap-2 items-center">
-						<Wallet /> {label}
-					</div>
+					<Wallet /> {label}
 				</button>
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-[425px]">
