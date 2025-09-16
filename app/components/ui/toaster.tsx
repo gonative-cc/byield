@@ -1,7 +1,6 @@
 import { useToast } from "~/hooks/use-toast";
 import { CircleX, Info, TriangleAlert } from "lucide-react";
 import { cva } from "class-variance-authority";
-import { Button } from "./button";
 
 const toastVariants = cva("alert", {
 	variants: {
@@ -45,9 +44,9 @@ export function Toaster() {
 						{title && <span>{title}</span>}
 						{description && <span>{description}</span>}
 					</div>
-					<Button variant="ghost" onClick={() => dismiss(id)}>
+					<button className="btn btn-ghost" onClick={() => dismiss(id)}>
 						X
-					</Button>
+					</button>
 				</div>
 			))}
 		</div>

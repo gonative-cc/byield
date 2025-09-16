@@ -1,6 +1,5 @@
 import { isRouteErrorResponse, useRouteError, Link, type ErrorResponse } from "react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { Button } from "~/components/ui/button";
 import { AlertTriangle, Home, RefreshCw } from "lucide-react";
 
 export function ErrorBoundary() {
@@ -25,16 +24,16 @@ export function ErrorBoundary() {
 					{err.data || "The page you're looking for doesn't exist or something went wrong."}
 				</p>
 				<div className="flex gap-2 justify-center">
-					<Button asChild variant="outline">
-						<Link to="/">
+					<Link to="/">
+						<button className="btn btn-primary btn-outline">
 							<Home />
 							Home
-						</Link>
-					</Button>
-					<Button onClick={handleRefresh}>
+						</button>
+					</Link>
+					<button onClick={handleRefresh} className="btn btn-primary">
 						<RefreshCw />
 						Retry
-					</Button>
+					</button>
 				</div>
 			</CardContent>
 		</>
@@ -53,10 +52,10 @@ export function ErrorBoundary() {
 					Something unexpected happened. Please try refreshing the page.
 				</p>
 				<div className="flex gap-2 justify-center">
-					<Button onClick={handleRefresh}>
+					<button onClick={handleRefresh} className="btn btn-primary">
 						<RefreshCw />
 						Retry
-					</Button>
+					</button>
 				</div>
 			</CardContent>
 		</>

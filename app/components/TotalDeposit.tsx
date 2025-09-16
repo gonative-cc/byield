@@ -2,10 +2,8 @@ import { Zap } from "lucide-react";
 import { Card, CardContent } from "./ui/card";
 import { Table } from "./ui/table";
 import type { Column, CellProps } from "react-table";
-import { Link } from "react-router";
 import { SelectInput } from "./ui/select";
 import { Input } from "./ui/input";
-import { Button } from "./ui/button";
 import { action } from "../config/market.json";
 import { formatNBTC } from "~/lib/denoms";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
@@ -99,12 +97,12 @@ export const columns: Column<DApp>[] = [
 			if (!action) return null;
 			return (
 				<div className="flex space-x-2">
-					<Link to={action.trade} target="_blank">
-						<Button variant="secondary">Trade nBTC</Button>
-					</Link>
-					<Link to={action.deposit} target="_blank">
-						<Button variant="ghost">Deposit</Button>
-					</Link>
+					<a href={action.trade} target="_blank" rel="noreferrer" className="btn">
+						Trade nBTC
+					</a>
+					<a href={action.deposit} target="_blank" rel="noreferrer" className="btn btn-primary">
+						Deposit
+					</a>
 				</div>
 			);
 		},

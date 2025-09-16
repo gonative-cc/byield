@@ -6,7 +6,6 @@ import {
 	useSwitchAccount,
 } from "@mysten/dapp-kit";
 import { SelectInput, type Option } from "../../ui/select";
-import { Button } from "../../ui/button";
 import { useCallback, useContext, useMemo } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
@@ -111,14 +110,15 @@ function SuiWalletMobileView() {
 						className="shrink-0 text-primary"
 					/>
 				</p>
-				<Button
+				<button
 					onClick={() => {
 						disconnect();
 						handleWalletConnect(Wallets.SuiWallet, false);
 					}}
+					className="btn btn-primary"
 				>
 					Disconnect
-				</Button>
+				</button>
 			</div>
 		</div>
 	);
@@ -141,14 +141,15 @@ export function SuiWallet() {
 					suffix=" SUI"
 					className="shrink-0"
 				/>
-				<Button
+				<button
 					onClick={() => {
 						disconnect();
 						handleWalletConnect(Wallets.SuiWallet, false);
 					}}
+					className="btn btn-primary"
 				>
 					Disconnect
-				</Button>
+				</button>
 			</div>
 			{/* handles below md screen sizes */}
 			<SuiWalletMobileView />
