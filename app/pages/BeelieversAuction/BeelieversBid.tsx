@@ -17,7 +17,11 @@ import { toast } from "~/hooks/use-toast";
 import { useNetworkVariables } from "~/networkConfig";
 import { SUIIcon } from "~/components/icons";
 import { moveCallTarget, type BeelieversAuctionCfg } from "~/config/sui/contracts-config";
-import { buttonEffectClasses, classNames } from "~/util/tailwind";
+import { classNames } from "~/util/tailwind";
+
+function buttonEffectClasses() {
+	return "transition-all duration-300 transform hover:scale-[1.02]";
+}
 
 const MINIMUM_FIRST_BID_MIST = 1e9;
 interface NewTotalBidAmountProps {

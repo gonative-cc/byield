@@ -92,7 +92,7 @@ function Percentage({ onChange }: { onChange: (value: number) => void }) {
 				<button
 					key={id}
 					onClick={() => onChange(value)}
-					className="btn btn-primary btn-outline transition-all duration-200 hover:scale-105"
+					className="btn btn-ghost bg-azure-10 w-full text-sm sm:text-base"
 				>
 					{value}%
 				</button>
@@ -253,10 +253,7 @@ export function MintBTC() {
 							}}
 						/>
 						{isBitCoinWalletConnected ? (
-							<button
-								type="submit"
-								className={classNames("btn btn-primary", buttonEffectClasses())}
-							>
+							<button type="submit" className="btn btn-primary">
 								Deposit BTC and mint nBTC
 							</button>
 						) : (
