@@ -13,21 +13,21 @@ import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
 
 import { Countdown } from "~/components/ui/countdown";
 import { Card, CardContent } from "~/components/ui/card";
-import { Button } from "~/components/ui/button";
 import { classNames } from "~/util/tailwind";
 import { toast } from "~/hooks/use-toast";
 import { useNetworkVariables } from "~/networkConfig";
 import { AuctionAccountType, type AuctionInfo, type User } from "~/server/BeelieversAuction/types";
-import { signAndExecTx, SUI_RANDOM_OBJECT_ID } from "~/lib/suienv";
+import { signAndExecTx, SUI_RANDOM_OBJECT_ID, mkSuiVisionUrl } from "~/lib/suienv";
 import { formatSUI } from "~/lib/denoms";
 import { parseTxError, formatSuiErr } from "~/lib/suierr";
-import type { BeelieversAuctionCfg, BeelieversMintCfg } from "~/config/sui/contracts-config";
+import type { BeelieversAuctionCfg, BeelieversMintCfg, ContractsCfg } from "~/config/sui/contracts-config";
 import { moveCallTarget } from "~/config/sui/contracts-config";
 import { delay } from "~/lib/batteries";
 
-import { mkSuiVisionUrl, NftDisplay, findExistingNft, findNftInTxResult, queryNftFromKiosk } from "./nft";
+import { NftDisplay, findExistingNft, findNftInTxResult, queryNftFromKiosk } from "./nft";
 import type { KioskInfo } from "./kiosk";
 import { initializeKioskInfo, createKiosk } from "./kiosk";
+import { LoadingSpinner } from "~/components/LoadingSpinner";
 
 interface MintInfoItemProps {
 	title: string;
@@ -49,8 +49,8 @@ function MintInfoItem({ title, value, isLastItem = false }: MintInfoItemProps) {
 	);
 }
 
-const createNftSuccessToast = (nftId: string, network: string) => {
-	const suiVisionUrl = mkSuiVisionUrl(nftId, network);
+const createNftSuccessToast = (nftId: string, contractsConfig: ContractsCfg) => {
+	const suiVisionUrl = mkSuiVisionUrl(nftId, contractsConfig);
 
 	return {
 		title: "Minting Successful! 🎉",
@@ -82,7 +82,8 @@ interface MintActionProps {
 }
 
 function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }: MintActionProps) {
-	const { beelieversAuction, beelieversMint } = useNetworkVariables();
+	const contractsConfig = useNetworkVariables();
+	const { beelieversAuction, beelieversMint } = contractsConfig;
 	const { mutate: signAndExecTxAction, isPending: isRefundPending } = useSignAndExecuteTransaction();
 	const { mutateAsync: signTransaction } = useSignTransaction();
 	const { network, client } = useSuiClientContext();
@@ -118,13 +119,13 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 			await delay(1600);
 			if (nftId) {
 				setNftId(nftId);
-				toast(createNftSuccessToast(nftId, network));
+				toast(createNftSuccessToast(nftId, contractsConfig));
 			} else {
 				console.log("nft not found in tx result, checking querying indexer with kiosk");
 				const nftFromKiosk = await queryNftFromKiosk(kioskId, beelieversMint.pkgId, client);
 				if (nftFromKiosk) {
 					setNftId(nftFromKiosk);
-					toast(createNftSuccessToast(nftFromKiosk, network));
+					toast(createNftSuccessToast(nftFromKiosk, contractsConfig));
 				} else {
 					toast({
 						title: "Minting Successful",
@@ -206,34 +207,29 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 	return (
 		<div className="flex flex-col sm:flex-row gap-4">
 			{canMint && (
-				<Button
-					type="button"
+				<button
 					disabled={isAnyActionPending}
-					isLoading={isMinting}
-					size="lg"
-					className="flex-1"
+					className="btn btn-primary btn-lg flex-1"
 					onClick={handleMintNFT}
 				>
+					<LoadingSpinner isLoading={isMinting} />
 					🐝 Mint
-				</Button>
+				</button>
 			)}
 			{doRefund === DoRefund.NoBoosted &&
 				"You have nothing to withdraw because you are a winner and your bid is below (due to boost) or at the Mint Price"}
 			{doRefund === DoRefund.Yes && (
-				<Button
-					type="button"
+				<button
 					disabled={isAnyActionPending}
-					isLoading={isRefundPending}
-					size="lg"
-					variant="outline"
-					className="flex-1"
+					className="btn btn-primary btn-outline btn-lg flex-1 flex-col h-16"
 					onClick={handleRefund}
 				>
+					<LoadingSpinner isLoading={isRefundPending} />
 					💰 Refund
-					<div className="text-small text-muted-foreground">
+					<div className="text-sm text-muted-foreground">
 						NOTE: if you already claimed refund, subsequent claim will fail
 					</div>
-				</Button>
+				</button>
 			)}
 		</div>
 	);
@@ -333,7 +329,7 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 		return <p className="text-xl">Connect to your wallet to see minting info</p>;
 	}
 
-	const isWinner = user.rank !== null && user.rank < _auctionSize;
+	const isWinner = user.rank !== null && user.rank <= _auctionSize;
 	const boosted = user.wlStatus > AuctionAccountType.DEFAULT;
 	let doRefund: DoRefund = DoRefund.No;
 	if (user.amount > 0) {

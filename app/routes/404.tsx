@@ -1,5 +1,4 @@
 import { Link } from "react-router";
-import { Button } from "~/components/ui/button";
 
 export default function PageNotFound() {
 	return (
@@ -9,7 +8,7 @@ export default function PageNotFound() {
 				<span className="font-bold text-3xl">Error 404</span>
 				<span>Oops! Seems like you are lost :(</span>
 				<Link to="/">
-					<Button>Go back to main page</Button>
+					<button className="btn btn-primary">Go back to main page</button>
 				</Link>
 			</div>
 		</div>

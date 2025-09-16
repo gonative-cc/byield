@@ -29,6 +29,20 @@ export function BuyNBTC() {
 		}
 	}, [disconnect, isMainnet]);
 
+	const renderBuyNBTCTabs = () => (
+		<div className="tabs tabs-lift text-primary">
+			<input type="radio" name="buy_nbtc_tabs" className="tab" aria-label="Buy" />
+			<div className="tab-content bg-base-100 border-base-300 p-6">
+				<BuyNBTCTabContent />
+			</div>
+
+			<input type="radio" name="buy_nbtc_tabs" className="tab" aria-label="Sell" defaultChecked />
+			<div className="tab-content bg-base-100 border-base-300 p-6">
+				<SellNBTCTabContent />
+			</div>
+		</div>
+	);
+
 	return (
 		<div className="flex flex-col items-center gap-8 px-2 pt-2">
 			<p className="md:text-3xl text-2xl text-center font-semibold max-w-96">

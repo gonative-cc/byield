@@ -6,7 +6,6 @@ import {
 	useSwitchAccount,
 } from "@mysten/dapp-kit";
 import { SelectInput, type Option } from "../../ui/select";
-import { Button } from "../../ui/button";
 import { useCallback, useContext, useMemo } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
@@ -41,7 +40,7 @@ function NetWorkOptions() {
 
 	// TODO: remove this after auction. enforce network change
 	const isAuctionPathname = pathname === "/beelievers-auction" && isProductionMode();
-	const networks = useMemo(
+	const suiNetworks: Option<SuiNetwork>[] = useMemo(
 		() =>
 			isAuctionPathname
 				? [{ label: SuiNetworkLabel[SuiNetwork.MainNet], value: SuiNetwork.MainNet }]
@@ -49,14 +48,12 @@ function NetWorkOptions() {
 		[isAuctionPathname],
 	);
 
-	const suiWalletNetworks: Option[] = useMemo(() => networks, [networks]);
-
 	return (
 		<SelectInput
-			options={suiWalletNetworks}
+			options={suiNetworks}
 			placeholder="Select network"
-			onValueChange={handleChange}
-			value={network}
+			onValueChange={(value: SuiNetwork) => handleChange(value)}
+			value={network as SuiNetwork}
 			className="w-full md:w-1/4"
 		/>
 	);
@@ -113,14 +110,15 @@ function SuiWalletMobileView() {
 						className="shrink-0 text-primary"
 					/>
 				</p>
-				<Button
+				<button
 					onClick={() => {
 						disconnect();
 						handleWalletConnect(Wallets.SuiWallet, false);
 					}}
+					className="btn btn-primary"
 				>
 					Disconnect
-				</Button>
+				</button>
 			</div>
 		</div>
 	);
@@ -143,14 +141,15 @@ export function SuiWallet() {
 					suffix=" SUI"
 					className="shrink-0"
 				/>
-				<Button
+				<button
 					onClick={() => {
 						disconnect();
 						handleWalletConnect(Wallets.SuiWallet, false);
 					}}
+					className="btn btn-primary"
 				>
 					Disconnect
-				</Button>
+				</button>
 			</div>
 			{/* handles below md screen sizes */}
 			<SuiWalletMobileView />
