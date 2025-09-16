@@ -16,8 +16,12 @@ import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { toast } from "~/hooks/use-toast";
 import { useNetworkVariables } from "~/networkConfig";
 import { SUIIcon } from "~/components/icons";
-
 import { moveCallTarget, type BeelieversAuctionCfg } from "~/config/sui/contracts-config";
+import { classNames } from "~/util/tailwind";
+
+function buttonEffectClasses() {
+	return "transition-all duration-300 transform hover:scale-[1.02]";
+}
 
 const MINIMUM_FIRST_BID_MIST = 1e9;
 interface NewTotalBidAmountProps {
@@ -243,7 +247,7 @@ function submitButton(isPending: boolean, hasUserBidBefore: boolean) {
 	return (
 		<button
 			disabled={isPending}
-			className="btn btn-primary h-14 lg:h-16 text-lg font-semibold bg-gradient-to-r from-primary to-orange-400 hover:from-orange-400 hover:to-primary transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+			className={classNames("btn btn-primary h-16 text-lg", buttonEffectClasses())}
 		>
 			<span className="flex items-center gap-2">
 				{isPending ? (
