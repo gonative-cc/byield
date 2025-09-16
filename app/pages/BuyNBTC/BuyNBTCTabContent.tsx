@@ -10,6 +10,7 @@ import { YouReceive } from "./YouReceive";
 import { classNames } from "~/util/tailwind";
 import { SUIIcon } from "~/components/icons";
 import { useBuySellNBTC } from "./useNBTC";
+import { LoadingSpinner } from "~/components/LoadingSpinner";
 
 const BUY_NBTC_GAS = parseSUI("0.01");
 
@@ -127,7 +128,7 @@ export function BuyNBTCTabContent() {
 				<YouReceive isSuiWalletConnected={isSuiWalletConnected} mistAmount={mistAmount} />
 				{isSuiWalletConnected ? (
 					<button className="btn btn-primary" type="submit" disabled={isPending}>
-						{isPending && <span className="loading loading-spinner" />}
+						<LoadingSpinner isLoading={isPending} />
 						Buy
 					</button>
 				) : (

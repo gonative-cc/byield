@@ -160,10 +160,6 @@ button {
   cursor: pointer;
 }
 
-a.link {
-  @apply font-medium text-blue-300 hover:underline;
-}
-
 a.link-raw {
   @apply hover:underline;
 }

@@ -20,7 +20,7 @@ interface InstallWalletProps {
 
 function InstallWallet({ link, name }: InstallWalletProps) {
 	return (
-		<a target="_blank" href={link} rel="noreferrer" className="btn btn-primary btn-link p-0 m-0">
+		<a target="_blank" href={link} rel="noreferrer" className="link link-primary">
 			Install {name}
 		</a>
 	);
@@ -85,7 +85,7 @@ function AvailableWallets() {
 					<div className="flex gap-2 w-full">
 						<button
 							onClick={() => walletConnectClick(installedWallet)}
-							className="btn btn-primary btn-ghost justify-between flex rounded-none w-full h-16"
+							className="btn btn-primary btn-soft justify-between flex w-full h-16"
 						>
 							<img
 								src={installedWallet.icon}
@@ -109,7 +109,7 @@ function AvailableWallets() {
 				<div key={wallet.name} className="flex justify-center w-full">
 					<button
 						onClick={() => walletConnectClick(wallet)}
-						className="btn btn-primary btn-ghost justify-between flex w-full h-16"
+						className="btn btn-primary btn-soft justify-between flex w-full h-16"
 					>
 						<img src={wallet.icon} alt={wallet.name} width={40} height={40} />
 						{wallet.name}

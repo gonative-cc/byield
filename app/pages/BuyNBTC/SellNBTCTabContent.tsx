@@ -10,6 +10,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { FormNumericInput } from "~/components/form/FormNumericInput";
 import { classNames } from "~/util/tailwind";
 import { PRICE_PER_NBTC_IN_SUI } from "~/lib/nbtc";
+import { LoadingSpinner } from "~/components/LoadingSpinner";
 
 interface NBTCRightAdornmentProps {
 	maxNBTCAmount: bigint;
@@ -137,11 +138,9 @@ export function SellNBTCTabContent() {
 				</div>
 				{isSuiWalletConnected ? (
 					<button type="submit" disabled={isPending} className="btn btn-primary">
-						<div className="flex w-full gap-2 items-center justify-center">
-							{isPending && <span className="loading loading-spinner" />}
-							Sell nBTC
-							<ChevronRight />
-						</div>
+						<LoadingSpinner isLoading={isPending} />
+						Sell nBTC
+						<ChevronRight />
 					</button>
 				) : (
 					<SuiModal />

@@ -18,7 +18,7 @@ export function Instructions() {
 									target="_blank"
 									href={`https://faucet.sui.io/?network=testnet&address=${account?.address}`}
 									rel="noreferrer"
-									className="px-0 text-primary btn btn-primary btn-link"
+									className="link link-primary"
 								>
 									Request Sui Tokens from faucet.
 								</a>
@@ -29,7 +29,7 @@ export function Instructions() {
 									target="_blank"
 									href="https://docs.sui.io/guides/developer/getting-started/get-coins"
 									rel="noreferrer"
-									className="px-0 text-primary btn btn-primary btn-link"
+									className="link link-primary"
 								>
 									alternative faucets.
 								</a>

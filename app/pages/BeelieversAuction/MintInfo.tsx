@@ -27,6 +27,7 @@ import { delay } from "~/lib/batteries";
 import { NftDisplay, findExistingNft, findNftInTxResult, queryNftFromKiosk } from "./nft";
 import type { KioskInfo } from "./kiosk";
 import { initializeKioskInfo, createKiosk } from "./kiosk";
+import { LoadingSpinner } from "~/components/LoadingSpinner";
 
 interface MintInfoItemProps {
 	title: string;
@@ -211,7 +212,7 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 					className="btn btn-primary btn-lg flex-1"
 					onClick={handleMintNFT}
 				>
-					{isMinting && <span className="loading loading-spinner"></span>}
+					<LoadingSpinner isLoading={isMinting} />
 					🐝 Mint
 				</button>
 			)}
@@ -220,12 +221,12 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 			{doRefund === DoRefund.Yes && (
 				<button
 					disabled={isAnyActionPending}
-					className="btn btn-primary btn-outline btn-lg flex-1"
+					className="btn btn-primary btn-outline btn-lg flex-1 flex-col h-16"
 					onClick={handleRefund}
 				>
-					{isRefundPending && <span className="loading loading-spinner"></span>}
+					<LoadingSpinner isLoading={isRefundPending} />
 					💰 Refund
-					<div className="text-small text-muted-foreground">
+					<div className="text-sm text-muted-foreground">
 						NOTE: if you already claimed refund, subsequent claim will fail
 					</div>
 				</button>

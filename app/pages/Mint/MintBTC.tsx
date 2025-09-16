@@ -39,20 +39,10 @@ function TransactionStatus({ SuiAddress, txId, handleRetry }: TransactionStatusP
 					size={30}
 				/>{" "}
 				Success
-				<a
-					target="_blank"
-					href={bitcoinBroadcastLink}
-					rel="noreferrer"
-					className="text-primary btn btn-link"
-				>
+				<a target="_blank" href={bitcoinBroadcastLink} rel="noreferrer" className="link link-primary">
 					Track bitcoin transaction confirmation in explorer
 				</a>
-				<a
-					target="_blank"
-					href={suiScanExplorerLink}
-					rel="noreferrer"
-					className="text-primary btn btn-link"
-				>
+				<a target="_blank" href={suiScanExplorerLink} rel="noreferrer" className="link link-primary">
 					Explore SUI coins
 				</a>
 			</div>
