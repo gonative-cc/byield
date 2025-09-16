@@ -87,7 +87,7 @@
 		"vite": "6",
 		"vite-tsconfig-paths": "^5.1.4",
 		"vitest": "^3.2.4",
-		"wrangler": "^4.37.0"
+		"wrangler": "^4.37.1"
 	},
 	"lint-staged": {
 		"*.{js,cjs,mjs,jsx,ts,tsx}": [
