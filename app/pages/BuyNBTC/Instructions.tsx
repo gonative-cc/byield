@@ -1,7 +1,5 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
-import { Link } from "react-router";
 
 export function Instructions() {
 	const account = useCurrentAccount();
@@ -16,27 +14,25 @@ export function Instructions() {
 						Make sure you have testnet Sui tokens:
 						<ul className="ps-8 mt-2 space-y-1 list-disc list-outside">
 							<li>
-								<Link
+								<a
 									target="_blank"
-									to={`https://faucet.sui.io/?network=testnet&address=${account?.address}`}
+									href={`https://faucet.sui.io/?network=testnet&address=${account?.address}`}
 									rel="noreferrer"
+									className="link link-primary"
 								>
-									<Button type="button" variant="link" className="p-0 text-base">
-										Request Sui Tokens from faucet.
-									</Button>
-								</Link>
+									Request Sui Tokens from faucet.
+								</a>
 							</li>
 							<li>
 								You can also check{" "}
-								<Link
+								<a
 									target="_blank"
-									to="https://docs.sui.io/guides/developer/getting-started/get-coins"
+									href="https://docs.sui.io/guides/developer/getting-started/get-coins"
 									rel="noreferrer"
+									className="link link-primary"
 								>
-									<Button type="button" variant="link" className="p-0 text-base">
-										alternative faucets.
-									</Button>
-								</Link>
+									alternative faucets.
+								</a>
 							</li>
 						</ul>
 					</li>

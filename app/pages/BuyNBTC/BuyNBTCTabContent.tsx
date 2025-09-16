@@ -1,6 +1,5 @@
 import { useCallback, useEffect } from "react";
 import { ArrowDown } from "lucide-react";
-import { Button } from "~/components/ui/button";
 import { FormProvider, useForm } from "react-hook-form";
 import { SuiModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import { formatSUI, parseSUI, SUI } from "~/lib/denoms";
@@ -11,6 +10,7 @@ import { YouReceive } from "./YouReceive";
 import { classNames } from "~/util/tailwind";
 import { SUIIcon } from "~/components/icons";
 import { useBuySellNBTC } from "./useNBTC";
+import { LoadingSpinner } from "~/components/LoadingSpinner";
 
 const BUY_NBTC_GAS = parseSUI("0.01");
 
@@ -25,14 +25,12 @@ function SUIRightAdornment({ maxSUIAmount, onMaxClick }: SUIRightAdornmentProps)
 			{maxSUIAmount && (
 				<div className="flex items-center gap-2">
 					<p className="text-xs whitespace-nowrap">Balance: {maxSUIAmount.substring(0, 4)} SUI</p>
-					<Button
-						variant="link"
-						type="button"
+					<button
 						onClick={() => onMaxClick(maxSUIAmount)}
-						className="text-xs w-fit p-0 pr-2 h-fit"
+						className="btn btn-primary btn-link text-xs w-fit p-0 pr-2 h-fit"
 					>
 						Max
-					</Button>
+					</button>
 				</div>
 			)}
 			<SUIIcon
@@ -129,9 +127,10 @@ export function BuyNBTCTabContent() {
 				<ArrowDown className="text-primary justify-center w-full flex mb-2 p-0 m-0" />
 				<YouReceive isSuiWalletConnected={isSuiWalletConnected} mistAmount={mistAmount} />
 				{isSuiWalletConnected ? (
-					<Button type="submit" disabled={isPending} isLoading={isPending}>
+					<button className="btn btn-primary" type="submit" disabled={isPending}>
+						<LoadingSpinner isLoading={isPending} />
 						Buy
-					</Button>
+					</button>
 				) : (
 					<SuiModal />
 				)}

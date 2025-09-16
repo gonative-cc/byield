@@ -1,6 +1,5 @@
 import { Check, CircleX } from "lucide-react";
 import { classNames } from "~/util/tailwind";
-import { Button } from "~/components/ui/button";
 import { Link } from "react-router";
 
 interface TransactionStatusProps {
@@ -30,14 +29,14 @@ export function TransactionStatus({ isSuccess, txnId, handleRetry }: Transaction
 						<p className="text-sm leading-relaxed">
 							If you want to increase your chances to be whitelisted for BTCFi Beelievers NFT,
 							please fill this{" "}
-							<Link
+							<a
 								target="_blank"
-								to="https://forms.gle/Hu4WUSfgQkp1xsyNA"
+								href="https://forms.gle/Hu4WUSfgQkp1xsyNA"
 								rel="noreferrer"
-								className="text-primary underline"
+								className="text-primary btn-link"
 							>
 								form.
-							</Link>
+							</a>
 						</p>
 					</div>
 				)}
@@ -52,7 +51,9 @@ export function TransactionStatus({ isSuccess, txnId, handleRetry }: Transaction
 					</Link>
 				)}
 			</div>
-			<Button onClick={handleRetry}>{isSuccess ? "Ok" : "Retry"}</Button>
+			<button onClick={handleRetry} className="btn btn-primary">
+				{isSuccess ? "Ok" : "Retry"}
+			</button>
 		</div>
 	);
 }

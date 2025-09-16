@@ -3,7 +3,6 @@ import { useSuiClientContext } from "@mysten/dapp-kit";
 import type { SuiClient, SuiTransactionBlockResponse } from "@mysten/sui/client";
 import { ExternalLink } from "lucide-react";
 import { trimAddress } from "~/components/Wallet/walletHelper";
-import { Button } from "~/components/ui/button";
 import { mkSuiVisionUrl, mkWalrusImageUrl } from "~/lib/suienv";
 import { useNetworkVariables } from "~/networkConfig";
 
@@ -60,7 +59,7 @@ export interface NftDisplayProps {
 
 export function NftDisplay({ nftId }: NftDisplayProps) {
 	const [metadata, setMetadata] = useState<NftMetadata | null>(null);
-	const { network, client } = useSuiClientContext();
+	const { client } = useSuiClientContext();
 	const contractsConfig = useNetworkVariables();
 
 	useEffect(() => {
@@ -137,10 +136,10 @@ export function NftDisplay({ nftId }: NftDisplayProps) {
 							target="_blank"
 							rel="noopener noreferrer"
 						>
-							<Button layout="oneLine">
+							<button className="btn btn-primary">
 								<ExternalLink size={16} />
 								View on SuiVision
-							</Button>
+							</button>
 						</a>
 					</div>
 				</div>

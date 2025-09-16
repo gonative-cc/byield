@@ -8,7 +8,6 @@ import { formatSUI, parseSUI, SUI } from "~/lib/denoms";
 import { delay } from "~/lib/batteries";
 import { Card, CardContent } from "~/components/ui/card";
 import { FormNumericInput } from "~/components/form/FormNumericInput";
-import { Button } from "~/components/ui/button";
 import { FormInput } from "~/components/form/FormInput";
 import { SuiModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import type { User } from "~/server/BeelieversAuction/types";
@@ -17,8 +16,12 @@ import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { toast } from "~/hooks/use-toast";
 import { useNetworkVariables } from "~/networkConfig";
 import { SUIIcon } from "~/components/icons";
-
 import { moveCallTarget, type BeelieversAuctionCfg } from "~/config/sui/contracts-config";
+import { classNames } from "~/util/tailwind";
+
+function buttonEffectClasses() {
+	return "transition-all duration-300 transform hover:scale-[1.02]";
+}
 
 const MINIMUM_FIRST_BID_MIST = 1e9;
 interface NewTotalBidAmountProps {
@@ -242,9 +245,9 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 
 function submitButton(isPending: boolean, hasUserBidBefore: boolean) {
 	return (
-		<Button
+		<button
 			disabled={isPending}
-			className="h-14 lg:h-16 text-lg font-semibold bg-gradient-to-r from-primary to-orange-400 hover:from-orange-400 hover:to-primary transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+			className={classNames("btn btn-primary h-16 text-lg", buttonEffectClasses())}
 		>
 			<span className="flex items-center gap-2">
 				{isPending ? (
@@ -255,7 +258,7 @@ function submitButton(isPending: boolean, hasUserBidBefore: boolean) {
 					</>
 				)}
 			</span>
-		</Button>
+		</button>
 	);
 }
 

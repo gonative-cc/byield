@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "daisyui";
 
 @plugin 'tailwindcss-animate';
 
@@ -16,39 +17,10 @@
   --color-foreground: hsl(var(--foreground));
   --color-primary-foreground: var(--primary-foreground);
   --color-muted-foreground: rgba(165, 165, 165, 1);
-  --color-muted: hsl(var(--muted));
 
   --foreground: 0 0% 98%;
-  --popover: 240 10% 3.9%;
-  --popover-foreground: 0 0% 98%;
-  --primary-foreground: rgba(238, 132, 44, 1);
-  --secondary: rgba(40, 40, 40, 1);
-  --secondary-foreground: rgba(250, 250, 250, 1);
   --muted: rgba(40, 40, 40, 1);
-  --accent: rgba(40, 40, 40, 1);
   --destructive: rgba(208, 4, 22, 1);
-  --destructive-foreground: rgba(251, 55, 72, 1);
-  --ring: 240 4.9% 83.9%;
-}
-
-@layer base {
-  :root {
-    --muted-foreground: rgba(117, 117, 117, 1);
-  }
-  .dark {
-    --muted-foreground: rgba(165, 165, 165, 1);
-  }
-}
-
-/*
-  This is the main daisyUI plugin configuration.
-  It enables two custom themes: 'native-light' and 'native-dark'.
-  - 'native-light' is the default theme for the site.
-  - 'native-dark' is automatically applied if the user prefers a dark color scheme.
-*/
-@plugin "daisyui" {
-  themes: dark --default;
-  logs: false; /* Disables daisyUI console logs for a cleaner console */
 }
 
 /*
@@ -60,15 +32,15 @@
 */
 
 @plugin "daisyui/theme" {
-  name: "dark";
+  name: "byield-theme";
   default: true;
   prefersdark: true;
   color-scheme: "dark";
+  --color-primary: oklch(0.6879 0.1613 53.85);
   --color-base-100: oklch(12% 0.042 264.695);
   --color-base-200: oklch(20% 0.042 265.755);
   --color-base-300: oklch(27% 0.041 260.031);
   --color-base-content: oklch(96% 0.007 247.896);
-  --color-primary: rgba(229, 122, 33, 1);
   --color-primary-content: var(--primary-foreground);
   --color-secondary: oklch(0% 0 0);
   --color-secondary-content: oklch(100% 0 0);
@@ -85,8 +57,8 @@
   --color-error: oklch(50% 0.213 27.518);
   --color-error-content: oklch(97% 0.013 17.38);
   --radius-selector: 1rem;
-  --radius-field: 2rem;
-  --radius-box: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 1rem;
   --size-selector: 0.25rem;
   --size-field: 0.25rem;
   --border: 1px;
@@ -98,16 +70,12 @@
   html,
   body {
     scrollbar-color: auto;
-    @apply dark:bg-gray-950;
   }
 }
 
 @layer base {
   * {
     @apply border-gray-800;
-  }
-  body {
-    @apply text-foreground;
   }
 }
 
@@ -192,10 +160,6 @@ button {
   cursor: pointer;
 }
 
-a.link {
-  @apply font-medium text-blue-300 hover:underline;
-}
-
 a.link-raw {
   @apply hover:underline;
 }
@@ -217,7 +181,7 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(229, 122, 33, 1);
+  background: var(--color-primary);
   border-radius: 4px;
 }
 

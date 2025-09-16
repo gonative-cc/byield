@@ -30,7 +30,6 @@
 		"@mysten/kiosk": "^0.13.1",
 		"@mysten/sui": "^1.38.0",
 		"@radix-ui/react-dialog": "^1.1.14",
-		"@radix-ui/react-slot": "^1.2.3",
 		"@react-router/cloudflare": "^7.6.3",
 		"@react-router/remix-routes-option-adapter": "^7.9.1",
 		"@tanstack/react-query": "^5.81.5",

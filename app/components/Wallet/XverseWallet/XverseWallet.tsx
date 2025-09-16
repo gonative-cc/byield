@@ -1,5 +1,4 @@
 import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
-import { Button } from "../../ui/button";
 import { type Option, SelectInput } from "../../ui/select";
 import { useMemo } from "react";
 import { trimAddress } from "../walletHelper";
@@ -71,7 +70,9 @@ function XverseWalletMobileView() {
 						/>
 					</p>
 				)}
-				<Button onClick={disconnectWallet}>Disconnect</Button>
+				<button onClick={disconnectWallet} className="btn btn-primary">
+					Disconnect
+				</button>
 			</div>
 		</div>
 	);
@@ -94,9 +95,9 @@ export function XverseWallet() {
 						className="shrink-0"
 					/>
 				)}
-				<Button onClick={disconnectWallet} size="sm">
+				<button onClick={disconnectWallet} className="btn btn-primary">
 					Disconnect
-				</Button>
+				</button>
 			</div>
 			{/* Mobile view */}
 			<XverseWalletMobileView />
