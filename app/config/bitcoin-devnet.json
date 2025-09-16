@@ -4,6 +4,6 @@
 	"nBTC": {
 		"depositAddress": "tb1qjgqhst2hlgjkh36pg6r3hdnz7zvurafe9h5lkx"
 	},
-	"indexerUrl": "http://142.93.46.134:3002",
+	"indexerUrl": "",
 	"btcRPCUrl": "http://142.93.46.134:3002"
 }
