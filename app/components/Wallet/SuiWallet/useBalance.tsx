@@ -30,20 +30,17 @@ export function useCoinBalance(coinAddr?: string): UseCoinBalanceResult {
 		console.log("Call fetch balance", account?.address);
 
 		try {
-			setIsLoading(true);
-			setError(null);
-
 			const result = await suiClient.getBalance({
 				owner: account.address,
 				coinType: coinAddr,
 			});
-
 			setBalance(result);
 		} catch (err) {
 			setError(err instanceof Error ? err : new Error("Failed to fetch balance: " + err));
-			setBalance(null);
+			return;
 		} finally {
 			setIsLoading(false);
+			setError(null);
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [account?.address || null, coinAddr, suiClient]);
