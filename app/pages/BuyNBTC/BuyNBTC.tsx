@@ -9,7 +9,6 @@ import { BuyNBTCTabContent } from "./BuyNBTCTabContent";
 import { SellNBTCTabContent } from "./SellNBTCTabContent";
 import { ArrowUpRight } from "lucide-react";
 import { useDisconnectWallet, useSuiClientContext } from "@mysten/dapp-kit";
-import { classNames } from "~/util/tailwind";
 
 export function BuyNBTC() {
 	const { network } = useSuiClientContext();
@@ -56,47 +55,6 @@ export function BuyNBTC() {
 				<CardContent className="p-6 rounded-lg text-white flex flex-col gap-4 bg-azure-10">
 					{isSuiWalletConnected && <NBTCBalance balance={nBTCBalance} />}
 					<Instructions />
-					<div role="tablist" className="tabs tabs-boxed bg-azure-15 rounded-full p-2 w-fit">
-						<button
-							type="button"
-							role="tab"
-							className={classNames({
-								"tab rounded-full": true,
-								"tab-active bg-primary text-white": activeTab === "BUY",
-							})}
-							onClick={() => setActiveTab("BUY")}
-							aria-selected={activeTab === "BUY"}
-						>
-							Buy
-						</button>
-						<button
-							type="button"
-							role="tab"
-							className={classNames({
-								"tab rounded-full": true,
-								"tab-active bg-primary text-white": activeTab === "SELL",
-							})}
-							onClick={() => setActiveTab("SELL")}
-							aria-selected={activeTab === "SELL"}
-						>
-							Sell
-						</button>
-					</div>
-					<div className="">
-						{activeTab === "BUY" ? <BuyNBTCTabContent /> : <SellNBTCTabContent />}
-					</div>
-
-					{isSuiWalletConnected && (
-						<a
-							href={transactionHistoryLink}
-							target="_blank"
-							rel="noreferrer"
-							className="flex gap-1 items-center text-primary hover:underline"
-						>
-							Check Transaction History
-							<ArrowUpRight size="22" />
-						</a>
-					)}
 					<div className="tabs tabs-boxed bg-azure-10 rounded-full p-1">
 						<input
 							type="radio"
