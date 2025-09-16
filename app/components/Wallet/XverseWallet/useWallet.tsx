@@ -154,13 +154,12 @@ export const useXverseWallet = () => {
 	}, [handleWalletConnect]);
 
 	const addDevnetNetwork = useCallback(async () => {
-		const name = ExtendedBitcoinNetworkType.Regtest;
+		const name = ExtendedBitcoinNetworkType.Devnet;
 		const res = await Wallet.request(addNetworkMethodName, {
 			chain: "bitcoin",
 			name,
 			type: BitcoinNetworkType.Regtest,
-			indexerUrl: devnetConfig.indexerUrl,
-			rpcUrl: devnetConfig.rpcUrl,
+			rpcUrl: devnetConfig.btcRPCUrl,
 		});
 		if (res.status !== "success") {
 			console.error(res.error);
@@ -175,7 +174,7 @@ export const useXverseWallet = () => {
 	const switchNetwork = useCallback(
 		async (newNetwork: ExtendedBitcoinNetworkType) => {
 			// Handle Devnet separately as it needs to be added first
-			if (newNetwork === ExtendedBitcoinNetworkType.Devnet) {
+			if (newNetwork === ExtendedBitcoinNetworkType.Regtest) {
 				await addDevnetNetwork();
 				// Switch to Regtest after adding devnet
 				const response = await Wallet.request(changeNetworkMethodName, {
