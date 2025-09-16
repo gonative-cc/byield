@@ -3,7 +3,8 @@ import { useSuiClientContext } from "@mysten/dapp-kit";
 import type { SuiClient, SuiTransactionBlockResponse } from "@mysten/sui/client";
 import { ExternalLink } from "lucide-react";
 import { trimAddress } from "~/components/Wallet/walletHelper";
-import { Button } from "~/components/ui/button";
+import { mkSuiVisionUrl, mkWalrusImageUrl } from "~/lib/suienv";
+import { useNetworkVariables } from "~/networkConfig";
 
 interface NftMetadata {
 	id: string;
@@ -58,7 +59,8 @@ export interface NftDisplayProps {
 
 export function NftDisplay({ nftId }: NftDisplayProps) {
 	const [metadata, setMetadata] = useState<NftMetadata | null>(null);
-	const { network, client } = useSuiClientContext();
+	const { client } = useSuiClientContext();
+	const contractsConfig = useNetworkVariables();
 
 	useEffect(() => {
 		if (nftId) {
@@ -129,32 +131,21 @@ export function NftDisplay({ nftId }: NftDisplayProps) {
 					)}
 
 					<div className="pt-3 justify-center w-full flex text-foreground">
-						<a href={mkSuiVisionUrl(nftId, network)} target="_blank" rel="noopener noreferrer">
-							<Button layout="oneLine">
+						<a
+							href={mkSuiVisionUrl(nftId, contractsConfig)}
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							<button className="btn btn-primary">
 								<ExternalLink size={16} />
 								View on SuiVision
-							</Button>
+							</button>
 						</a>
 					</div>
 				</div>
 			</div>
 		</div>
 	);
-}
-
-// TODO: move it to app/lib/suienv
-export function mkSuiVisionUrl(objectId: string, network: string): string {
-	// TODO: let's define it in contracts-*.json, next to the `accountExplorer`.
-	const baseUrl = network === "mainnet" ? "https://suivision.xyz" : "https://testnet.suivision.xyz";
-	return `${baseUrl}/object/${objectId}`;
-}
-
-// TODO: move it to app/lib/suienv
-function mkWalrusImageUrl(imageUrl: string): string {
-	if (imageUrl.startsWith("http")) {
-		return imageUrl;
-	}
-	return `https://walrus.tusky.io/${imageUrl}`;
 }
 
 function getAttributeValue(attributes: NftMetadata["attributes"], key: string): string {

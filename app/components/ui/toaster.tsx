@@ -1,12 +1,11 @@
 import { useToast } from "~/hooks/use-toast";
 import { CircleX, Info, TriangleAlert } from "lucide-react";
-import { Alert, Button, Toast } from "react-daisyui";
 import { cva } from "class-variance-authority";
 
-const toastVariants = cva("alert-outline", {
+const toastVariants = cva("alert", {
 	variants: {
 		variant: {
-			default: "",
+			default: "alert-success",
 			info: "alert-info",
 			destructive: "alert-error",
 			warning: "alert-warning",
@@ -36,21 +35,20 @@ export function Toaster() {
 	const { toasts, dismiss } = useToast();
 
 	return (
-		<Toast vertical="bottom" horizontal="end">
+		// TODO: replace daisyui classes with react-daisyui component when it supports daisyui 5.
+		<div className="toast toast-bottom toast-end">
 			{toasts.map(({ id, title, description, variant }) => (
 				<div key={id} className={toastVariants({ variant })}>
-					<Alert>
-						<ToastIcon variant={variant} />
-						<div className="flex flex-col gap-2">
-							{title && <span>{title}</span>}
-							{description && <span>{description}</span>}
-						</div>
-						<Button color="ghost" onClick={() => dismiss(id)}>
-							X
-						</Button>
-					</Alert>
+					<ToastIcon variant={variant} />
+					<div className="flex flex-col gap-2">
+						{title && <span>{title}</span>}
+						{description && <span>{description}</span>}
+					</div>
+					<button className="btn btn-ghost" onClick={() => dismiss(id)}>
+						X
+					</button>
 				</div>
 			))}
-		</Toast>
+		</div>
 	);
 }

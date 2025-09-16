@@ -31,13 +31,28 @@ export function BuyNBTC() {
 		}
 	}, [disconnect, isMainnet]);
 
+	const renderBuyNBTCTabs = () => (
+		<div className="tabs tabs-lift text-primary">
+			<input type="radio" name="buy_nbtc_tabs" className="tab" aria-label="Buy" />
+			<div className="tab-content bg-base-100 border-base-300 p-6">
+				<BuyNBTCTabContent />
+			</div>
+
+			<input type="radio" name="buy_nbtc_tabs" className="tab" aria-label="Sell" defaultChecked />
+			<div className="tab-content bg-base-100 border-base-300 p-6">
+				<SellNBTCTabContent />
+			</div>
+		</div>
+	);
+
 	return (
 		<div className="flex flex-col items-center gap-8 px-2 pt-2">
 			<p className="md:text-3xl text-2xl text-center font-semibold max-w-96">
 				Native enables <span className="text-2xl text-primary md:text-3xl">BTCFi</span> in the{" "}
 				<span className="text-2xl text-primary md:text-3xl">Web3 native</span> way!
 			</p>
-			<Card>
+			{/* TODO: George, probably we should remove the classes in the card */}
+			<Card className="max-w-lg w-full">
 				<CardContent className="p-6 rounded-lg text-white flex flex-col gap-4 bg-azure-10">
 					{isSuiWalletConnected && <NBTCBalance balance={nBTCBalance} />}
 					<Instructions />
@@ -69,6 +84,40 @@ export function BuyNBTC() {
 					</div>
 					<div className="">
 						{activeTab === "BUY" ? <BuyNBTCTabContent /> : <SellNBTCTabContent />}
+					</div>
+
+					{isSuiWalletConnected && (
+						<a
+							href={transactionHistoryLink}
+							target="_blank"
+							rel="noreferrer"
+							className="flex gap-1 items-center text-primary hover:underline"
+						>
+							Check Transaction History
+							<ArrowUpRight size="22" />
+						</a>
+					)}
+					<div className="tabs tabs-boxed bg-azure-10 rounded-full p-1">
+						<input
+							type="radio"
+							name="tab_nbtc_buy_sell"
+							className="tab tab-lg rounded-full checked:bg-primary"
+							aria-label="Buy"
+							defaultChecked
+						/>
+						<div className="tab-content py-6">
+							<BuyNBTCTabContent />
+						</div>
+
+						<input
+							type="radio"
+							name="tab_nbtc_buy_sell"
+							className="tab tab-lg rounded-full checked:bg-primary"
+							aria-label="Sell"
+						/>
+						<div className="tab-content py-6">
+							<SellNBTCTabContent />
+						</div>
 					</div>
 
 					{isSuiWalletConnected && (
