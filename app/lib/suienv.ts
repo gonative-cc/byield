@@ -4,6 +4,7 @@ import type {
 	SuiTransactionBlockResponseOptions,
 } from "@mysten/sui/client";
 import type { Transaction } from "@mysten/sui/transactions";
+import type { ContractsCfg } from "~/config/sui/contracts-config";
 
 // Std Sui object addresses
 export const SUI_RANDOM_OBJECT_ID = "0x8";
@@ -36,4 +37,21 @@ export async function signAndExecTx(
 		signature,
 		options: Object.assign({}, defaultExecOptions, options),
 	});
+}
+
+/**
+ * Creates a SuiVision URL for the given object ID using the configured explorer URL
+ */
+export function mkSuiVisionUrl(objectId: string, cfg: ContractsCfg): string {
+	return `${cfg.explorer}/object/${objectId}`;
+}
+
+/**
+ * Creates a Walrus image URL, handling both full URLs and blob IDs
+ */
+export function mkWalrusImageUrl(imageUrl: string): string {
+	if (imageUrl.startsWith("http")) {
+		return imageUrl;
+	}
+	return `https://walrus.tusky.io/${imageUrl}`;
 }

@@ -1,7 +1,5 @@
 import { Card, CardContent } from "../../components/ui/card";
 import { BitcoinBalance } from "../../components/BitcoinBalance";
-import { Link } from "react-router";
-import { Button } from "../../components/ui/button";
 import { FormProvider, useForm } from "react-hook-form";
 import { FormInput } from "../../components/form/FormInput";
 import { useXverseConnect, useXverseWallet } from "../../components/Wallet/XverseWallet/useWallet";
@@ -18,7 +16,6 @@ import { isValidSuiAddress } from "@mysten/sui/utils";
 import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import { useNetworkVariables } from "~/networkConfig";
 import { Modal } from "~/components/ui/dialog";
-import { toast } from "~/hooks/use-toast";
 
 interface TransactionStatusProps {
 	SuiAddress: string;
@@ -42,25 +39,17 @@ function TransactionStatus({ SuiAddress, txId, handleRetry }: TransactionStatusP
 					size={30}
 				/>{" "}
 				Success
-				<Link
-					target="_blank"
-					to={bitcoinBroadcastLink}
-					rel="noreferrer"
-					className="underline text-primary"
-				>
+				<a target="_blank" href={bitcoinBroadcastLink} rel="noreferrer" className="link link-primary">
 					Track bitcoin transaction confirmation in explorer
-				</Link>
-				<Link
-					target="_blank"
-					to={suiScanExplorerLink}
-					rel="noreferrer"
-					className="underline text-primary"
-				>
+				</a>
+				<a target="_blank" href={suiScanExplorerLink} rel="noreferrer" className="link link-primary">
 					Explore SUI coins
-				</Link>
+				</a>
 			</div>
 
-			<Button onClick={handleRetry}>Ok</Button>
+			<button className="btn btn-primary" onClick={handleRetry}>
+				Ok
+			</button>
 		</div>
 	);
 }
@@ -95,15 +84,13 @@ function Percentage({ onChange }: { onChange: (value: number) => void }) {
 	return (
 		<div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
 			{PERCENTAGES.map(({ id, value }) => (
-				<Button
-					type="button"
+				<button
 					key={id}
 					onClick={() => onChange(value)}
-					variant="ghost"
-					className="bg-azure-10 w-full text-sm sm:text-base"
+					className="btn btn-ghost bg-azure-10 w-full text-sm sm:text-base"
 				>
 					{value}%
-				</Button>
+				</button>
 			))}
 		</div>
 	);
@@ -236,11 +223,13 @@ export function MintBTC() {
 							}}
 						/>
 						{isBitCoinWalletConnected ? (
-							<Button type="submit">Deposit BTC and mint nBTC</Button>
+							<button type="submit" className="btn btn-primary">
+								Deposit BTC and mint nBTC
+							</button>
 						) : (
-							<Button type="button" onClick={connectWallet}>
+							<button onClick={connectWallet} className="btn btn-primary">
 								Connect Bitcoin Wallet
-							</Button>
+							</button>
 						)}
 						{txId && (
 							<Modal
