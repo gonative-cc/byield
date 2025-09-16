@@ -15,19 +15,38 @@ const DUST_THRESHOLD_SATOSHI = 546;
 export const MINT_NBTC_ACTION = "0";
 export const FUTURE_ACTION = "1";
 
-/**
- * Creates an OP_RETURN script string for Bitcoin transactions
- * Format: [action_type] [sui_address]
- *
- * @param actionType - '0' for mint nBTC action, '1' for future actions
- * @param suiAddress - Full SUI address with 0x prefix
- * @returns OP_RETURN script string (action type + space + full SUI address)
- */
-export function createOpReturnScript(
-	actionType: typeof MINT_NBTC_ACTION | typeof FUTURE_ACTION,
-	suiAddress: string,
-): string {
-	return `${actionType} ${suiAddress}`;
+export type OpReturnActionType = "0" | "1";
+
+export function createOpReturnScript(actionType: OpReturnActionType, suiAddress: string): string {
+	if (!actionType || (actionType !== MINT_NBTC_ACTION && actionType !== FUTURE_ACTION)) {
+		throw new Error(
+			`Invalid action type: ${actionType}. Must be '${MINT_NBTC_ACTION}' or '${FUTURE_ACTION}'`,
+		);
+	}
+
+	if (!suiAddress) {
+		throw new Error("SUI address is required");
+	}
+
+	if (!isValidSuiAddress(suiAddress)) {
+		throw new Error(`Invalid SUI address: ${suiAddress}`);
+	}
+
+	const addressHex = suiAddress.startsWith("0x") ? suiAddress.substring(2) : suiAddress;
+
+	if (addressHex.length !== 64) {
+		throw new Error(
+			`Invalid SUI address length: ${addressHex.length}. Expected 64 hex characters`,
+		);
+	}
+
+	if (!/^[0-9a-fA-F]{64}$/.test(addressHex)) {
+		throw new Error("SUI address contains invalid hex characters");
+	}
+
+	const actionTypeHex = actionType === MINT_NBTC_ACTION ? "00" : "01";
+
+	return actionTypeHex + addressHex;
 }
 
 export async function nBTCMintTx(
@@ -109,33 +128,37 @@ export async function nBTCMintTx(
 
 		let opReturnData: Buffer;
 		try {
-			if (opReturn.length < 3) {
-				throw new Error("OP_RETURN data is too short");
-			}
-
-			const parts = opReturn.split(" ");
-			if (parts.length !== 2) {
+			if (opReturn.length !== 66) {
 				throw new Error(
-					"Invalid OP_RETURN format. Expected format: '[action_type] [sui_address]'",
+					`OP_RETURN data must be exactly 66 hex characters (2 for action type + 64 for address), got ${opReturn.length}`,
 				);
 			}
 
-			const actionType = parts[0];
-			const suiAddress = parts[1];
+			const actionTypeHex = opReturn.substring(0, 2);
+			const suiAddressHex = opReturn.substring(2);
 
-			if (actionType !== MINT_NBTC_ACTION && actionType !== FUTURE_ACTION) {
+			if (actionTypeHex !== "00" && actionTypeHex !== "01") {
 				throw new Error(
-					`Invalid action type: ${actionType}. Must be '${MINT_NBTC_ACTION}' for mint or '${FUTURE_ACTION}' for future actions`,
+					`Invalid action type hex: ${actionTypeHex}. Must be '00' for mint or '01' for future actions`,
 				);
 			}
 
-			if (!isValidSuiAddress(suiAddress)) {
-				throw new Error(`Invalid SUI address: ${suiAddress}`);
+			if (suiAddressHex.length !== 64) {
+				throw new Error(
+					`Invalid SUI address length: ${suiAddressHex.length}. Expected 64 hex characters`,
+				);
 			}
 
-			const actionTypeByte = Buffer.from([parseInt(actionType, 10)]);
-			const suiAddressBuffer = Buffer.from(suiAddress, "utf8");
-			opReturnData = Buffer.concat([actionTypeByte, suiAddressBuffer]);
+			if (!/^[0-9a-fA-F]{64}$/.test(suiAddressHex)) {
+				throw new Error("SUI address contains invalid hex characters");
+			}
+
+			const fullSuiAddress = `0x${suiAddressHex}`;
+			if (!isValidSuiAddress(fullSuiAddress)) {
+				throw new Error(`Invalid SUI address: ${fullSuiAddress}`);
+			}
+
+			opReturnData = Buffer.from(opReturn, "hex");
 		} catch (error) {
 			console.error("Invalid OP_RETURN data:", error);
 			toast?.({

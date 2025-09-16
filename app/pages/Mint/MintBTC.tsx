@@ -65,8 +65,6 @@ function TransactionStatus({ SuiAddress, txId, handleRetry }: TransactionStatusP
 	);
 }
 
-// Removed formatSuiAddressForMint function using createOpReturnScript from nbtc.ts
-
 const PERCENTAGES = [
 	{
 		id: "percentage-1",

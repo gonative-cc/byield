@@ -1,158 +1,145 @@
 import { describe, test, expect } from "vitest";
+import {
+	createOpReturnScript,
+	MINT_NBTC_ACTION,
+	FUTURE_ACTION,
+	type OpReturnActionType,
+} from "./nbtc";
 
-const MINT_NBTC_ACTION = "0";
-const FUTURE_ACTION = "1";
+describe("createOpReturnScript", () => {
+	const validSuiAddress = "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef";
+	const validSuiAddressWithoutPrefix =
+		"1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef";
 
-/**
- * Creates an OP_RETURN script string for Bitcoin transactions
- * Format: [action_type] [sui_address]
- *
- * @param actionType - '0' for mint nBTC action, '1' for future actions
- * @param suiAddress - Full SUI address with 0x prefix
- * @returns OP_RETURN script string (action type + space + full SUI address)
- */
-function createOpReturnScript(
-	actionType: typeof MINT_NBTC_ACTION | typeof FUTURE_ACTION,
-	suiAddress: string,
-): string {
-	return `${actionType} ${suiAddress}`;
-}
-
-describe("OP_RETURN Script Functions", () => {
-	describe("createOpReturnScript", () => {
-		test("should create mint action script with 0x prefix", () => {
-			const testAddress =
-				"0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef";
-			const result = createOpReturnScript(MINT_NBTC_ACTION, testAddress);
+	describe("successful cases", () => {
+		test("creates mint action payload with correct hex encoding", () => {
+			const result = createOpReturnScript(MINT_NBTC_ACTION, validSuiAddress);
 
 			expect(result).toBe(
-				"0 0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-			);
-			expect(result.length).toBe(68);
-			expect(result.startsWith("0 0x")).toBe(true);
-		});
-
-		test("should create future action script with 0x prefix", () => {
-			const testAddress =
-				"0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef";
-			const result = createOpReturnScript(FUTURE_ACTION, testAddress);
-
-			expect(result).toBe(
-				"1 0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-			);
-			expect(result.length).toBe(68);
-			expect(result.startsWith("1 0x")).toBe(true);
-		});
-
-		test("should create mint action script without 0x prefix", () => {
-			const testAddress = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef";
-			const result = createOpReturnScript(MINT_NBTC_ACTION, testAddress);
-
-			expect(result).toBe(
-				"0 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+				"001234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
 			);
 			expect(result.length).toBe(66);
-			expect(result.startsWith("0 ")).toBe(true);
+
+			expect(() => Buffer.from(result, "hex")).not.toThrow();
+			const buffer = Buffer.from(result, "hex");
+			expect(buffer.length).toBe(33);
 		});
 
-		test("should handle uppercase hex addresses", () => {
-			const testAddress =
+		test("creates future action payload with correct hex encoding", () => {
+			const result = createOpReturnScript(FUTURE_ACTION, validSuiAddress);
+
+			expect(result).toBe(
+				"011234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+			);
+			expect(result.length).toBe(66);
+
+			const buffer = Buffer.from(result, "hex");
+			expect(buffer.length).toBe(33);
+		});
+
+		test("handles SUI address without 0x prefix correctly", () => {
+			const result = createOpReturnScript(MINT_NBTC_ACTION, validSuiAddressWithoutPrefix);
+
+			expect(result).toBe(
+				"001234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+			);
+			expect(result.length).toBe(66);
+		});
+
+		test("produces consistent results for same inputs", () => {
+			const result1 = createOpReturnScript(MINT_NBTC_ACTION, validSuiAddress);
+			const result2 = createOpReturnScript(MINT_NBTC_ACTION, validSuiAddress);
+
+			expect(result1).toBe(result2);
+		});
+	});
+
+	describe("input validation", () => {
+		test("throws error for invalid action type", () => {
+			expect(() => createOpReturnScript("2" as OpReturnActionType, validSuiAddress)).toThrow(
+				"Invalid action type: 2",
+			);
+		});
+
+		test("throws error for empty action type", () => {
+			expect(() => createOpReturnScript("" as OpReturnActionType, validSuiAddress)).toThrow(
+				"Invalid action type:",
+			);
+		});
+
+		test("throws error for missing SUI address", () => {
+			expect(() => createOpReturnScript(MINT_NBTC_ACTION, "")).toThrow(
+				"SUI address is required",
+			);
+		});
+
+		test("throws error for invalid SUI address format", () => {
+			const invalidAddress = "0xinvalid";
+			expect(() => createOpReturnScript(MINT_NBTC_ACTION, invalidAddress)).toThrow(
+				"Invalid SUI address:",
+			);
+		});
+
+		test("throws error for SUI address with invalid length", () => {
+			const shortAddress = "0x1234567890abcdef";
+			expect(() => createOpReturnScript(MINT_NBTC_ACTION, shortAddress)).toThrow(
+				"Invalid SUI address:",
+			);
+		});
+
+		test("throws error for SUI address with non-hex characters", () => {
+			const invalidHexAddress =
+				"0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcxyz";
+			expect(() => createOpReturnScript(MINT_NBTC_ACTION, invalidHexAddress)).toThrow(
+				"Invalid SUI address:",
+			);
+		});
+	});
+
+	describe("edge cases", () => {
+		test("handles uppercase hex characters in SUI address", () => {
+			const upperCaseAddress =
 				"0x1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF";
-			const result = createOpReturnScript(MINT_NBTC_ACTION, testAddress);
 
+			const result = createOpReturnScript(MINT_NBTC_ACTION, upperCaseAddress);
 			expect(result).toBe(
-				"0 0x1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF",
+				"001234567890ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF",
 			);
-			expect(result.startsWith("0 0x")).toBe(true);
 		});
 
-		test("should handle mixed case 0x prefix", () => {
-			const testAddress =
-				"0X1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef";
-			const result = createOpReturnScript(MINT_NBTC_ACTION, testAddress);
+		test("handles mixed case hex characters in SUI address", () => {
+			const mixedCaseAddress =
+				"0x1234567890aBcDeF1234567890aBcDeF1234567890aBcDeF1234567890aBcDeF";
 
+			const result = createOpReturnScript(MINT_NBTC_ACTION, mixedCaseAddress);
 			expect(result).toBe(
-				"0 0X1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+				"001234567890aBcDeF1234567890aBcDeF1234567890aBcDeF1234567890aBcDeF",
 			);
-			expect(result.startsWith("0 0X")).toBe(true);
-		});
-
-		test("should handle short addresses", () => {
-			const testAddress = "0x123";
-			const result = createOpReturnScript(MINT_NBTC_ACTION, testAddress);
-
-			expect(result).toBe("0 0x123");
-			expect(result.startsWith("0 0x")).toBe(true);
 		});
 	});
 
-	describe("Action Type Constants", () => {
-		test("should have correct action type values", () => {
-			expect(MINT_NBTC_ACTION).toBe("0");
-			expect(FUTURE_ACTION).toBe("1");
-		});
-	});
+	describe("integration with actual usage", () => {
+		test("output can be parsed by nBTCMintTx validation logic", () => {
+			const result = createOpReturnScript(MINT_NBTC_ACTION, validSuiAddress);
 
-	describe("OP_RETURN Script Format Validation", () => {
-		test("should create valid format for parsing", () => {
-			const testAddress =
-				"0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef";
-			const script = createOpReturnScript(MINT_NBTC_ACTION, testAddress);
+			expect(result.length).toBe(66);
 
-			const parts = script.split(" ");
-			expect(parts.length).toBe(2);
+			const actionTypeHex = result.substring(0, 2);
+			const suiAddressHex = result.substring(2);
 
-			const actionType = parts[0];
-			const suiAddress = parts[1];
-
-			expect(actionType).toBe(MINT_NBTC_ACTION);
-			expect(suiAddress).toBe(
-				"0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-			);
-			expect(suiAddress.length).toBe(66);
-
-			expect(suiAddress.startsWith("0x")).toBe(true);
-			expect(/^0x[0-9a-fA-F]{64}$/.test(suiAddress)).toBe(true);
+			expect(actionTypeHex).toBe("00");
+			expect(suiAddressHex.length).toBe(64);
+			expect(/^[0-9a-fA-F]{64}$/.test(suiAddressHex)).toBe(true);
 		});
 
-		test("should parse script format correctly", () => {
-			const mintScript = createOpReturnScript(
-				MINT_NBTC_ACTION,
-				"0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-			);
-			const futureScript = createOpReturnScript(
-				FUTURE_ACTION,
-				"0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-			);
+		test("future action output can be parsed correctly", () => {
+			const result = createOpReturnScript(FUTURE_ACTION, validSuiAddress);
 
-			const mintParts = mintScript.split(" ");
-			expect(mintParts[0]).toBe(MINT_NBTC_ACTION);
-			expect(mintParts[1]).toBe(
-				"0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-			);
+			const actionTypeHex = result.substring(0, 2);
+			const suiAddressHex = result.substring(2);
 
-			const futureParts = futureScript.split(" ");
-			expect(futureParts[0]).toBe(FUTURE_ACTION);
-			expect(futureParts[1]).toBe(
-				"0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-			);
-		});
-
-		test("should validate parsing of different action types", () => {
-			const testAddress =
-				"0xabc123def456abc123def456abc123def456abc123def456abc123def456abc123";
-
-			const mintScript = createOpReturnScript(MINT_NBTC_ACTION, testAddress);
-			const mintParts = mintScript.split(" ");
-			expect(mintParts.length).toBe(2);
-			expect(mintParts[0]).toBe("0");
-			expect(mintParts[1]).toBe(testAddress);
-
-			const futureScript = createOpReturnScript(FUTURE_ACTION, testAddress);
-			const futureParts = futureScript.split(" ");
-			expect(futureParts.length).toBe(2);
-			expect(futureParts[0]).toBe("1");
-			expect(futureParts[1]).toBe(testAddress);
+			expect(actionTypeHex).toBe("01");
+			expect(suiAddressHex.length).toBe(64);
 		});
 	});
 });
