@@ -9,12 +9,10 @@ import { BuyNBTCTabContent } from "./BuyNBTCTabContent";
 import { SellNBTCTabContent } from "./SellNBTCTabContent";
 import { ArrowUpRight } from "lucide-react";
 import { useDisconnectWallet, useSuiClientContext } from "@mysten/dapp-kit";
-import { classNames } from "~/util/tailwind";
 
 export function BuyNBTC() {
 	const { network } = useSuiClientContext();
 	const { mutate: disconnect } = useDisconnectWallet();
-	const [activeTab, setActiveTab] = useState<"BUY" | "SELL">("BUY");
 
 	// TODO: it doesn't get automatically refresehed
 	const { balance: nBTCBalance } = useCoinBalance();
@@ -41,34 +39,22 @@ export function BuyNBTC() {
 				<CardContent className="p-6 rounded-lg text-white flex flex-col gap-4 bg-azure-10">
 					{isSuiWalletConnected && <NBTCBalance balance={nBTCBalance} />}
 					<Instructions />
-					<div role="tablist" className="tabs tabs-boxed bg-azure-15 rounded-full p-2 w-fit">
-						<button
-							type="button"
-							role="tab"
-							className={classNames({
-								"tab rounded-full": true,
-								"tab-active bg-primary text-white": activeTab === "BUY",
-							})}
-							onClick={() => setActiveTab("BUY")}
-							aria-selected={activeTab === "BUY"}
-						>
-							Buy
-						</button>
-						<button
-							type="button"
-							role="tab"
-							className={classNames({
-								"tab rounded-full": true,
-								"tab-active bg-primary text-white": activeTab === "SELL",
-							})}
-							onClick={() => setActiveTab("SELL")}
-							aria-selected={activeTab === "SELL"}
-						>
-							Sell
-						</button>
-					</div>
-					<div className="">
-						{activeTab === "BUY" ? <BuyNBTCTabContent /> : <SellNBTCTabContent />}
+					<div className="tabs tabs-border bg-azure-10">
+						<input
+							type="radio"
+							name="tab_nbtc_buy_sell"
+							className="tab"
+							aria-label="Buy"
+							defaultChecked
+						/>
+						<div className="tab-content py-6">
+							<BuyNBTCTabContent />
+						</div>
+
+						<input type="radio" name="tab_nbtc_buy_sell" className="tab" aria-label="Sell" />
+						<div className="tab-content py-6">
+							<SellNBTCTabContent />
+						</div>
 					</div>
 
 					{isSuiWalletConnected && (
