@@ -241,10 +241,7 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 
 function submitButton(isPending: boolean, hasUserBidBefore: boolean) {
 	return (
-		<button
-			disabled={isPending}
-			className={classNames("btn btn-primary h-16 text-lg", buttonEffectClasses())}
-		>
+		<button disabled={isPending} className={"btn btn-primary h-16 text-lg " + buttonEffectClasses()}>
 			<span className="flex items-center gap-2">
 				{isPending ? (
 					<LoaderCircle className="animate-spin w-64 h-64" />

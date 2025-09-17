@@ -223,10 +223,7 @@ export function MintBTC() {
 							}}
 						/>
 						{isBitCoinWalletConnected ? (
-							<button
-								type="submit"
-								className={classNames("btn btn-primary", buttonEffectClasses())}
-							>
+							<button type="submit" className={"btn btn-primary " + buttonEffectClasses()}>
 								Deposit BTC and mint nBTC
 							</button>
 						) : (
