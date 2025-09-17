@@ -6,8 +6,7 @@ import { useContext, useEffect, useState } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
 import { FormNumericInput } from "../../components/form/FormNumericInput";
-import { NumericFormat } from "react-number-format";
-import { BTC, formatBTC, parseBTC } from "~/lib/denoms";
+import { BTC, formatBTC, parseBTC, formatNBTC } from "~/lib/denoms";
 import { nBTCMintTx } from "~/lib/nbtc";
 import { BitcoinIcon, Check } from "lucide-react";
 import { buttonEffectClasses, classNames } from "~/util/tailwind";
@@ -96,21 +95,20 @@ function Percentage({ onChange }: { onChange: (value: number) => void }) {
 }
 
 interface FeeProps {
-	feeInSatoshi: bigint;
-	youReceive: string;
+	mintingFeeNSats: bigint;
 }
 
-function Fee({ feeInSatoshi, youReceive }: FeeProps) {
+function Fee({ mintingFeeNSats }: FeeProps) {
 	return (
-		<div className="card p-4 rounded-2xl h-24">
-			<div className="card-body flex flex-col justify-between h-full p-0">
-				<div className="flex justify-between">
-					<p className="text-gray-400">Fixed Fee</p>
-					<NumericFormat displayType="text" value={formatBTC(feeInSatoshi)} suffix=" Satoshi" />
-				</div>
-				<div className="flex justify-between">
-					<p className="text-gray-400">You Receive</p>
-					<NumericFormat displayType="text" value={youReceive} suffix=" nBTC" />
+		<div className="card card-border bg-base-300">
+			<div className="card-body">
+				<div className="flex justify-between text-sm">
+					<span>Minting Fee</span>
+					<div className="tooltip" data-tip="1 nSats = 0.00000001 nBTC">
+						<span className="cursor-help">
+							{mintingFeeNSats} nSats ({formatNBTC(mintingFeeNSats)} nBTC)
+						</span>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -221,6 +219,9 @@ export function MintBTC() {
 								},
 							}}
 						/>
+						{bitcoinConfig.nBTC && (
+							<Fee mintingFeeNSats={BigInt(bitcoinConfig?.nBTC?.mintingFeeNSats)} />
+						)}
 						{isBitCoinWalletConnected ? (
 							<button
 								type="submit"
