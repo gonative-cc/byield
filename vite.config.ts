@@ -14,4 +14,14 @@ export default defineConfig({
 	build: {
 		minify: true,
 	},
+	server: {
+		proxy: {
+			"/api/indexer": {
+				target: "https://btcindexer.gonative-cc.workers.dev:443",
+				changeOrigin: true,
+				rewrite: (path) => path.replace(/^\/api\/indexer/, "/nbtc"),
+				secure: true,
+			},
+		},
+	},
 });

@@ -18,9 +18,10 @@ function isOptionValueNumberOrString<T>(value: T) {
 function SelectInput<T = string>({ options, value, placeholder, onValueChange }: SelectInputProps<T>) {
 	const handleOnChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		if (onValueChange) {
-			const selectedOption = options.find((opt) =>
-				isOptionValueNumberOrString(opt.value) ? opt.value : opt.value === event.target.value,
-			);
+			const selectedOption = options.find((opt) => {
+				const optValue = isOptionValueNumberOrString(opt.value) ? opt.value : String(opt.value);
+				return optValue === event.target.value;
+			});
 			if (selectedOption) onValueChange(selectedOption.value);
 		}
 	};

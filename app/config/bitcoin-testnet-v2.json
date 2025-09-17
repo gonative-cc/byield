@@ -1,0 +1,10 @@
+{
+	"bitcoinBroadcastLink": "https://mempool.space/testnet/tx/",
+	"confirmationThreshold": 3,
+	"blockTime": 120,
+	"nBTC": {
+		"depositAddress": "tb1qjgqhst2hlgjkh36pg6r3hdnz7zvurafe9h5lkx",
+		"packageId": "0xc9aebf90a0ca994786a20768a5c37f7e3590f4f796fc89859489c444e592c13c"
+	},
+	"indexerUrl": "https://btcindexer.gonative-cc.workers.dev:443"
+}

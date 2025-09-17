@@ -32,15 +32,23 @@ const TableRows = <T extends object>({
 	rows,
 	prepareRow,
 	getRowProps,
+	expandedRows,
+	renderExpandedRow,
+	columns,
 }: {
 	rows: Row<T>[];
 	prepareRow: (row: Row<T>) => void;
 	getRowProps?: (row: Row<T>) => { className?: string };
+	expandedRows?: Set<string>;
+	renderExpandedRow?: (row: Row<T>) => React.ReactNode;
+	columns: Column<T>[];
 }) =>
-	rows.map((row, index) => {
+	rows.flatMap((row, index) => {
 		prepareRow(row);
 		const customRowProps = getRowProps?.(row) || {};
-		return (
+		const isExpanded = expandedRows?.has(row.id);
+
+		const mainRow = (
 			<tr
 				{...row.getRowProps()}
 				key={row.getRowProps().key}
@@ -56,9 +64,10 @@ const TableRows = <T extends object>({
 						key={cell.getCellProps().key}
 						className={twMerge(
 							"p-4 group-hover:text-foreground transition-colors",
-							cellIndex === 0 && index === rows.length - 1 && "rounded-bl-2xl",
+							cellIndex === 0 && index === rows.length - 1 && !isExpanded && "rounded-bl-2xl",
 							cellIndex === row.cells.length - 1 &&
 								index === rows.length - 1 &&
+								!isExpanded &&
 								"rounded-br-2xl",
 						)}
 					>
@@ -67,6 +76,20 @@ const TableRows = <T extends object>({
 				))}
 			</tr>
 		);
+
+		const expandedRow =
+			isExpanded && renderExpandedRow ? (
+				<tr key={`${row.id}-expanded`} className="border-t border-gray-700/30">
+					<td
+						colSpan={columns.length}
+						className={twMerge("p-0", index === rows.length - 1 && "rounded-b-2xl")}
+					>
+						{renderExpandedRow(row)}
+					</td>
+				</tr>
+			) : null;
+
+		return expandedRow ? [mainRow, expandedRow] : [mainRow];
 	});
 
 interface TableProps<T extends object> {
@@ -78,12 +101,31 @@ interface TableProps<T extends object> {
 	data: T[];
 	className?: string;
 	getRowProps?: (row: Row<T>) => { className?: string };
+	expandedRows?: Set<string>;
+	renderExpandedRow?: (row: Row<T>) => React.ReactNode;
 }
 
-export const Table = <T extends object>({ header, columns, data, className, getRowProps }: TableProps<T>) => {
+export const Table = <T extends object>({
+	header,
+	columns,
+	data,
+	className,
+	getRowProps,
+	expandedRows,
+	renderExpandedRow,
+}: TableProps<T>) => {
 	const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<T>({
 		columns,
 		data,
+		getRowId: (row: T) => {
+			// Safely access potential ID properties
+			const record = row as Record<string, unknown>;
+			return (
+				(typeof record.bitcoinTxId === "string" ? record.bitcoinTxId : null) ||
+				(typeof record.id === "string" ? record.id : null) ||
+				JSON.stringify(row)
+			);
+		},
 	});
 	const isTableEmpty = !data.length;
 	const renderNoDataMessage = (
@@ -133,7 +175,14 @@ export const Table = <T extends object>({ header, columns, data, className, getR
 							{isTableEmpty ? (
 								renderNoDataMessage
 							) : (
-								<TableRows rows={rows} prepareRow={prepareRow} getRowProps={getRowProps} />
+								<TableRows
+									rows={rows}
+									prepareRow={prepareRow}
+									getRowProps={getRowProps}
+									expandedRows={expandedRows}
+									renderExpandedRow={renderExpandedRow}
+									columns={columns}
+								/>
 							)}
 						</tbody>
 					</table>
