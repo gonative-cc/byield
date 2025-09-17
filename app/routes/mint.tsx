@@ -97,7 +97,15 @@ const data: MintTransaction[] = [
 
 export default function Mint() {
 	return (
-		<div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-6">
+		<div className="mx-auto px-4 py-4 space-y-6">
+			<div className="text-center space-y-2">
+				<span className="text-4xl">
+					Mint<span className="text-primary"> nBTC</span>
+				</span>
+				<p className="text-muted-foreground text-lg">
+					Deposit Bitcoin and mint native Bitcoin tokens on Sui network
+				</p>
+			</div>
 			<div className="flex justify-center">
 				<MintBTC />
 			</div>
