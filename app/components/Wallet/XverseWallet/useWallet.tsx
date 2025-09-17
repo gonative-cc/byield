@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import Wallet, {
 	AddressPurpose,
 	BitcoinNetworkType,
@@ -64,18 +64,25 @@ export const useXverseWallet = () => {
 	const [balance, setBalance] = useState<string>();
 	// TODO: Default bitcoin network on connection is Testnet4
 	const [network, setNetwork] = useState<ExtendedBitcoinNetworkType>(ExtendedBitcoinNetworkType.Testnet4);
+	// Prevent repeated toasts when balance fetch fails due to a transient issue
+	const hasShownBalanceErrorRef = useRef<boolean>(false);
 
 	const getBalance = useCallback(async () => {
 		try {
 			const response = await Wallet.request(getBalanceMethodName, null);
 			if (response.status === "success") {
 				setBalance(response.result.total);
+				// Reset the error flag on success so future failures can notify once
+				hasShownBalanceErrorRef.current = false;
 			} else {
-				toast({
-					title: "Balance",
-					description: "Failed to get the balance",
-					variant: "destructive",
-				});
+				if (!hasShownBalanceErrorRef.current) {
+					toast({
+						title: "Balance",
+						description: "Failed to get the balance",
+						variant: "destructive",
+					});
+					hasShownBalanceErrorRef.current = true;
+				}
 			}
 		} catch (err) {
 			console.log(err);
@@ -121,10 +128,14 @@ export const useXverseWallet = () => {
 				setAddressInfo([]);
 				setCurrentAddress(null);
 				setBalance(undefined);
+				// Reset error spam guard on disconnect
+				hasShownBalanceErrorRef.current = false;
 			}
 		}
 		getWalletStatus();
-	}, [getAddresses, getBalance, getNetworkStatus, isBitCoinWalletConnected, network]);
+		// Note: do not depend on `network` here to avoid feedback loops that
+		// can repeatedly trigger balance fetches and spam toasts on failure.
+	}, [getAddresses, getBalance, getNetworkStatus, isBitCoinWalletConnected]);
 
 	const disconnectWallet = useCallback(async () => {
 		try {
