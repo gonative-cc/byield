@@ -13,7 +13,6 @@ import { useDisconnectWallet, useSuiClientContext } from "@mysten/dapp-kit";
 export function BuyNBTC() {
 	const { network } = useSuiClientContext();
 	const { mutate: disconnect } = useDisconnectWallet();
-	const [activeTab, setActiveTab] = useState<"BUY" | "SELL">("BUY");
 
 	// TODO: it doesn't get automatically refresehed
 	const { balance: nBTCBalance } = useCoinBalance();

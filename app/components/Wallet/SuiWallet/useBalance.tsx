@@ -17,7 +17,6 @@ export function useCoinBalance(coinAddr?: string): UseCoinBalanceResult {
 	const [balance, setBalance] = useState<CoinBalance | null>(null);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [error, setError] = useState<Error | null>(null);
-	// Keep the fetching logic simple and reusable
 	const fetchBalance = useCallback(
 		async (owner: string, coin: string | undefined) => {
 			setIsLoading(true);
