@@ -58,11 +58,13 @@ export function BuyNBTC() {
 	);
 }
 
+// TODO: Ravindra, if we decide to use rounded tabs, then we need to update the theme / style to make it
+// default for tabs-boxed, rather than specifying here
 const renderTabHeader = (title: string, checked = false) => (
 	<input
 		type="radio"
 		name="tab_nbtc_buy_sell"
-		className="tab tab-lg rounded-full checked:bg-primary"
+		className="tab rounded-full checked:bg-primary"
 		aria-label={title}
 		defaultChecked={checked}
 	/>
@@ -70,11 +72,11 @@ const renderTabHeader = (title: string, checked = false) => (
 
 const BuyNBTCTabs = () => (
 	<div className="tabs tabs-boxed bg-azure-10 rounded-full p-1">
-		${renderTabHeader("Buy", true)}
+		{renderTabHeader("Buy", true)}
 		<div className="tab-content py-6">
 			<BuyNBTCTabContent />
 		</div>
-		${renderTabHeader("Sell")}
+		{renderTabHeader("Sell")}
 		<div className="tab-content py-6">
 			<SellNBTCTabContent />
 		</div>
