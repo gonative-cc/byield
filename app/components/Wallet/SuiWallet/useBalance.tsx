@@ -17,43 +17,58 @@ export function useCoinBalance(coinAddr?: string): UseCoinBalanceResult {
 	const [balance, setBalance] = useState<CoinBalance | null>(null);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [error, setError] = useState<Error | null>(null);
+	const fetchBalance = useCallback(
+		async (owner: string, coin: string | undefined) => {
+			setIsLoading(true);
+			setError(null);
 
-	// callback restricts re-creation of the function again if dependency has not changed
-	const fetchBalance = useCallback(async () => {
+			let cancelled = false;
+			try {
+				const result = await suiClient.getBalance({ owner, coinType: coin });
+				if (!cancelled) {
+					setBalance(result);
+				}
+			} catch (err) {
+				if (!cancelled) {
+					setError(err instanceof Error ? err : new Error("Failed to fetch balance: " + err));
+					setBalance(null);
+				}
+			} finally {
+				if (!cancelled) {
+					setIsLoading(false);
+				}
+			}
+
+			return () => {
+				cancelled = true;
+			};
+		},
+		[suiClient],
+	);
+
+	useEffect(() => {
 		if (!account?.address) {
 			setBalance(null);
 			setIsLoading(false);
 			setError(null);
 			return;
 		}
-		// TODO: need to optimize this
-		console.log("Call fetch balance", account?.address);
 
-		try {
-			const result = await suiClient.getBalance({
-				owner: account.address,
-				coinType: coinAddr,
-			});
-			setBalance(result);
-		} catch (err) {
-			setError(err instanceof Error ? err : new Error("Failed to fetch balance: " + err));
-			return;
-		} finally {
-			setIsLoading(false);
-			setError(null);
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [account?.address || null, coinAddr, suiClient]);
+		// Keep the log for visibility
+		console.log("Call fetch balance", account.address);
 
-	useEffect(() => {
-		fetchBalance();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [account?.address || null, fetchBalance]);
+		const cleanup = fetchBalance(account.address, coinAddr);
+		return typeof cleanup === "function" ? cleanup : undefined;
+	}, [account?.address, coinAddr, fetchBalance]);
 
 	return {
 		balance: balance === null ? 0n : BigInt(balance.totalBalance),
 		isLoading,
 		error,
-		refetch: fetchBalance,
+		refetch: () => {
+			if (account?.address) {
+				fetchBalance(account.address, coinAddr);
+			}
+		},
 	};
 }
