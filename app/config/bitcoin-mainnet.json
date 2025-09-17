@@ -2,7 +2,8 @@
 	"bitcoinBroadcastLink": "https://mempool.space/tx/",
 	"confirmationThreshold": 6,
 	"nBTC": {
-		"depositAddress": "tb1qjgqhst2hlgjkh36pg6r3hdnz7zvurafe9h5lkx"
+		"depositAddress": "tb1qjgqhst2hlgjkh36pg6r3hdnz7zvurafe9h5lkx",
+		"mintingFeeNSats": 5
 	},
 	"indexerUrl": "",
 	"btcRPCUrl": ""

@@ -7,8 +7,7 @@ import { useContext, useEffect, useState } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
 import { FormNumericInput } from "../../components/form/FormNumericInput";
-import { NumericFormat } from "react-number-format";
-import { BTC, formatBTC, parseBTC } from "~/lib/denoms";
+import { BTC, formatBTC, parseBTC, formatNBTC } from "~/lib/denoms";
 import { nBTCMintTx } from "~/lib/nbtc";
 import { Check } from "lucide-react";
 import { buttonEffectClasses, classNames } from "~/util/tailwind";
@@ -97,21 +96,20 @@ function Percentage({ onChange }: { onChange: (value: number) => void }) {
 }
 
 interface FeeProps {
-	feeInSatoshi: bigint;
-	youReceive: string;
+	mintingFeeNSats: bigint;
 }
 
-function Fee({ feeInSatoshi, youReceive }: FeeProps) {
+function Fee({ mintingFeeNSats }: FeeProps) {
 	return (
-		<Card className="p-4 bg-azure-10 rounded-2xl h-24">
-			<CardContent className="flex flex-col justify-between h-full p-0">
-				<div className="flex justify-between">
-					<p className="text-gray-400">Fixed Fee</p>
-					<NumericFormat displayType="text" value={formatBTC(feeInSatoshi)} suffix=" Satoshi" />
-				</div>
-				<div className="flex justify-between">
-					<p className="text-gray-400">You Receive</p>
-					<NumericFormat displayType="text" value={youReceive} suffix=" nBTC" />
+		<Card className="p-4 rounded-2xl">
+			<CardContent className="flex flex-col justify-between p-0">
+				<div className="flex justify-between text-sm">
+					<span>Minting Fee</span>
+					<div className="tooltip" data-tip="1 nSat = 0.00000001 nBTC">
+						<span className="cursor-help">
+							{mintingFeeNSats} ({formatNBTC(mintingFeeNSats)} nBTC)
+						</span>
+					</div>
 				</div>
 			</CardContent>
 		</Card>
@@ -222,6 +220,9 @@ export function MintBTC() {
 								},
 							}}
 						/>
+						{bitcoinConfig.nBTC && (
+							<Fee mintingFeeNSats={BigInt(bitcoinConfig?.nBTC?.mintingFeeNSats)} />
+						)}
 						{isBitCoinWalletConnected ? (
 							<button
 								type="submit"
