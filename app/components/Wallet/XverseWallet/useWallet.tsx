@@ -104,7 +104,7 @@ export const useXverseWallet = () => {
 	const getNetworkStatus = useCallback(async () => {
 		const response = await Wallet.request(getNetworkMethodName, null);
 		if (response.status === "success") {
-			setNetwork(response.result.bitcoin.name as unknown as BitcoinNetworkType);
+			setNetwork(response.result.bitcoin.name);
 		} else {
 			toast({
 				title: "Network",
@@ -152,7 +152,7 @@ export const useXverseWallet = () => {
 	const switchNetwork = useCallback(async (newNetwork: BitcoinNetworkType) => {
 		// Handle other networks normally
 		const response = await Wallet.request(changeNetworkMethodName, {
-			name: newNetwork as unknown as BitcoinNetworkType,
+			name: newNetwork,
 		});
 		if (response.status === "success") {
 			setNetwork(newNetwork);
