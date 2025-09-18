@@ -19,7 +19,7 @@ export function RegtestInstructions() {
 		},
 		{
 			id: "instruction-3",
-			content: "On top right corner, click on hamburger icon and select Settings",
+			content: "On top right corner, click on ☰ icon and select Settings",
 		},
 		{
 			id: "instruction-4",
@@ -31,7 +31,7 @@ export function RegtestInstructions() {
 		},
 		{
 			id: "instruction-6",
-			content: "Click on edit icon on Regtest",
+			content: "Click on ⋮ icon on Regtest",
 		},
 		{
 			id: "instruction-7",
@@ -43,7 +43,7 @@ export function RegtestInstructions() {
 		},
 		{
 			id: "instruction-9",
-			content: "Click on Save",
+			content: "Press Save",
 		},
 	];
 
