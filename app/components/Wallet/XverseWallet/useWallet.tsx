@@ -133,9 +133,8 @@ export const useXverseWallet = () => {
 			}
 		}
 		getWalletStatus();
-		// Note: do not depend on `network` here to avoid feedback loops that
-		// can repeatedly trigger balance fetches and spam toasts on failure.
-	}, [getAddresses, getBalance, getNetworkStatus, isBitCoinWalletConnected]);
+		// Re-fetch on `network` or `currentAddress` change as well as connect state
+	}, [getAddresses, getBalance, getNetworkStatus, isBitCoinWalletConnected, network, currentAddress]);
 
 	const disconnectWallet = useCallback(async () => {
 		try {
@@ -181,6 +180,7 @@ export const useXverseWallet = () => {
 		currentAddress,
 		addressInfo,
 		setCurrentAddress,
+		refreshBalance: getBalance,
 		disconnectWallet,
 		switchNetwork,
 	};
