@@ -1,4 +1,4 @@
-import Wallet from "sats-connect";
+import Wallet, { BitcoinNetworkType } from "sats-connect";
 import { type Address, type RpcResult } from "sats-connect";
 import { fetchUTXOs, fetchValidateAddress } from "~/api/btcrpc";
 import type { UTXO, ValidateAddressI } from "~/api/btcrpc";
@@ -30,7 +30,7 @@ export async function nBTCMintTx(
 	bitcoinAddress: Address,
 	mintAmountInSatoshi: number,
 	opReturn: string,
-	bitcoinNetworkType: ExtendedBitcoinNetworkType,
+	bitcoinNetworkType: BitcoinNetworkType,
 	depositAddress: string,
 ): Promise<MintTxResult | undefined> {
 	try {

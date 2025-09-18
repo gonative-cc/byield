@@ -9,6 +9,7 @@ import { CopyButton } from "~/components/ui/CopyButton";
 
 function NetWorkOptions() {
 	const { network, switchNetwork } = useXverseWallet();
+
 	const bitcoinSupportedNetwork: Option[] = useMemo(
 		() => [
 			{ label: "TestnetV2 (indexer + Testnet4)", value: ExtendedBitcoinNetworkType.TestnetV2 },
