@@ -26,7 +26,9 @@ const getBitcoinNetworkConfig: Record<BitcoinNetworkType, NetworkConfig> = {
 	},
 	// Regtest is localnet
 	Regtest: {
-		variables: {},
+		variables: {
+			...devnetConfig,
+		},
 	},
 };
 
