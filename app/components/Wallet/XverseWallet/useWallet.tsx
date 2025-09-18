@@ -72,7 +72,6 @@ export const useXverseWallet = () => {
 			const response = await Wallet.request(getBalanceMethodName, null);
 			if (response.status === "success") {
 				setBalance(response.result.total);
-				// Mark that we have a successful balance at least once
 				hasFetchedBalanceSuccessfullyRef.current = true;
 			} else {
 				// Only show an error if we never had a successful balance
