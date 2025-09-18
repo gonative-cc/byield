@@ -66,6 +66,8 @@ export const useXverseWallet = () => {
 	const [network, setNetwork] = useState<ExtendedBitcoinNetworkType>(ExtendedBitcoinNetworkType.Testnet4);
 	// Only toast on failure if we have not yet successfully fetched a balance
 	const hasFetchedBalanceSuccessfullyRef = useRef<boolean>(false);
+	// Only toast on failure if we have not yet successfully fetched network status
+	const hasFetchedNetworkSuccessfullyRef = useRef<boolean>(false);
 
 	const getBalance = useCallback(async () => {
 		try {
@@ -109,12 +111,15 @@ export const useXverseWallet = () => {
 		const response = await Wallet.request(getNetworkMethodName, null);
 		if (response.status === "success") {
 			setNetwork(response.result.bitcoin.name as unknown as ExtendedBitcoinNetworkType);
+			hasFetchedNetworkSuccessfullyRef.current = true;
 		} else {
-			toast({
-				title: "Network",
-				description: "Failed to get network status",
-				variant: "destructive",
-			});
+			if (!hasFetchedNetworkSuccessfullyRef.current) {
+				toast({
+					title: "Network",
+					description: "Failed to get network status",
+					variant: "destructive",
+				});
+			}
 		}
 	}, []);
 
@@ -128,13 +133,20 @@ export const useXverseWallet = () => {
 				setAddressInfo([]);
 				setCurrentAddress(null);
 				setBalance(undefined);
-				// Reset session success marker on disconnect
+				// Reset session success markers on disconnect
 				hasFetchedBalanceSuccessfullyRef.current = false;
+				hasFetchedNetworkSuccessfullyRef.current = false;
 			}
 		}
 		getWalletStatus();
-		// Re-fetch on `network` or `currentAddress` change as well as connect state
-	}, [getAddresses, getBalance, getNetworkStatus, isBitCoinWalletConnected, network, currentAddress]);
+		// Only depend on connect state to avoid network-triggered loops
+	}, [getAddresses, getBalance, getNetworkStatus, isBitCoinWalletConnected]);
+
+	// Re-fetch balance when network or address changes (while connected)
+	useEffect(() => {
+		if (!isBitCoinWalletConnected) return;
+		getBalance();
+	}, [network, currentAddress, isBitCoinWalletConnected, getBalance]);
 
 	const disconnectWallet = useCallback(async () => {
 		try {
