@@ -9,7 +9,7 @@ interface SelectInputProps<T = string> {
 	onValueChange?: (value: T) => void;
 	className?: string;
 	value?: T;
-	optionItem?: (option: Option<T>) => React.ReactNode;
+	optionItemRenderer?: (option: Option<T>) => React.ReactNode;
 }
 
 function isOptionValueNumberOrString<T>(value: T) {
@@ -21,7 +21,7 @@ function SelectInput<T = string>({
 	value,
 	placeholder,
 	onValueChange,
-	optionItem,
+	optionItemRenderer,
 }: SelectInputProps<T>) {
 	const handleOnChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		if (onValueChange) {
@@ -50,7 +50,7 @@ function SelectInput<T = string>({
 							isOptionValueNumberOrString(option.value) ? option.value : String(option.value)
 						}
 					>
-						{optionItem ? optionItem(option) : option.label}
+						{optionItemRenderer ? optionItemRenderer(option) : option.label}
 					</option>
 				))
 			) : (

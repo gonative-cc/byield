@@ -39,13 +39,12 @@ function Accounts() {
 	return (
 		<SelectInput
 			options={options}
-			placeholder="Select account"
 			onValueChange={(address) => {
 				const account = addressInfo.find((a) => a.address === address);
 				if (account) setCurrentAddress(account);
 			}}
 			value={currentAddress?.address}
-			optionItem={(val) => (
+			optionItemRenderer={(val) => (
 				<div className="flex gap-2 items-center">
 					{val.label} <CopyButton text={val.value} />
 				</div>

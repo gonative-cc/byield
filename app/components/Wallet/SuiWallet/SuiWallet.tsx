@@ -73,7 +73,6 @@ function Accounts() {
 	return (
 		<SelectInput
 			options={options}
-			placeholder="Select account"
 			onValueChange={(address) => {
 				const newAccount = accounts.find((a) => a.address === address);
 				if (!newAccount) return;
@@ -85,7 +84,7 @@ function Accounts() {
 				);
 			}}
 			value={currentSelectedAccount?.address}
-			optionItem={(val) => (
+			optionItemRenderer={(val) => (
 				<div className="flex gap-2 items-center">
 					{val.label} <CopyButton text={val.value} />
 				</div>
