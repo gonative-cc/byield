@@ -5,6 +5,7 @@ import { trimAddress } from "../walletHelper";
 import { NumericFormat } from "react-number-format";
 import { formatBTC } from "~/lib/denoms";
 import { ExtendedBitcoinNetworkType } from "~/hooks/useBitcoinConfig";
+import { CopyButton } from "~/components/ui/CopyButton";
 
 function NetWorkOptions() {
 	const { network, switchNetwork } = useXverseWallet();
@@ -38,12 +39,16 @@ function Accounts() {
 	return (
 		<SelectInput
 			options={options}
-			placeholder="Select account"
 			onValueChange={(address) => {
 				const account = addressInfo.find((a) => a.address === address);
 				if (account) setCurrentAddress(account);
 			}}
 			value={currentAddress?.address}
+			optionItemRenderer={(val) => (
+				<div className="flex gap-2 items-center">
+					{val.label} <CopyButton text={val.value} />
+				</div>
+			)}
 			className="w-full md:w-auto"
 		/>
 	);
