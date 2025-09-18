@@ -18,7 +18,7 @@ export function ErrorBoundary() {
 					{err.status} {err.statusText}
 				</h2>
 			</div>
-			<div className="card-body text-center space-y-4 border-0 bg-transparent">
+			<div className="card-body text-center space-y-4">
 				<p className="text-muted-foreground">
 					{err.data || "The page you're looking for doesn't exist or something went wrong."}
 				</p>
