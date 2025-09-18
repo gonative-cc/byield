@@ -1,3 +1,4 @@
+import { RegtestInstructions } from "~/pages/Mint/RegtestInstructions";
 import { MintBTC } from "~/pages/Mint/MintBTC";
 import { MintBTCTable } from "~/pages/Mint/MintBTCTable";
 import { MintingTxStatus, type MintTransaction } from "~/server/Mint/types";
@@ -54,7 +55,10 @@ export default function Mint() {
 				</p>
 			</div>
 			<div className="flex justify-center">
-				<MintBTC />
+				<div className="space-y-4">
+					<RegtestInstructions />
+					<MintBTC />
+				</div>
 			</div>
 			<MintBTCTable data={data} />
 		</div>

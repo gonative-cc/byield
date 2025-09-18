@@ -1,4 +1,4 @@
-import Wallet from "sats-connect";
+import Wallet, { BitcoinNetworkType } from "sats-connect";
 import { type Address, type RpcResult } from "sats-connect";
 import { fetchUTXOs, fetchValidateAddress } from "~/api/btcrpc";
 import type { UTXO, ValidateAddressI } from "~/api/btcrpc";
@@ -9,7 +9,6 @@ import {
 	getOpReturnOpcode,
 } from "./bitcoin.client";
 import { toast } from "~/hooks/use-toast";
-import type { ExtendedBitcoinNetworkType } from "~/hooks/useBitcoinConfig";
 
 export const PRICE_PER_NBTC_IN_SUI = 25000n;
 const DUST_THRESHOLD_SATOSHI = 546;
@@ -18,7 +17,7 @@ export async function nBTCMintTx(
 	bitcoinAddress: Address,
 	mintAmountInSatoshi: number,
 	opReturn: string,
-	bitcoinNetworkType: ExtendedBitcoinNetworkType,
+	bitcoinNetworkType: BitcoinNetworkType,
 	depositAddress: string,
 ): Promise<RpcResult<"signPsbt"> | undefined> {
 	try {

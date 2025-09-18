@@ -8,14 +8,11 @@ import Wallet, {
 	getAddressesMethodName,
 	getBalanceMethodName,
 	getNetworkMethodName,
-	addNetworkMethodName,
 } from "sats-connect";
 import type { Address } from "sats-connect";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
-import { ExtendedBitcoinNetworkType } from "~/hooks/useBitcoinConfig";
 import { toast } from "~/hooks/use-toast";
-import devnetConfig from "~/config/bitcoin-devnet.json";
 
 export const useXverseConnect = () => {
 	const { handleWalletConnect, toggleBitcoinModal } = useContext(WalletContext);
@@ -64,9 +61,8 @@ export const useXverseWallet = () => {
 	const [addressInfo, setAddressInfo] = useState<Address[]>([]);
 	const [currentAddress, setCurrentAddress] = useState<Address | null>(null);
 	const [balance, setBalance] = useState<string>();
-	// TODO: Default bitcoin network on connection is Testnet4
-	const [network, setNetwork] = useState<ExtendedBitcoinNetworkType>(ExtendedBitcoinNetworkType.Testnet4);
-	// Only toast on failure if we have not yet successfully fetched a balance
+	// TODO: Default bitcoin network on connection is Regtest
+	const [network, setNetwork] = useState<BitcoinNetworkType>(BitcoinNetworkType.Regtest);
 	const hasFetchedBalanceSuccessfullyRef = useRef<boolean>(false);
 
 	const getBalance = useCallback(async () => {
@@ -108,7 +104,7 @@ export const useXverseWallet = () => {
 	const getNetworkStatus = useCallback(async () => {
 		const response = await Wallet.request(getNetworkMethodName, null);
 		if (response.status === "success") {
-			setNetwork(response.result.bitcoin.name as unknown as ExtendedBitcoinNetworkType);
+			setNetwork(response.result.bitcoin.name as unknown as BitcoinNetworkType);
 		} else {
 			toast({
 				title: "Network",
@@ -153,62 +149,22 @@ export const useXverseWallet = () => {
 		}
 	}, [handleWalletConnect]);
 
-	const addDevnetNetwork = useCallback(async () => {
-		const name = ExtendedBitcoinNetworkType.Devnet;
-		const res = await Wallet.request(addNetworkMethodName, {
-			chain: "bitcoin",
-			name,
-			type: BitcoinNetworkType.Regtest,
-			rpcUrl: devnetConfig.btcRPCUrl,
+	const switchNetwork = useCallback(async (newNetwork: BitcoinNetworkType) => {
+		// Handle other networks normally
+		const response = await Wallet.request(changeNetworkMethodName, {
+			name: newNetwork as unknown as BitcoinNetworkType,
 		});
-		if (res.status !== "success") {
-			console.error(res.error);
+		if (response.status === "success") {
+			setNetwork(newNetwork);
+		} else {
+			console.error("Failed to switch network:", response.error);
 			toast({
 				title: "Network",
-				description: `Failed to add Devnet network`,
+				description: "Failed to switch network",
 				variant: "destructive",
 			});
 		}
 	}, []);
-
-	const switchNetwork = useCallback(
-		async (newNetwork: ExtendedBitcoinNetworkType) => {
-			// Handle Devnet separately as it needs to be added first
-			if (newNetwork === ExtendedBitcoinNetworkType.Regtest) {
-				await addDevnetNetwork();
-				// Switch to Regtest after adding devnet
-				const response = await Wallet.request(changeNetworkMethodName, {
-					name: ExtendedBitcoinNetworkType.Regtest as unknown as BitcoinNetworkType,
-				});
-				if (response.status === "success") {
-					setNetwork(ExtendedBitcoinNetworkType.Devnet);
-				} else {
-					console.error("Failed to switch to Devnet network:", response.error);
-					toast({
-						title: "Network",
-						description: `Failed to switch to Devnet network`,
-						variant: "destructive",
-					});
-				}
-			} else {
-				// Handle other networks normally
-				const response = await Wallet.request(changeNetworkMethodName, {
-					name: newNetwork as unknown as BitcoinNetworkType,
-				});
-				if (response.status === "success") {
-					setNetwork(newNetwork);
-				} else {
-					console.error("Failed to switch network:", response.error);
-					toast({
-						title: "Network",
-						description: "Failed to switch network",
-						variant: "destructive",
-					});
-				}
-			}
-		},
-		[addDevnetNetwork],
-	);
 
 	return {
 		balance,
