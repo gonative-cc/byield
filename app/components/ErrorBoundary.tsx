@@ -46,7 +46,7 @@ export function ErrorBoundary() {
 				</div>
 				<h2 className="card-title text-2xl font-bold">Oops!</h2>
 			</div>
-			<div className="card-body text-center space-y-4 border-0 bg-transparent">
+			<div className="card-body text-center space-y-4">
 				<p className="card-title text-muted-foreground">
 					Something unexpected happened. Please try refreshing the page.
 				</p>
