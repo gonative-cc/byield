@@ -96,10 +96,10 @@ function Percentage({ onChange }: { onChange: (value: number) => void }) {
 }
 
 interface FeeProps {
-	mintingFeeNSats: bigint;
+	mintingFee: bigint;
 }
 
-function Fee({ mintingFeeNSats }: FeeProps) {
+function Fee({ mintingFee }: FeeProps) {
 	return (
 		<Card className="p-4 rounded-2xl">
 			<CardContent className="flex flex-col justify-between p-0">
@@ -107,7 +107,7 @@ function Fee({ mintingFeeNSats }: FeeProps) {
 					<span>Minting Fee</span>
 					<div className="tooltip" data-tip="1 nSat = 0.00000001 nBTC">
 						<span className="cursor-help">
-							{mintingFeeNSats} ({formatNBTC(mintingFeeNSats)} nBTC)
+							{mintingFee} ({formatNBTC(mintingFee)} nBTC)
 						</span>
 					</div>
 				</div>
@@ -220,9 +220,7 @@ export function MintBTC() {
 								},
 							}}
 						/>
-						{bitcoinConfig.nBTC && (
-							<Fee mintingFeeNSats={BigInt(bitcoinConfig?.nBTC?.mintingFeeNSats)} />
-						)}
+						{bitcoinConfig.nBTC && <Fee mintingFee={BigInt(bitcoinConfig?.nBTC?.mintingFee)} />}
 						{isBitCoinWalletConnected ? (
 							<button
 								type="submit"

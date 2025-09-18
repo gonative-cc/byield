@@ -3,7 +3,7 @@
 	"confirmationThreshold": 6,
 	"nBTC": {
 		"depositAddress": "tb1qjgqhst2hlgjkh36pg6r3hdnz7zvurafe9h5lkx",
-		"mintingFeeNSats": 5
+		"mintingFee": 5
 	},
 	"indexerUrl": "",
 	"btcRPCUrl": "http://142.93.46.134:3002"
