@@ -132,7 +132,6 @@ export const useXverseWallet = () => {
 			}
 		}
 		getWalletStatus();
-		// Re-fetch on `network` or `currentAddress` change as well as connect state
 	}, [getAddresses, getBalance, getNetworkStatus, isBitCoinWalletConnected, network, currentAddress]);
 
 	const disconnectWallet = useCallback(async () => {
