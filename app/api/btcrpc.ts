@@ -1,5 +1,14 @@
 import axios from "axios";
 
+export const MEMPOOL_APIS = {
+	Mainnet: "https://mempool.space/api",
+	Testnet: "https://mempool.space/testnet/api",
+	Testnet4: "https://mempool.space/testnet4/api",
+	TestnetV2: "http://142.93.46.134:3002",
+	Regtest: "http://142.93.46.134:3002",
+	Devnet: "http://142.93.46.134:3002",
+};
+
 export const MEMPOOL_API = "https://mempool.space/testnet4/api";
 
 /**
@@ -38,7 +47,20 @@ export type ValidateAddressI = {
 
 export async function fetchUTXOs(address: string): Promise<UTXO[]> {
 	try {
-		// TOOD: maybe other wallet will provide it.
+		if (address.startsWith("bcrt1")) {
+			console.log("Fetching real UTXOs from custom regtest network");
+			const response = await axios.get(
+				`/api/btcrpc?action=utxos&address=${encodeURIComponent(address)}`,
+			);
+			console.log("Real regtest UTXOs:", response.data);
+			return response.data.map((utxo: UTXO) => ({
+				txid: utxo.txid,
+				vout: utxo.vout,
+				value: utxo.value,
+				scriptPubKey: utxo.scriptpubkey,
+			}));
+		}
+
 		const response = await axios.get(`${MEMPOOL_API}/address/${address}/utxo`);
 		return response.data.map((utxo: UTXO) => ({
 			txid: utxo.txid,
@@ -47,15 +69,24 @@ export async function fetchUTXOs(address: string): Promise<UTXO[]> {
 			scriptPubKey: utxo.scriptpubkey,
 		}));
 	} catch (error) {
-		throw new Error(`Failed to fetch UTXOs: ${error}`);
+		console.error("Failed to fetch UTXOs:", error);
+		throw new Error(`Failed to fetch UTXOs for address ${address}`);
 	}
 }
 
 export async function fetchValidateAddress(address: string): Promise<ValidateAddressI> {
-	try {
-		const response = await axios.get(`${MEMPOOL_API}/v1/validate-address/${address}`);
-		return response.data;
-	} catch (error) {
-		throw new Error(`Failed to validate address: ${error}`);
-	}
+	console.warn(
+		"fetchValidateAddress is deprecated. Use client-side validation with bitcoinjs-lib instead.",
+	);
+
+	return {
+		isValid: true,
+		address: address,
+		scriptPubKey: "",
+		isscript: false,
+		iswitness:
+			address.startsWith("bc1") || address.startsWith("tb1") || address.startsWith("bcrt1"),
+		witness_version: 0,
+		witness_program: "",
+	};
 }

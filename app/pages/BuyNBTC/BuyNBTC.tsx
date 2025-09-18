@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { Card, CardContent } from "~/components/ui/card";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
@@ -29,19 +29,20 @@ export function BuyNBTC() {
 		}
 	}, [disconnect, isMainnet]);
 
-	const renderBuyNBTCTabs = () => (
-		<div className="tabs tabs-lift text-primary">
-			<input type="radio" name="buy_nbtc_tabs" className="tab" aria-label="Buy" />
-			<div className="tab-content bg-base-100 border-base-300 p-6">
-				<BuyNBTCTabContent />
-			</div>
-
-			<input type="radio" name="buy_nbtc_tabs" className="tab" aria-label="Sell" defaultChecked />
-			<div className="tab-content bg-base-100 border-base-300 p-6">
-				<SellNBTCTabContent />
-			</div>
-		</div>
-	);
+	// Tabs functionality temporarily commented out
+	// const renderBuyNBTCTabs = () => (
+	// 	<div className="tabs tabs-lift text-primary">
+	// 		<input type="radio" name="buy_nbtc_tabs" className="tab" aria-label="Buy" />
+	// 		<div className="tab-content bg-base-100 border-base-300 p-6">
+	// 			<BuyNBTCTabContent />
+	// 		</div>
+	//
+	// 		<input type="radio" name="buy_nbtc_tabs" className="tab" aria-label="Sell" defaultChecked />
+	// 		<div className="tab-content bg-base-100 border-base-300 p-6">
+	// 			<SellNBTCTabContent />
+	// 		</div>
+	// 	</div>
+	// );
 
 	return (
 		<div className="flex flex-col items-center gap-8 px-2 pt-2">

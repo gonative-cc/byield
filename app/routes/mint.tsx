@@ -2,9 +2,10 @@ import { MintBTC } from "~/pages/Mint/MintBTC";
 import { MintBTCTable } from "~/pages/Mint/MintBTCTable";
 import { useNbtcTransactions } from "~/hooks/useNbtcTransactions";
 import { LoadingSpinner } from "~/components/LoadingSpinner";
+import { RefreshCw } from "lucide-react";
 
 function MintContent() {
-	const { transactions, isLoading, error, refetch } = useNbtcTransactions();
+	const { transactions, isLoading, error, refetch, addPendingTransaction } = useNbtcTransactions();
 
 	return (
 		<div className="mx-auto px-4 py-4 space-y-6">
@@ -20,11 +21,28 @@ function MintContent() {
 			</div>
 
 			<div className="flex justify-center">
-				<MintBTC />
+				<MintBTC onTransactionBroadcast={addPendingTransaction} />
 			</div>
 
 			{/* Transaction Table Section */}
 			<div className="space-y-4">
+				{/* Table Header with Refresh Button */}
+				<div className="flex items-center justify-between">
+					<h2 className="text-xl font-semibold flex items-center gap-2">
+						<span>₿</span>
+						<span>nBTC Mint Transactions</span>
+					</h2>
+					<button
+						onClick={refetch}
+						disabled={isLoading}
+						className="btn btn-sm btn-ghost flex items-center gap-2 hover:bg-base-200"
+						title="Refresh transactions"
+					>
+						<RefreshCw size={16} className={isLoading ? "animate-spin" : ""} />
+						Refresh
+					</button>
+				</div>
+
 				{error && (
 					<div className="alert">
 						<div>

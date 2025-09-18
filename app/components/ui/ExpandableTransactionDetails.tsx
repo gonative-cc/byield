@@ -1,7 +1,9 @@
-import { Info } from "lucide-react";
-import { type NbtcTxStatus, type MintTransaction } from "~/server/Mint/types";
+import { Info, CheckCircle, XCircle } from "lucide-react";
+import { type MintTransaction } from "~/server/Mint/types";
 import { AnimatedHourglass } from "./AnimatedHourglass";
 import { useIndexerNetworkContext } from "~/providers/IndexerNetworkProvider";
+import { NumericFormat } from "react-number-format";
+import { formatBTC } from "~/lib/denoms";
 
 interface ExpandableTransactionDetailsProps {
 	transaction: MintTransaction;
@@ -9,79 +11,9 @@ interface ExpandableTransactionDetailsProps {
 
 export function ExpandableTransactionDetails({ transaction }: ExpandableTransactionDetailsProps) {
 	const { bitcoinConfig } = useIndexerNetworkContext();
-	const confirmationThreshold = bitcoinConfig?.confirmationThreshold || 3; // Default to 3 for testnet-v2
-	const blockTime = bitcoinConfig?.blockTime || 120; // Default 2 minutes for testnet-v2
+	const confirmationThreshold = bitcoinConfig?.confirmationThreshold || 3;
+	const blockTime = bitcoinConfig?.blockTime || 120;
 	const operationDate = new Date(transaction.operationStartDate || transaction.timestamp);
-
-	const getStatusIcon = (status: NbtcTxStatus) => {
-		switch (status) {
-			case "confirming":
-				return <AnimatedHourglass />;
-			case "finalized":
-			case "minted":
-				return null;
-			case "failed":
-			case "reorg":
-				return null;
-			default:
-				return null;
-		}
-	};
-
-	const getConfirmationIcon = () => {
-		if (transaction.status === "confirming" && transaction.numberOfConfirmation === 0) {
-			return null;
-		}
-		return transaction.numberOfConfirmation >= confirmationThreshold ? null : <AnimatedHourglass />;
-	};
-
-	const getBitcoinTxStatus = () => {
-		switch (transaction.status) {
-			case "confirming":
-				return transaction.numberOfConfirmation === 0
-					? "Bitcoin Tx broadcasting"
-					: "Bitcoin Tx broadcasted";
-			case "finalized":
-			case "minted":
-				return "Bitcoin Tx broadcasted";
-			case "failed":
-			case "reorg":
-				return "Bitcoin Tx Broadcast failed";
-			default:
-				return "Bitcoin Tx status unknown";
-		}
-	};
-
-	const getSuiMintingStatus = () => {
-		switch (transaction.status) {
-			case "confirming":
-			case "finalized":
-				return "nBTC minting";
-			case "minted":
-				return "nBTC minted";
-			case "failed":
-			case "reorg":
-				return "nBTC minting";
-			default:
-				return "nBTC minting";
-		}
-	};
-
-	const getSuiMintingIcon = () => {
-		switch (transaction.status) {
-			case "minted":
-				return null;
-			case "failed":
-			case "reorg":
-				return null;
-			default:
-				return <AnimatedHourglass />;
-		}
-	};
-
-	const isTransactionBroadcasting = () => {
-		return transaction.status === "confirming" && transaction.numberOfConfirmation === 0;
-	};
 
 	const estimatedTimeRemaining = () => {
 		if (transaction.status !== "confirming") return null;
@@ -90,22 +22,53 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 		return Math.ceil(estimatedMinutes);
 	};
 
+	const formatTimeRemaining = (minutes: number | null) => {
+		if (!minutes || minutes <= 0) return null;
+		if (minutes === 1) return "~1 minute";
+		return `~${minutes} minutes`;
+	};
+
+	const isBroadcasted = () => {
+		return transaction.status !== "confirming" || transaction.numberOfConfirmation > 0;
+	};
+
+	const isConfirmed = () => {
+		return transaction.numberOfConfirmation >= confirmationThreshold;
+	};
+
+	const isMinted = () => {
+		return transaction.status === "minted";
+	};
+
+	const isFailed = () => {
+		return transaction.status === "failed" || transaction.status === "reorg";
+	};
+
 	return (
 		<div className="p-6 bg-base-100 border-t border-base-300">
 			<div className="space-y-4">
-				{/* Operation Start */}
 				<div className="text-sm text-base-content/70">
 					<span className="font-semibold">Operation start:</span> {operationDate.toLocaleString()}
 				</div>
 
 				<div className="divider my-2"></div>
 
-				{/* Bitcoin Transaction Status */}
 				<div className="flex items-center gap-2 text-sm">
-					<span className="flex items-center gap-1">
-						{getStatusIcon(transaction.status)} {getBitcoinTxStatus()}
+					{isFailed() ? (
+						<XCircle size={16} className="text-error flex-shrink-0" />
+					) : isBroadcasted() ? (
+						<CheckCircle size={16} className="text-success flex-shrink-0" />
+					) : (
+						<AnimatedHourglass size={16} />
+					)}
+					<span>
+						{isFailed()
+							? "Bitcoin Tx Broadcast failed"
+							: isBroadcasted()
+								? "Bitcoin Tx broadcasted"
+								: "Bitcoin Tx broadcasting"}
 					</span>
-					{transaction.bitcoinExplorerUrl && !isTransactionBroadcasting() && (
+					{transaction.bitcoinExplorerUrl && isBroadcasted() && (
 						<a
 							href={transaction.bitcoinExplorerUrl}
 							target="_blank"
@@ -117,20 +80,24 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 					)}
 				</div>
 
-				{/* Bitcoin Confirmations */}
-				<div className="flex items-start gap-2 text-sm">
-					<span className="flex items-center gap-1">
-						{getConfirmationIcon()} Bitcoin confirmations: {transaction.numberOfConfirmation}/
+				<div className="flex items-center gap-2 text-sm">
+					{isConfirmed() ? (
+						<CheckCircle size={16} className="text-success flex-shrink-0" />
+					) : transaction.numberOfConfirmation > 0 ? (
+						<AnimatedHourglass size={16} />
+					) : null}
+					<span>
+						Bitcoin confirmations:{" "}
+						{Math.min(transaction.numberOfConfirmation, confirmationThreshold)}/
 						{confirmationThreshold}
 					</span>
-					{transaction.status === "confirming" && estimatedTimeRemaining() && (
+					{!isConfirmed() && transaction.status === "confirming" && estimatedTimeRemaining() && (
 						<span className="text-base-content/60">
-							[~{estimatedTimeRemaining()} minutes remaining]
+							[{formatTimeRemaining(estimatedTimeRemaining())}]
 						</span>
 					)}
 				</div>
 
-				{/* Info about Bitcoin confirmations */}
 				<div className="alert">
 					<Info size={16} className="flex-shrink-0" />
 					<span className="text-xs">
@@ -140,33 +107,38 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 					</span>
 				</div>
 
-				{/* Sui Minting Status */}
 				<div className="flex items-center gap-2 text-sm">
-					<span className="flex items-center gap-1">
-						{getSuiMintingIcon()} {getSuiMintingStatus()}
+					{isMinted() ? (
+						<CheckCircle size={16} className="text-success flex-shrink-0" />
+					) : isFailed() ? (
+						<XCircle size={16} className="text-error flex-shrink-0" />
+					) : isConfirmed() ? (
+						<AnimatedHourglass size={16} />
+					) : null}
+					<span>
+						{isMinted() ? "nBTC minted" : isConfirmed() ? "nBTC minting" : "nBTC minting"}
 					</span>
-					{transaction.suiTxId && (
-						<a
-							href={transaction.suiExplorerUrl || `#${transaction.suiTxId}`}
-							target="_blank"
-							rel="noopener noreferrer"
-							className="link link-primary"
-						>
-							[Sui Tx ID]
-						</a>
-					)}
 				</div>
 
 				<div className="divider my-2"></div>
 
-				{/* Fees */}
 				<div className="text-sm text-base-content/70">
-					<span className="font-semibold">Fees:</span> {transaction.fees || 5} sats
+					<span className="font-semibold">Fees:</span> {transaction.fees || 1000} sats{" "}
+					<span className="text-base-content/50">
+						(~
+						<NumericFormat
+							displayType="text"
+							value={formatBTC(BigInt(transaction.fees || 1000))}
+							suffix=" BTC"
+							className="font-mono"
+						/>
+						)
+					</span>
 				</div>
 
-				{/* Error message for failed transactions */}
-				{(transaction.status === "failed" || transaction.status === "reorg") && (
-					<div className="alert">
+				{isFailed() && (
+					<div className="alert alert-error">
+						<XCircle size={16} className="flex-shrink-0" />
 						<div>
 							<div className="font-medium mb-1">
 								Transaction {transaction.status === "reorg" ? "Reorganized" : "Failed"}
@@ -175,11 +147,9 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 								{transaction.errorMessage ||
 									(transaction.status === "reorg"
 										? "The transaction was reorganized due to a blockchain reorganization"
-										: "The transaction failed to be included in the block (the transaction didn't happen)")}
+										: "The transaction was not included in the block (the transaction didn't happen)")}
 							</div>
-							<button className="btn btn-sm mt-2">
-								{transaction.status === "reorg" ? "Retry Transaction" : "Retry Transaction"}
-							</button>
+							<button className="btn btn-sm btn-error mt-2">Retry Transaction</button>
 						</div>
 					</div>
 				)}

@@ -2,6 +2,7 @@ import { createContext, useContext, type ReactNode } from "react";
 import { useIndexerNetwork } from "~/hooks/useIndexerNetwork";
 import { ExtendedBitcoinNetworkType } from "~/hooks/useBitcoinConfig";
 import testnetV2Config from "~/config/bitcoin-testnet-v2.json";
+import regtestConfig from "~/config/bitcoin-regtest.json";
 import devnetConfig from "~/config/bitcoin-devnet.json";
 import mainnetConfig from "~/config/bitcoin-mainnet.json";
 
@@ -9,6 +10,7 @@ type BitcoinNetworkVariables =
 	| typeof mainnetConfig
 	| typeof devnetConfig
 	| typeof testnetV2Config
+	| typeof regtestConfig
 	| Record<string, never>;
 
 interface IndexerNetworkContextType {

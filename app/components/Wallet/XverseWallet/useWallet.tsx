@@ -101,7 +101,26 @@ export const useXverseWallet = () => {
 	const getNetworkStatus = useCallback(async () => {
 		const response = await Wallet.request(getNetworkMethodName, null);
 		if (response.status === "success") {
-			setNetwork(response.result.bitcoin.name as unknown as ExtendedBitcoinNetworkType);
+			const walletNetworkName = response.result.bitcoin.name;
+
+			const networkMapping: Record<string, ExtendedBitcoinNetworkType> = {
+				Mainnet: ExtendedBitcoinNetworkType.Mainnet,
+				Testnet: ExtendedBitcoinNetworkType.Testnet,
+				Testnet4: ExtendedBitcoinNetworkType.Testnet4,
+				Regtest: ExtendedBitcoinNetworkType.Regtest,
+				testnet: ExtendedBitcoinNetworkType.Testnet4,
+				mainnet: ExtendedBitcoinNetworkType.Mainnet,
+			};
+
+			const mappedNetwork = networkMapping[walletNetworkName] || ExtendedBitcoinNetworkType.TestnetV2;
+
+			if (network !== mappedNetwork) {
+				console.log("🔍 WALLET NETWORK CHANGED:");
+				console.log("  - Wallet reported network:", walletNetworkName);
+				console.log("  - Mapped to our internal type:", mappedNetwork);
+			}
+
+			setNetwork(mappedNetwork);
 		} else {
 			toast({
 				title: "Network",
@@ -109,7 +128,7 @@ export const useXverseWallet = () => {
 				variant: "destructive",
 			});
 		}
-	}, []);
+	}, [network]);
 
 	useEffect(() => {
 		async function getWalletStatus() {
@@ -145,10 +164,21 @@ export const useXverseWallet = () => {
 	}, [handleWalletConnect]);
 
 	const switchNetwork = useCallback(async (newNetwork: ExtendedBitcoinNetworkType) => {
-		// Only switch if it's a valid BitcoinNetworkType (not Devnet)
-		if (newNetwork !== ExtendedBitcoinNetworkType.Devnet) {
+		// Map our internal network types to Xverse's BitcoinNetworkType enum
+		const networkToXverseMapping: Record<ExtendedBitcoinNetworkType, BitcoinNetworkType | null> = {
+			[ExtendedBitcoinNetworkType.Mainnet]: BitcoinNetworkType.Mainnet,
+			[ExtendedBitcoinNetworkType.Testnet]: BitcoinNetworkType.Testnet,
+			[ExtendedBitcoinNetworkType.Testnet4]: BitcoinNetworkType.Testnet4,
+			[ExtendedBitcoinNetworkType.TestnetV2]: BitcoinNetworkType.Regtest, // TestnetV2 maps to Regtest
+			[ExtendedBitcoinNetworkType.Regtest]: BitcoinNetworkType.Regtest,
+			[ExtendedBitcoinNetworkType.Devnet]: null,
+		};
+
+		const xverseNetworkName = networkToXverseMapping[newNetwork];
+
+		if (xverseNetworkName) {
 			const response = await Wallet.request(changeNetworkMethodName, {
-				name: newNetwork as unknown as BitcoinNetworkType,
+				name: xverseNetworkName,
 			});
 			if (response.status === "success") setNetwork(newNetwork);
 			else {

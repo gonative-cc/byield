@@ -1,7 +1,9 @@
+import React from "react";
 import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
 import devnetConfig from "~/config/bitcoin-devnet.json";
 import mainnetConfig from "~/config/bitcoin-mainnet.json";
 import testnetV2Config from "~/config/bitcoin-testnet-v2.json";
+import regtestConfig from "~/config/bitcoin-regtest.json";
 
 export enum ExtendedBitcoinNetworkType {
 	Mainnet = "Mainnet",
@@ -16,6 +18,7 @@ type BitcoinNetworkVariables =
 	| typeof mainnetConfig
 	| typeof devnetConfig
 	| typeof testnetV2Config
+	| typeof regtestConfig
 	| Record<string, never>;
 
 interface NetworkConfig {
@@ -34,7 +37,9 @@ const getBitcoinNetworkConfig: Record<ExtendedBitcoinNetworkType, NetworkConfig>
 		},
 	},
 	Testnet: {
-		variables: {},
+		variables: {
+			...testnetV2Config,
+		},
 	},
 	TestnetV2: {
 		variables: {
@@ -42,16 +47,32 @@ const getBitcoinNetworkConfig: Record<ExtendedBitcoinNetworkType, NetworkConfig>
 		},
 	},
 	Testnet4: {
-		variables: {},
+		variables: {
+			...testnetV2Config,
+		},
 	},
-	// Regtest is localnet
 	Regtest: {
-		variables: {},
+		variables: {
+			...regtestConfig,
+		},
 	},
 };
 
 export function useBitcoinConfig(): BitcoinNetworkVariables {
 	const { network } = useXverseWallet();
 
-	return getBitcoinNetworkConfig[network].variables;
+	const config = getBitcoinNetworkConfig[network];
+
+	const networkRef = React.useRef(network);
+	if (networkRef.current !== network) {
+		networkRef.current = network;
+	}
+
+	if (!config || !config.variables || Object.keys(config.variables).length === 0) {
+		const fallbackConfig =
+			getBitcoinNetworkConfig[ExtendedBitcoinNetworkType.TestnetV2].variables;
+		return fallbackConfig;
+	}
+
+	return config.variables;
 }

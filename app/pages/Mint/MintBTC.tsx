@@ -7,7 +7,6 @@ import { useContext, useEffect, useState } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
 import { FormNumericInput } from "../../components/form/FormNumericInput";
-import { NumericFormat } from "react-number-format";
 import { BTC, formatBTC, parseBTC } from "~/lib/denoms";
 import { nBTCMintTx } from "~/lib/nbtc";
 import { Check } from "lucide-react";
@@ -16,6 +15,8 @@ import { isValidSuiAddress } from "@mysten/sui/utils";
 import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import { useNetworkVariables } from "~/networkConfig";
 import { Modal } from "~/components/ui/dialog";
+import { toast } from "~/hooks/use-toast";
+import { setupBufferPolyfill } from "~/lib/buffer-polyfill";
 
 interface TransactionStatusProps {
 	SuiAddress: string;
@@ -55,8 +56,8 @@ function TransactionStatus({ SuiAddress, txId, handleRetry }: TransactionStatusP
 }
 
 function formatSuiAddress(suiAddress: string) {
-	if (suiAddress.toLowerCase().startsWith("0x")) {
-		return suiAddress.substring(2);
+	if (!suiAddress.toLowerCase().startsWith("0x")) {
+		return "0x" + suiAddress;
 	}
 	return suiAddress;
 }
@@ -95,35 +96,15 @@ function Percentage({ onChange }: { onChange: (value: number) => void }) {
 		</div>
 	);
 }
-
-interface FeeProps {
-	feeInSatoshi: bigint;
-	youReceive: string;
-}
-
-function Fee({ feeInSatoshi, youReceive }: FeeProps) {
-	return (
-		<Card className="p-4 bg-azure-10 rounded-2xl h-24">
-			<CardContent className="flex flex-col justify-between h-full p-0">
-				<div className="flex justify-between">
-					<p className="text-gray-400">Fixed Fee</p>
-					<NumericFormat displayType="text" value={formatBTC(feeInSatoshi)} suffix=" Satoshi" />
-				</div>
-				<div className="flex justify-between">
-					<p className="text-gray-400">You Receive</p>
-					<NumericFormat displayType="text" value={youReceive} suffix=" nBTC" />
-				</div>
-			</CardContent>
-		</Card>
-	);
-}
-
 interface MintNBTCForm {
 	numberOfBTC: string;
 	suiAddress: string;
 }
 
-export function MintBTC() {
+interface MintBTCProps {
+	onTransactionBroadcast?: (txId: string, amountInSatoshi: number, suiAddress: string) => void;
+}
+export function MintBTC({ onTransactionBroadcast }: MintBTCProps = {}) {
 	const [txId, setTxId] = useState<string | undefined>(undefined);
 	const { connectWallet } = useXverseConnect();
 	const { balance: walletBalance, currentAddress, network } = useXverseWallet();
@@ -145,8 +126,22 @@ export function MintBTC() {
 
 	useEffect(() => setValue("suiAddress", suiAddr || ""), [setValue, suiAddr]);
 
+	useEffect(() => {
+		setupBufferPolyfill();
+	}, []);
+
 	const handlenBTCMintTx = async ({ numberOfBTC, suiAddress }: MintNBTCForm) => {
 		if (currentAddress) {
+			if (!bitcoinConfig.nBTC || !bitcoinConfig.nBTC.depositAddress) {
+				console.error("ERROR: Missing depositAddress in bitcoin config for network:", network);
+				toast({
+					title: "Network Configuration Error",
+					description: `Missing deposit address for network ${network}. Please switch to TestnetV2, Mainnet, or Devnet for nBTC minting.`,
+					variant: "destructive",
+				});
+				return;
+			}
+
 			const response = await nBTCMintTx(
 				currentAddress,
 				Number(parseBTC(numberOfBTC)),
@@ -156,6 +151,15 @@ export function MintBTC() {
 			);
 			if (response && response.status === "success") {
 				setTxId(response.result.txid);
+
+				if (onTransactionBroadcast && response.result.txid) {
+					const formattedSuiAddress = formatSuiAddress(suiAddress);
+					onTransactionBroadcast(
+						response.result.txid,
+						Number(parseBTC(numberOfBTC)),
+						formattedSuiAddress,
+					);
+				}
 			}
 		}
 	};
@@ -233,19 +237,6 @@ export function MintBTC() {
 							<button onClick={connectWallet} className="btn btn-primary">
 								Connect Bitcoin Wallet
 							</button>
-						)}
-						{txId && (
-							<Modal
-								title={"Mint BTC Transaction Status"}
-								open
-								handleClose={() => setTxId(() => undefined)}
-							>
-								<TransactionStatus
-									handleRetry={() => setTxId(() => undefined)}
-									txId={txId}
-									SuiAddress={SuiAddress}
-								/>
-							</Modal>
 						)}
 					</CardContent>
 				</Card>

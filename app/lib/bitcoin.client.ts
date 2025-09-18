@@ -31,9 +31,12 @@ export async function getBitcoinNetworkConfig(
 		case ExtendedBitcoinNetworkType.Regtest:
 		case ExtendedBitcoinNetworkType.Devnet:
 			return bitcoinjs.networks.regtest;
+		case ExtendedBitcoinNetworkType.Testnet:
+		case ExtendedBitcoinNetworkType.TestnetV2:
 		case ExtendedBitcoinNetworkType.Testnet4:
 			return bitcoinjs.networks.testnet;
 		default:
+			console.error("DEBUG: Unknown network type:", network);
 			return null;
 	}
 }

@@ -168,10 +168,6 @@ export function MintBTCTable({ data }: MintBTCTableProps) {
 				data={data}
 				expandedRows={expandedRows}
 				renderExpandedRow={renderExpandedRow}
-				header={{
-					icon: "₿",
-					title: "nBTC Mint Transactions",
-				}}
 			/>
 		</div>
 	);
