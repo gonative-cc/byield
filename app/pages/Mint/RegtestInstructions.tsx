@@ -50,8 +50,8 @@ export function RegtestInstructions() {
 	return (
 		<div className="card card-border bg-base-200">
 			<div className="card-body">
-				<h2 className="card-title">Regtest Configuration for Devnet Server</h2>
-				<ul className="space-y-2 list-disc list-inside">
+				<h2 className="card-title text-xl mb-4">Regtest Configuration for Devnet Server</h2>
+				<ul className="space-y-3 list-disc list-inside text-base">
 					{instructions.map(({ id, content }) => (
 						<li key={id}>{content}</li>
 					))}

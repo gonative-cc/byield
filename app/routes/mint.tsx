@@ -55,7 +55,7 @@ export default function Mint() {
 				</p>
 			</div>
 			<div className="flex justify-center">
-				<div className="space-y-4">
+				<div className="w-full max-w-xl space-y-6">
 					<RegtestInstructions />
 					<MintBTC />
 				</div>
