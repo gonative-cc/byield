@@ -105,9 +105,9 @@ function Fee({ mintingFee }: FeeProps) {
 			<CardContent className="flex flex-col justify-between p-0">
 				<div className="flex justify-between text-sm">
 					<span>Minting Fee</span>
-					<div className="tooltip" data-tip="1 nSat = 0.00000001 nBTC">
+					<div className="tooltip" data-tip="1 nSats = 0.00000001 nBTC">
 						<span className="cursor-help">
-							{mintingFee} ({formatNBTC(mintingFee)} nBTC)
+							{mintingFee} nSats ({formatNBTC(mintingFee)} nBTC)
 						</span>
 					</div>
 				</div>
