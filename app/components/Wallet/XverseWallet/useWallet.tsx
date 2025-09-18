@@ -62,8 +62,9 @@ export const useXverseWallet = () => {
 	const [addressInfo, setAddressInfo] = useState<Address[]>([]);
 	const [currentAddress, setCurrentAddress] = useState<Address | null>(null);
 	const [balance, setBalance] = useState<string>();
-	// TODO: Default bitcoin network on connection is TestnetV2 (with indexer)
-	const [network, setNetwork] = useState<ExtendedBitcoinNetworkType>(ExtendedBitcoinNetworkType.TestnetV2);
+	// TODO: Default bitcoin network on connection is Testnet4
+	const [network, setNetwork] = useState<ExtendedBitcoinNetworkType>(ExtendedBitcoinNetworkType.Testnet4);
+	// Only toast on failure if we have not yet successfully fetched a balance
 	const hasFetchedBalanceSuccessfullyRef = useRef<boolean>(false);
 
 	const getBalance = useCallback(async () => {
