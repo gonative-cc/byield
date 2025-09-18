@@ -64,24 +64,24 @@ export const useXverseWallet = () => {
 	const [balance, setBalance] = useState<string>();
 	// TODO: Default bitcoin network on connection is Testnet4
 	const [network, setNetwork] = useState<ExtendedBitcoinNetworkType>(ExtendedBitcoinNetworkType.Testnet4);
-	// Prevent repeated toasts when balance fetch fails due to a transient issue
-	const hasShownBalanceErrorRef = useRef<boolean>(false);
+	// Only toast on failure if we have not yet successfully fetched a balance
+	const hasFetchedBalanceSuccessfullyRef = useRef<boolean>(false);
 
 	const getBalance = useCallback(async () => {
 		try {
 			const response = await Wallet.request(getBalanceMethodName, null);
 			if (response.status === "success") {
 				setBalance(response.result.total);
-				// Reset the error flag on success so future failures can notify once
-				hasShownBalanceErrorRef.current = false;
+				// Mark that we have a successful balance at least once
+				hasFetchedBalanceSuccessfullyRef.current = true;
 			} else {
-				if (!hasShownBalanceErrorRef.current) {
+				// Only show an error if we never had a successful balance
+				if (!hasFetchedBalanceSuccessfullyRef.current) {
 					toast({
 						title: "Balance",
 						description: "Failed to get the balance",
 						variant: "destructive",
 					});
-					hasShownBalanceErrorRef.current = true;
 				}
 			}
 		} catch (err) {
@@ -128,8 +128,8 @@ export const useXverseWallet = () => {
 				setAddressInfo([]);
 				setCurrentAddress(null);
 				setBalance(undefined);
-				// Reset error spam guard on disconnect
-				hasShownBalanceErrorRef.current = false;
+				// Reset session success marker on disconnect
+				hasFetchedBalanceSuccessfullyRef.current = false;
 			}
 		}
 		getWalletStatus();
