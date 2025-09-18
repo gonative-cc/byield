@@ -111,7 +111,7 @@ export const columns: Column<DApp>[] = [
 function DepositCard({ title, value }: DepositData) {
 	return (
 		<div className="card flex flex-1 max-w-1/4 card-border border rounded-lg">
-			<div className="card-body p-6 rounded-lg text-white flex flex-col gap-2 bg-azure-10 w-full">
+			<div className="card-body p-6 rounded-lg text-white flex flex-col gap-2 w-full">
 				<div className="flex gap-2">
 					<span className="text-base font-medium">{title}</span>
 				</div>
