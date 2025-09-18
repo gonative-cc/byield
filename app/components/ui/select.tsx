@@ -9,13 +9,20 @@ interface SelectInputProps<T = string> {
 	onValueChange?: (value: T) => void;
 	className?: string;
 	value?: T;
+	optionItemRenderer?: (option: Option<T>) => React.ReactNode;
 }
 
 function isOptionValueNumberOrString<T>(value: T) {
 	return typeof value === "number" || typeof value === "string";
 }
 
-function SelectInput<T = string>({ options, value, placeholder, onValueChange }: SelectInputProps<T>) {
+function SelectInput<T = string>({
+	options,
+	value,
+	placeholder,
+	onValueChange,
+	optionItemRenderer,
+}: SelectInputProps<T>) {
 	const handleOnChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		if (onValueChange) {
 			const selectedOption = options.find((opt) =>
@@ -36,12 +43,14 @@ function SelectInput<T = string>({ options, value, placeholder, onValueChange }:
 				</option>
 			)}
 			{isThereOptions ? (
-				options?.map(({ value: optionValue, label }) => (
+				options?.map((option) => (
 					<option
-						key={String(optionValue)}
-						value={isOptionValueNumberOrString(optionValue) ? optionValue : String(optionValue)}
+						key={String(option.value)}
+						value={
+							isOptionValueNumberOrString(option.value) ? option.value : String(option.value)
+						}
 					>
-						{label}
+						{optionItemRenderer ? optionItemRenderer(option) : option.label}
 					</option>
 				))
 			) : (
