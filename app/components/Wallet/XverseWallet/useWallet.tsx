@@ -74,7 +74,6 @@ export const useXverseWallet = () => {
 				setBalance(response.result.total);
 				hasFetchedBalanceSuccessfullyRef.current = true;
 			} else {
-				// Only show an error if we never had a successful balance
 				if (!hasFetchedBalanceSuccessfullyRef.current) {
 					toast({
 						title: "Balance",
