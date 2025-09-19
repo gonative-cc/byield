@@ -28,21 +28,11 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 		return `~${minutes} minutes`;
 	};
 
-	const isBroadcasted = () => {
-		return transaction.status !== "confirming" || transaction.numberOfConfirmation > 0;
-	};
-
-	const isConfirmed = () => {
-		return transaction.numberOfConfirmation >= confirmationThreshold;
-	};
-
-	const isMinted = () => {
-		return transaction.status === "minted";
-	};
-
-	const isFailed = () => {
-		return transaction.status === "failed" || transaction.status === "reorg";
-	};
+	const isBroadcasted = transaction.status !== "confirming" || transaction.numberOfConfirmation > 0;
+	const isConfirmed = transaction.numberOfConfirmation >= confirmationThreshold;
+	const isMinted = transaction.status === "minted";
+	const isFailed = transaction.status === "failed" || transaction.status === "reorg";
+	const showTimeRemaining = !isConfirmed && transaction.status === "confirming" && estimatedTimeRemaining();
 
 	return (
 		<div className="p-6 bg-base-100 border-t border-base-300">
@@ -54,21 +44,21 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 				<div className="divider my-2"></div>
 
 				<div className="flex items-center gap-2 text-sm">
-					{isFailed() ? (
+					{isFailed ? (
 						<XCircle size={16} className="text-error flex-shrink-0" />
-					) : isBroadcasted() ? (
+					) : isBroadcasted ? (
 						<CheckCircle size={16} className="text-success flex-shrink-0" />
 					) : (
 						<AnimatedHourglass size={16} />
 					)}
 					<span>
-						{isFailed()
+						{isFailed
 							? "Bitcoin Tx Broadcast failed"
-							: isBroadcasted()
+							: isBroadcasted
 								? "Bitcoin Tx broadcasted"
 								: "Bitcoin Tx broadcasting"}
 					</span>
-					{transaction.bitcoinExplorerUrl && isBroadcasted() && (
+					{transaction.bitcoinExplorerUrl && isBroadcasted && (
 						<a
 							href={transaction.bitcoinExplorerUrl}
 							target="_blank"
@@ -81,7 +71,7 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 				</div>
 
 				<div className="flex items-center gap-2 text-sm">
-					{isConfirmed() ? (
+					{isConfirmed ? (
 						<CheckCircle size={16} className="text-success flex-shrink-0" />
 					) : transaction.numberOfConfirmation > 0 ? (
 						<AnimatedHourglass size={16} />
@@ -91,7 +81,7 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 						{Math.min(transaction.numberOfConfirmation, confirmationThreshold)}/
 						{confirmationThreshold}
 					</span>
-					{!isConfirmed() && transaction.status === "confirming" && estimatedTimeRemaining() && (
+					{showTimeRemaining && (
 						<span className="text-base-content/60">
 							[{formatTimeRemaining(estimatedTimeRemaining())}]
 						</span>
@@ -108,16 +98,14 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 				</div>
 
 				<div className="flex items-center gap-2 text-sm">
-					{isMinted() ? (
+					{isMinted ? (
 						<CheckCircle size={16} className="text-success flex-shrink-0" />
-					) : isFailed() ? (
+					) : isFailed ? (
 						<XCircle size={16} className="text-error flex-shrink-0" />
-					) : isConfirmed() ? (
+					) : isConfirmed ? (
 						<AnimatedHourglass size={16} />
 					) : null}
-					<span>
-						{isMinted() ? "nBTC minted" : isConfirmed() ? "nBTC minting" : "nBTC minting"}
-					</span>
+					<span>{isMinted ? "nBTC minted" : isConfirmed ? "nBTC minting" : "nBTC minting"}</span>
 				</div>
 
 				<div className="divider my-2"></div>
@@ -136,7 +124,7 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 					</span>
 				</div>
 
-				{isFailed() && (
+				{isFailed && (
 					<div className="alert alert-error">
 						<XCircle size={16} className="flex-shrink-0" />
 						<div>
