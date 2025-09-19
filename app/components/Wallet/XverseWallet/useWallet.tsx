@@ -143,14 +143,12 @@ export const useXverseWallet = () => {
 		}
 	}, [handleWalletConnect]);
 
-
 	const switchNetwork = useCallback(async (newNetwork: BitcoinNetworkType) => {
 		// Handle other networks normally
 		const response = await Wallet.request(changeNetworkMethodName, {
 			name: newNetwork,
 		});
 		if (response.status === "success") {
-
 			setNetwork(newNetwork);
 		} else {
 			console.error("Failed to switch network:", response.error);
