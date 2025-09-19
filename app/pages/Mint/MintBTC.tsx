@@ -8,51 +8,12 @@ import { Wallets } from "~/components/Wallet";
 import { FormNumericInput } from "../../components/form/FormNumericInput";
 import { BTC, formatBTC, parseBTC } from "~/lib/denoms";
 import { nBTCMintTx } from "~/lib/nbtc";
-import { BitcoinIcon, Check } from "lucide-react";
+import { BitcoinIcon } from "lucide-react";
 import { buttonEffectClasses, classNames } from "~/util/tailwind";
 import { isValidSuiAddress } from "@mysten/sui/utils";
 import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
-import { useNetworkVariables } from "~/networkConfig";
-import { Modal } from "~/components/ui/dialog";
 import { toast } from "~/hooks/use-toast";
 import { setupBufferPolyfill } from "~/lib/buffer-polyfill";
-
-interface TransactionStatusProps {
-	SuiAddress: string;
-	txId: string;
-	handleRetry: () => void;
-}
-
-function TransactionStatus({ SuiAddress, txId, handleRetry }: TransactionStatusProps) {
-	const { accountExplorer } = useNetworkVariables();
-	const bitcoinConfig = useBitcoinConfig();
-	const bitcoinBroadcastLink = `${bitcoinConfig.bitcoinBroadcastLink}${txId}`;
-	const suiScanExplorerLink = `${accountExplorer}${SuiAddress}`;
-
-	return (
-		<div className="p-4 rounded-lg text-white flex flex-col gap-4">
-			<div className="flex flex-col items-center gap-2">
-				<Check
-					className={classNames({
-						"text-green-500": true,
-					})}
-					size={30}
-				/>{" "}
-				Success
-				<a target="_blank" href={bitcoinBroadcastLink} rel="noreferrer" className="link link-primary">
-					Track bitcoin transaction confirmation in explorer
-				</a>
-				<a target="_blank" href={suiScanExplorerLink} rel="noreferrer" className="link link-primary">
-					Explore SUI coins
-				</a>
-			</div>
-
-			<button className="btn btn-primary" onClick={handleRetry}>
-				Ok
-			</button>
-		</div>
-	);
-}
 
 function formatSuiAddress(suiAddress: string) {
 	if (!suiAddress.toLowerCase().startsWith("0x")) {
@@ -239,19 +200,6 @@ export function MintBTC({ onTransactionBroadcast }: MintBTCProps = {}) {
 								<BitcoinIcon className="h-5 w-5" />
 								Connect Bitcoin Wallet
 							</button>
-						)}
-						{txId && (
-							<Modal
-								title={"Mint BTC Transaction Status"}
-								open
-								handleClose={() => setTxId(() => undefined)}
-							>
-								<TransactionStatus
-									handleRetry={() => setTxId(() => undefined)}
-									txId={txId}
-									SuiAddress={SuiAddress}
-								/>
-							</Modal>
 						)}
 					</div>
 				</div>
