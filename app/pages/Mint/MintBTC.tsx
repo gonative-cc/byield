@@ -170,7 +170,7 @@ export function MintBTC({ onTransactionBroadcast }: MintBTCProps = {}) {
 				onSubmit={handleSubmit(async (form) => {
 					handlenBTCMintTx({ ...form });
 				})}
-				className="w-full max-w-lg"
+				className="w-full"
 			>
 				<Card className="w-full">
 					<CardContent className="p-4 sm:p-6 rounded-lg text-white flex flex-col bg-azure-10 space-y-4">

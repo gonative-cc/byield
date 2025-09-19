@@ -1,36 +1,18 @@
-import React from "react";
+import type { BitcoinNetworkType } from "sats-connect";
 import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
 import devnetConfig from "~/config/bitcoin-devnet.json";
 import mainnetConfig from "~/config/bitcoin-mainnet.json";
 import testnetV2Config from "~/config/bitcoin-testnet-v2.json";
 import regtestConfig from "~/config/bitcoin-regtest.json";
 
-export enum ExtendedBitcoinNetworkType {
-	Mainnet = "Mainnet",
-	Testnet = "Testnet",
-	TestnetV2 = "TestnetV2",
-	Testnet4 = "Testnet4",
-	Regtest = "Regtest",
-	Devnet = "Devnet",
-}
 
-type BitcoinNetworkVariables =
-	| typeof mainnetConfig
-	| typeof devnetConfig
-	| typeof testnetV2Config
-	| typeof regtestConfig
-	| Record<string, never>;
+type BitcoinNetworkVariables = typeof mainnetConfig | typeof devnetConfig | Record<string, never>;
 
 interface NetworkConfig {
 	variables: BitcoinNetworkVariables;
 }
 
-const getBitcoinNetworkConfig: Record<ExtendedBitcoinNetworkType, NetworkConfig> = {
-	Devnet: {
-		variables: {
-			...devnetConfig,
-		},
-	},
+const getBitcoinNetworkConfig: Record<BitcoinNetworkType, NetworkConfig> = {
 	Mainnet: {
 		variables: {
 			...mainnetConfig,
@@ -51,9 +33,13 @@ const getBitcoinNetworkConfig: Record<ExtendedBitcoinNetworkType, NetworkConfig>
 			...testnetV2Config,
 		},
 	},
+	Signet: {
+		variables: {},
+	},
+	// Regtest is localnet
 	Regtest: {
 		variables: {
-			...regtestConfig,
+			...devnetConfig,
 		},
 	},
 };

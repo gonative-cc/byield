@@ -1,3 +1,4 @@
+import { RegtestInstructions } from "~/pages/Mint/RegtestInstructions";
 import { MintBTC } from "~/pages/Mint/MintBTC";
 import { MintBTCTable } from "~/pages/Mint/MintBTCTable";
 import { useNbtcTransactions } from "~/hooks/useNbtcTransactions";
@@ -21,7 +22,10 @@ function MintContent() {
 			</div>
 
 			<div className="flex justify-center">
-				<MintBTC onTransactionBroadcast={addPendingTransaction} />
+				<div className="w-full max-w-xl space-y-6">
+					<RegtestInstructions />
+					<MintBTC onTransactionBroadcast={addPendingTransaction} />
+				</div>
 			</div>
 
 			{/* Transaction Table Section */}
