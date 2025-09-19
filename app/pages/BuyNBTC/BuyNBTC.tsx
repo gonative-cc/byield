@@ -69,7 +69,7 @@ const renderTabHeader = (title: string, checked = false) => (
 );
 
 const BuyNBTCTabs = () => (
-	<div className="tabs tabs-boxed bg-azure-10 rounded-full p-1">
+	<div className="tabs tabs-boxed rounded-full p-1">
 		{renderTabHeader("Buy", true)}
 		<div className="tab-content py-6">
 			<BuyNBTCTabContent />
