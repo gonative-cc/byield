@@ -84,6 +84,7 @@ export function useNbtcTransactions(): UseNbtcTransactionsResult {
 		}
 
 		try {
+			setIsLoading(true);
 			setError(null);
 
 			const fetchedTransactions = await indexerClient.fetchNbtcTransactions(suiAddr, network);

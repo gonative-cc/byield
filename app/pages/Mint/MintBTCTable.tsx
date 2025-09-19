@@ -8,7 +8,7 @@ import { Info, ChevronDown, ChevronUp } from "lucide-react";
 import { CopyButton } from "~/components/ui/CopyButton";
 import { ExpandableTransactionDetails } from "~/components/ui/ExpandableTransactionDetails";
 import { AnimatedHourglass } from "~/components/ui/AnimatedHourglass";
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 
 function MintTableTooltip({ tooltip, label }: { tooltip: string; label: string }) {
 	return (
@@ -122,10 +122,12 @@ const createColumns = (
 		id: "details",
 		accessor: () => "details", // Custom accessor that doesn't conflict
 		Cell: ({ row }: CellProps<MintTransaction>) => {
-			const isExpanded = expandedRows.has(row.original.bitcoinTxId);
+			const isExpanded = expandedRows.has(row.id);
 			return (
 				<button
-					onClick={() => toggleExpanded(row.original.bitcoinTxId)}
+					onClick={() => {
+						toggleExpanded(row.id);
+					}}
 					className="btn btn-ghost btn-sm"
 					aria-label={isExpanded ? "Collapse details" : "Expand details"}
 				>
@@ -143,7 +145,7 @@ interface MintBTCTableProps {
 export function MintBTCTable({ data }: MintBTCTableProps) {
 	const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
-	const toggleExpanded = (txId: string) => {
+	const toggleExpanded = useCallback((txId: string) => {
 		setExpandedRows((prev) => {
 			const newSet = new Set(prev);
 			if (newSet.has(txId)) {
@@ -153,13 +155,16 @@ export function MintBTCTable({ data }: MintBTCTableProps) {
 			}
 			return newSet;
 		});
-	};
+	}, []);
 
-	const renderExpandedRow = (row: Row<MintTransaction>) => {
+	const renderExpandedRow = useCallback((row: Row<MintTransaction>) => {
 		return <ExpandableTransactionDetails transaction={row.original} />;
-	};
+	}, []);
 
-	const columns = createColumns(expandedRows, toggleExpanded);
+	const columns = useMemo(
+		() => createColumns(expandedRows, toggleExpanded),
+		[expandedRows, toggleExpanded],
+	);
 
 	return (
 		<div className="w-full space-y-4">

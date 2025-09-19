@@ -2,8 +2,13 @@ import type { BitcoinNetworkType } from "sats-connect";
 import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
 import devnetConfig from "~/config/bitcoin-devnet.json";
 import mainnetConfig from "~/config/bitcoin-mainnet.json";
+import regtestConfig from "~/config/bitcoin-regtest.json";
 
-type BitcoinNetworkVariables = typeof mainnetConfig | typeof devnetConfig | Record<string, never>;
+type BitcoinNetworkVariables =
+	| typeof mainnetConfig
+	| typeof devnetConfig
+	| typeof regtestConfig
+	| Record<string, never>;
 
 interface NetworkConfig {
 	variables: BitcoinNetworkVariables;
@@ -27,7 +32,7 @@ const getBitcoinNetworkConfig: Record<BitcoinNetworkType, NetworkConfig> = {
 	// Regtest is localnet
 	Regtest: {
 		variables: {
-			...devnetConfig,
+			...regtestConfig,
 		},
 	},
 };
