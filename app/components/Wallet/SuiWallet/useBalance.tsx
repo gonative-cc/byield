@@ -55,7 +55,9 @@ export function useCoinBalance(coinAddr?: string): UseCoinBalanceResult {
 		});
 
 		// cleanup function
-		return () => (cancelled = true);
+		return () => {
+			cancelled = true;
+		};
 	}, [suiClient, coinAddr, userAddr]);
 
 	useEffect(refetch, [refetch]);
