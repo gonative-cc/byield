@@ -6,56 +6,18 @@ import { useContext, useEffect, useState } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
 import { FormNumericInput } from "../../components/form/FormNumericInput";
-import { NumericFormat } from "react-number-format";
 import { BTC, formatBTC, parseBTC } from "~/lib/denoms";
 import { nBTCMintTx } from "~/lib/nbtc";
-import { BitcoinIcon, Check } from "lucide-react";
+import { BitcoinIcon } from "lucide-react";
 import { buttonEffectClasses, classNames } from "~/util/tailwind";
 import { isValidSuiAddress } from "@mysten/sui/utils";
 import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
-import { useNetworkVariables } from "~/networkConfig";
-import { Modal } from "~/components/ui/dialog";
-
-interface TransactionStatusProps {
-	SuiAddress: string;
-	txId: string;
-	handleRetry: () => void;
-}
-
-function TransactionStatus({ SuiAddress, txId, handleRetry }: TransactionStatusProps) {
-	const { accountExplorer } = useNetworkVariables();
-	const bitcoinConfig = useBitcoinConfig();
-	const bitcoinBroadcastLink = `${bitcoinConfig.bitcoinBroadcastLink}${txId}`;
-	const suiScanExplorerLink = `${accountExplorer}${SuiAddress}`;
-
-	return (
-		<div className="p-4 rounded-lg text-white flex flex-col gap-4">
-			<div className="flex flex-col items-center gap-2">
-				<Check
-					className={classNames({
-						"text-green-500": true,
-					})}
-					size={30}
-				/>{" "}
-				Success
-				<a target="_blank" href={bitcoinBroadcastLink} rel="noreferrer" className="link link-primary">
-					Track bitcoin transaction confirmation in explorer
-				</a>
-				<a target="_blank" href={suiScanExplorerLink} rel="noreferrer" className="link link-primary">
-					Explore SUI coins
-				</a>
-			</div>
-
-			<button className="btn btn-primary" onClick={handleRetry}>
-				Ok
-			</button>
-		</div>
-	);
-}
+import { toast } from "~/hooks/use-toast";
+import { setupBufferPolyfill } from "~/lib/buffer-polyfill";
 
 function formatSuiAddress(suiAddress: string) {
-	if (suiAddress.toLowerCase().startsWith("0x")) {
-		return suiAddress.substring(2);
+	if (!suiAddress.toLowerCase().startsWith("0x")) {
+		return "0x" + suiAddress;
 	}
 	return suiAddress;
 }
@@ -95,34 +57,16 @@ function Percentage({ onChange }: { onChange: (value: number) => void }) {
 	);
 }
 
-interface FeeProps {
-	feeInSatoshi: bigint;
-	youReceive: string;
-}
-
-function Fee({ feeInSatoshi, youReceive }: FeeProps) {
-	return (
-		<div className="card p-4 rounded-2xl h-24">
-			<div className="card-body flex flex-col justify-between h-full p-0">
-				<div className="flex justify-between">
-					<p className="text-gray-400">Fixed Fee</p>
-					<NumericFormat displayType="text" value={formatBTC(feeInSatoshi)} suffix=" Satoshi" />
-				</div>
-				<div className="flex justify-between">
-					<p className="text-gray-400">You Receive</p>
-					<NumericFormat displayType="text" value={youReceive} suffix=" nBTC" />
-				</div>
-			</div>
-		</div>
-	);
-}
-
 interface MintNBTCForm {
 	numberOfBTC: string;
 	suiAddress: string;
 }
 
-export function MintBTC() {
+interface MintBTCProps {
+	onTransactionBroadcast?: (txId: string, amountInSatoshi: number, suiAddress: string) => void;
+}
+
+export function MintBTC({ onTransactionBroadcast }: MintBTCProps = {}) {
 	const [txId, setTxId] = useState<string | undefined>(undefined);
 	const { connectWallet } = useXverseConnect();
 	const { balance: walletBalance, currentAddress, network } = useXverseWallet();
@@ -144,8 +88,22 @@ export function MintBTC() {
 
 	useEffect(() => setValue("suiAddress", suiAddr || ""), [setValue, suiAddr]);
 
+	useEffect(() => {
+		setupBufferPolyfill();
+	}, []);
+
 	const handlenBTCMintTx = async ({ numberOfBTC, suiAddress }: MintNBTCForm) => {
 		if (currentAddress) {
+			if (!bitcoinConfig.nBTC || !bitcoinConfig.nBTC.depositAddress) {
+				console.error("ERROR: Missing depositAddress in bitcoin config for network:", network);
+				toast({
+					title: "Network Configuration Error",
+					description: `Missing deposit address for network ${network}. Please switch to TestnetV2, Mainnet, or Devnet for nBTC minting.`,
+					variant: "destructive",
+				});
+				return;
+			}
+
 			const response = await nBTCMintTx(
 				currentAddress,
 				Number(parseBTC(numberOfBTC)),
@@ -155,6 +113,15 @@ export function MintBTC() {
 			);
 			if (response && response.status === "success") {
 				setTxId(response.result.txid);
+
+				if (onTransactionBroadcast && response.result.txid) {
+					const formattedSuiAddress = formatSuiAddress(suiAddress);
+					onTransactionBroadcast(
+						response.result.txid,
+						Number(parseBTC(numberOfBTC)),
+						formattedSuiAddress,
+					);
+				}
 			}
 		}
 	};
@@ -233,19 +200,6 @@ export function MintBTC() {
 								<BitcoinIcon className="h-5 w-5" />
 								Connect Bitcoin Wallet
 							</button>
-						)}
-						{txId && (
-							<Modal
-								title={"Mint BTC Transaction Status"}
-								open
-								handleClose={() => setTxId(() => undefined)}
-							>
-								<TransactionStatus
-									handleRetry={() => setTxId(() => undefined)}
-									txId={txId}
-									SuiAddress={SuiAddress}
-								/>
-							</Modal>
 						)}
 					</div>
 				</div>

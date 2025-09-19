@@ -1,17 +1,16 @@
-export enum MintingTxStatus {
-	MINTED = "MINTED",
-	FAILED = "FAILED",
-	REORG = "REORG",
-	CONFIRMING = "CONFIRMING",
-	BROADCASTED = "BROADCASTED",
-}
+export type MintingTxStatus = "confirming" | "finalized" | "minted" | "failed" | "reorg";
 
 export interface MintTransaction {
 	bitcoinTxId: string;
 	amountInSatoshi: number;
 	status: MintingTxStatus;
 	suiAddress: string;
-	suiTxId: string;
+	suiTxId?: string;
 	timestamp: number;
 	numberOfConfirmation: number;
+	operationStartDate?: number;
+	bitcoinExplorerUrl?: string;
+	suiExplorerUrl?: string;
+	fees?: number;
+	errorMessage?: string;
 }

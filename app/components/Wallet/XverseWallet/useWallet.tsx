@@ -108,7 +108,7 @@ export const useXverseWallet = () => {
 				variant: "destructive",
 			});
 		}
-	}, []);
+	}, [network]);
 
 	useEffect(() => {
 		async function getWalletStatus() {

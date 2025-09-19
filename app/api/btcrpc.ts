@@ -1,6 +1,11 @@
 import axios from "axios";
+import { BitcoinNetworkType } from "sats-connect";
 
-export const MEMPOOL_API = "https://mempool.space/testnet4/api";
+export const MEMPOOL_APIS = {
+	Mainnet: "https://mempool.space/api",
+	Testnet4: "https://mempool.space/testnet4/api",
+	Regtest: "http://142.93.46.134:3002",
+};
 
 /**
  * @typedef {object} UTXO
@@ -36,10 +41,30 @@ export type ValidateAddressI = {
 	witness_program: string;
 };
 
-export async function fetchUTXOs(address: string): Promise<UTXO[]> {
+export async function fetchUTXOs(
+	address: string,
+	network: BitcoinNetworkType = BitcoinNetworkType.Testnet4,
+): Promise<UTXO[]> {
 	try {
-		// TOOD: maybe other wallet will provide it.
-		const response = await axios.get(`${MEMPOOL_API}/address/${address}/utxo`);
+		if (address.startsWith("bcrt1") || network === BitcoinNetworkType.Regtest) {
+			console.log("Fetching real UTXOs from custom regtest network");
+			const response = await axios.get(
+				`/api/btcrpc?action=utxos&address=${encodeURIComponent(address)}`,
+			);
+			console.log("Real regtest UTXOs:", response.data);
+			return response.data.map((utxo: UTXO) => ({
+				txid: utxo.txid,
+				vout: utxo.vout,
+				value: utxo.value,
+				scriptPubKey: utxo.scriptpubkey,
+			}));
+		}
+
+		const mempoolApi = MEMPOOL_APIS[network as keyof typeof MEMPOOL_APIS];
+		if (!mempoolApi) {
+			throw new Error(`Unsupported network: ${network}`);
+		}
+		const response = await axios.get(`${mempoolApi}/address/${address}/utxo`);
 		return response.data.map((utxo: UTXO) => ({
 			txid: utxo.txid,
 			vout: utxo.vout,
@@ -47,15 +72,7 @@ export async function fetchUTXOs(address: string): Promise<UTXO[]> {
 			scriptPubKey: utxo.scriptpubkey,
 		}));
 	} catch (error) {
-		throw new Error(`Failed to fetch UTXOs: ${error}`);
-	}
-}
-
-export async function fetchValidateAddress(address: string): Promise<ValidateAddressI> {
-	try {
-		const response = await axios.get(`${MEMPOOL_API}/v1/validate-address/${address}`);
-		return response.data;
-	} catch (error) {
-		throw new Error(`Failed to validate address: ${error}`);
+		console.error("Failed to fetch UTXOs:", error);
+		throw new Error(`Failed to fetch UTXOs for address ${address}`);
 	}
 }

@@ -33,6 +33,7 @@ export async function getBitcoinNetworkConfig(
 		case BitcoinNetworkType.Testnet4:
 			return bitcoinjs.networks.testnet;
 		default:
+			console.error("DEBUG: Unknown network type:", network);
 			return null;
 	}
 }
