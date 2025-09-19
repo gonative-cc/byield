@@ -3,7 +3,38 @@ import { type MintTransaction } from "~/server/Mint/types";
 import { indexerClient, getRefreshInterval, shouldRefreshFrequently } from "~/lib/indexer.client";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
-import { ExtendedBitcoinNetworkType } from "~/hooks/useBitcoinConfig";
+import type { BitcoinNetworkType } from "sats-connect";
+import devnetConfig from "~/config/bitcoin-devnet.json";
+import mainnetConfig from "~/config/bitcoin-mainnet.json";
+
+type BitcoinNetworkVariables = typeof mainnetConfig | typeof devnetConfig | Record<string, never>;
+
+interface NetworkConfig {
+	variables: BitcoinNetworkVariables;
+}
+
+export const getBitcoinNetworkConfig: Record<BitcoinNetworkType, NetworkConfig> = {
+	Mainnet: {
+		variables: {
+			...mainnetConfig,
+		},
+	},
+	Testnet: {
+		variables: {},
+	},
+	Testnet4: {
+		variables: {},
+	},
+	Signet: {
+		variables: {},
+	},
+	// Regtest is localnet
+	Regtest: {
+		variables: {
+			...devnetConfig,
+		},
+	},
+};
 
 interface UseNbtcTransactionsResult {
 	transactions: MintTransaction[];
@@ -93,7 +124,7 @@ export function useNbtcTransactions(): UseNbtcTransactionsResult {
 			return;
 		}
 
-		const isRegtest = network === ExtendedBitcoinNetworkType.Regtest;
+		const isRegtest = network === "Regtest";
 
 		const needsFrequentRefresh = shouldRefreshFrequently(transactions);
 
