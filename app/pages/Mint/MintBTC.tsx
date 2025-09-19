@@ -1,4 +1,3 @@
-import { Card, CardContent } from "../../components/ui/card";
 import { BitcoinBalance } from "../../components/BitcoinBalance";
 import { FormProvider, useForm } from "react-hook-form";
 import { FormInput } from "../../components/form/FormInput";
@@ -9,7 +8,7 @@ import { Wallets } from "~/components/Wallet";
 import { FormNumericInput } from "../../components/form/FormNumericInput";
 import { BTC, formatBTC, parseBTC } from "~/lib/denoms";
 import { nBTCMintTx } from "~/lib/nbtc";
-import { Check } from "lucide-react";
+import { BitcoinIcon, Check } from "lucide-react";
 import { buttonEffectClasses, classNames } from "~/util/tailwind";
 import { isValidSuiAddress } from "@mysten/sui/utils";
 import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
@@ -96,6 +95,7 @@ function Percentage({ onChange }: { onChange: (value: number) => void }) {
 		</div>
 	);
 }
+
 interface MintNBTCForm {
 	numberOfBTC: string;
 	suiAddress: string;
@@ -104,6 +104,7 @@ interface MintNBTCForm {
 interface MintBTCProps {
 	onTransactionBroadcast?: (txId: string, amountInSatoshi: number, suiAddress: string) => void;
 }
+
 export function MintBTC({ onTransactionBroadcast }: MintBTCProps = {}) {
 	const [txId, setTxId] = useState<string | undefined>(undefined);
 	const { connectWallet } = useXverseConnect();
@@ -172,8 +173,8 @@ export function MintBTC({ onTransactionBroadcast }: MintBTCProps = {}) {
 				})}
 				className="w-full"
 			>
-				<Card className="w-full">
-					<CardContent className="p-4 sm:p-6 rounded-lg text-white flex flex-col bg-azure-10 space-y-4">
+				<div className="card w-full">
+					<div className="card-body p-4 sm:p-6 rounded-lg flex flex-col space-y-4">
 						{isBitCoinWalletConnected && walletBalance && (
 							<BitcoinBalance availableBalance={walletBalance} />
 						)}
@@ -235,11 +236,25 @@ export function MintBTC({ onTransactionBroadcast }: MintBTCProps = {}) {
 							</button>
 						) : (
 							<button onClick={connectWallet} className="btn btn-primary">
+								<BitcoinIcon className="h-5 w-5" />
 								Connect Bitcoin Wallet
 							</button>
 						)}
-					</CardContent>
-				</Card>
+						{txId && (
+							<Modal
+								title={"Mint BTC Transaction Status"}
+								open
+								handleClose={() => setTxId(() => undefined)}
+							>
+								<TransactionStatus
+									handleRetry={() => setTxId(() => undefined)}
+									txId={txId}
+									SuiAddress={SuiAddress}
+								/>
+							</Modal>
+						)}
+					</div>
+				</div>
 			</form>
 		</FormProvider>
 	);

@@ -35,34 +35,11 @@ export function BuyNBTC() {
 				Native enables <span className="text-2xl text-primary md:text-3xl">BTCFi</span> in the{" "}
 				<span className="text-2xl text-primary md:text-3xl">Web3 native</span> way!
 			</p>
-			{/* TODO: George, probably we should remove the classes in the card */}
-			<Card className="max-w-lg w-full">
-				<CardContent className="p-6 rounded-lg text-white flex flex-col gap-4 bg-azure-10">
+			<div className="card max-w-lg w-full">
+				<div className="card-body p-6 text-white flex flex-col gap-4">
 					{isSuiWalletConnected && <NBTCBalance balance={nBTCBalance} />}
 					<Instructions />
-					<div className="tabs tabs-boxed bg-azure-10 rounded-full p-1">
-						<input
-							type="radio"
-							name="tab_nbtc_buy_sell"
-							className="tab tab-lg rounded-full checked:bg-primary"
-							aria-label="Buy"
-							defaultChecked
-						/>
-						<div className="tab-content py-6">
-							<BuyNBTCTabContent />
-						</div>
-
-						<input
-							type="radio"
-							name="tab_nbtc_buy_sell"
-							className="tab tab-lg rounded-full checked:bg-primary"
-							aria-label="Sell"
-						/>
-						<div className="tab-content py-6">
-							<SellNBTCTabContent />
-						</div>
-					</div>
-
+					<BuyNBTCTabs />
 					{isSuiWalletConnected && (
 						<a
 							href={transactionHistoryLink}
@@ -74,8 +51,33 @@ export function BuyNBTC() {
 							<ArrowUpRight size="22" />
 						</a>
 					)}
-				</CardContent>
-			</Card>
+				</div>
+			</div>
 		</div>
 	);
 }
+
+// TODO: Ravindra, if we decide to use rounded tabs, then we need to update the theme / style to make it
+// default for tabs-boxed, rather than specifying here
+const renderTabHeader = (title: string, checked = false) => (
+	<input
+		type="radio"
+		name="tab_nbtc_buy_sell"
+		className="tab rounded-full checked:bg-primary"
+		aria-label={title}
+		defaultChecked={checked}
+	/>
+);
+
+const BuyNBTCTabs = () => (
+	<div className="tabs tabs-boxed rounded-full p-1">
+		{renderTabHeader("Buy", true)}
+		<div className="tab-content py-6">
+			<BuyNBTCTabContent />
+		</div>
+		{renderTabHeader("Sell")}
+		<div className="tab-content py-6">
+			<SellNBTCTabContent />
+		</div>
+	</div>
+);

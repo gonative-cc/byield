@@ -1,5 +1,4 @@
 import { Zap } from "lucide-react";
-import { Card, CardContent } from "./ui/card";
 import { Table } from "./ui/table";
 import type { Column, CellProps } from "react-table";
 import { SelectInput } from "./ui/select";
@@ -111,14 +110,12 @@ export const columns: Column<DApp>[] = [
 
 function DepositCard({ title, value }: DepositData) {
 	return (
-		<Card className="flex flex-1 max-w-1/4">
-			<CardContent className="p-6 rounded-lg text-white flex flex-col gap-2 bg-azure-10 w-full">
-				<div className="flex gap-2">
-					<span className="text-base font-medium">{title}</span>
-				</div>
+		<div className="card card-border flex flex-1 max-w-1/4">
+			<div className="card-body p-6 rounded-lg text-white flex flex-col gap-2 w-full">
+				<span className="text-base font-medium">{title}</span>
 				<span className="text-base font-medium">{value}</span>
-			</CardContent>
-		</Card>
+			</div>
+		</div>
 	);
 }
 

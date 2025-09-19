@@ -1,5 +1,4 @@
 import React from "react";
-import { Card, CardContent } from "~/components/ui/card";
 import { Countdown } from "~/components/ui/countdown";
 import { BadgesModal } from "~/components/BadgesModal";
 import { AuctionAccountType } from "~/server/BeelieversAuction/types";
@@ -33,8 +32,8 @@ export function Info({ user, auctionInfo, auctionState }: InfoProps) {
 Securing my spot in the top 5810 at https://byield.gonative.cc/beelievers-auction`;
 
 	return (
-		<Card className="w-full lg:w-[85%] xl:w-[75%] shadow-2xl border-primary/20 hover:border-primary/40 transition-all duration-300">
-			<CardContent className="p-4 lg:p-8 rounded-lg text-white flex flex-col lg:flex-row gap-6 lg:gap-8 bg-gradient-to-br from-azure-25 via-azure-20 to-azure-15">
+		<div className="card w-full lg:w-[85%] xl:w-[75%] shadow-2xl card-border border transition-all duration-300">
+			<div className="card-body p-4 lg:p-8 rounded-lg text-white flex flex-col lg:flex-row gap-6 lg:gap-8 bg-gradient-to-br from-azure-25 via-azure-20 to-azure-15">
 				<div className="flex-shrink-0 flex justify-center lg:justify-start">
 					<div className="animate-float">
 						<img
@@ -81,8 +80,8 @@ Securing my spot in the top 5810 at https://byield.gonative.cc/beelievers-auctio
 
 					<Instructions />
 				</div>
-			</CardContent>
-		</Card>
+			</div>
+		</div>
 	);
 }
 
