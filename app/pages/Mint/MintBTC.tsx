@@ -17,6 +17,7 @@ import { useNetworkVariables } from "~/networkConfig";
 import { Modal } from "~/components/ui/dialog";
 import { toast } from "~/hooks/use-toast";
 import { setupBufferPolyfill } from "~/lib/buffer-polyfill";
+import { indexerClient } from "~/lib/indexer.client";
 
 interface TransactionStatusProps {
 	SuiAddress: string;
@@ -149,13 +150,19 @@ export function MintBTC({ onTransactionBroadcast }: MintBTCProps = {}) {
 				network,
 				bitcoinConfig.nBTC.depositAddress,
 			);
-			if (response && response.status === "success") {
-				setTxId(response.result.txid);
+			if (response && response.result && response.result.status === "success") {
+				const { result, txHex } = response;
+				setTxId(result.result.txid);
 
-				if (onTransactionBroadcast && response.result.txid) {
+				// Post transaction hex to indexer
+				if (txHex) {
+					await indexerClient.postNBTCTX(txHex);
+				}
+
+				if (onTransactionBroadcast && result.result.txid) {
 					const formattedSuiAddress = formatSuiAddress(suiAddress);
 					onTransactionBroadcast(
-						response.result.txid,
+						result.result.txid,
 						Number(parseBTC(numberOfBTC)),
 						formattedSuiAddress,
 					);
