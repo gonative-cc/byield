@@ -9,7 +9,7 @@ import { FormNumericInput } from "../../components/form/FormNumericInput";
 import { NumericFormat } from "react-number-format";
 import { BTC, formatBTC, parseBTC } from "~/lib/denoms";
 import { nBTCMintTx } from "~/lib/nbtc";
-import { Check } from "lucide-react";
+import { BitcoinIcon, Check } from "lucide-react";
 import { buttonEffectClasses, classNames } from "~/util/tailwind";
 import { isValidSuiAddress } from "@mysten/sui/utils";
 import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
@@ -230,6 +230,7 @@ export function MintBTC() {
 							</button>
 						) : (
 							<button onClick={connectWallet} className="btn btn-primary">
+								<BitcoinIcon className="h-5 w-5" />
 								Connect Bitcoin Wallet
 							</button>
 						)}

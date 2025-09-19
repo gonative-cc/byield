@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { useLocation } from "react-router";
-import { Wallet } from "lucide-react";
+import { BitcoinIcon, Wallet } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { Skeleton } from "~/components/ui/skeleton";
 import { XverseWallet } from "./Wallet/XverseWallet/XverseWallet";
@@ -73,6 +73,7 @@ export function SelectWallet({ isProductionMode }: SelectWalletProps) {
 			<XverseWallet />
 		) : (
 			<button onClick={connectWallet} className="btn btn-primary md:w-auto w-full">
+				<BitcoinIcon className="h-5 w-5" />
 				Connect Bitcoin Wallet
 			</button>
 		));
