@@ -48,8 +48,7 @@ function convertIndexerTransaction(tx: IndexerTransaction): MintTransaction {
 		timestamp: tx.created_at,
 		numberOfConfirmation: tx.confirmations,
 		operationStartDate: tx.created_at,
-		bitcoinExplorerUrl:
-			tx.bitcoin_explorer_url || `http://142.93.46.134:3002/tx/${tx.btc_tx_id}`,
+		bitcoinExplorerUrl: tx.bitcoin_explorer_url,
 		suiExplorerUrl: tx.sui_explorer_url,
 		fees: tx.fees || 1000,
 		errorMessage: tx.error_message,

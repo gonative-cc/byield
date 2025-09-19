@@ -3,9 +3,7 @@ import { BitcoinNetworkType } from "sats-connect";
 
 export const MEMPOOL_APIS = {
 	Mainnet: "https://mempool.space/api",
-	Testnet: "https://mempool.space/testnet/api",
 	Testnet4: "https://mempool.space/testnet4/api",
-	TestnetV2: "http://142.93.46.134:3002",
 	Regtest: "http://142.93.46.134:3002",
 };
 
@@ -77,21 +75,4 @@ export async function fetchUTXOs(
 		console.error("Failed to fetch UTXOs:", error);
 		throw new Error(`Failed to fetch UTXOs for address ${address}`);
 	}
-}
-
-export async function fetchValidateAddress(address: string): Promise<ValidateAddressI> {
-	console.warn(
-		"fetchValidateAddress is deprecated. Use client-side validation with bitcoinjs-lib instead.",
-	);
-
-	return {
-		isValid: true,
-		address: address,
-		scriptPubKey: "",
-		isscript: false,
-		iswitness:
-			address.startsWith("bc1") || address.startsWith("tb1") || address.startsWith("bcrt1"),
-		witness_version: 0,
-		witness_program: "",
-	};
 }

@@ -1,7 +1,7 @@
 {
 	"bitcoinBroadcastLink": "http://142.93.46.134:3002/tx/",
 	"confirmationThreshold": 3,
-	"blockTime": 120,
+	"blockTimeSec": 120,
 	"bitcoinRpcUrl": "http://142.93.46.134:3002",
 	"nBTC": {
 		"depositAddress": "bcrt1q90xm34jqm0kcpfclkdmn868rw6vcv9fzvfg6p6"

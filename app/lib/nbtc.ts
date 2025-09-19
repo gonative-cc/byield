@@ -1,7 +1,7 @@
 import Wallet, { BitcoinNetworkType } from "sats-connect";
 import { type Address, type RpcResult } from "sats-connect";
 import { fetchUTXOs } from "~/api/btcrpc";
-import type { UTXO, ValidateAddressI } from "~/api/btcrpc";
+import type { UTXO } from "~/api/btcrpc";
 import {
 	getBitcoinNetworkConfig,
 	createPsbt,
@@ -13,6 +13,11 @@ import { toast } from "~/hooks/use-toast";
 
 export const PRICE_PER_NBTC_IN_SUI = 25000n;
 const DUST_THRESHOLD_SATOSHI = 546;
+
+// Enum for OP_RETURN flags
+export enum OpReturnFlag {
+	MINT = 0x00,
+}
 
 export async function nBTCMintTx(
 	bitcoinAddress: Address,
@@ -46,7 +51,15 @@ export async function nBTCMintTx(
 		}
 
 		const bitcoinjs = await getBitcoinLib();
-		let validateAddress: ValidateAddressI;
+		let validateAddress: {
+			isValid: boolean;
+			address: string;
+			scriptPubKey: string;
+			isscript: boolean;
+			iswitness: boolean;
+			witness_version: number;
+			witness_program: string;
+		};
 		try {
 			const outputScript = bitcoinjs.address.toOutputScript(bitcoinAddress.address, network);
 			validateAddress = {
@@ -112,7 +125,7 @@ export async function nBTCMintTx(
 				);
 			}
 			const cleanHex = opReturn.replace(/^0x/, "").toLowerCase();
-			const flagByte = Buffer.from([0x00]);
+			const flagByte = Buffer.from([OpReturnFlag.MINT]);
 			const addressBytes = Buffer.from(cleanHex, "hex");
 			opReturnData = Buffer.concat([flagByte, addressBytes]);
 		} catch (error) {

@@ -29,7 +29,7 @@ export function useNbtcTransactions(): UseNbtcTransactionsResult {
 				timestamp: Date.now(),
 				numberOfConfirmation: 0,
 				operationStartDate: Date.now(),
-				bitcoinExplorerUrl: `http://142.93.46.134:3002/tx/${txId}`,
+				bitcoinExplorerUrl: undefined,
 				fees: 1000,
 			};
 
