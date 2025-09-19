@@ -1,13 +1,12 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { Card, CardContent } from "~/components/ui/card";
 
 export function Instructions() {
 	const account = useCurrentAccount();
 	return (
-		<Card className="p-4 bg-azure-10 rounded-2xl md:bg-[url('/assets/bee/bee-with-question-mark.webp')] bg-no-repeat bg-bottom-right bg-size-[min(150px,100%)]">
-			<CardContent className="flex flex-col justify-between p-0">
+		<div className="card card-border bg-base-300 md:bg-[url('/assets/bee/bee-with-question-mark.webp')] bg-no-repeat bg-right-bottom bg-[length:min(150px,100%)]">
+			<div className="card-body flex flex-col justify-between p-4">
 				<h2 className="mb-2 font-semibold text-gray-900 dark:text-white">Instructions:</h2>
-				<ul className="space-y-2 text-gray-500 list-disc list-inside dark:text-gray-400">
+				<ul className="space-y-2  list-disc list-inside dark:text-gray-400">
 					<li>Click on Connect Sui Wallet button, if not already connected.</li>
 					<li>Connect your wallet. Slush recommended.</li>
 					<li>
@@ -37,7 +36,7 @@ export function Instructions() {
 						</ul>
 					</li>
 				</ul>
-			</CardContent>
-		</Card>
+			</div>
+		</div>
 	);
 }
