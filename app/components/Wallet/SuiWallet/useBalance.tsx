@@ -39,15 +39,23 @@ export function useCoinBalance(coinAddr?: string): UseCoinBalanceResult {
 			return;
 		}
 
+		let cancelled = false;
+
 		console.log(`Fetching coin (${coinAddr}) balance for`, userAddr);
 		setIsLoading(true);
 		setError(null);
 
 		fetchBalance(suiClient, userAddr, coinAddr).then((resOrErr) => {
+			if (cancelled) {
+				return;
+			}
 			setIsLoading(false);
 			if (resOrErr instanceof Error) setError(resOrErr);
 			else setBalance(resOrErr);
 		});
+
+		// cleanup function
+		return () => (cancelled = true);
 	}, [suiClient, coinAddr, userAddr]);
 
 	useEffect(refetch, [refetch]);
