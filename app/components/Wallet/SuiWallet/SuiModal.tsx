@@ -10,8 +10,8 @@ import {
 import { useContext } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
-import { Wallet } from "lucide-react";
 import { toast } from "~/hooks/use-toast";
+import { SUIIcon } from "~/components/icons";
 
 interface InstallWalletProps {
 	link: string;
@@ -129,7 +129,7 @@ export function SuiModal({ label = "Connect Sui Wallet" }: SuiModalProps) {
 		<Dialog>
 			<DialogTrigger asChild>
 				<button className="btn btn-primary md:w-auto w-full">
-					<Wallet /> {label}
+					<SUIIcon prefix="" className="h-5 w-5" /> {label}
 				</button>
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-[425px]">
