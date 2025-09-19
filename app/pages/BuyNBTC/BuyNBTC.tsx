@@ -1,5 +1,4 @@
 import { useContext, useEffect } from "react";
-import { Card, CardContent } from "~/components/ui/card";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";

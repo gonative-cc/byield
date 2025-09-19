@@ -104,7 +104,7 @@ export function useNbtcTransactions(): UseNbtcTransactionsResult {
 		let refreshInterval: number;
 
 		if (isRegtest) {
-			refreshInterval = 15000;
+			refreshInterval = 60000;
 		} else {
 			refreshInterval = Math.min(
 				...transactions

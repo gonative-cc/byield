@@ -137,15 +137,15 @@ export const indexerClient = new IndexerClient();
 export function getRefreshInterval(status: NbtcTxStatus): number {
 	switch (status) {
 		case "confirming":
-			return 30000;
+			return 60000;
 		case "finalized":
 		case "minted":
-			return 1000;
+			return 60000;
 		case "failed":
 		case "reorg":
 			return 0;
 		default:
-			return 30000;
+			return 60000;
 	}
 }
 

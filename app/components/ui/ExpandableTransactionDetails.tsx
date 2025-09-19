@@ -12,7 +12,7 @@ interface ExpandableTransactionDetailsProps {
 export function ExpandableTransactionDetails({ transaction }: ExpandableTransactionDetailsProps) {
 	const { bitcoinConfig } = useIndexerNetwork();
 	const confirmationThreshold = bitcoinConfig?.confirmationThreshold || 3;
-	const blockTime = bitcoinConfig?.blockTime || 120;
+	const blockTime = bitcoinConfig?.blockTimeSec || 120;
 	const operationDate = new Date(transaction.operationStartDate || transaction.timestamp);
 
 	const estimatedTimeRemaining = () => {
@@ -71,14 +71,14 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 				</div>
 
 				<div className="flex items-center gap-2 text-sm">
-					{isConfirmed ? (
+					{isFailed ? null : isConfirmed ? (
 						<CheckCircle size={16} className="text-success flex-shrink-0" />
 					) : transaction.numberOfConfirmation > 0 ? (
 						<AnimatedHourglass size={16} />
 					) : null}
 					<span>
 						Bitcoin confirmations:{" "}
-						{Math.min(transaction.numberOfConfirmation, confirmationThreshold)}/
+						{isFailed ? 0 : Math.min(transaction.numberOfConfirmation, confirmationThreshold)}/
 						{confirmationThreshold}
 					</span>
 					{showTimeRemaining && (
