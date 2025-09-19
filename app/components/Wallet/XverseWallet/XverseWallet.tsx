@@ -4,23 +4,32 @@ import { useMemo } from "react";
 import { trimAddress } from "../walletHelper";
 import { NumericFormat } from "react-number-format";
 import { formatBTC } from "~/lib/denoms";
-import { ExtendedBitcoinNetworkType } from "~/hooks/useBitcoinConfig";
+import { useLocation } from "react-router";
+import { BitcoinNetworkType } from "sats-connect";
+import { CopyButton } from "~/components/ui/CopyButton";
 
 function NetWorkOptions() {
 	const { network, switchNetwork } = useXverseWallet();
+
+	const location = useLocation();
+	const pathname = location.pathname;
+	const isUserOnMintNBTCPage = pathname === "/mint";
+
 	const bitcoinSupportedNetwork: Option[] = useMemo(
-		() => [
-			{ label: ExtendedBitcoinNetworkType.Testnet4, value: ExtendedBitcoinNetworkType.Testnet4 },
-			{ label: ExtendedBitcoinNetworkType.Regtest, value: ExtendedBitcoinNetworkType.Regtest },
-			{ label: ExtendedBitcoinNetworkType.Mainnet, value: ExtendedBitcoinNetworkType.Mainnet },
-		],
-		[],
+		() =>
+			isUserOnMintNBTCPage
+				? [{ label: "Devnet", value: BitcoinNetworkType.Regtest }]
+				: [
+						{ label: BitcoinNetworkType.Testnet4, value: BitcoinNetworkType.Testnet4 },
+						{ label: BitcoinNetworkType.Mainnet, value: BitcoinNetworkType.Mainnet },
+					],
+		[isUserOnMintNBTCPage],
 	);
 
 	return (
 		<SelectInput
 			options={bitcoinSupportedNetwork}
-			onValueChange={(value) => switchNetwork(value as ExtendedBitcoinNetworkType)}
+			onValueChange={(value) => switchNetwork(value as BitcoinNetworkType)}
 			placeholder="Select network"
 			value={network}
 			className="w-full md:w-auto"
@@ -38,12 +47,16 @@ function Accounts() {
 	return (
 		<SelectInput
 			options={options}
-			placeholder="Select account"
 			onValueChange={(address) => {
 				const account = addressInfo.find((a) => a.address === address);
 				if (account) setCurrentAddress(account);
 			}}
 			value={currentAddress?.address}
+			optionItemRenderer={(val) => (
+				<div className="flex gap-2 items-center">
+					{val.label} <CopyButton text={val.value} />
+				</div>
+			)}
 			className="w-full md:w-auto"
 		/>
 	);

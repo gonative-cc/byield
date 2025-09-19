@@ -5,6 +5,10 @@ export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
 }
 
+export function buttonEffectClasses() {
+	return "transition-all duration-300 transform hover:scale-[1.02]";
+}
+
 export function classNames(
 	...args: (string | { [key: string]: boolean } | undefined | null)[]
 ): string {

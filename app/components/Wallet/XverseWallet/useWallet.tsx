@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import Wallet, {
 	AddressPurpose,
 	BitcoinNetworkType,
@@ -12,7 +12,6 @@ import Wallet, {
 import type { Address } from "sats-connect";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
-import { ExtendedBitcoinNetworkType } from "~/hooks/useBitcoinConfig";
 import { toast } from "~/hooks/use-toast";
 
 export const useXverseConnect = () => {
@@ -62,20 +61,24 @@ export const useXverseWallet = () => {
 	const [addressInfo, setAddressInfo] = useState<Address[]>([]);
 	const [currentAddress, setCurrentAddress] = useState<Address | null>(null);
 	const [balance, setBalance] = useState<string>();
-	// TODO: Default bitcoin network on connection is Testnet4
-	const [network, setNetwork] = useState<ExtendedBitcoinNetworkType>(ExtendedBitcoinNetworkType.Testnet4);
+	// TODO: Default bitcoin network on connection is Regtest
+	const [network, setNetwork] = useState<BitcoinNetworkType>(BitcoinNetworkType.Regtest);
+	const hasFetchedBalanceSuccessfullyRef = useRef<boolean>(false);
 
 	const getBalance = useCallback(async () => {
 		try {
 			const response = await Wallet.request(getBalanceMethodName, null);
 			if (response.status === "success") {
 				setBalance(response.result.total);
+				hasFetchedBalanceSuccessfullyRef.current = true;
 			} else {
-				toast({
-					title: "Balance",
-					description: "Failed to get the balance",
-					variant: "destructive",
-				});
+				if (!hasFetchedBalanceSuccessfullyRef.current) {
+					toast({
+						title: "Balance",
+						description: "Failed to get the balance",
+						variant: "destructive",
+					});
+				}
 			}
 		} catch (err) {
 			console.log(err);
@@ -101,7 +104,7 @@ export const useXverseWallet = () => {
 	const getNetworkStatus = useCallback(async () => {
 		const response = await Wallet.request(getNetworkMethodName, null);
 		if (response.status === "success") {
-			setNetwork(response.result.bitcoin.name as unknown as ExtendedBitcoinNetworkType);
+			setNetwork(response.result.bitcoin.name);
 		} else {
 			toast({
 				title: "Network",
@@ -121,10 +124,12 @@ export const useXverseWallet = () => {
 				setAddressInfo([]);
 				setCurrentAddress(null);
 				setBalance(undefined);
+				// Reset session success marker on disconnect
+				hasFetchedBalanceSuccessfullyRef.current = false;
 			}
 		}
 		getWalletStatus();
-	}, [getAddresses, getBalance, getNetworkStatus, isBitCoinWalletConnected, network]);
+	}, [getAddresses, getBalance, getNetworkStatus, isBitCoinWalletConnected, network, currentAddress]);
 
 	const disconnectWallet = useCallback(async () => {
 		try {
@@ -144,23 +149,20 @@ export const useXverseWallet = () => {
 		}
 	}, [handleWalletConnect]);
 
-	const switchNetwork = useCallback(async (newNetwork: ExtendedBitcoinNetworkType) => {
-		// Only switch if it's a valid BitcoinNetworkType (not Devnet)
-		if (newNetwork !== ExtendedBitcoinNetworkType.Devnet) {
-			const response = await Wallet.request(changeNetworkMethodName, {
-				name: newNetwork as unknown as BitcoinNetworkType,
-			});
-			if (response.status === "success") setNetwork(newNetwork);
-			else {
-				toast({
-					title: "Network",
-					description: "Failed to switch network",
-					variant: "destructive",
-				});
-			}
-		} else {
-			// Handle Devnet case - just set the network state
+	const switchNetwork = useCallback(async (newNetwork: BitcoinNetworkType) => {
+		// Handle other networks normally
+		const response = await Wallet.request(changeNetworkMethodName, {
+			name: newNetwork,
+		});
+		if (response.status === "success") {
 			setNetwork(newNetwork);
+		} else {
+			console.error("Failed to switch network:", response.error);
+			toast({
+				title: "Network",
+				description: "Failed to switch network",
+				variant: "destructive",
+			});
 		}
 	}, []);
 
@@ -170,6 +172,7 @@ export const useXverseWallet = () => {
 		currentAddress,
 		addressInfo,
 		setCurrentAddress,
+		refreshBalance: getBalance,
 		disconnectWallet,
 		switchNetwork,
 	};

@@ -15,6 +15,7 @@ import { NumericFormat } from "react-number-format";
 import { formatSUI } from "~/lib/denoms";
 import { useLocation } from "react-router";
 import { isProductionMode } from "~/lib/appenv";
+import { CopyButton } from "~/components/ui/CopyButton";
 
 enum SuiNetwork {
 	TestNet = "testnet",
@@ -72,7 +73,6 @@ function Accounts() {
 	return (
 		<SelectInput
 			options={options}
-			placeholder="Select account"
 			onValueChange={(address) => {
 				const newAccount = accounts.find((a) => a.address === address);
 				if (!newAccount) return;
@@ -84,6 +84,11 @@ function Accounts() {
 				);
 			}}
 			value={currentSelectedAccount?.address}
+			optionItemRenderer={(val) => (
+				<div className="flex gap-2 items-center">
+					{val.label} <CopyButton text={val.value} />
+				</div>
+			)}
 			className="w-full md:w-1/4"
 		/>
 	);
