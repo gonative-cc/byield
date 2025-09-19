@@ -1,4 +1,4 @@
-import { type MintTransaction, type NbtcTxStatus } from "~/server/Mint/types";
+import { type MintTransaction, type MintingTxStatus } from "~/server/Mint/types";
 
 const INDEXER_BASE_URL = "/api/indexer";
 
@@ -21,7 +21,7 @@ interface IndexerTransaction {
 	error_message?: string;
 }
 
-function mapIndexerStatus(status: string): NbtcTxStatus {
+function mapIndexerStatus(status: string): MintingTxStatus {
 	switch (status.toLowerCase()) {
 		case "confirming":
 			return "confirming";
@@ -134,7 +134,7 @@ export class IndexerClient {
 
 export const indexerClient = new IndexerClient();
 
-export function getRefreshInterval(status: NbtcTxStatus): number {
+export function getRefreshInterval(status: MintingTxStatus): number {
 	switch (status) {
 		case "confirming":
 			return 60000;

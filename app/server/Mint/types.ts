@@ -1,9 +1,9 @@
-export type NbtcTxStatus = "confirming" | "finalized" | "minted" | "failed" | "reorg";
+export type MintingTxStatus = "confirming" | "finalized" | "minted" | "failed" | "reorg";
 
 export interface MintTransaction {
 	bitcoinTxId: string;
 	amountInSatoshi: number;
-	status: NbtcTxStatus;
+	status: MintingTxStatus;
 	suiAddress: string;
 	suiTxId?: string;
 	timestamp: number;

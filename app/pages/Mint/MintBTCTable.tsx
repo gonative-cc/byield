@@ -3,7 +3,7 @@ import { Table } from "~/components/ui/table";
 import { Tooltip } from "~/components/ui/tooltip";
 import { trimAddress } from "~/components/Wallet/walletHelper";
 import { formatBTC } from "~/lib/denoms";
-import { type NbtcTxStatus, type MintTransaction } from "~/server/Mint/types";
+import { type MintingTxStatus, type MintTransaction } from "~/server/Mint/types";
 import { Info, ChevronDown, ChevronUp } from "lucide-react";
 import { CopyButton } from "~/components/ui/CopyButton";
 import { ExpandableTransactionDetails } from "~/components/ui/ExpandableTransactionDetails";
@@ -21,7 +21,7 @@ function MintTableTooltip({ tooltip, label }: { tooltip: string; label: string }
 	);
 }
 
-const getStatusDisplay = (status: NbtcTxStatus) => {
+const getStatusDisplay = (status: MintingTxStatus) => {
 	switch (status) {
 		case "confirming":
 			return (
