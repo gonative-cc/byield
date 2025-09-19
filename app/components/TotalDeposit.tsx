@@ -112,7 +112,7 @@ function DepositCard({ title, value }: DepositData) {
 	return (
 		<div className="card card-border flex flex-1 max-w-1/4">
 			<div className="card-body p-6 rounded-lg text-white flex flex-col gap-2 w-full">
-					<span className="text-base font-medium">{title}</span>
+				<span className="text-base font-medium">{title}</span>
 				<span className="text-base font-medium">{value}</span>
 			</div>
 		</div>

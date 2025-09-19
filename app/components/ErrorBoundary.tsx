@@ -19,9 +19,7 @@ export function ErrorBoundary() {
 				</h2>
 			</div>
 			<div className="text-center space-y-4">
-				<p>
-					{err.data || "The page you're looking for doesn't exist or something went wrong."}
-				</p>
+				<p>{err.data || "The page you're looking for doesn't exist or something went wrong."}</p>
 				<div className="flex gap-2 justify-center">
 					<Link to="/">
 						<button className="btn btn-primary btn-outline">
@@ -47,9 +45,7 @@ export function ErrorBoundary() {
 				<h2 className="text-2xl font-bold">Oops!</h2>
 			</div>
 			<div className="text-center space-y-4">
-				<p>
-					Something unexpected happened. Please try refreshing the page.
-				</p>
+				<p>Something unexpected happened. Please try refreshing the page.</p>
 				<div className="flex gap-2 justify-center">
 					<button onClick={handleRefresh} className="btn btn-primary">
 						<RefreshCw />
