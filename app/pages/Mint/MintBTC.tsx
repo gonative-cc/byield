@@ -102,7 +102,7 @@ interface FeeProps {
 
 function Fee({ feeInSatoshi, youReceive }: FeeProps) {
 	return (
-		<div className="card p-4 bg-azure-10 rounded-2xl h-24">
+		<div className="card p-4 rounded-2xl h-24">
 			<div className="card-body flex flex-col justify-between h-full p-0">
 				<div className="flex justify-between">
 					<p className="text-gray-400">Fixed Fee</p>
@@ -168,7 +168,7 @@ export function MintBTC() {
 				className="w-full"
 			>
 				<div className="card w-full">
-					<div className="card-body p-4 sm:p-6 rounded-lg text-white flex flex-col bg-azure-10 space-y-4">
+					<div className="card-body p-4 sm:p-6 rounded-lg flex flex-col space-y-4">
 						{isBitCoinWalletConnected && walletBalance && (
 							<BitcoinBalance availableBalance={walletBalance} />
 						)}

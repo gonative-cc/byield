@@ -35,7 +35,7 @@ export function BuyNBTC() {
 				<span className="text-2xl text-primary md:text-3xl">Web3 native</span> way!
 			</p>
 			<div className="card max-w-lg w-full">
-				<div className="card-body p-6 rounded-lg text-white flex flex-col gap-4 bg-azure-10">
+				<div className="card-body p-6 text-white flex flex-col gap-4">
 					{isSuiWalletConnected && <NBTCBalance balance={nBTCBalance} />}
 					<Instructions />
 					<BuyNBTCTabs />

@@ -66,6 +66,12 @@
   --noise: 0;
 }
 
+@layer components {
+  .card {
+    @apply bg-base-200;
+  }
+}
+
 @layer utilities {
   html,
   body {
