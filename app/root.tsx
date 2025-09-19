@@ -13,7 +13,6 @@ import { Footer } from "~/components/Footer";
 import { SideBarProvider } from "./providers/SiderBarProvider";
 import { SideBar } from "~/components/SideBar";
 import { ErrorBoundary } from "~/components/ErrorBoundary";
-import { IndexerNetworkProvider } from "./providers/IndexerNetworkProvider";
 
 const queryClient = new QueryClient();
 
@@ -102,10 +101,8 @@ function NativeApp({ children }: { children: React.ReactNode }) {
 					<SuiClientProvider networks={networkConfig} network={network}>
 						<SuiWalletProvider autoConnect>
 							<ByieldWalletProvider>
-								<IndexerNetworkProvider>
-									<main className="flex-1">{children}</main>
-									<Toaster />
-								</IndexerNetworkProvider>
+								<main className="flex-1">{children}</main>
+								<Toaster />
 							</ByieldWalletProvider>
 						</SuiWalletProvider>
 					</SuiClientProvider>

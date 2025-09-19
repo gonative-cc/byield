@@ -34,7 +34,7 @@ export async function nBTCMintTx(
 			return;
 		}
 
-		const utxos: UTXO[] = await fetchUTXOs(bitcoinAddress.address);
+		const utxos: UTXO[] = await fetchUTXOs(bitcoinAddress.address, bitcoinNetworkType);
 		if (!utxos?.length) {
 			console.error("utxos not found.");
 			toast?.({
