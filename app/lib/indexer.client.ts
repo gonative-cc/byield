@@ -131,6 +131,30 @@ export class IndexerClient {
 			return null;
 		}
 	}
+
+	/**
+	 * post nbtc tx
+	 */
+	async postNBTCTX(txHex: string) {
+		try {
+			const url = `${this.baseUrl}/nbtc`;
+
+			const response = await fetch(url, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ txHex }),
+			});
+
+			if (!response.ok) {
+				if (response.status === 404) {
+					return null;
+				}
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+		} catch (error) {
+			console.error("Error posting tx hex:", error);
+		}
+	}
 }
 
 export const indexerClient = new IndexerClient();

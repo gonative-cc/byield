@@ -14,13 +14,18 @@ import { toast } from "~/hooks/use-toast";
 export const PRICE_PER_NBTC_IN_SUI = 25000n;
 const DUST_THRESHOLD_SATOSHI = 546;
 
+interface MintNBTCTxResponse {
+	result?: RpcResult<"signPsbt">;
+	txHex?: string;
+}
+
 export async function nBTCMintTx(
 	bitcoinAddress: Address,
 	mintAmountInSatoshi: number,
 	opReturn: string,
 	bitcoinNetworkType: BitcoinNetworkType,
 	depositAddress: string,
-): Promise<RpcResult<"signPsbt"> | undefined> {
+): Promise<MintNBTCTxResponse | undefined> {
 	try {
 		const network = await getBitcoinNetworkConfig(bitcoinNetworkType);
 
@@ -174,7 +179,7 @@ export async function nBTCMintTx(
 			});
 			console.error("Transaction failed:", response);
 		}
-		return response;
+		return { result: response, txHex: txHex };
 	} catch (error) {
 		console.error("nBTC Mint Transaction Error:", error);
 		toast?.({
