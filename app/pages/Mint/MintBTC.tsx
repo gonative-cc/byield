@@ -13,6 +13,7 @@ import { buttonEffectClasses, classNames } from "~/util/tailwind";
 import { isValidSuiAddress } from "@mysten/sui/utils";
 import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import { toast } from "~/hooks/use-toast";
+import { setupBufferPolyfill } from "~/lib/buffer-polyfill";
 
 function formatSuiAddress(suiAddress: string) {
 	if (!suiAddress.toLowerCase().startsWith("0x")) {
@@ -86,6 +87,10 @@ export function MintBTC({ onTransactionBroadcast }: MintBTCProps = {}) {
 	const SuiAddress = watch("suiAddress");
 
 	useEffect(() => setValue("suiAddress", suiAddr || ""), [setValue, suiAddr]);
+
+	useEffect(() => {
+		setupBufferPolyfill();
+	}, []);
 
 	const handlenBTCMintTx = async ({ numberOfBTC, suiAddress }: MintNBTCForm) => {
 		if (currentAddress) {

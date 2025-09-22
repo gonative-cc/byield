@@ -21,14 +21,34 @@ function MintTableTooltip({ tooltip, label }: { tooltip: string; label: string }
 	);
 }
 
-const getStatusDisplay = (status: MintingTxStatus) => {
-	const isActive = ["broadcasting", "confirming", "finalized", "minting"].includes(status);
+interface StatusDisplayProps {
+	status: MintingTxStatus;
+	showLoading?: boolean;
+}
+
+function StatusDisplay({ status, showLoading = false }: StatusDisplayProps) {
+	const statusConfig = {
+		broadcasting: { label: "Broadcasting", showSpinner: true },
+		confirming: { label: "Confirming", showSpinner: true },
+		finalized: { label: "Finalized", showSpinner: true },
+		minting: { label: "Minting", showSpinner: true },
+		minted: { label: "Minted", showSpinner: false },
+		failed: { label: "Failed", showSpinner: false },
+		reorg: { label: "Reorg", showSpinner: false },
+	};
+
+	const config = statusConfig[status] || { label: status, showSpinner: false };
+
 	return (
 		<div className="flex items-center gap-2">
-			{isActive && <AnimatedHourglass size="md" />}
-			<span className="badge capitalize">{status}</span>
+			{(config.showSpinner || showLoading) && <AnimatedHourglass size="md" />}
+			<span className="badge">{config.label}</span>
 		</div>
 	);
+}
+
+const getStatusDisplay = (status: MintingTxStatus) => {
+	return <StatusDisplay status={status} />;
 };
 
 const createColumns = (
