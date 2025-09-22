@@ -112,6 +112,8 @@ interface TableProps<T extends object> {
 	expandedRows?: Set<string>;
 	renderExpandedRow?: (row: Row<T>) => React.ReactNode;
 	getRowId?: (row: T) => string;
+	isLoading?: boolean;
+	loadingMessage?: string;
 }
 
 export const Table = <T extends object>({
@@ -123,6 +125,8 @@ export const Table = <T extends object>({
 	expandedRows,
 	renderExpandedRow,
 	getRowId,
+	isLoading = false,
+	loadingMessage = "Loading...",
 }: TableProps<T>) => {
 	const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<T>({
 		columns,
@@ -144,6 +148,19 @@ export const Table = <T extends object>({
 						<span className="text-2xl">📊</span>
 					</div>
 					<p>No data available</p>
+				</div>
+			</td>
+		</tr>
+	);
+
+	const renderLoadingMessage = (
+		<tr className="animate-in fade-in-0 duration-500">
+			<td colSpan={columns.length} className="p-8 text-center text-base text-muted-foreground">
+				<div className="flex flex-col items-center gap-3">
+					<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+						<div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+					</div>
+					<p>{loadingMessage}</p>
 				</div>
 			</td>
 		</tr>
@@ -180,7 +197,9 @@ export const Table = <T extends object>({
 					>
 						<TableHead headerGroups={headerGroups} />
 						<tbody {...getTableBodyProps()}>
-							{isTableEmpty ? (
+							{isLoading ? (
+								renderLoadingMessage
+							) : isTableEmpty ? (
 								renderNoDataMessage
 							) : (
 								<TableRows

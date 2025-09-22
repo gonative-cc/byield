@@ -21,34 +21,14 @@ function MintTableTooltip({ tooltip, label }: { tooltip: string; label: string }
 	);
 }
 
-interface StatusDisplayProps {
-	status: MintingTxStatus;
-	showLoading?: boolean;
-}
-
-function StatusDisplay({ status, showLoading = false }: StatusDisplayProps) {
-	const statusConfig = {
-		broadcasting: { label: "Broadcasting", showSpinner: true },
-		confirming: { label: "Confirming", showSpinner: true },
-		finalized: { label: "Finalized", showSpinner: true },
-		minting: { label: "Minting", showSpinner: true },
-		minted: { label: "Minted", showSpinner: false },
-		failed: { label: "Failed", showSpinner: false },
-		reorg: { label: "Reorg", showSpinner: false },
-	};
-
-	const config = statusConfig[status] || { label: status, showSpinner: false };
-
+const getStatusDisplay = (status: MintingTxStatus) => {
+	const isActive = ["broadcasting", "confirming", "finalized", "minting"].includes(status);
 	return (
 		<div className="flex items-center gap-2">
-			{(config.showSpinner || showLoading) && <AnimatedHourglass size="md" />}
-			<span className="badge">{config.label}</span>
+			{isActive && <AnimatedHourglass size="md" />}
+			<span className="badge capitalize">{status}</span>
 		</div>
 	);
-}
-
-const getStatusDisplay = (status: MintingTxStatus) => {
-	return <StatusDisplay status={status} />;
 };
 
 const createColumns = (
@@ -127,9 +107,10 @@ const createColumns = (
 
 interface MintBTCTableProps {
 	data: MintTransaction[];
+	isLoading?: boolean;
 }
 
-export function MintBTCTable({ data }: MintBTCTableProps) {
+export function MintBTCTable({ data, isLoading = false }: MintBTCTableProps) {
 	const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
 	const toggleExpanded = useCallback((txId: string) => {
@@ -165,6 +146,8 @@ export function MintBTCTable({ data }: MintBTCTableProps) {
 				expandedRows={expandedRows}
 				renderExpandedRow={renderExpandedRow}
 				getRowId={(row) => row.bitcoinTxId}
+				isLoading={isLoading}
+				loadingMessage="Loading nBTC transactions..."
 			/>
 		</div>
 	);

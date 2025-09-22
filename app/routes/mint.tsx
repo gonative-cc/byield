@@ -2,7 +2,6 @@ import { RegtestInstructions } from "~/pages/Mint/RegtestInstructions";
 import { MintBTC } from "~/pages/Mint/MintBTC";
 import { MintBTCTable } from "~/pages/Mint/MintBTCTable";
 import { useNbtcTxs } from "~/hooks/useNbtcTransactions";
-import { LoadingSpinner } from "~/components/LoadingSpinner";
 import { RefreshCw } from "lucide-react";
 
 function MintContent() {
@@ -54,16 +53,7 @@ function MintContent() {
 					</div>
 				)}
 
-				{isLoading ? (
-					<div className="flex justify-center py-8">
-						<div className="flex flex-col items-center gap-4">
-							<LoadingSpinner isLoading={isLoading} />
-							<p className="text-base-content/60">Loading nBTC transactions...</p>
-						</div>
-					</div>
-				) : (
-					<MintBTCTable data={transactions} />
-				)}
+				<MintBTCTable data={transactions} isLoading={isLoading} />
 			</div>
 		</div>
 	);
