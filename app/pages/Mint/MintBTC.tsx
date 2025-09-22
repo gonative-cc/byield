@@ -6,7 +6,8 @@ import { useContext, useEffect, useState } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
 import { FormNumericInput } from "../../components/form/FormNumericInput";
-import { BTC, formatBTC, parseBTC } from "~/lib/denoms";
+import { BTC, formatBTC, parseBTC, formatNBTC } from "~/lib/denoms";
+
 import { nBTCMintTx } from "~/lib/nbtc";
 import { BitcoinIcon } from "lucide-react";
 import { buttonEffectClasses, classNames } from "~/util/tailwind";
@@ -53,6 +54,27 @@ function Percentage({ onChange }: { onChange: (value: number) => void }) {
 					{value}%
 				</button>
 			))}
+		</div>
+	);
+}
+
+interface FeeProps {
+	mintingFee: bigint;
+}
+
+function Fee({ mintingFee }: FeeProps) {
+	return (
+		<div className="card card-border bg-base-300">
+			<div className="card-body">
+				<div className="flex justify-between text-sm">
+					<span>Minting Fee</span>
+					<div className="tooltip" data-tip="1 nSats = 0.00000001 nBTC">
+						<span className="cursor-help">
+							{mintingFee} nSats ({formatNBTC(mintingFee)} nBTC)
+						</span>
+					</div>
+				</div>
+			</div>
 		</div>
 	);
 }
@@ -187,6 +209,7 @@ export function MintBTC({ onTransactionBroadcast }: MintBTCProps = {}) {
 								},
 							}}
 						/>
+						{bitcoinConfig.nBTC && <Fee mintingFee={BigInt(bitcoinConfig?.nBTC?.mintingFee)} />}
 						{isBitCoinWalletConnected ? (
 							<button
 								type="submit"
