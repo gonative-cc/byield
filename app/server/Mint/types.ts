@@ -1,4 +1,11 @@
-export type MintingTxStatus = "confirming" | "finalized" | "minted" | "failed" | "reorg";
+export type MintingTxStatus =
+	| "broadcasting"
+	| "confirming"
+	| "finalized"
+	| "minting"
+	| "minted"
+	| "failed"
+	| "reorg";
 
 export interface MintTransaction {
 	bitcoinTxId: string;

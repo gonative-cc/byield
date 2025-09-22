@@ -1,47 +1,23 @@
 import { useState, useEffect, useCallback, useContext } from "react";
 import { type MintTransaction } from "~/server/Mint/types";
-import { indexerClient, getRefreshInterval, shouldRefreshFrequently } from "~/lib/indexer.client";
+import { fetchNbtcTransactions } from "~/lib/external-apis";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
 
-interface UseNbtcTransactionsResult {
-	transactions: MintTransaction[];
+interface UseNbtcTxsResult {
+	txs: MintTransaction[];
 	isLoading: boolean;
 	error: string | null;
 	refetch: () => Promise<void>;
-	addPendingTransaction: (txId: string, amountInSatoshi: number, suiAddress: string) => void;
+	addPendingTx: (txId: string, amountInSatoshi: number, suiAddress: string) => void;
 }
 
-export function useNbtcTransactions(): UseNbtcTransactionsResult {
+export function useNbtcTxs(): UseNbtcTxsResult {
 	const [transactions, setTransactions] = useState<MintTransaction[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const { suiAddr } = useContext(WalletContext);
 	const { network } = useXverseWallet();
-
-	const addPendingTransaction = useCallback(
-		(txId: string, amountInSatoshi: number, suiAddress: string) => {
-			const pendingTx: MintTransaction = {
-				bitcoinTxId: txId,
-				amountInSatoshi: amountInSatoshi,
-				status: "confirming",
-				suiAddress: suiAddress,
-				timestamp: Date.now(),
-				numberOfConfirmation: 0,
-				operationStartDate: Date.now(),
-				bitcoinExplorerUrl: undefined,
-				fees: 1000,
-			};
-
-			setTransactions((prev) => {
-				const exists = prev.some((tx) => tx.bitcoinTxId === txId);
-				if (exists) return prev;
-
-				return [pendingTx, ...prev];
-			});
-		},
-		[],
-	);
 
 	const fetchTransactions = useCallback(async () => {
 		if (!suiAddr) {
@@ -54,27 +30,27 @@ export function useNbtcTransactions(): UseNbtcTransactionsResult {
 		try {
 			setIsLoading(true);
 			setError(null);
+			const fetchedTransactions = await fetchNbtcTransactions(suiAddr, network);
 
-			const fetchedTransactions = await indexerClient.fetchNbtcTransactions(suiAddr, network);
+			const mergedTxs = [...fetchedTransactions];
+			const pendingTxs: string[] = [];
 
-			setTransactions((prev) => {
-				const mergedTxs = [...fetchedTransactions];
-
-				prev.forEach((pendingTx) => {
-					const exists = fetchedTransactions.some(
-						(fetchedTx) => fetchedTx.bitcoinTxId === pendingTx.bitcoinTxId,
-					);
-					if (!exists) {
-						mergedTxs.push(pendingTx);
-					}
-				});
-
-				return mergedTxs.sort(
-					(a, b) =>
-						(b.operationStartDate || b.timestamp) -
-						(a.operationStartDate || a.timestamp),
+			transactions.forEach((pendingTx) => {
+				const exists = fetchedTransactions.some(
+					(fetchedTx) => fetchedTx.bitcoinTxId === pendingTx.bitcoinTxId,
 				);
+				if (!exists) {
+					mergedTxs.push(pendingTx);
+					pendingTxs.push(pendingTx.bitcoinTxId);
+				}
 			});
+
+			const sortedTxs = mergedTxs.sort(
+				(a, b) =>
+					(b.operationStartDate || b.timestamp) - (a.operationStartDate || a.timestamp),
+			);
+
+			setTransactions(sortedTxs);
 		} catch (err) {
 			console.error("Error fetching nBTC transactions:", err);
 			setError(err instanceof Error ? err.message : "Failed to fetch transactions");
@@ -83,55 +59,65 @@ export function useNbtcTransactions(): UseNbtcTransactionsResult {
 		}
 	}, [suiAddr, network]);
 
+	const addPendingTx = useCallback(
+		(txId: string, amountInSatoshi: number, suiAddress: string) => {
+			const pendingTx: MintTransaction = {
+				bitcoinTxId: txId,
+				amountInSatoshi: amountInSatoshi,
+				status: "broadcasting",
+				suiAddress: suiAddress,
+				timestamp: Date.now(),
+				numberOfConfirmation: 0,
+				operationStartDate: Date.now(),
+				bitcoinExplorerUrl: undefined,
+				fees: 1000,
+			};
+
+			setTransactions((prev) => {
+				const exists = prev.some((tx) => tx.bitcoinTxId === txId);
+				if (exists) return prev;
+				return [pendingTx, ...prev];
+			});
+
+			if (network === "Regtest") {
+				setTimeout(() => fetchTransactions(), 10000);
+				setTimeout(() => fetchTransactions(), 30000);
+			}
+		},
+		[network, fetchTransactions],
+	);
+
 	useEffect(() => {
-		setIsLoading(true);
 		fetchTransactions();
 	}, [fetchTransactions]);
 
 	useEffect(() => {
-		if (!suiAddr || transactions.length === 0) {
-			return;
+		if (!suiAddr) return;
+
+		const hasActiveTxs = transactions.some(
+			(tx) =>
+				tx.status === "broadcasting" ||
+				tx.status === "confirming" ||
+				tx.status === "finalized" ||
+				tx.status === "minting",
+		);
+
+		if (network === "Regtest") {
+			const interval = setInterval(fetchTransactions, 60000); // 1 minute for regtest
+			return () => clearInterval(interval);
 		}
 
-		const isRegtest = network === "Regtest";
-
-		const needsFrequentRefresh = shouldRefreshFrequently(transactions);
-
-		if (!needsFrequentRefresh && !isRegtest) {
-			return;
+		if (hasActiveTxs) {
+			const interval = setInterval(fetchTransactions, 60000); // 1 minute
+			return () => clearInterval(interval);
 		}
-
-		let refreshInterval: number;
-
-		if (isRegtest) {
-			refreshInterval = 60000;
-		} else {
-			refreshInterval = Math.min(
-				...transactions
-					.filter(
-						(tx) =>
-							tx.status === "confirming" ||
-							tx.status === "finalized" ||
-							tx.status === "minted",
-					)
-					.map((tx) => getRefreshInterval(tx.status)),
-			);
-		}
-
-		const intervalId = setInterval(() => {
-			fetchTransactions();
-		}, refreshInterval);
-
-		return () => {
-			clearInterval(intervalId);
-		};
-	}, [transactions, suiAddr, fetchTransactions, network]);
+	}, [transactions, suiAddr, network, fetchTransactions]);
 
 	return {
-		transactions,
+		txs: transactions,
 		isLoading,
 		error,
 		refetch: fetchTransactions,
-		addPendingTransaction,
+		addPendingTx,
 	};
 }

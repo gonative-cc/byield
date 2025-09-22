@@ -1,7 +1,6 @@
 import Wallet, { BitcoinNetworkType } from "sats-connect";
 import { type Address, type RpcResult } from "sats-connect";
-import { fetchUTXOs } from "~/api/btcrpc";
-import type { UTXO } from "~/api/btcrpc";
+import { fetchUTXOs, type UTXO } from "~/lib/external-apis";
 import {
 	getBitcoinNetworkConfig,
 	createPsbt,
@@ -171,7 +170,6 @@ export async function nBTCMintTx(
 		});
 
 		if (!shouldBroadcast && response.status === "success") {
-			console.log("✅ PSBT signed successfully (broadcast skipped)");
 			toast?.({
 				title: "Transaction Signed",
 				description: "PSBT signed successfully. Broadcast manually if needed.",
@@ -185,7 +183,6 @@ export async function nBTCMintTx(
 				description: "Failed to broadcast the transaction.",
 				variant: "destructive",
 			});
-			console.error("Transaction failed:", response);
 		}
 		return response;
 	} catch (error) {

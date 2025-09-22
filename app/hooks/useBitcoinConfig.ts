@@ -4,11 +4,20 @@ import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
 import devnetConfig from "~/config/bitcoin-devnet.json";
 import mainnetConfig from "~/config/bitcoin-mainnet.json";
 import regtestConfig from "~/config/bitcoin-regtest.json";
+import testnet4Config from "~/config/bitcoin-testnet4.json";
 
 export type BitcoinNetworkVariables =
-	| typeof mainnetConfig
-	| typeof devnetConfig
-	| typeof regtestConfig
+	| {
+			bitcoinBroadcastLink: string;
+			confirmationDepth: number;
+			blockTimeSec: number;
+			mempoolApiUrl: string;
+			indexerUrl: string;
+			btcRPCUrl: string;
+			nBTC: {
+				depositAddress: string;
+			};
+	  }
 	| Record<string, never>;
 
 interface NetworkConfig {
@@ -25,7 +34,9 @@ export const getBitcoinNetworkConfig: Record<BitcoinNetworkType, NetworkConfig> 
 		variables: {},
 	},
 	Testnet4: {
-		variables: {},
+		variables: {
+			...testnet4Config,
+		},
 	},
 	Signet: {
 		variables: {},
@@ -47,19 +58,19 @@ export function useBitcoinConfig(): BitcoinNetworkVariables {
 export function useIndexerNetwork() {
 	const { network } = useXverseWallet();
 
-	const [indexerNetwork, setIndexerNetwork] = useState<BitcoinNetworkType>(network || "Testnet");
+	const [indexerNetwork, setIndexerNetwork] = useState<BitcoinNetworkType | null>(
+		network || null,
+	);
 
 	useEffect(() => {
-		if (network) {
-			setIndexerNetwork(network);
-		}
+		setIndexerNetwork(network || null);
 	}, [network]);
 
-	const bitcoinConfig = getBitcoinNetworkConfig[indexerNetwork].variables;
+	const bitcoinConfig = indexerNetwork ? getBitcoinNetworkConfig[indexerNetwork].variables : null;
 
 	return {
 		indexerNetwork,
-		setIndexerNetwork,
+		setIndexerNetwork: (network: BitcoinNetworkType | null) => setIndexerNetwork(network),
 		bitcoinConfig,
 	};
 }

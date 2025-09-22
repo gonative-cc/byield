@@ -1,3 +1,4 @@
+import React from "react";
 import { useTable } from "react-table";
 import type { Column, HeaderGroup, Row } from "react-table";
 import { twMerge } from "tailwind-merge";
@@ -42,55 +43,62 @@ const TableRows = <T extends object>({
 	expandedRows?: Set<string>;
 	renderExpandedRow?: (row: Row<T>) => React.ReactNode;
 	columns: Column<T>[];
-}) =>
-	rows.flatMap((row, index) => {
-		prepareRow(row);
-		const customRowProps = getRowProps?.(row) || {};
-		const isExpanded = expandedRows?.has(row.id);
+}) => (
+	<>
+		{rows.map((row, index) => {
+			prepareRow(row);
+			const customRowProps = getRowProps?.(row) || {};
+			const isExpanded = expandedRows?.has(row.id);
+			const isLastRow = index === rows.length - 1;
 
-		const mainRow = (
-			<tr
-				{...row.getRowProps()}
-				key={row.getRowProps().key}
-				className={twMerge(
-					"border-t border-gray-700/30 text-sm hover:bg-primary/5 transition-all duration-200 group animate-in slide-in-from-left-2",
-					customRowProps.className,
-				)}
-				style={{ animationDelay: `${index * 50}ms` }}
-			>
-				{row.cells.map((cell, cellIndex) => (
-					<td
-						{...cell.getCellProps()}
-						key={cell.getCellProps().key}
+			const rowProps = row.getRowProps();
+			const { key, ...restRowProps } = rowProps;
+
+			return (
+				<React.Fragment key={row.id}>
+					<tr
+						{...restRowProps}
 						className={twMerge(
-							"p-4 group-hover:text-foreground transition-colors",
-							cellIndex === 0 && index === rows.length - 1 && !isExpanded && "rounded-bl-2xl",
-							cellIndex === row.cells.length - 1 &&
-								index === rows.length - 1 &&
-								!isExpanded &&
-								"rounded-br-2xl",
+							"border-t border-gray-700/30 text-sm hover:bg-primary/5 transition-colors group",
+							customRowProps.className,
 						)}
 					>
-						{cell.render("Cell")}
-					</td>
-				))}
-			</tr>
-		);
-
-		const expandedRow =
-			isExpanded && renderExpandedRow ? (
-				<tr key={`${row.id}-expanded`} className="border-t border-gray-700/30">
-					<td
-						colSpan={columns.length}
-						className={twMerge("p-0", index === rows.length - 1 && "rounded-b-2xl")}
-					>
-						{renderExpandedRow(row)}
-					</td>
-				</tr>
-			) : null;
-
-		return expandedRow ? [mainRow, expandedRow] : [mainRow];
-	});
+						{row.cells.map((cell, cellIndex) => {
+							const cellProps = cell.getCellProps();
+							const { key: cellKey, ...restCellProps } = cellProps;
+							return (
+								<td
+									{...restCellProps}
+									key={cellKey}
+									className={twMerge(
+										"p-4 group-hover:text-foreground transition-colors",
+										cellIndex === 0 && isLastRow && !isExpanded && "rounded-bl-2xl",
+										cellIndex === row.cells.length - 1 &&
+											isLastRow &&
+											!isExpanded &&
+											"rounded-br-2xl",
+									)}
+								>
+									{cell.render("Cell")}
+								</td>
+							);
+						})}
+					</tr>
+					{isExpanded && renderExpandedRow && (
+						<tr className="border-t border-gray-700/30">
+							<td
+								colSpan={columns.length}
+								className={twMerge("p-0", isLastRow && "rounded-b-2xl")}
+							>
+								{renderExpandedRow(row)}
+							</td>
+						</tr>
+					)}
+				</React.Fragment>
+			);
+		})}
+	</>
+);
 
 interface TableProps<T extends object> {
 	header?: {
@@ -103,6 +111,7 @@ interface TableProps<T extends object> {
 	getRowProps?: (row: Row<T>) => { className?: string };
 	expandedRows?: Set<string>;
 	renderExpandedRow?: (row: Row<T>) => React.ReactNode;
+	getRowId?: (row: T) => string;
 }
 
 export const Table = <T extends object>({
@@ -113,19 +122,18 @@ export const Table = <T extends object>({
 	getRowProps,
 	expandedRows,
 	renderExpandedRow,
+	getRowId,
 }: TableProps<T>) => {
 	const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<T>({
 		columns,
 		data,
-		getRowId: (row: T) => {
-			// Safely access potential ID properties
-			const record = row as Record<string, unknown>;
-			return (
-				(typeof record.bitcoinTxId === "string" ? record.bitcoinTxId : null) ||
-				(typeof record.id === "string" ? record.id : null) ||
-				JSON.stringify(row)
-			);
-		},
+		getRowId:
+			getRowId ||
+			((row: T, index: number) => {
+				// Default fallback - try common ID properties or use index
+				const record = row as Record<string, unknown>;
+				return (typeof record.id === "string" ? record.id : null) || index.toString();
+			}),
 	});
 	const isTableEmpty = !data.length;
 	const renderNoDataMessage = (

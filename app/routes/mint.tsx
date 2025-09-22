@@ -1,12 +1,12 @@
 import { RegtestInstructions } from "~/pages/Mint/RegtestInstructions";
 import { MintBTC } from "~/pages/Mint/MintBTC";
 import { MintBTCTable } from "~/pages/Mint/MintBTCTable";
-import { useNbtcTransactions } from "~/hooks/useNbtcTransactions";
+import { useNbtcTxs } from "~/hooks/useNbtcTransactions";
 import { LoadingSpinner } from "~/components/LoadingSpinner";
 import { RefreshCw } from "lucide-react";
 
 function MintContent() {
-	const { transactions, isLoading, error, refetch, addPendingTransaction } = useNbtcTransactions();
+	const { txs: transactions, isLoading, error, refetch, addPendingTx } = useNbtcTxs();
 
 	return (
 		<div className="mx-auto px-4 py-4 space-y-6">
@@ -24,18 +24,13 @@ function MintContent() {
 			<div className="flex justify-center">
 				<div className="w-full max-w-xl space-y-6">
 					<RegtestInstructions />
-					<MintBTC onTransactionBroadcast={addPendingTransaction} />
+					<MintBTC onTransactionBroadcast={addPendingTx} />
 				</div>
 			</div>
 
 			{/* Transaction Table Section */}
 			<div className="space-y-4">
-				{/* Table Header with Refresh Button */}
-				<div className="flex items-center justify-between">
-					<h2 className="text-xl font-semibold flex items-center gap-2">
-						<span>₿</span>
-						<span>nBTC Mint Transactions</span>
-					</h2>
+				<div className="flex justify-end">
 					<button
 						onClick={refetch}
 						disabled={isLoading}

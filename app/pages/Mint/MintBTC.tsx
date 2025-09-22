@@ -113,7 +113,6 @@ export function MintBTC({ onTransactionBroadcast }: MintBTCProps = {}) {
 			);
 			if (response && response.status === "success") {
 				setTxId(response.result.txid);
-
 				if (onTransactionBroadcast && response.result.txid) {
 					const formattedSuiAddress = formatSuiAddress(suiAddress);
 					onTransactionBroadcast(

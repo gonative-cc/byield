@@ -1,10 +1,11 @@
 {
-	"bitcoinBroadcastLink": "https://mempool.space/tx/",
-	"confirmationThreshold": 8,
+	"bitcoinBroadcastLink": "",
+	"confirmationDepth": 6,
 	"blockTimeSec": 600,
-	"nBTC": {
-		"depositAddress": "tb1qjgqhst2hlgjkh36pg6r3hdnz7zvurafe9h5lkx"
-	},
+	"mempoolApiUrl": "",
 	"indexerUrl": "",
-	"btcRPCUrl": ""
+	"btcRPCUrl": "",
+	"nBTC": {
+		"depositAddress": ""
+	}
 }

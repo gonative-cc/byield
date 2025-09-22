@@ -5,19 +5,54 @@ import { useIndexerNetwork } from "~/hooks/useBitcoinConfig";
 import { NumericFormat } from "react-number-format";
 import { formatBTC } from "~/lib/denoms";
 
+interface FailedTransactionAlertProps {
+	transaction: MintTransaction;
+}
+
+function FailedTransactionAlert({ transaction }: FailedTransactionAlertProps) {
+	return (
+		<div className="alert alert-error">
+			<XCircle size={16} className="flex-shrink-0" />
+			<div>
+				<div className="font-medium mb-1">
+					Transaction {transaction.status === "reorg" ? "Reorganized" : "Failed"}
+				</div>
+				<div className="text-sm opacity-80">
+					{transaction.errorMessage ||
+						(transaction.status === "reorg"
+							? "The transaction was reorganized due to a blockchain reorganization"
+							: "The transaction was not included in the block (the transaction didn't happen)")}
+				</div>
+				<button className="btn btn-sm btn-error mt-2">Retry Transaction</button>
+			</div>
+		</div>
+	);
+}
+
 interface ExpandableTransactionDetailsProps {
 	transaction: MintTransaction;
 }
 
 export function ExpandableTransactionDetails({ transaction }: ExpandableTransactionDetailsProps) {
 	const { bitcoinConfig } = useIndexerNetwork();
-	const confirmationThreshold = bitcoinConfig?.confirmationThreshold || 3;
-	const blockTime = bitcoinConfig?.blockTimeSec || 120;
+
+	if (!bitcoinConfig?.confirmationDepth || !bitcoinConfig?.blockTimeSec) {
+		return (
+			<div className="p-6 bg-base-100 border-t border-base-300">
+				<div className="text-center text-base-content/60">
+					Please connect your wallet to view transaction details
+				</div>
+			</div>
+		);
+	}
+
+	const confirmationDepth = bitcoinConfig.confirmationDepth;
+	const blockTime = bitcoinConfig.blockTimeSec;
 	const operationDate = new Date(transaction.operationStartDate || transaction.timestamp);
 
 	const estimatedTimeRemaining = () => {
-		if (transaction.status !== "confirming") return null;
-		const remainingConfirmations = Math.max(0, confirmationThreshold - transaction.numberOfConfirmation);
+		if (transaction.status !== "confirming" && transaction.status !== "broadcasting") return null;
+		const remainingConfirmations = Math.max(0, confirmationDepth - transaction.numberOfConfirmation);
 		const estimatedMinutes = remainingConfirmations * (blockTime / 60);
 		return Math.ceil(estimatedMinutes);
 	};
@@ -28,11 +63,14 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 		return `~${minutes} minutes`;
 	};
 
-	const isBroadcasted = transaction.status !== "confirming" || transaction.numberOfConfirmation > 0;
-	const isConfirmed = transaction.numberOfConfirmation >= confirmationThreshold;
+	const isBroadcasted = transaction.status !== "broadcasting";
+	const isConfirmed = transaction.numberOfConfirmation >= confirmationDepth;
 	const isMinted = transaction.status === "minted";
 	const isFailed = transaction.status === "failed" || transaction.status === "reorg";
-	const showTimeRemaining = !isConfirmed && transaction.status === "confirming" && estimatedTimeRemaining();
+	const showTimeRemaining =
+		!isConfirmed &&
+		(transaction.status === "confirming" || transaction.status === "broadcasting") &&
+		estimatedTimeRemaining();
 
 	return (
 		<div className="p-6 bg-base-100 border-t border-base-300">
@@ -49,7 +87,7 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 					) : isBroadcasted ? (
 						<CheckCircle size={16} className="text-success flex-shrink-0" />
 					) : (
-						<AnimatedHourglass size={16} />
+						<AnimatedHourglass size="md" />
 					)}
 					<span>
 						{isFailed
@@ -74,12 +112,12 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 					{isFailed ? null : isConfirmed ? (
 						<CheckCircle size={16} className="text-success flex-shrink-0" />
 					) : transaction.numberOfConfirmation > 0 ? (
-						<AnimatedHourglass size={16} />
+						<AnimatedHourglass size="md" />
 					) : null}
 					<span>
 						Bitcoin confirmations:{" "}
-						{isFailed ? 0 : Math.min(transaction.numberOfConfirmation, confirmationThreshold)}/
-						{confirmationThreshold}
+						{isFailed ? 0 : Math.min(transaction.numberOfConfirmation, confirmationDepth)}/
+						{confirmationDepth}
 					</span>
 					{showTimeRemaining && (
 						<span className="text-base-content/60">
@@ -103,7 +141,7 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 					) : isFailed ? (
 						<XCircle size={16} className="text-error flex-shrink-0" />
 					) : isConfirmed ? (
-						<AnimatedHourglass size={16} />
+						<AnimatedHourglass size="md" />
 					) : null}
 					<span>{isMinted ? "nBTC minted" : isConfirmed ? "nBTC minting" : "nBTC minting"}</span>
 				</div>
@@ -124,23 +162,7 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 					</span>
 				</div>
 
-				{isFailed && (
-					<div className="alert alert-error">
-						<XCircle size={16} className="flex-shrink-0" />
-						<div>
-							<div className="font-medium mb-1">
-								Transaction {transaction.status === "reorg" ? "Reorganized" : "Failed"}
-							</div>
-							<div className="text-sm opacity-80">
-								{transaction.errorMessage ||
-									(transaction.status === "reorg"
-										? "The transaction was reorganized due to a blockchain reorganization"
-										: "The transaction was not included in the block (the transaction didn't happen)")}
-							</div>
-							<button className="btn btn-sm btn-error mt-2">Retry Transaction</button>
-						</div>
-					</div>
-				)}
+				{isFailed && <FailedTransactionAlert transaction={transaction} />}
 			</div>
 		</div>
 	);

@@ -2,18 +2,25 @@ import { cn } from "~/util/tailwind";
 
 interface AnimatedHourglassProps {
 	className?: string;
-	size?: number;
+	size?: "sm" | "md" | "lg";
 }
 
-export function AnimatedHourglass({ className, size = 16 }: AnimatedHourglassProps) {
+export function AnimatedHourglass({ className, size = "md" }: AnimatedHourglassProps) {
+	const sizeClasses = {
+		sm: "w-4 h-4",
+		md: "w-4 h-4",
+		lg: "w-6 h-6",
+	};
+
 	return (
 		<div
-			className={cn("inline-flex items-center justify-center", className)}
-			style={{ width: size, height: size }}
+			className={cn(
+				"inline-flex items-center justify-center animate-spin duration-1000 ease-in-out",
+				sizeClasses[size],
+				className,
+			)}
 		>
-			<div className="relative">
-				<div className="animate-spin duration-1000 ease-in-out">⌛</div>
-			</div>
+			⌛
 		</div>
 	);
 }

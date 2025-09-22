@@ -21,47 +21,34 @@ function MintTableTooltip({ tooltip, label }: { tooltip: string; label: string }
 	);
 }
 
+interface StatusDisplayProps {
+	status: MintingTxStatus;
+	showLoading?: boolean;
+}
+
+function StatusDisplay({ status, showLoading = false }: StatusDisplayProps) {
+	const statusConfig = {
+		broadcasting: { label: "Broadcasting", showSpinner: true },
+		confirming: { label: "Confirming", showSpinner: true },
+		finalized: { label: "Finalized", showSpinner: true },
+		minting: { label: "Minting", showSpinner: true },
+		minted: { label: "Minted", showSpinner: false },
+		failed: { label: "Failed", showSpinner: false },
+		reorg: { label: "Reorg", showSpinner: false },
+	};
+
+	const config = statusConfig[status] || { label: status, showSpinner: false };
+
+	return (
+		<div className="flex items-center gap-2">
+			{(config.showSpinner || showLoading) && <AnimatedHourglass size="md" />}
+			<span className="badge">{config.label}</span>
+		</div>
+	);
+}
+
 const getStatusDisplay = (status: MintingTxStatus) => {
-	switch (status) {
-		case "confirming":
-			return (
-				<div className="flex items-center gap-2">
-					<AnimatedHourglass size={16} />
-					<span className="badge">Confirming</span>
-				</div>
-			);
-		case "finalized":
-			return (
-				<div className="flex items-center gap-2">
-					<AnimatedHourglass size={16} />
-					<span className="badge">Finalized</span>
-				</div>
-			);
-		case "minted":
-			return (
-				<div className="flex items-center gap-2">
-					<span className="badge">Minted</span>
-				</div>
-			);
-		case "failed":
-			return (
-				<div className="flex items-center gap-2">
-					<span className="badge">Failed</span>
-				</div>
-			);
-		case "reorg":
-			return (
-				<div className="flex items-center gap-2">
-					<span className="badge">Reorg</span>
-				</div>
-			);
-		default:
-			return (
-				<div className="flex items-center gap-2">
-					<span className="badge">{status}</span>
-				</div>
-			);
-	}
+	return <StatusDisplay status={status} />;
 };
 
 const createColumns = (
@@ -169,10 +156,15 @@ export function MintBTCTable({ data }: MintBTCTableProps) {
 	return (
 		<div className="w-full space-y-4">
 			<Table
+				header={{
+					icon: "₿",
+					title: "nBTC Mint Transactions",
+				}}
 				columns={columns}
 				data={data}
 				expandedRows={expandedRows}
 				renderExpandedRow={renderExpandedRow}
+				getRowId={(row) => row.bitcoinTxId}
 			/>
 		</div>
 	);
