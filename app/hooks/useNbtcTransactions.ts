@@ -78,8 +78,6 @@ export function useNbtcTxs(): UseNbtcTxsResult {
 				if (exists) return prev;
 				return [pendingTx, ...prev];
 			});
-
-			// Removed quick follow-up fetches; rely on periodic refresh instead
 		},
 		[network, fetchTransactions],
 	);

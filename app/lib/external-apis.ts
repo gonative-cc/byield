@@ -2,17 +2,8 @@ import { BitcoinNetworkType } from "sats-connect";
 import { getBitcoinNetworkConfig } from "~/hooks/useBitcoinConfig";
 import { type MintTransaction, type MintingTxStatus, MintingStatus } from "~/server/Mint/types";
 
-// Raw mempool/bitcoin API UTXO shape
-type ExternalUTXO = {
-	scriptpubkey: string;
-	txid: string;
-	value: number;
-	vout: number;
-};
-
-// Normalized UTXO shape used by the app
 export type UTXO = {
-	scriptPubKey: string;
+	scriptpubkey: string;
 	txid: string;
 	value: number;
 	vout: number;
@@ -83,12 +74,7 @@ export async function fetchUTXOs(
 			);
 			if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 			const data = await res.json();
-			return (data as ExternalUTXO[]).map((utxo: ExternalUTXO) => ({
-				txid: utxo.txid,
-				vout: utxo.vout,
-				value: utxo.value,
-				scriptPubKey: utxo.scriptpubkey,
-			}));
+			return data as UTXO[];
 		}
 
 		const networkConfig = getBitcoinNetworkConfig[network];
@@ -101,19 +87,12 @@ export async function fetchUTXOs(
 		const res = await fetch(`${variables.mempoolApiUrl}/address/${address}/utxo`);
 		if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 		const data = await res.json();
-		return (data as ExternalUTXO[]).map((utxo: ExternalUTXO) => ({
-			txid: utxo.txid,
-			vout: utxo.vout,
-			value: utxo.value,
-			scriptPubKey: utxo.scriptpubkey,
-		}));
+		return data as UTXO[];
 	} catch (error) {
 		console.error("Failed to fetch UTXOs:", error);
 		throw new Error(`Failed to fetch UTXOs for address ${address}`);
 	}
 }
-
-// fetchRecommendedFeeRate removed (not used)
 
 export async function fetchNbtcTransactions(
 	suiRecipient: string,

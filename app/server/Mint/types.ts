@@ -1,23 +1,15 @@
-export type MintingTxStatus =
-	| "broadcasting"
-	| "confirming"
-	| "finalized"
-	| "minting"
-	| "minted"
-	| "failed"
-	| "reorg"
-	| "unknown";
+export enum MintingStatus {
+	Broadcasting = "broadcasting",
+	Confirming = "confirming",
+	Finalized = "finalized",
+	Minting = "minting",
+	Minted = "minted",
+	Failed = "failed",
+	Reorg = "reorg",
+	Unknown = "unknown",
+}
 
-export const MintingStatus = {
-	Broadcasting: "broadcasting" as const,
-	Confirming: "confirming" as const,
-	Finalized: "finalized" as const,
-	Minting: "minting" as const,
-	Minted: "minted" as const,
-	Failed: "failed" as const,
-	Reorg: "reorg" as const,
-	Unknown: "unknown" as const,
-} as const;
+export type MintingTxStatus = `${MintingStatus}`;
 
 export interface MintTransaction {
 	bitcoinTxId: string;
