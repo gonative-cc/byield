@@ -15,6 +15,7 @@ import { isValidSuiAddress } from "@mysten/sui/utils";
 import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import { toast } from "~/hooks/use-toast";
 import { setupBufferPolyfill } from "~/lib/buffer-polyfill";
+import { putNBTCTX } from "~/server/Mint/mint";
 
 function formatSuiAddress(suiAddress: string) {
 	if (!suiAddress.toLowerCase().startsWith("0x")) {
@@ -135,6 +136,7 @@ export function MintBTC({ onTransactionBroadcast }: MintBTCProps = {}) {
 			);
 			if (response && response.status === "success") {
 				setTxId(response.result.txid);
+				if (response.result.txid) await putNBTCTX(response.result.txid, network);
 				if (onTransactionBroadcast && response.result.txid) {
 					const formattedSuiAddress = formatSuiAddress(suiAddress);
 					onTransactionBroadcast(

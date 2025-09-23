@@ -60,6 +60,9 @@ async function handleBitcoinService(url: URL) {
 		case "tx":
 			rpcUrl = `${rpcBase}/tx/${encodeURIComponent(txid!)}`;
 			break;
+		case "hex":
+			rpcUrl = `${rpcBase}/tx/${encodeURIComponent(txid!)}/hex`;
+			break;
 		default:
 			return Response.json({ error: `Unknown action: ${action}` }, { status: 400 });
 	}
@@ -80,6 +83,9 @@ async function handleBitcoinService(url: URL) {
 		);
 	}
 
+	if (action === "hex") {
+		return await rpcResponse.text();
+	}
 	const data = await rpcResponse.json();
 	return Response.json(data);
 }
@@ -88,13 +94,8 @@ async function handleIndexerService(url: URL) {
 	const suiRecipient = url.searchParams.get("sui_recipient");
 	const bitcoinTxId = url.searchParams.get("bitcoin_tx_id");
 	const network = url.searchParams.get("network");
-
-	if (!suiRecipient && !bitcoinTxId) {
-		return Response.json(
-			{ error: "Missing required parameter: sui_recipient or bitcoin_tx_id" },
-			{ status: 400 },
-		);
-	}
+	const action = url.searchParams.get("action");
+	const txHex = url.searchParams.get("txHex");
 
 	let indexerBaseUrl: string | null = null;
 
@@ -112,6 +113,27 @@ async function handleIndexerService(url: URL) {
 	if (!indexerBaseUrl) {
 		console.error("No indexer URL configured for network:", network);
 		return Response.json({ error: `No indexer URL configured for network: ${network}` }, { status: 500 });
+	}
+
+	if (action === "putnbtctx") {
+		const indexerResponse = await fetch(indexerBaseUrl, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				"User-Agent": "Byield-Frontend/1.0",
+			},
+			body: JSON.stringify({
+				txHex,
+			}),
+		});
+		return indexerResponse;
+	}
+
+	if (!suiRecipient && !bitcoinTxId) {
+		return Response.json(
+			{ error: "Missing required parameter: sui_recipient or bitcoin_tx_id" },
+			{ status: 400 },
+		);
 	}
 
 	let indexerUrl: string;
