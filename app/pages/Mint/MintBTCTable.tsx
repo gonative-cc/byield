@@ -119,7 +119,7 @@ const createColumns = (
 							href={explorerUrl}
 							target="_blank"
 							rel="noopener noreferrer"
-							className="text-sm text-white hover:text-orange-400 transition-colors cursor-pointer no-underline"
+							className="link text-sm text-white hover:text-orange-400 !no-underline"
 						>
 							{trimAddress(suiTxId)}
 						</a>
