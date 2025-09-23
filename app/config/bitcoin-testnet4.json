@@ -6,6 +6,7 @@
 	"indexerUrl": "",
 	"btcRPCUrl": "",
 	"nBTC": {
-		"depositAddress": ""
+		"depositAddress": "",
+		"mintingFee": 5
 	}
 }

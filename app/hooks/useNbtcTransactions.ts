@@ -79,10 +79,7 @@ export function useNbtcTxs(): UseNbtcTxsResult {
 				return [pendingTx, ...prev];
 			});
 
-			if (network === "Regtest") {
-				setTimeout(() => fetchTransactions(), 10000);
-				setTimeout(() => fetchTransactions(), 30000);
-			}
+			// Removed quick follow-up fetches; rely on periodic refresh instead
 		},
 		[network, fetchTransactions],
 	);
@@ -94,23 +91,9 @@ export function useNbtcTxs(): UseNbtcTxsResult {
 	useEffect(() => {
 		if (!suiAddr) return;
 
-		const hasActiveTxs = transactions.some(
-			(tx) =>
-				tx.status === MintingStatus.Broadcasting ||
-				tx.status === MintingStatus.Confirming ||
-				tx.status === MintingStatus.Finalized ||
-				tx.status === MintingStatus.Minting,
-		);
-
-		if (network === "Regtest") {
-			const interval = setInterval(fetchTransactions, 120000); // 2 minutes for regtest
-			return () => clearInterval(interval);
-		}
-
-		if (hasActiveTxs) {
-			const interval = setInterval(fetchTransactions, 120000); // 2 minutes
-			return () => clearInterval(interval);
-		}
+		// Unified polling: refresh every 2 minutes for all networks
+		const interval = setInterval(fetchTransactions, 120000);
+		return () => clearInterval(interval);
 	}, [transactions, suiAddr, network, fetchTransactions]);
 
 	return {

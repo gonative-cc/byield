@@ -1,10 +1,18 @@
-import axios from "axios";
 import { BitcoinNetworkType } from "sats-connect";
 import { getBitcoinNetworkConfig } from "~/hooks/useBitcoinConfig";
 import { type MintTransaction, type MintingTxStatus, MintingStatus } from "~/server/Mint/types";
 
-export type UTXO = {
+// Raw mempool/bitcoin API UTXO shape
+type ExternalUTXO = {
 	scriptpubkey: string;
+	txid: string;
+	value: number;
+	vout: number;
+};
+
+// Normalized UTXO shape used by the app
+export type UTXO = {
+	scriptPubKey: string;
 	txid: string;
 	value: number;
 	vout: number;
@@ -43,7 +51,7 @@ function mapIndexerStatus(status: string): MintingTxStatus {
 		case "reorg":
 			return MintingStatus.Reorg;
 		default:
-			return MintingStatus.Confirming;
+			return MintingStatus.Unknown;
 	}
 }
 
@@ -70,11 +78,12 @@ export async function fetchUTXOs(
 ): Promise<UTXO[]> {
 	try {
 		if (network === BitcoinNetworkType.Regtest) {
-			// Use proxy for regtest
-			const response = await axios.get(
+			const res = await fetch(
 				`/api/proxy?service=bitcoin&action=utxos&address=${encodeURIComponent(address)}`,
 			);
-			return response.data.map((utxo: UTXO) => ({
+			if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+			const data = await res.json();
+			return (data as ExternalUTXO[]).map((utxo: ExternalUTXO) => ({
 				txid: utxo.txid,
 				vout: utxo.vout,
 				value: utxo.value,
@@ -89,8 +98,10 @@ export async function fetchUTXOs(
 			throw new Error(`Mempool API URL not configured for network: ${network}`);
 		}
 
-		const response = await axios.get(`${variables.mempoolApiUrl}/address/${address}/utxo`);
-		return response.data.map((utxo: UTXO) => ({
+		const res = await fetch(`${variables.mempoolApiUrl}/address/${address}/utxo`);
+		if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+		const data = await res.json();
+		return (data as ExternalUTXO[]).map((utxo: ExternalUTXO) => ({
 			txid: utxo.txid,
 			vout: utxo.vout,
 			value: utxo.value,
@@ -99,6 +110,32 @@ export async function fetchUTXOs(
 	} catch (error) {
 		console.error("Failed to fetch UTXOs:", error);
 		throw new Error(`Failed to fetch UTXOs for address ${address}`);
+	}
+}
+
+// Fetch recommended fee rate (sats/vB) from mempool API when available
+export async function fetchRecommendedFeeRate(
+	network: BitcoinNetworkType = BitcoinNetworkType.Testnet4,
+): Promise<number | null> {
+	try {
+		const networkConfig = getBitcoinNetworkConfig[network];
+		const variables = networkConfig?.variables;
+		if (!variables || !variables.mempoolApiUrl) return null;
+
+		const res = await fetch(`${variables.mempoolApiUrl}/v1/fees/recommended`);
+		if (!res.ok) return null;
+		const data = (await res.json()) as Partial<{
+			fastestFee: number;
+			halfHourFee: number;
+			hourFee: number;
+			minimumFee: number;
+		}>;
+		// Prefer halfHourFee if present, fallback to fastestFee, then hourFee
+		return (data.halfHourFee || data.fastestFee || data.hourFee || data.minimumFee || null) as
+			| number
+			| null;
+	} catch {
+		return null;
 	}
 }
 

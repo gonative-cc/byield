@@ -5,7 +5,8 @@ export type MintingTxStatus =
 	| "minting"
 	| "minted"
 	| "failed"
-	| "reorg";
+	| "reorg"
+	| "unknown";
 
 export const MintingStatus = {
 	Broadcasting: "broadcasting" as const,
@@ -15,6 +16,7 @@ export const MintingStatus = {
 	Minted: "minted" as const,
 	Failed: "failed" as const,
 	Reorg: "reorg" as const,
+	Unknown: "unknown" as const,
 } as const;
 
 export interface MintTransaction {

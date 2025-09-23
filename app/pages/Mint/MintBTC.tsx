@@ -209,7 +209,9 @@ export function MintBTC({ onTransactionBroadcast }: MintBTCProps = {}) {
 								},
 							}}
 						/>
-						{bitcoinConfig.nBTC && <Fee mintingFee={BigInt(bitcoinConfig?.nBTC?.mintingFee)} />}
+						{bitcoinConfig.nBTC && (
+							<Fee mintingFee={BigInt(bitcoinConfig?.nBTC?.mintingFee ?? 0)} />
+						)}
 						{isBitCoinWalletConnected ? (
 							<button
 								type="submit"

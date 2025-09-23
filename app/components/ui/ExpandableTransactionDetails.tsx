@@ -155,12 +155,12 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 				<div className="divider my-2"></div>
 
 				<div className="text-sm text-base-content/70">
-					<span className="font-semibold">Fees:</span> {transaction.fees || 1000} sats{" "}
+					<span className="font-semibold">Fees:</span> {transaction.fees ?? "-"} sats{" "}
 					<span className="text-base-content/50">
 						(~
 						<NumericFormat
 							displayType="text"
-							value={formatBTC(BigInt(transaction.fees || 1000))}
+							value={transaction.fees != null ? formatBTC(BigInt(transaction.fees)) : "-"}
 							suffix=" BTC"
 							className="font-mono"
 						/>

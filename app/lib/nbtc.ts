@@ -1,6 +1,6 @@
 import Wallet, { BitcoinNetworkType } from "sats-connect";
 import { type Address, type RpcResult } from "sats-connect";
-import { fetchUTXOs, type UTXO } from "~/lib/external-apis";
+import { fetchUTXOs, type UTXO, fetchRecommendedFeeRate } from "~/lib/external-apis";
 import {
 	getBitcoinNetworkConfig,
 	createPsbt,
@@ -54,10 +54,10 @@ export async function nBTCMintTx(
 			isValid: boolean;
 			address: string;
 			scriptPubKey: string;
-			isscript: boolean;
-			iswitness: boolean;
-			witness_version: number;
-			witness_program: string;
+			isScript: boolean;
+			isWitness: boolean;
+			witnessVersion: number;
+			witnessProgram: string;
 		};
 		try {
 			const outputScript = bitcoinjs.address.toOutputScript(bitcoinAddress.address, network);
@@ -65,13 +65,13 @@ export async function nBTCMintTx(
 				isValid: true,
 				address: bitcoinAddress.address,
 				scriptPubKey: outputScript.toString("hex"),
-				isscript: false,
-				iswitness:
+				isScript: false,
+				isWitness:
 					bitcoinAddress.address.startsWith("bc1") ||
 					bitcoinAddress.address.startsWith("tb1") ||
 					bitcoinAddress.address.startsWith("bcrt1"),
-				witness_version: 0,
-				witness_program: "",
+				witnessVersion: 0,
+				witnessProgram: "",
 			};
 		} catch (error) {
 			console.error("Invalid Bitcoin address:", error);
@@ -83,8 +83,21 @@ export async function nBTCMintTx(
 			return;
 		}
 
-		// TODO: dynamic fee calculation
-		const estimatedFee = 1000;
+		// Dynamic fee estimation (no fallback)
+		const feeRateSatsPerVb = await fetchRecommendedFeeRate(bitcoinNetworkType);
+		if (!feeRateSatsPerVb || feeRateSatsPerVb <= 0) {
+			toast?.({
+				title: "Fee Rate Unavailable",
+				description:
+					"Unable to fetch recommended Bitcoin fee rate. Please try again later or switch network.",
+				variant: "destructive",
+			});
+			return;
+		}
+		// Estimated vbytes for a simple segwit 1-in 2-out + OP_RETURN tx
+		// Rough breakdown: input ~68 vB, two P2WPKH outputs ~62 vB, OP_RETURN ~34 vB, overhead ~10 vB
+		const estimatedVBytes = 68 + 62 + 34 + 10;
+		const estimatedFee = feeRateSatsPerVb * estimatedVBytes;
 
 		// Check if we have sufficient funds
 		const totalAvailable = utxos[0].value;

@@ -16,6 +16,7 @@ export type BitcoinNetworkVariables =
 			btcRPCUrl: string;
 			nBTC: {
 				depositAddress: string;
+				mintingFee?: number;
 			};
 	  }
 	| Record<string, never>;
