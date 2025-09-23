@@ -3,12 +3,10 @@
 	"confirmationDepth": 6,
 	"blockTimeSec": 600,
 	"mempoolApiUrl": "",
-	"confirmationDepth": 6,
-  "blockTimeSec": 600,
 	"nBTC": {
 		"depositAddress": "tb1qjgqhst2hlgjkh36pg6r3hdnz7zvurafe9h5lkx",
 		"mintingFee": 5
 	},
 	"indexerUrl": "",
-	"btcRPCUrl": "",
+	"btcRPCUrl": ""
 }

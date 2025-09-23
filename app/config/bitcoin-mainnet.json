@@ -1,6 +1,6 @@
 {
 	"bitcoinBroadcastLink": "https://mempool.space/tx/",
-  "confirmationDepth": 6,
+	"confirmationDepth": 6,
 	"blockTimeSec": 600,
 	"mempoolApiUrl": "",
 	"nBTC": {
@@ -8,5 +8,5 @@
 		"mintingFee": 5
 	},
 	"indexerUrl": "",
-	"btcRPCUrl": "",
+	"btcRPCUrl": ""
 }
