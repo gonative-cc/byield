@@ -106,8 +106,7 @@ export function MintBTC({ onTransactionBroadcast }: MintBTCProps = {}) {
 		},
 	});
 
-	const { handleSubmit, watch, setValue } = mintNBTCForm;
-	const SuiAddress = watch("suiAddress");
+	const { handleSubmit, setValue } = mintNBTCForm;
 
 	useEffect(() => setValue("suiAddress", suiAddr || ""), [setValue, suiAddr]);
 
@@ -117,7 +116,7 @@ export function MintBTC({ onTransactionBroadcast }: MintBTCProps = {}) {
 
 	const handlenBTCMintTx = async ({ numberOfBTC, suiAddress }: MintNBTCForm) => {
 		if (currentAddress) {
-			if (!bitcoinConfig.nBTC || !bitcoinConfig.nBTC.depositAddress) {
+			if (!bitcoinConfig.nBTC.depositAddress) {
 				console.error("ERROR: Missing depositAddress in bitcoin config for network:", network);
 				toast({
 					title: "Network Configuration Error",
@@ -131,8 +130,8 @@ export function MintBTC({ onTransactionBroadcast }: MintBTCProps = {}) {
 				currentAddress,
 				Number(parseBTC(numberOfBTC)),
 				formatSuiAddress(suiAddress),
+				bitcoinConfig,
 				network,
-				bitcoinConfig.nBTC.depositAddress,
 			);
 			if (response && response.status === "success") {
 				setTxId(response.result.txid);
@@ -211,9 +210,7 @@ export function MintBTC({ onTransactionBroadcast }: MintBTCProps = {}) {
 								},
 							}}
 						/>
-						{bitcoinConfig.nBTC && (
-							<Fee mintingFee={BigInt(bitcoinConfig?.nBTC?.mintingFee ?? 0)} />
-						)}
+						<Fee mintingFee={BigInt(bitcoinConfig.nBTC.mintingFee)} />
 						{isBitCoinWalletConnected ? (
 							<button
 								type="submit"

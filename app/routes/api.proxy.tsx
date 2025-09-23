@@ -1,4 +1,5 @@
-import { getBitcoinNetworkConfig } from "~/hooks/useBitcoinConfig";
+import { BitcoinNetworkType } from "sats-connect";
+import { mustGetBitcoinConfig, type BitcoinConfig } from "~/hooks/useBitcoinConfig";
 
 export async function loader({ request }: { request: Request }) {
 	const url = new URL(request.url);
@@ -22,6 +23,7 @@ export async function loader({ request }: { request: Request }) {
 	}
 }
 
+// TODO: use RPC as we use in auction
 async function handleBitcoinService(url: URL) {
 	const action = url.searchParams.get("action");
 	const address = url.searchParams.get("address");
@@ -42,26 +44,24 @@ async function handleBitcoinService(url: URL) {
 		);
 	}
 
-	const regtestConfig = getBitcoinNetworkConfig.Regtest.variables;
-	const rpcBase = regtestConfig.btcRPCUrl;
-
-	if (!rpcBase) {
-		return Response.json({ error: "Bitcoin RPC URL not configured for regtest" }, { status: 500 });
-	}
+	// TODO: network name should come as a parameter.
+	// + properly handle case where network is not supported
+	const regtestConfig = mustGetBitcoinConfig(BitcoinNetworkType.Regtest);
+	const bitcoinRpcUrl = regtestConfig.btcRPCUrl;
 
 	let rpcUrl: string;
 	switch (action) {
 		case "utxos":
-			rpcUrl = `${rpcBase}/address/${encodeURIComponent(address!)}/utxo`;
+			rpcUrl = `${bitcoinRpcUrl}/address/${encodeURIComponent(address!)}/utxo`;
 			break;
 		case "validate":
-			rpcUrl = `${rpcBase}/v1/validate-address/${encodeURIComponent(address!)}`;
+			rpcUrl = `${bitcoinRpcUrl}/v1/validate-address/${encodeURIComponent(address!)}`;
 			break;
 		case "tx":
-			rpcUrl = `${rpcBase}/tx/${encodeURIComponent(txid!)}`;
+			rpcUrl = `${bitcoinRpcUrl}/tx/${encodeURIComponent(txid!)}`;
 			break;
 		case "hex":
-			rpcUrl = `${rpcBase}/tx/${encodeURIComponent(txid!)}/hex`;
+			rpcUrl = `${bitcoinRpcUrl}/tx/${encodeURIComponent(txid!)}/hex`;
 			break;
 		default:
 			return Response.json({ error: `Unknown action: ${action}` }, { status: 400 });
@@ -97,30 +97,27 @@ async function handleIndexerService(url: URL) {
 	const action = url.searchParams.get("action");
 	const txHex = url.searchParams.get("txHex");
 
-	let indexerBaseUrl: string | null = null;
-
-	if (network) {
-		try {
-			const networkKey = (network.charAt(0).toUpperCase() +
-				network.slice(1).toLowerCase()) as keyof typeof getBitcoinNetworkConfig;
-			const networkConfig = getBitcoinNetworkConfig[networkKey];
-			indexerBaseUrl = networkConfig?.variables?.indexerUrl || null;
-		} catch (error) {
-			console.error("Error getting network config:", error);
-		}
-	}
-
-	if (!indexerBaseUrl) {
-		console.error("No indexer URL configured for network:", network);
+	let nbtcUrl: string;
+	try {
+		let indexerUrl = mustGetBitcoinConfig(network as BitcoinNetworkType).indexerUrl;
+		if (indexerUrl.endsWith("/")) indexerUrl = indexerUrl.slice(0, -1);
+		nbtcUrl = indexerUrl + "/nbtc";
+	} catch (error) {
+		console.error(error);
+		// TODO: use standard functions to handle errors
 		return Response.json({ error: `No indexer URL configured for network: ${network}` }, { status: 500 });
 	}
 
+	// TODO: we should use btcindexer/api client here, rather than making the requests ourselves.
+
+	// TODO: rename the action, this is post
+	// in general, we should use the RPC as we do in auction server
 	if (action === "putnbtctx") {
-		const indexerResponse = await fetch(indexerBaseUrl, {
+		const indexerResponse = await fetch(nbtcUrl, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
-				"User-Agent": "Byield-Frontend/1.0",
+				"User-Agent": "BYield/1.0",
 			},
 			body: JSON.stringify({
 				txHex,
@@ -136,14 +133,11 @@ async function handleIndexerService(url: URL) {
 		);
 	}
 
-	let indexerUrl: string;
-	if (bitcoinTxId) {
-		indexerUrl = `${indexerBaseUrl}/tx/${encodeURIComponent(bitcoinTxId)}`;
-	} else {
-		indexerUrl = `${indexerBaseUrl}?sui_recipient=${encodeURIComponent(suiRecipient!)}`;
-	}
+	const reqUrl = bitcoinTxId
+		? `${nbtcUrl}/tx/${encodeURIComponent(bitcoinTxId)}`
+		: `${nbtcUrl}?sui_recipient=${encodeURIComponent(suiRecipient!)}`;
 
-	const indexerResponse = await fetch(indexerUrl, {
+	const indexerResponse = await fetch(reqUrl, {
 		method: "GET",
 		headers: {
 			"Content-Type": "application/json",

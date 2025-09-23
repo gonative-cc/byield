@@ -1,7 +1,6 @@
 import Wallet, { BitcoinNetworkType } from "sats-connect";
 import { type Address, type RpcResult } from "sats-connect";
 import { fetchUTXOs, type UTXO } from "~/lib/external-apis";
-import { getBitcoinNetworkConfig as networkVarsMap } from "~/hooks/useBitcoinConfig";
 import {
 	getBitcoinNetworkConfig,
 	createPsbt,
@@ -10,6 +9,7 @@ import {
 	getBitcoinLib,
 } from "./bitcoin.client";
 import { toast } from "~/hooks/use-toast";
+import type { BitcoinConfig } from "~/hooks/useBitcoinConfig";
 
 export const PRICE_PER_NBTC_IN_SUI = 25000n;
 const DUST_THRESHOLD_SATOSHI = 546;
@@ -19,30 +19,30 @@ export enum OpReturnFlag {
 	MINT = 0x00,
 }
 
+// TODO: this function is too long
 export async function nBTCMintTx(
 	bitcoinAddress: Address,
 	mintAmountInSatoshi: number,
 	opReturn: string,
-	bitcoinNetworkType: BitcoinNetworkType,
-	depositAddress: string,
+	bitcoinCfg: BitcoinConfig,
+	network: BitcoinNetworkType,
 ): Promise<RpcResult<"signPsbt"> | undefined> {
+	const networkCfg = await getBitcoinNetworkConfig(network);
+	if (!networkCfg) {
+		const description = "can't fetch bitcoin network config for network: " + network;
+		console.error(description);
+		toast({
+			title: "Bitcoin network",
+			description,
+			variant: "destructive",
+		});
+		return;
+	}
 	try {
-		const network = await getBitcoinNetworkConfig(bitcoinNetworkType);
-
-		if (!network) {
-			console.error("network config not found");
-			toast?.({
-				title: "Bitcoin network",
-				description: "Bitcoin network not found",
-				variant: "destructive",
-			});
-			return;
-		}
-
-		const utxos: UTXO[] = await fetchUTXOs(bitcoinAddress.address, bitcoinNetworkType);
+		const utxos: UTXO[] = await fetchUTXOs(bitcoinAddress.address, network, bitcoinCfg);
 		if (!utxos?.length) {
 			console.error("utxos not found.");
-			toast?.({
+			toast({
 				title: "UTXO",
 				description: "UTXOs not found for this address.",
 				variant: "destructive",
@@ -61,7 +61,10 @@ export async function nBTCMintTx(
 			witnessProgram: string;
 		};
 		try {
-			const outputScript = bitcoinjs.address.toOutputScript(bitcoinAddress.address, network);
+			const outputScript = bitcoinjs.address.toOutputScript(
+				bitcoinAddress.address,
+				networkCfg,
+			);
 			validateAddress = {
 				isValid: true,
 				address: bitcoinAddress.address,
@@ -76,7 +79,7 @@ export async function nBTCMintTx(
 			};
 		} catch (error) {
 			console.error("Invalid Bitcoin address:", error);
-			toast?.({
+			toast({
 				title: "Address",
 				description: "Invalid Bitcoin address format.",
 				variant: "destructive",
@@ -84,18 +87,9 @@ export async function nBTCMintTx(
 			return;
 		}
 
-		// Use miner fee from app network variables (no fallback)
-		const v = (networkVarsMap[bitcoinNetworkType]?.variables as { minerFeeSats?: number })
-			?.minerFeeSats;
-		if (typeof v !== "number" || v <= 0) {
-			toast?.({
-				title: "Miner Fee Not Configured",
-				description: "Please set minerFeeSats in the Bitcoin network config.",
-				variant: "destructive",
-			});
-			return;
-		}
-		const estimatedFee = v;
+		// TODO: handle case when miner fee is zero - user should be able to change it,
+		// so it should be an input to the function, and we should use the value from cfg as a fallback.
+		const estimatedFee = bitcoinCfg.minerFeeSats || 0;
 
 		// Check if we have sufficient funds
 		const totalAvailable = utxos[0].value;
@@ -103,7 +97,7 @@ export async function nBTCMintTx(
 
 		if (totalAvailable < totalRequired) {
 			console.error("Insufficient funds for transaction and fee.");
-			toast?.({
+			toast({
 				title: "Insufficient Funds",
 				description: `Need ${totalRequired} satoshis but only have ${totalAvailable} available.`,
 				variant: "destructive",
@@ -111,8 +105,7 @@ export async function nBTCMintTx(
 			return;
 		}
 
-		const psbt = await createPsbt(network);
-
+		const psbt = await createPsbt(networkCfg);
 		psbt.addInput({
 			hash: utxos[0].txid,
 			index: utxos[0].vout,
@@ -123,7 +116,7 @@ export async function nBTCMintTx(
 		});
 
 		psbt.addOutput({
-			address: depositAddress,
+			address: bitcoinCfg.nBTC.depositAddress,
 			value: mintAmountInSatoshi,
 		});
 
@@ -140,7 +133,7 @@ export async function nBTCMintTx(
 			opReturnData = Buffer.concat([flagByte, addressBytes]);
 		} catch (error) {
 			console.error("Invalid OP_RETURN data:", error);
-			toast?.({
+			toast({
 				title: "Invalid Data",
 				description:
 					error instanceof Error ? error.message : "Invalid OP_RETURN data format.",
@@ -168,12 +161,9 @@ export async function nBTCMintTx(
 			});
 		}
 
-		const txHex = psbt.toBase64();
-
 		const shouldBroadcast = true;
-
 		const response = await Wallet.request("signPsbt", {
-			psbt: txHex,
+			psbt: psbt.toBase64(),
 			signInputs: {
 				[bitcoinAddress.address]: [0],
 			},
@@ -181,7 +171,7 @@ export async function nBTCMintTx(
 		});
 
 		if (!shouldBroadcast && response.status === "success") {
-			toast?.({
+			toast({
 				title: "Transaction Signed",
 				description: "PSBT signed successfully. Broadcast manually if needed.",
 				variant: "default",
@@ -189,7 +179,7 @@ export async function nBTCMintTx(
 		}
 
 		if (response.status !== "success") {
-			toast?.({
+			toast({
 				title: "Transaction Failed",
 				description: "Failed to broadcast the transaction.",
 				variant: "destructive",
@@ -198,7 +188,7 @@ export async function nBTCMintTx(
 		return response;
 	} catch (error) {
 		console.error("nBTC Mint Transaction Error:", error);
-		toast?.({
+		toast({
 			title: "Transaction Error",
 			description: error instanceof Error ? error.message : "An unexpected error occurred.",
 			variant: "destructive",

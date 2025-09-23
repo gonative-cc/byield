@@ -5,7 +5,7 @@ import { Collapse } from "~/components/ui/collapse";
 import { useNbtcTxs } from "~/hooks/useNbtcTransactions";
 import { RefreshCw } from "lucide-react";
 
-function MintContent() {
+export default function Mint() {
 	const { txs: transactions, isLoading, error, refetch, addPendingTx } = useNbtcTxs();
 
 	return (
@@ -60,8 +60,4 @@ function MintContent() {
 			</div>
 		</div>
 	);
-}
-
-export default function Mint() {
-	return <MintContent />;
 }
