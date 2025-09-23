@@ -1,6 +1,7 @@
 import { RegtestInstructions } from "~/pages/Mint/RegtestInstructions";
 import { MintBTC } from "~/pages/Mint/MintBTC";
 import { MintBTCTable } from "~/pages/Mint/MintBTCTable";
+import { Collapse } from "~/components/ui/collapse";
 import { MintingTxStatus, type MintTransaction } from "~/server/Mint/types";
 
 // TODO: mocked mint tx data
@@ -56,7 +57,9 @@ export default function Mint() {
 			</div>
 			<div className="flex justify-center">
 				<div className="w-full max-w-xl space-y-6">
-					<RegtestInstructions />
+					<Collapse title="Regtest Configuration for Devnet Server" className="bg-base-200">
+						<RegtestInstructions />
+					</Collapse>
 					<MintBTC />
 				</div>
 			</div>
