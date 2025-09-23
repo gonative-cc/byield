@@ -24,8 +24,8 @@ export async function nBTCMintTx(
 	bitcoinAddress: Address,
 	mintAmountInSatoshi: number,
 	opReturn: string,
-	bitcoinCfg: BitcoinConfig,
 	network: BitcoinNetworkType,
+	cfg: BitcoinConfig,
 ): Promise<RpcResult<"signPsbt"> | undefined> {
 	const networkCfg = await getBitcoinNetworkConfig(network);
 	if (!networkCfg) {
@@ -39,7 +39,7 @@ export async function nBTCMintTx(
 		return;
 	}
 	try {
-		const utxos: UTXO[] = await fetchUTXOs(bitcoinAddress.address, network, bitcoinCfg);
+		const utxos: UTXO[] = await fetchUTXOs(bitcoinAddress.address, network, cfg);
 		if (!utxos?.length) {
 			console.error("utxos not found.");
 			toast({
@@ -89,7 +89,7 @@ export async function nBTCMintTx(
 
 		// TODO: handle case when miner fee is zero - user should be able to change it,
 		// so it should be an input to the function, and we should use the value from cfg as a fallback.
-		const estimatedFee = bitcoinCfg.minerFeeSats || 0;
+		const estimatedFee = cfg.minerFeeSats || 0;
 
 		// Check if we have sufficient funds
 		const totalAvailable = utxos[0].value;
@@ -116,7 +116,7 @@ export async function nBTCMintTx(
 		});
 
 		psbt.addOutput({
-			address: bitcoinCfg.nBTC.depositAddress,
+			address: cfg.nBTC.depositAddress,
 			value: mintAmountInSatoshi,
 		});
 

@@ -29,7 +29,7 @@ const bitcoinConfigs: Record<BitcoinNetworkType, BitcoinConfig | undefined> = {
 export function mustGetBitcoinConfig(network: BitcoinNetworkType): BitcoinConfig {
 	const cfg = bitcoinConfigs[network];
 	if (cfg === undefined) {
-		throw new Error("not supported Bitcoin network.");
+		throw new Error("`Not supported Bitcoin network: " + network);
 	}
 	return cfg;
 }
