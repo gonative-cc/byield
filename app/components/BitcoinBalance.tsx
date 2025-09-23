@@ -11,17 +11,21 @@ export const BitcoinBalance = ({ availableBalance }: BitcoinBalanceProps) => {
 	const balanceInBTC = formatBTC(BigInt(availableBalance || "0"));
 
 	return (
-		<div className="flex items-center gap-4 bg-white-3 p-3.5 rounded-2xl mb-4">
-			<BitCoinIcon />
-			<div className="flex flex-col gap-1">
-				<span>Available Balance</span>
-				<NumericFormat
-					displayType="text"
-					value={balanceInBTC}
-					className="text-gray-400"
-					readOnly
-					suffix=" BTC"
-				/>
+		<div className="card card-border bg-base-300">
+			<div className="card-body py-4">
+				<div className="flex items-center gap-4">
+					<BitCoinIcon />
+					<div className="flex flex-col">
+						<span>Available Balance</span>
+						<NumericFormat
+							displayType="text"
+							value={balanceInBTC}
+							className="text-gray-400"
+							readOnly
+							suffix=" BTC"
+						/>
+					</div>
+				</div>
 			</div>
 		</div>
 	);

@@ -84,7 +84,7 @@ function XverseWalletMobileView() {
 					</p>
 				)}
 				<button onClick={disconnectWallet} className="btn btn-primary">
-					Disconnect
+					Disconnect Bitcoin Wallet
 				</button>
 			</div>
 		</div>
@@ -109,7 +109,7 @@ export function XverseWallet() {
 					/>
 				)}
 				<button onClick={disconnectWallet} className="btn btn-primary">
-					Disconnect
+					Disconnect Bitcoin Wallet
 				</button>
 			</div>
 			{/* Mobile view */}
