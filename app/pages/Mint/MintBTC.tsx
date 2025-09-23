@@ -15,7 +15,7 @@ import { isValidSuiAddress } from "@mysten/sui/utils";
 import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import { toast } from "~/hooks/use-toast";
 import { setupBufferPolyfill } from "~/lib/buffer-polyfill";
-import { TransactionConfirmationModal } from "~/components/ui/TransactionConfirmationModal";
+import { TxConfirmationModal } from "~/components/ui/TransactionConfirmationModal";
 
 function formatSuiAddress(suiAddress: string) {
 	if (!suiAddress.toLowerCase().startsWith("0x")) {
@@ -233,7 +233,7 @@ export function MintBTC({ onTransactionBroadcast }: MintBTCProps = {}) {
 			</form>
 
 			{txId && (
-				<TransactionConfirmationModal
+				<TxConfirmationModal
 					isOpen={showConfirmationModal}
 					onClose={() => setShowConfirmationModal(false)}
 					txId={txId}

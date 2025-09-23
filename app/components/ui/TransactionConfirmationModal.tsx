@@ -2,17 +2,13 @@ import { CheckCircle, Clock, Info } from "lucide-react";
 import { Modal } from "./dialog";
 import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 
-interface TransactionConfirmationModalProps {
+interface TxConfirmationModal {
 	isOpen: boolean;
 	onClose: () => void;
 	txId: string;
 }
 
-export function TransactionConfirmationModal({
-	isOpen,
-	onClose,
-	txId: _txId,
-}: TransactionConfirmationModalProps) {
+export function TxConfirmationModal({ isOpen, onClose, txId: _txId }: TxConfirmationModal) {
 	const bitcoinConfig = useBitcoinConfig();
 
 	const blockTime = bitcoinConfig?.blockTimeSec;
