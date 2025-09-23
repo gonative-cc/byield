@@ -1,6 +1,6 @@
 import Wallet, { BitcoinNetworkType } from "sats-connect";
 import { type Address, type RpcResult } from "sats-connect";
-import { fetchUTXOs, type UTXO, fetchRecommendedFeeRate } from "~/lib/external-apis";
+import { fetchUTXOs, type UTXO } from "~/lib/external-apis";
 import {
 	getBitcoinNetworkConfig,
 	createPsbt,
@@ -83,21 +83,8 @@ export async function nBTCMintTx(
 			return;
 		}
 
-		// Dynamic fee estimation (no fallback)
-		const feeRateSatsPerVb = await fetchRecommendedFeeRate(bitcoinNetworkType);
-		if (!feeRateSatsPerVb || feeRateSatsPerVb <= 0) {
-			toast?.({
-				title: "Fee Rate Unavailable",
-				description:
-					"Unable to fetch recommended Bitcoin fee rate. Please try again later or switch network.",
-				variant: "destructive",
-			});
-			return;
-		}
-		// Estimated vbytes for a simple segwit 1-in 2-out + OP_RETURN tx
-		// Rough breakdown: input ~68 vB, two P2WPKH outputs ~62 vB, OP_RETURN ~34 vB, overhead ~10 vB
-		const estimatedVBytes = 68 + 62 + 34 + 10;
-		const estimatedFee = feeRateSatsPerVb * estimatedVBytes;
+		// Use a fixed miner/network fee for the Bitcoin tx (not the displayed minting fee)
+		const estimatedFee = 5;
 
 		// Check if we have sufficient funds
 		const totalAvailable = utxos[0].value;
