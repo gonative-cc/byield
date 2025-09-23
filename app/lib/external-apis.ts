@@ -1,7 +1,7 @@
 import axios from "axios";
 import { BitcoinNetworkType } from "sats-connect";
 import { getBitcoinNetworkConfig } from "~/hooks/useBitcoinConfig";
-import { type MintTransaction, type MintingTxStatus } from "~/server/Mint/types";
+import { type MintTransaction, type MintingTxStatus, MintingStatus } from "~/server/Mint/types";
 
 export type UTXO = {
 	scriptpubkey: string;
@@ -33,17 +33,17 @@ interface IndexerTransaction {
 function mapIndexerStatus(status: string): MintingTxStatus {
 	switch (status.toLowerCase()) {
 		case "confirming":
-			return "confirming";
+			return MintingStatus.Confirming;
 		case "finalized":
-			return "finalized";
+			return MintingStatus.Finalized;
 		case "minted":
-			return "minted";
+			return MintingStatus.Minted;
 		case "failed":
-			return "failed";
+			return MintingStatus.Failed;
 		case "reorg":
-			return "reorg";
+			return MintingStatus.Reorg;
 		default:
-			return "confirming";
+			return MintingStatus.Confirming;
 	}
 }
 

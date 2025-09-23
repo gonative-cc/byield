@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useContext } from "react";
-import { type MintTransaction } from "~/server/Mint/types";
+import { type MintTransaction, MintingStatus } from "~/server/Mint/types";
 import { fetchNbtcTransactions } from "~/lib/external-apis";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
@@ -64,7 +64,7 @@ export function useNbtcTxs(): UseNbtcTxsResult {
 			const pendingTx: MintTransaction = {
 				bitcoinTxId: txId,
 				amountInSatoshi: amountInSatoshi,
-				status: "broadcasting",
+				status: MintingStatus.Broadcasting,
 				suiAddress: suiAddress,
 				timestamp: Date.now(),
 				numberOfConfirmation: 0,
@@ -96,19 +96,19 @@ export function useNbtcTxs(): UseNbtcTxsResult {
 
 		const hasActiveTxs = transactions.some(
 			(tx) =>
-				tx.status === "broadcasting" ||
-				tx.status === "confirming" ||
-				tx.status === "finalized" ||
-				tx.status === "minting",
+				tx.status === MintingStatus.Broadcasting ||
+				tx.status === MintingStatus.Confirming ||
+				tx.status === MintingStatus.Finalized ||
+				tx.status === MintingStatus.Minting,
 		);
 
 		if (network === "Regtest") {
-			const interval = setInterval(fetchTransactions, 60000); // 1 minute for regtest
+			const interval = setInterval(fetchTransactions, 120000); // 2 minutes for regtest
 			return () => clearInterval(interval);
 		}
 
 		if (hasActiveTxs) {
-			const interval = setInterval(fetchTransactions, 60000); // 1 minute
+			const interval = setInterval(fetchTransactions, 120000); // 2 minutes
 			return () => clearInterval(interval);
 		}
 	}, [transactions, suiAddr, network, fetchTransactions]);

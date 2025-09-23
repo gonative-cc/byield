@@ -7,6 +7,16 @@ export type MintingTxStatus =
 	| "failed"
 	| "reorg";
 
+export const MintingStatus = {
+	Broadcasting: "broadcasting" as const,
+	Confirming: "confirming" as const,
+	Finalized: "finalized" as const,
+	Minting: "minting" as const,
+	Minted: "minted" as const,
+	Failed: "failed" as const,
+	Reorg: "reorg" as const,
+} as const;
+
 export interface MintTransaction {
 	bitcoinTxId: string;
 	amountInSatoshi: number;

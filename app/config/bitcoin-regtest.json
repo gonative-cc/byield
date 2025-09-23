@@ -1,6 +1,6 @@
 {
 	"bitcoinBroadcastLink": "http://142.93.46.134:3002/tx/",
-	"confirmationDepth": 3,
+	"confirmationDepth": 4,
 	"blockTimeSec": 120,
 	"btcRPCUrl": "http://142.93.46.134:3002",
 	"mempoolApiUrl": "http://142.93.46.134:3002",
