@@ -2,7 +2,8 @@ import { RegtestInstructions } from "~/pages/Mint/RegtestInstructions";
 import { MintBTC } from "~/pages/Mint/MintBTC";
 import { MintBTCTable } from "~/pages/Mint/MintBTCTable";
 import { Collapse } from "~/components/ui/collapse";
-import { MintingTxStatus, type MintTransaction } from "~/server/Mint/types";
+import { useNbtcTxs } from "~/hooks/useNbtcTransactions";
+import { RefreshCw } from "lucide-react";
 
 function MintContent() {
 	const { txs: transactions, isLoading, error, refetch, addPendingTx } = useNbtcTxs();
@@ -25,7 +26,7 @@ function MintContent() {
 					<Collapse title="Regtest Configuration for Devnet Server" className="bg-base-200">
 						<RegtestInstructions />
 					</Collapse>
-					<MintBTC />
+					<MintBTC onTransactionBroadcast={addPendingTx} />
 				</div>
 			</div>
 
