@@ -5,6 +5,7 @@
 	"btcRPCUrl": "http://142.93.46.134:3002",
 	"mempoolApiUrl": "http://142.93.46.134:3002",
 	"indexerUrl": "https://btcindexer.gonative-cc.workers.dev:443/nbtc",
+	"minerFeeSats": 1000,
 	"nBTC": {
 		"depositAddress": "bcrt1q90xm34jqm0kcpfclkdmn868rw6vcv9fzvfg6p6",
 		"mintingFee": 5

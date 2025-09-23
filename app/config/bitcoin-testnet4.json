@@ -5,6 +5,7 @@
 	"mempoolApiUrl": "",
 	"indexerUrl": "",
 	"btcRPCUrl": "",
+	"minerFeeSats": 1000,
 	"nBTC": {
 		"depositAddress": "",
 		"mintingFee": 5

@@ -14,6 +14,7 @@ export type BitcoinNetworkVariables =
 			mempoolApiUrl: string;
 			indexerUrl: string;
 			btcRPCUrl: string;
+			minerFeeSats?: number;
 			nBTC: {
 				depositAddress: string;
 				mintingFee?: number;

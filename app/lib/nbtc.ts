@@ -1,6 +1,7 @@
 import Wallet, { BitcoinNetworkType } from "sats-connect";
 import { type Address, type RpcResult } from "sats-connect";
 import { fetchUTXOs, type UTXO } from "~/lib/external-apis";
+import { getBitcoinNetworkConfig as networkVarsMap } from "~/hooks/useBitcoinConfig";
 import {
 	getBitcoinNetworkConfig,
 	createPsbt,
@@ -83,8 +84,18 @@ export async function nBTCMintTx(
 			return;
 		}
 
-		// Use a fixed miner/network fee for the Bitcoin tx (not the displayed minting fee)
-		const estimatedFee = 500;
+		// Use miner fee from app network variables (no fallback)
+		const v = (networkVarsMap[bitcoinNetworkType]?.variables as { minerFeeSats?: number })
+			?.minerFeeSats;
+		if (typeof v !== "number" || v <= 0) {
+			toast?.({
+				title: "Miner Fee Not Configured",
+				description: "Please set minerFeeSats in the Bitcoin network config.",
+				variant: "destructive",
+			});
+			return;
+		}
+		const estimatedFee = v;
 
 		// Check if we have sufficient funds
 		const totalAvailable = utxos[0].value;
