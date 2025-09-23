@@ -4,6 +4,7 @@ import { MintBTCTable } from "~/pages/Mint/MintBTCTable";
 import { Collapse } from "~/components/ui/collapse";
 import { useNbtcTxs } from "~/hooks/useNbtcTransactions";
 import { RefreshCw } from "lucide-react";
+import { BlockInfoCard } from "~/components/ui/BlockInfoCard";
 
 function MintContent() {
 	const { txs: transactions, isLoading, error, refetch, addPendingTx } = useNbtcTxs();
@@ -26,6 +27,7 @@ function MintContent() {
 					<Collapse title="Regtest Configuration for Devnet Server" className="bg-base-200">
 						<RegtestInstructions />
 					</Collapse>
+					<BlockInfoCard />
 					<MintBTC onTransactionBroadcast={addPendingTx} />
 				</div>
 			</div>
