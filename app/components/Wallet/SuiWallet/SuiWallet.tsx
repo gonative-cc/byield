@@ -121,7 +121,7 @@ function SuiWalletMobileView({ balance }: { balance: bigint }) {
 					}}
 					className="btn btn-primary"
 				>
-					Disconnect
+					Disconnect Sui Wallet
 				</button>
 			</div>
 		</div>
@@ -152,7 +152,7 @@ export function SuiWallet() {
 					}}
 					className="btn btn-primary"
 				>
-					Disconnect
+					Disconnect Sui Wallet
 				</button>
 			</div>
 			{/* handles below md screen sizes */}
