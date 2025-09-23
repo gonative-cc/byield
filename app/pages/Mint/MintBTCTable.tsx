@@ -9,6 +9,7 @@ import { CopyButton } from "~/components/ui/CopyButton";
 import { ExpandableTransactionDetails } from "~/components/ui/ExpandableTransactionDetails";
 import { AnimatedHourglass } from "~/components/ui/AnimatedHourglass";
 import { useState, useMemo, useCallback } from "react";
+import { useNetworkVariable } from "~/networkConfig";
 
 function MintTableTooltip({ tooltip, label }: { tooltip: string; label: string }) {
 	return (
@@ -19,6 +20,17 @@ function MintTableTooltip({ tooltip, label }: { tooltip: string; label: string }
 			</div>
 		</Tooltip>
 	);
+}
+
+function buildSuiTransactionUrl(txId: string, explorerUrl?: string, configExplorerUrl?: string): string {
+	if (explorerUrl) {
+		return explorerUrl;
+	}
+
+	if (configExplorerUrl) {
+		return `${configExplorerUrl}/txblock/${txId}`;
+	}
+	return `https://testnet.suivision.xyz/txblock/${txId}`;
 }
 
 const getStatusDisplay = (status: MintingTxStatus) => {
@@ -34,6 +46,7 @@ const getStatusDisplay = (status: MintingTxStatus) => {
 const createColumns = (
 	expandedRows: Set<string>,
 	toggleExpanded: (txId: string) => void,
+	configExplorerUrl?: string,
 ): Column<MintTransaction>[] => [
 	{
 		Header: () => (
@@ -85,6 +98,38 @@ const createColumns = (
 		Cell: ({ row }: CellProps<MintTransaction>) => getStatusDisplay(row.original.status),
 	},
 	{
+		Header: () => (
+			<MintTableTooltip label="Sui TX" tooltip="The Sui transaction ID for the minted nBTC tokens" />
+		),
+		accessor: "suiTxId",
+		Cell: ({ row }: CellProps<MintTransaction>) => {
+			const suiTxId = row.original.suiTxId;
+			const suiExplorerUrl = row.original.suiExplorerUrl;
+
+			if (!suiTxId) {
+				return <span className="text-base-content/40">-</span>;
+			}
+
+			const explorerUrl = buildSuiTransactionUrl(suiTxId, suiExplorerUrl, configExplorerUrl);
+
+			return (
+				<Tooltip tooltip={suiTxId}>
+					<div className="flex items-center gap-2 font-mono">
+						<a
+							href={explorerUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="link text-sm text-white hover:text-orange-400 !no-underline"
+						>
+							{trimAddress(suiTxId)}
+						</a>
+						<CopyButton text={suiTxId} />
+					</div>
+				</Tooltip>
+			);
+		},
+	},
+	{
 		Header: "Details",
 		id: "details",
 		accessor: () => "details", // Custom accessor that doesn't conflict
@@ -112,6 +157,7 @@ interface MintBTCTableProps {
 
 export function MintBTCTable({ data, isLoading = false }: MintBTCTableProps) {
 	const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+	const explorerUrl = useNetworkVariable("explorer");
 
 	const toggleExpanded = useCallback((txId: string) => {
 		setExpandedRows((prev) => {
@@ -130,8 +176,8 @@ export function MintBTCTable({ data, isLoading = false }: MintBTCTableProps) {
 	}, []);
 
 	const columns = useMemo(
-		() => createColumns(expandedRows, toggleExpanded),
-		[expandedRows, toggleExpanded],
+		() => createColumns(expandedRows, toggleExpanded, explorerUrl),
+		[expandedRows, toggleExpanded, explorerUrl],
 	);
 
 	return (
