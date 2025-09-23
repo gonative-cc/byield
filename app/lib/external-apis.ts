@@ -113,31 +113,7 @@ export async function fetchUTXOs(
 	}
 }
 
-// Fetch recommended fee rate (sats/vB) from mempool API when available
-export async function fetchRecommendedFeeRate(
-	network: BitcoinNetworkType = BitcoinNetworkType.Testnet4,
-): Promise<number | null> {
-	try {
-		const networkConfig = getBitcoinNetworkConfig[network];
-		const variables = networkConfig?.variables;
-		if (!variables || !variables.mempoolApiUrl) return null;
-
-		const res = await fetch(`${variables.mempoolApiUrl}/v1/fees/recommended`);
-		if (!res.ok) return null;
-		const data = (await res.json()) as Partial<{
-			fastestFee: number;
-			halfHourFee: number;
-			hourFee: number;
-			minimumFee: number;
-		}>;
-		// Prefer halfHourFee if present, fallback to fastestFee, then hourFee
-		return (data.halfHourFee || data.fastestFee || data.hourFee || data.minimumFee || null) as
-			| number
-			| null;
-	} catch {
-		return null;
-	}
-}
+// fetchRecommendedFeeRate removed (not used)
 
 export async function fetchNbtcTransactions(
 	suiRecipient: string,
