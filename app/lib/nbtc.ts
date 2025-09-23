@@ -84,7 +84,7 @@ export async function nBTCMintTx(
 		}
 
 		// Use a fixed miner/network fee for the Bitcoin tx (not the displayed minting fee)
-		const estimatedFee = 5;
+		const estimatedFee = 500;
 
 		// Check if we have sufficient funds
 		const totalAvailable = utxos[0].value;
