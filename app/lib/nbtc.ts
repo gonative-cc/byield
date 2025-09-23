@@ -1,17 +1,23 @@
 import Wallet, { BitcoinNetworkType } from "sats-connect";
 import { type Address, type RpcResult } from "sats-connect";
-import { fetchUTXOs, fetchValidateAddress } from "~/api/btcrpc";
-import type { UTXO, ValidateAddressI } from "~/api/btcrpc";
+import { fetchUTXOs, type UTXO } from "~/lib/external-apis";
+import { getBitcoinNetworkConfig as networkVarsMap } from "~/hooks/useBitcoinConfig";
 import {
 	getBitcoinNetworkConfig,
 	createPsbt,
 	compileScript,
 	getOpReturnOpcode,
+	getBitcoinLib,
 } from "./bitcoin.client";
 import { toast } from "~/hooks/use-toast";
 
 export const PRICE_PER_NBTC_IN_SUI = 25000n;
 const DUST_THRESHOLD_SATOSHI = 546;
+
+// Enum for OP_RETURN flags
+export enum OpReturnFlag {
+	MINT = 0x00,
+}
 
 export async function nBTCMintTx(
 	bitcoinAddress: Address,
@@ -33,7 +39,7 @@ export async function nBTCMintTx(
 			return;
 		}
 
-		const utxos: UTXO[] = await fetchUTXOs(bitcoinAddress.address);
+		const utxos: UTXO[] = await fetchUTXOs(bitcoinAddress.address, bitcoinNetworkType);
 		if (!utxos?.length) {
 			console.error("utxos not found.");
 			toast?.({
@@ -44,21 +50,52 @@ export async function nBTCMintTx(
 			return;
 		}
 
-		const validateAddress: ValidateAddressI = await fetchValidateAddress(
-			bitcoinAddress.address,
-		);
-		if (!validateAddress) {
-			console.error("Not able to validate the address.");
+		const bitcoinjs = await getBitcoinLib();
+		let validateAddress: {
+			isValid: boolean;
+			address: string;
+			scriptPubKey: string;
+			isScript: boolean;
+			isWitness: boolean;
+			witnessVersion: number;
+			witnessProgram: string;
+		};
+		try {
+			const outputScript = bitcoinjs.address.toOutputScript(bitcoinAddress.address, network);
+			validateAddress = {
+				isValid: true,
+				address: bitcoinAddress.address,
+				scriptPubKey: outputScript.toString("hex"),
+				isScript: false,
+				isWitness:
+					bitcoinAddress.address.startsWith("bc1") ||
+					bitcoinAddress.address.startsWith("tb1") ||
+					bitcoinAddress.address.startsWith("bcrt1"),
+				witnessVersion: 0,
+				witnessProgram: "",
+			};
+		} catch (error) {
+			console.error("Invalid Bitcoin address:", error);
 			toast?.({
 				title: "Address",
-				description: "Unable to validate the Bitcoin address.",
+				description: "Invalid Bitcoin address format.",
 				variant: "destructive",
 			});
 			return;
 		}
 
-		// TODO: dynamic fee calculation
-		const estimatedFee = 1000;
+		// Use miner fee from app network variables (no fallback)
+		const v = (networkVarsMap[bitcoinNetworkType]?.variables as { minerFeeSats?: number })
+			?.minerFeeSats;
+		if (typeof v !== "number" || v <= 0) {
+			toast?.({
+				title: "Miner Fee Not Configured",
+				description: "Please set minerFeeSats in the Bitcoin network config.",
+				variant: "destructive",
+			});
+			return;
+		}
+		const estimatedFee = v;
 
 		// Check if we have sufficient funds
 		const totalAvailable = utxos[0].value;
@@ -92,12 +129,21 @@ export async function nBTCMintTx(
 
 		let opReturnData: Buffer;
 		try {
-			opReturnData = Buffer.from(opReturn, "hex");
+			if (!opReturn.startsWith("0x") || opReturn.length !== 66) {
+				throw new Error(
+					`Sui address must be in format 0x... with 64 hex chars, got ${opReturn}`,
+				);
+			}
+			const cleanHex = opReturn.replace(/^0x/, "").toLowerCase();
+			const flagByte = Buffer.from([OpReturnFlag.MINT]);
+			const addressBytes = Buffer.from(cleanHex, "hex");
+			opReturnData = Buffer.concat([flagByte, addressBytes]);
 		} catch (error) {
 			console.error("Invalid OP_RETURN data:", error);
 			toast?.({
 				title: "Invalid Data",
-				description: "Invalid OP_RETURN data format.",
+				description:
+					error instanceof Error ? error.message : "Invalid OP_RETURN data format.",
 				variant: "destructive",
 			});
 			return;
@@ -105,6 +151,7 @@ export async function nBTCMintTx(
 
 		const OP_RETURN = await getOpReturnOpcode();
 		const opReturnScript = await compileScript([OP_RETURN, opReturnData]);
+
 		psbt.addOutput({
 			script: opReturnScript,
 			value: 0,
@@ -123,13 +170,23 @@ export async function nBTCMintTx(
 
 		const txHex = psbt.toBase64();
 
+		const shouldBroadcast = true;
+
 		const response = await Wallet.request("signPsbt", {
 			psbt: txHex,
 			signInputs: {
 				[bitcoinAddress.address]: [0],
 			},
-			broadcast: true,
+			broadcast: shouldBroadcast,
 		});
+
+		if (!shouldBroadcast && response.status === "success") {
+			toast?.({
+				title: "Transaction Signed",
+				description: "PSBT signed successfully. Broadcast manually if needed.",
+				variant: "default",
+			});
+		}
 
 		if (response.status !== "success") {
 			toast?.({
@@ -137,7 +194,6 @@ export async function nBTCMintTx(
 				description: "Failed to broadcast the transaction.",
 				variant: "destructive",
 			});
-			console.error("Transaction failed:", response);
 		}
 		return response;
 	} catch (error) {
