@@ -16,7 +16,7 @@ import { toast } from "~/hooks/use-toast";
 import { useNetworkVariables } from "~/networkConfig";
 import { SUIIcon } from "~/components/icons";
 import { moveCallTarget, type BeelieversAuctionCfg } from "~/config/sui/contracts-config";
-import { buttonEffectClasses, classNames } from "~/util/tailwind";
+import { buttonEffectClasses, classNames, cardShowcaseClasses, cn, infoBoxClasses } from "~/util/tailwind";
 
 const MINIMUM_FIRST_BID_MIST = 1e9;
 interface NewTotalBidAmountProps {
@@ -41,7 +41,7 @@ function NewTotalBidAmount({ currentBidInMist, additionalBidInSUI, entryBidMist 
 	}
 
 	return (
-		<div className="p-3 bg-primary/10 rounded-lg border border-primary/20">
+		<div className={infoBoxClasses()}>
 			<div className="flex justify-between items-center mb-2">
 				<span className="text-sm text-muted-foreground">New total bid amount:</span>
 				<div className="text-lg font-semibold text-primary">{formatSUI(newTotal)} SUI</div>
@@ -154,7 +154,12 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 		<FormProvider {...bidForm}>
 			<form onSubmit={onSubmit} className="flex justify-center w-full">
 				<div className="w-full lg:w-2/3 xl:w-1/2 space-y-6">
-					<div className="card shadow-2xl card-border transition-all duration-300 animate-in slide-in-from-bottom-2 duration-700">
+					<div
+						className={cn(
+							cardShowcaseClasses(),
+							"card animate-in slide-in-from-bottom-2 duration-700",
+						)}
+					>
 						<div className="card-body p-6 lg:p-8 rounded-lg text-white flex flex-col w-full gap-6 bg-gradient-to-br from-azure-10 via-azure-15 to-azure-20">
 							<div className="flex items-center justify-between">
 								<div className="flex items-center gap-3">

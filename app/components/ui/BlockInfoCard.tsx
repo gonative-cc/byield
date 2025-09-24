@@ -1,7 +1,7 @@
 import { Timer, CheckCircle2, Info } from "lucide-react";
 import { toast } from "~/hooks/use-toast";
 import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
-import { getCardClasses } from "~/util/tailwind";
+import { gradientCardClasses } from "~/util/tailwind";
 
 export function BlockInfoCard() {
 	const bitcoinConfig = useBitcoinConfig();
@@ -20,7 +20,7 @@ export function BlockInfoCard() {
 	const estimatedTime = Math.ceil((blockTime * confirmationDepth) / 60);
 
 	return (
-		<div className={getCardClasses("gradient")}>
+		<div className={gradientCardClasses()}>
 			<div className="card-body">
 				<div className="card-title flex items-center gap-2">
 					<Info size={20} className="text-primary" />
