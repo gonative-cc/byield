@@ -1,9 +1,12 @@
 import type { FetcherWithComponents } from "react-router";
 import type { MintTransaction } from "./types";
+import type { BitcoinNetworkType } from "sats-connect";
 
+//
 export type Req = {
 	method: "queryMintTx";
-	params: [string];
+	// network, sui address
+	params: [BitcoinNetworkType, string];
 };
 
 export async function makeReq<T>(
