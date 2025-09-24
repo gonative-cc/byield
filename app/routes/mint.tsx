@@ -103,7 +103,7 @@ export default function Mint() {
 	const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
 	const mintTxs = mintTxFetcher.data ?? null;
-	const isLoading = mintTxFetcher.state === "loading";
+	const isLoading = mintTxFetcher.state !== "idle";
 	const hasError = mintTxFetcher.state === "idle" && mintTxFetcher.data === undefined && suiAddr;
 	const error = hasError ? "Failed to load transactions" : null;
 
@@ -206,7 +206,7 @@ export default function Mint() {
 							</div>
 						</div>
 					)}
-					{mintTxs && <MintBTCTable data={mintTxs} isLoading={isLoading} />}
+					<MintBTCTable data={mintTxs || []} isLoading={isLoading} />
 				</div>
 			)}
 			<div className="flex justify-center">
