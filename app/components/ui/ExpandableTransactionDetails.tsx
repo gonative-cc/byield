@@ -1,7 +1,7 @@
 import { Info, CheckCircle, XCircle } from "lucide-react";
 import { type MintTransaction, MintingStatus } from "~/server/Mint/types";
 import { AnimatedHourglass } from "./AnimatedHourglass";
-import { useIndexerNetwork } from "~/hooks/useBitcoinConfig";
+import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import { NumericFormat } from "react-number-format";
 import { formatBTC } from "~/lib/denoms";
 
@@ -34,7 +34,7 @@ interface ExpandableTransactionDetailsProps {
 }
 
 export function ExpandableTransactionDetails({ transaction }: ExpandableTransactionDetailsProps) {
-	const { bitcoinConfig } = useIndexerNetwork();
+	const bitcoinConfig = useBitcoinConfig();
 
 	if (!bitcoinConfig?.confirmationDepth || !bitcoinConfig?.blockTimeSec) {
 		return (

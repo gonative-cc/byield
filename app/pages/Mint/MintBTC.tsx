@@ -16,6 +16,7 @@ import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import { toast } from "~/hooks/use-toast";
 import { setupBufferPolyfill } from "~/lib/buffer-polyfill";
 import { TxConfirmationModal } from "~/components/ui/TransactionConfirmationModal";
+import { putNBTCTX } from "~/server/Mint/mint";
 
 function formatSuiAddress(suiAddress: string) {
 	if (!suiAddress.toLowerCase().startsWith("0x")) {
@@ -96,7 +97,7 @@ export function MintBTC({ onTransactionBroadcast }: MintBTCProps = {}) {
 	const { balance: walletBalance, currentAddress, network } = useXverseWallet();
 	const { isWalletConnected, suiAddr } = useContext(WalletContext);
 	const isBitCoinWalletConnected = isWalletConnected(Wallets.Xverse);
-	const bitcoinConfig = useBitcoinConfig();
+	const cfg = useBitcoinConfig();
 
 	const mintNBTCForm = useForm<MintNBTCForm>({
 		mode: "all",
@@ -107,8 +108,7 @@ export function MintBTC({ onTransactionBroadcast }: MintBTCProps = {}) {
 		},
 	});
 
-	const { handleSubmit, watch, setValue } = mintNBTCForm;
-	const SuiAddress = watch("suiAddress");
+	const { handleSubmit, setValue } = mintNBTCForm;
 
 	useEffect(() => setValue("suiAddress", suiAddr || ""), [setValue, suiAddr]);
 
@@ -118,7 +118,7 @@ export function MintBTC({ onTransactionBroadcast }: MintBTCProps = {}) {
 
 	const handlenBTCMintTx = async ({ numberOfBTC, suiAddress }: MintNBTCForm) => {
 		if (currentAddress) {
-			if (!bitcoinConfig.nBTC || !bitcoinConfig.nBTC.depositAddress) {
+			if (!cfg.nBTC.depositAddress) {
 				console.error("ERROR: Missing depositAddress in bitcoin config for network:", network);
 				toast({
 					title: "Network Configuration Error",
@@ -133,11 +133,12 @@ export function MintBTC({ onTransactionBroadcast }: MintBTCProps = {}) {
 				Number(parseBTC(numberOfBTC)),
 				formatSuiAddress(suiAddress),
 				network,
-				bitcoinConfig.nBTC.depositAddress,
+				cfg,
 			);
 			if (response && response.status === "success") {
 				setTxId(response.result.txid);
 				setShowConfirmationModal(true);
+				if (response.result.txid) await putNBTCTX(response.result.txid, network);
 				if (onTransactionBroadcast && response.result.txid) {
 					const formattedSuiAddress = formatSuiAddress(suiAddress);
 					onTransactionBroadcast(
@@ -212,9 +213,7 @@ export function MintBTC({ onTransactionBroadcast }: MintBTCProps = {}) {
 								},
 							}}
 						/>
-						{bitcoinConfig.nBTC && (
-							<Fee mintingFee={BigInt(bitcoinConfig?.nBTC?.mintingFee ?? 0)} />
-						)}
+						<Fee mintingFee={BigInt(cfg.nBTC.mintingFee)} />
 						{isBitCoinWalletConnected ? (
 							<button
 								type="submit"

@@ -6,7 +6,7 @@
 	"minerFeeSats": 1000,
 	"nBTC": {
 		"depositAddress": "tb1qjgqhst2hlgjkh36pg6r3hdnz7zvurafe9h5lkx",
-		"mintingFee": 5
+		"mintingFee": 10
 	},
 	"indexerUrl": "",
 	"btcRPCUrl": ""

@@ -1,5 +1,5 @@
 import { BitcoinNetworkType } from "sats-connect";
-import { getBitcoinNetworkConfig } from "~/hooks/useBitcoinConfig";
+import type { BitcoinConfig } from "~/hooks/useBitcoinConfig";
 import { type MintTransaction, type MintingTxStatus, MintingStatus } from "~/server/Mint/types";
 
 export type UTXO = {
@@ -63,9 +63,11 @@ function convertIndexerTransaction(tx: IndexerTransaction): MintTransaction {
 	};
 }
 
+// TODO: should be part of Bitcoin service
 export async function fetchUTXOs(
 	address: string,
-	network: BitcoinNetworkType = BitcoinNetworkType.Testnet4,
+	network: BitcoinNetworkType,
+	cfg: BitcoinConfig,
 ): Promise<UTXO[]> {
 	try {
 		if (network === BitcoinNetworkType.Regtest) {
@@ -77,14 +79,7 @@ export async function fetchUTXOs(
 			return data as UTXO[];
 		}
 
-		const networkConfig = getBitcoinNetworkConfig[network];
-		const variables = networkConfig?.variables;
-
-		if (!variables || !variables.mempoolApiUrl) {
-			throw new Error(`Mempool API URL not configured for network: ${network}`);
-		}
-
-		const res = await fetch(`${variables.mempoolApiUrl}/address/${address}/utxo`);
+		const res = await fetch(`${cfg.mempoolApiUrl}/address/${address}/utxo`);
 		if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 		const data = await res.json();
 		return data as UTXO[];
@@ -94,6 +89,9 @@ export async function fetchUTXOs(
 	}
 }
 
+// TODO: should be part of Bitcoin service
+// TODO: we should have a more consisten way of handling queries. In fetchUTXOs (above) we support
+// regtests, here we don't.
 export async function fetchNbtcTransactions(
 	suiRecipient: string,
 	network?: string,
