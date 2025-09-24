@@ -15,6 +15,7 @@ import { isValidSuiAddress } from "@mysten/sui/utils";
 import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import { toast } from "~/hooks/use-toast";
 import { setupBufferPolyfill } from "~/lib/buffer-polyfill";
+import { TxConfirmationModal } from "~/components/ui/TransactionConfirmationModal";
 import { putNBTCTX } from "~/server/Mint/mint";
 
 function formatSuiAddress(suiAddress: string) {
@@ -91,6 +92,7 @@ interface MintBTCProps {
 
 export function MintBTC({ onTransactionBroadcast }: MintBTCProps = {}) {
 	const [txId, setTxId] = useState<string | undefined>(undefined);
+	const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 	const { connectWallet } = useXverseConnect();
 	const { balance: walletBalance, currentAddress, network } = useXverseWallet();
 	const { isWalletConnected, suiAddr } = useContext(WalletContext);
@@ -135,6 +137,7 @@ export function MintBTC({ onTransactionBroadcast }: MintBTCProps = {}) {
 			);
 			if (response && response.status === "success") {
 				setTxId(response.result.txid);
+				setShowConfirmationModal(true);
 				if (response.result.txid) await putNBTCTX(response.result.txid, network);
 				if (onTransactionBroadcast && response.result.txid) {
 					const formattedSuiAddress = formatSuiAddress(suiAddress);
@@ -227,6 +230,14 @@ export function MintBTC({ onTransactionBroadcast }: MintBTCProps = {}) {
 					</div>
 				</div>
 			</form>
+
+			{txId && (
+				<TxConfirmationModal
+					isOpen={showConfirmationModal}
+					onClose={() => setShowConfirmationModal(false)}
+					txId={txId}
+				/>
+			)}
 		</FormProvider>
 	);
 }
