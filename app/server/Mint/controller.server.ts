@@ -10,7 +10,14 @@ import type { BitcoinNetworkType } from "sats-connect";
 import { bitcoinConfigs } from "~/hooks/useBitcoinConfig";
 
 export default class Controller {
+	btcRPCUrl: string | null = null;
 	indexerBaseUrl: string | null = null;
+
+	private handleNetwork(network: BitcoinNetworkType) {
+		const networkConfig = bitcoinConfigs[network];
+		this.indexerBaseUrl = networkConfig?.indexerUrl || null;
+		this.btcRPCUrl = networkConfig?.btcRPCUrl || null;
+	}
 
 	private mapIndexerStatus(status: string): MintingTxStatus {
 		switch (status?.toLowerCase()) {
@@ -62,9 +69,47 @@ export default class Controller {
 		}
 	}
 
-	private handleNetwork(network: BitcoinNetworkType) {
-		const networkConfig = bitcoinConfigs[network];
-		this.indexerBaseUrl = networkConfig?.indexerUrl || null;
+	private async fetchTxHexByTxId(txId: string) {
+		try {
+			const url = this.btcRPCUrl + `/tx/${txId}/hex`;
+			const response = await fetch(url);
+			if (!response.ok) {
+				if (response.status === 404) {
+					return responseNotFound();
+				}
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+			return await response.text();
+		} catch (error) {
+			console.error("Error fetching tx hex:", error);
+			return responseServerError();
+		}
+	}
+
+	private async putNBTCTX(txId: string) {
+		try {
+			const txHex = await this.fetchTxHexByTxId(txId);
+			if (!txHex) {
+				throw new Error(`Error fetching tx hex: ${txId}`);
+			}
+			const url = this.indexerBaseUrl + `/nbtc`;
+			const response = await fetch(url, {
+				method: "POST",
+				body: JSON.stringify({
+					txHex,
+				}),
+			});
+			if (!response.ok) {
+				if (response.status === 404) {
+					return responseNotFound();
+				}
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+			return response;
+		} catch (error) {
+			console.error("Error posting tx hex:", error);
+			return responseServerError();
+		}
 	}
 
 	async handleJsonRPC(r: Request) {
@@ -83,6 +128,8 @@ export default class Controller {
 		switch (reqData.method) {
 			case "queryMintTx":
 				return this.getMintTxs(reqData.params[1]);
+			case "putNBTCTx":
+				return this.putNBTCTX(reqData.params[1]);
 			default:
 				return responseNotFound("Unknown method");
 		}
