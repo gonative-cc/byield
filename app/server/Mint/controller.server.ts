@@ -28,7 +28,6 @@ export default class Controller {
 	}
 
 	private convertIndexerTransaction(tx: IndexerTransaction): MintTransaction {
-		console.log(tx);
 		return {
 			bitcoinTxId: tx.btc_tx_id,
 			amountInSatoshi: tx.amount_sats,
@@ -47,7 +46,7 @@ export default class Controller {
 
 	private async getMintTxs(suiAddr: string): Promise<QueryMintTxResp | Response> {
 		if (!isValidSuiAddress(suiAddr)) {
-			return null;
+			return responseBadRequest();
 		}
 		try {
 			const indexerResponse = await fetch(this.indexerUrl + `?sui_recipient=${suiAddr}`);
@@ -57,7 +56,7 @@ export default class Controller {
 			return mintTxs;
 		} catch (error) {
 			console.error("Failed to fetch the mint txs: ", error);
-			return responseServerError(String(error));
+			return responseServerError();
 		}
 	}
 
@@ -71,7 +70,6 @@ export default class Controller {
 				status: 400,
 			});
 		}
-		console.log("handle RPC", reqData);
 		switch (reqData.method) {
 			case "queryMintTx":
 				return this.getMintTxs(reqData.params[0]);
@@ -79,6 +77,10 @@ export default class Controller {
 				return responseNotFound("Unknown method");
 		}
 	}
+}
+
+function responseBadRequest(msg: string = "Bad Request"): Response {
+	return new Response(msg, { status: 400 });
 }
 
 function responseNotFound(msg: string = "Not Found"): Response {
