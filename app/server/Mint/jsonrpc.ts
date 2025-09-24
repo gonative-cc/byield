@@ -12,6 +12,11 @@ export type Req =
 			method: "putNBTCTx";
 			// network, tx id
 			params: [BitcoinNetworkType, string];
+	  }
+	| {
+			method: "bitcoinService";
+			// network, address
+			params: [BitcoinNetworkType, string];
 	  };
 
 export async function makeReq<T>(

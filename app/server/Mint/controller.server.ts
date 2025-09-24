@@ -6,8 +6,8 @@ import {
 	type MintTransaction,
 } from "./types";
 import type { QueryMintTxResp, Req } from "./jsonrpc";
-import type { BitcoinNetworkType } from "sats-connect";
-import { bitcoinConfigs } from "~/hooks/useBitcoinConfig";
+import { BitcoinNetworkType } from "sats-connect";
+import { bitcoinConfigs, mustGetBitcoinConfig } from "~/hooks/useBitcoinConfig";
 
 export default class Controller {
 	btcRPCUrl: string | null = null;
@@ -112,6 +112,27 @@ export default class Controller {
 		}
 	}
 
+	private async handleBitcoinServiceRPC(address: string) {
+		const rpcUrl = `${this.btcRPCUrl}/address/${encodeURIComponent(address!)}/utxo`;
+		console.log("rpcUrl", rpcUrl);
+		const rpcResponse = await fetch(rpcUrl);
+		console.log("rpcResponse", rpcResponse);
+		if (!rpcResponse.ok) {
+			console.error(
+				"Bitcoin RPC responded with error:",
+				rpcResponse.status,
+				rpcResponse.statusText,
+			);
+			return responseServerError(
+				`Bitcoin RPC error: ${rpcResponse.status} ${rpcResponse.statusText}`,
+			);
+		}
+
+		const data = await rpcResponse.json();
+		console.log("data", data);
+		return Response.json(data);
+	}
+
 	async handleJsonRPC(r: Request) {
 		let reqData: Req;
 		try {
@@ -124,12 +145,13 @@ export default class Controller {
 		}
 		const network = reqData.params[0];
 		this.handleNetwork(network);
-
 		switch (reqData.method) {
 			case "queryMintTx":
 				return this.getMintTxs(reqData.params[1]);
 			case "putNBTCTx":
 				return this.putNBTCTX(reqData.params[1]);
+			case "bitcoinService":
+				return this.handleBitcoinServiceRPC(reqData.params[1]);
 			default:
 				return responseNotFound("Unknown method");
 		}

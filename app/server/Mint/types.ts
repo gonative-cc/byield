@@ -11,6 +11,12 @@ export enum MintingStatus {
 
 export type MintingTxStatus = `${MintingStatus}`;
 
+export type UTXO = {
+	scriptpubkey: string;
+	txid: string;
+	value: number;
+	vout: number;
+};
 export interface IndexerTransaction {
 	btc_tx_id: string;
 	amount_sats: number;

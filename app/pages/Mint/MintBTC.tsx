@@ -95,6 +95,7 @@ export function MintBTC() {
 	const isBitCoinWalletConnected = isWalletConnected(Wallets.Xverse);
 	const cfg = useBitcoinConfig();
 	const mintTxFetcher = useFetcher();
+	const utxosFetcher = useFetcher();
 
 	const mintNBTCForm = useForm<MintNBTCForm>({
 		mode: "all",
@@ -125,12 +126,22 @@ export function MintBTC() {
 				return;
 			}
 
+			const utxos = await makeReq(utxosFetcher, {
+				method: "bitcoinService",
+				params: [network, currentAddress.address],
+			});
+			await new Promise((res) => setTimeout(res, 10000));
+
+			console.log("utxos", utxos);
+			console.log("utxosFetcher.data", utxosFetcher.data);
+
 			const response = await nBTCMintTx(
 				currentAddress,
 				Number(parseBTC(numberOfBTC)),
 				formatSuiAddress(suiAddress),
 				network,
 				cfg,
+				utxos,
 			);
 			if (response && response.status === "success") {
 				setTxId(response.result.txid);

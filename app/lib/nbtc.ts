@@ -1,6 +1,6 @@
 import Wallet, { BitcoinNetworkType } from "sats-connect";
 import { type Address, type RpcResult } from "sats-connect";
-import { fetchUTXOs, type UTXO } from "~/lib/external-apis";
+import { type UTXO } from "~/server/Mint/types";
 import {
 	getBitcoinNetworkConfig,
 	createPsbt,
@@ -26,6 +26,7 @@ export async function nBTCMintTx(
 	opReturn: string,
 	network: BitcoinNetworkType,
 	cfg: BitcoinConfig,
+	utxos: UTXO[],
 ): Promise<RpcResult<"signPsbt"> | undefined> {
 	const networkCfg = await getBitcoinNetworkConfig(network);
 	if (!networkCfg) {
@@ -39,7 +40,6 @@ export async function nBTCMintTx(
 		return;
 	}
 	try {
-		const utxos: UTXO[] = await fetchUTXOs(bitcoinAddress.address, network, cfg);
 		if (!utxos?.length) {
 			console.error("utxos not found.");
 			toast({
