@@ -19,7 +19,7 @@ export interface BitcoinConfig {
 }
 
 // TODO: this should be in /app/config!
-const bitcoinConfigs: Record<BitcoinNetworkType, BitcoinConfig | undefined> = {
+export const bitcoinConfigs: Record<BitcoinNetworkType, BitcoinConfig | undefined> = {
 	Mainnet: undefined,
 	Testnet: undefined,
 	Testnet4: undefined,
