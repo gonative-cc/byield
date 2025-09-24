@@ -13,7 +13,7 @@ export function TxConfirmationModal({ isOpen, onClose, txId: _txId }: TxConfirma
 
 	const blockTime = bitcoinConfig?.blockTimeSec;
 	const confirmationDepth = bitcoinConfig?.confirmationDepth;
-	const estimatedTime = Math.ceil(blockTime * confirmationDepth) / 60;
+	const estimatedTime = Math.ceil((blockTime * confirmationDepth) / 60);
 
 	return (
 		<Modal open={isOpen} title="Transaction Sent Successfully" handleClose={onClose}>
@@ -25,7 +25,7 @@ export function TxConfirmationModal({ isOpen, onClose, txId: _txId }: TxConfirma
 					</span>
 				</div>
 
-				<div className="divider"></div>
+				<div className="divider" />
 
 				<div>
 					<h3 className="text-lg font-semibold mb-3">What happens next?</h3>

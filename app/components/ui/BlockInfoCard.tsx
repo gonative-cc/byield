@@ -1,4 +1,5 @@
 import { Timer, CheckCircle2, Info } from "lucide-react";
+import { toast } from "~/hooks/use-toast";
 import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 
 export function BlockInfoCard() {
@@ -8,7 +9,11 @@ export function BlockInfoCard() {
 	const confirmationDepth = bitcoinConfig?.confirmationDepth;
 
 	if (!blockTime || !confirmationDepth) {
-		return null;
+		return toast({
+			title: "Data not available",
+			description: "Data is not available at the moment",
+			variant: "info",
+		});
 	}
 
 	const estimatedTime = Math.ceil((blockTime * confirmationDepth) / 60);
