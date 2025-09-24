@@ -1,5 +1,5 @@
 import { BitcoinNetworkType } from "sats-connect";
-import { mustGetBitcoinConfig, type BitcoinConfig } from "~/hooks/useBitcoinConfig";
+import { mustGetBitcoinConfig } from "~/hooks/useBitcoinConfig";
 
 export async function loader({ request }: { request: Request }) {
 	const url = new URL(request.url);
@@ -97,15 +97,15 @@ async function handleIndexerService(url: URL) {
 	const action = url.searchParams.get("action");
 	const txHex = url.searchParams.get("txHex");
 
-	let nbtcUrl: string;
+	let nbtcUrl: URL;
 	try {
-		let indexerUrl = mustGetBitcoinConfig(network as BitcoinNetworkType).indexerUrl;
-		if (indexerUrl.endsWith("/")) indexerUrl = indexerUrl.slice(0, -1);
-		nbtcUrl = indexerUrl + "/nbtc";
+		const indexerUrl = mustGetBitcoinConfig(network as BitcoinNetworkType).indexerUrl;
+		nbtcUrl = new URL("nbtc", indexerUrl);
 	} catch (error) {
-		console.error(error);
+		const msg = `No bitcoin config for network: ${network}`;
+		console.error(msg, error);
 		// TODO: use standard functions to handle errors
-		return Response.json({ error: `No indexer URL configured for network: ${network}` }, { status: 500 });
+		return Response.json({ error: msg }, { status: 500 });
 	}
 
 	// TODO: we should use btcindexer/api client here, rather than making the requests ourselves.
