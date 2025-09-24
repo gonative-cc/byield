@@ -1,0 +1,90 @@
+import { isValidSuiAddress } from "@mysten/sui/utils";
+import {
+	MintingStatus,
+	type IndexerTransaction,
+	type MintingTxStatus,
+	type MintTransaction,
+} from "./types";
+import type { QueryMintTxResp, Req } from "./jsonrpc";
+
+export default class Controller {
+	indexerUrl = "https://btcindexer.gonative-cc.workers.dev:443/nbtc";
+
+	private mapIndexerStatus(status: string): MintingTxStatus {
+		switch (status?.toLowerCase()) {
+			case "confirming":
+				return MintingStatus.Confirming;
+			case "finalized":
+				return MintingStatus.Finalized;
+			case "minted":
+				return MintingStatus.Minted;
+			case "failed":
+				return MintingStatus.Failed;
+			case "reorg":
+				return MintingStatus.Reorg;
+			default:
+				return MintingStatus.Unknown;
+		}
+	}
+
+	private convertIndexerTransaction(tx: IndexerTransaction): MintTransaction {
+		console.log(tx);
+		return {
+			bitcoinTxId: tx.btc_tx_id,
+			amountInSatoshi: tx.amount_sats,
+			status: this.mapIndexerStatus(tx.status),
+			suiAddress: tx.sui_recipient,
+			suiTxId: tx.sui_tx_id,
+			timestamp: tx.created_at,
+			numberOfConfirmation: tx.confirmations,
+			operationStartDate: tx.created_at,
+			bitcoinExplorerUrl: tx.bitcoin_explorer_url,
+			suiExplorerUrl: tx.sui_explorer_url,
+			fees: tx.fees || 1000,
+			errorMessage: tx.error_message,
+		};
+	}
+
+	private async getMintTxs(suiAddr: string): Promise<QueryMintTxResp | Response> {
+		if (!isValidSuiAddress(suiAddr)) {
+			return null;
+		}
+		try {
+			const indexerResponse = await fetch(this.indexerUrl + `?sui_recipient=${suiAddr}`);
+			const data: IndexerTransaction[] = await indexerResponse.json();
+			const mintTxs: MintTransaction[] = data.map((tx) => this.convertIndexerTransaction(tx));
+			console.log(mintTxs);
+			return mintTxs;
+		} catch (error) {
+			console.error("Failed to fetch the mint txs: ", error);
+			return responseServerError(String(error));
+		}
+	}
+
+	async handleJsonRPC(r: Request) {
+		let reqData: Req;
+		try {
+			reqData = await r.json<Req>();
+		} catch (_err) {
+			console.log(">>>>> Expected JSON content type:", _err);
+			return new Response("Expecting JSON Content-Type and JSON body", {
+				status: 400,
+			});
+		}
+		console.log("handle RPC", reqData);
+		switch (reqData.method) {
+			case "queryMintTx":
+				return this.getMintTxs(reqData.params[0]);
+			default:
+				return responseNotFound("Unknown method");
+		}
+	}
+}
+
+function responseNotFound(msg: string = "Not Found"): Response {
+	return new Response(msg, { status: 404 });
+}
+
+function responseServerError(msg: string = "Server Error"): Response {
+	return new Response(msg, { status: 500 });
+}

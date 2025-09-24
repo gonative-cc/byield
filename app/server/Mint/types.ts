@@ -11,6 +11,25 @@ export enum MintingStatus {
 
 export type MintingTxStatus = `${MintingStatus}`;
 
+export interface IndexerTransaction {
+	btc_tx_id: string;
+	amount_sats: number;
+	status: string;
+	sui_recipient: string;
+	sui_tx_id?: string;
+	created_at: number;
+	updated_at: number;
+	confirmations: number;
+	block_hash: string;
+	block_height: number;
+	tx_id: string;
+	vout: number;
+	bitcoin_explorer_url?: string;
+	sui_explorer_url?: string;
+	fees?: number;
+	error_message?: string;
+}
+
 export interface MintTransaction {
 	bitcoinTxId: string;
 	amountInSatoshi: number;
@@ -24,4 +43,13 @@ export interface MintTransaction {
 	suiExplorerUrl?: string;
 	fees?: number;
 	errorMessage?: string;
+}
+
+export interface LoaderData {
+	mintTxs: MintTransaction[];
+}
+
+// TODO move to controller
+export interface LoaderDataResp extends LoaderData {
+	error?: Error;
 }
