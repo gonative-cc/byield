@@ -49,7 +49,6 @@ export interface LoaderData {
 	mintTxs: MintTransaction[];
 }
 
-// TODO move to controller
 export interface LoaderDataResp extends LoaderData {
 	error?: Error;
 }
