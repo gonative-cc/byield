@@ -11,6 +11,7 @@ import { useContext, useEffect, useRef, useCallback } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { BlockInfoCard } from "~/components/ui/BlockInfoCard";
 import { FAQ } from "~/components/FAQ";
+import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
 
 const FAQS = [
 	{
@@ -95,6 +96,7 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function Mint() {
+	const { network } = useXverseWallet();
 	const { suiAddr } = useContext(WalletContext);
 	const mintTxFetcher = useFetcher<QueryMintTxResp>();
 	const prevSuiAddrRef = useRef<string | null>(null);
@@ -108,9 +110,9 @@ export default function Mint() {
 	// Function to fetch mint transactions
 	const fetchMintTxs = useCallback(() => {
 		if (suiAddr) {
-			makeReq<QueryMintTxResp>(mintTxFetcher, { method: "queryMintTx", params: [suiAddr] });
+			makeReq<QueryMintTxResp>(mintTxFetcher, { method: "queryMintTx", params: [network, suiAddr] });
 		}
-	}, [suiAddr, mintTxFetcher]);
+	}, [suiAddr, mintTxFetcher, network]);
 
 	// Refetch when suiAddr changes
 	useEffect(() => {

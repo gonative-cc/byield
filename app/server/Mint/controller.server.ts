@@ -6,9 +6,11 @@ import {
 	type MintTransaction,
 } from "./types";
 import type { QueryMintTxResp, Req } from "./jsonrpc";
+import { getBitcoinNetworkConfig } from "~/hooks/useBitcoinConfig";
+import type { BitcoinNetworkType } from "sats-connect";
 
 export default class Controller {
-	indexerUrl = "https://btcindexer.gonative-cc.workers.dev:443/nbtc";
+	indexerBaseUrl: string | null = null;
 
 	private mapIndexerStatus(status: string): MintingTxStatus {
 		switch (status?.toLowerCase()) {
@@ -49,15 +51,19 @@ export default class Controller {
 			return responseBadRequest();
 		}
 		try {
-			const indexerResponse = await fetch(this.indexerUrl + `?sui_recipient=${suiAddr}`);
+			const indexerResponse = await fetch(this.indexerBaseUrl + `?sui_recipient=${suiAddr}`);
 			const data: IndexerTransaction[] = await indexerResponse.json();
 			const mintTxs: MintTransaction[] = data.map((tx) => this.convertIndexerTransaction(tx));
-			console.log(mintTxs);
 			return mintTxs;
 		} catch (error) {
 			console.error("Failed to fetch the mint txs: ", error);
 			return responseServerError();
 		}
+	}
+
+	private handleNetwork(network: BitcoinNetworkType) {
+		const networkConfig = getBitcoinNetworkConfig[network];
+		this.indexerBaseUrl = networkConfig?.variables?.indexerUrl || null;
 	}
 
 	async handleJsonRPC(r: Request) {
@@ -70,9 +76,12 @@ export default class Controller {
 				status: 400,
 			});
 		}
+		const network = reqData.params[0];
+		this.handleNetwork(network);
+
 		switch (reqData.method) {
 			case "queryMintTx":
-				return this.getMintTxs(reqData.params[0]);
+				return this.getMintTxs(reqData.params[1]);
 			default:
 				return responseNotFound("Unknown method");
 		}
