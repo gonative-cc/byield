@@ -12,7 +12,7 @@ import {
 import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
 
 import { Countdown } from "~/components/ui/countdown";
-import { classNames } from "~/util/tailwind";
+import { classNames, primaryHeadingClasses } from "~/util/tailwind";
 import { toast } from "~/hooks/use-toast";
 import { useNetworkVariables } from "~/networkConfig";
 import { AuctionAccountType, type AuctionInfo, type User } from "~/server/BeelieversAuction/types";
@@ -27,6 +27,7 @@ import { NftDisplay, findExistingNft, findNftInTxResult, queryNftFromKiosk } fro
 import type { KioskInfo } from "./kiosk";
 import { initializeKioskInfo, createKiosk } from "./kiosk";
 import { LoadingSpinner } from "~/components/LoadingSpinner";
+import { cardShowcaseClasses, cn, primaryBadgeClasses } from "~/util/tailwind";
 
 interface MintInfoItemProps {
 	title: string;
@@ -343,7 +344,9 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 	const mintStarted = beelieversMint.mintStart <= +new Date();
 
 	return (
-		<div className="card lg:w-[85%] xl:w-[75%] w-full shadow-2xl card-border transition-all duration-300 hover:shadow-primary/10">
+		<div
+			className={cn(cardShowcaseClasses(), "card lg:w-[85%] xl:w-[75%] w-full hover:shadow-primary/10")}
+		>
 			<div className="card-body p-4 lg:p-8 rounded-lg text-white flex flex-col xl:flex-row gap-6 sm:gap-8 lg:gap-12 bg-gradient-to-br from-azure-25 via-azure-20 to-azure-15">
 				<div className="flex-shrink-0 flex justify-center xl:justify-start w-full xl:w-auto">
 					{nftId ? (
@@ -361,10 +364,10 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 				</div>
 				<div className="flex flex-col w-full justify-between gap-8">
 					<div className="space-y-4">
-						<h3 className="text-xl lg:text-2xl font-bold text-primary">Mint Details</h3>
+						<h3 className={`${primaryHeadingClasses()} text-xl lg:text-2xl`}>Mint Details</h3>
 						<div className="p-4 bg-primary/15 rounded-xl border border-primary/30 backdrop-blur-sm space-y-4">
 							{!mintStarted && (
-								<div className="px-4 py-2 bg-primary/10 rounded-lg border border-primary/20 font-semibold text-primary">
+								<div className={primaryBadgeClasses()}>
 									<span className="text-2xl">⏰</span>
 									<span className="text-sm"> Minting starts in </span>
 									<Countdown targetTime={beelieversMint.mintStart} />

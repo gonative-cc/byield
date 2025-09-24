@@ -1,5 +1,6 @@
 import { isRouteErrorResponse, useRouteError, Link, type ErrorResponse } from "react-router";
 import { AlertTriangle, Home, RefreshCw } from "lucide-react";
+import { pageBgClasses, cn } from "~/util/tailwind";
 
 export function ErrorBoundary() {
 	const error = useRouteError();
@@ -57,7 +58,7 @@ export function ErrorBoundary() {
 	);
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-background via-azure-20 to-azure-25 flex items-center justify-center p-4">
+		<div className={cn(pageBgClasses(), "min-h-screen flex items-center justify-center p-4")}>
 			<div className="w-full max-w-md border-0 bg-transparent">
 				{isRouteErrorResponse(error) ? routerError(error) : nonRouterError()}
 			</div>

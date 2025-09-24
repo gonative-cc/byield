@@ -2,6 +2,7 @@ import React from "react";
 import { useTable } from "react-table";
 import type { Column, HeaderGroup, Row } from "react-table";
 import { twMerge } from "tailwind-merge";
+import { primaryHeadingClasses, avatarGradientClasses } from "~/util/tailwind";
 
 const TableHead = <T extends object>({ headerGroups }: { headerGroups: HeaderGroup<T>[] }) => (
 	<thead className="sticky top-0 z-10">
@@ -172,13 +173,13 @@ export const Table = <T extends object>({
 				<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-2 pt-4">
 					<div className="flex items-center gap-3">
 						{header.icon && (
-							<div className="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-orange-400 flex items-center justify-center">
+							<div className={avatarGradientClasses()}>
 								<span className="text-xl">{header.icon}</span>
 							</div>
 						)}
 						{header.title && (
 							<div>
-								<h2 className="text-2xl font-bold text-primary">{header.title}</h2>
+								<h2 className={primaryHeadingClasses()}>{header.title}</h2>
 							</div>
 						)}
 					</div>

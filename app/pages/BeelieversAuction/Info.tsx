@@ -1,5 +1,6 @@
 import React from "react";
 import { Countdown } from "~/components/ui/countdown";
+import { primaryBadgeClasses } from "~/util/tailwind";
 import { BadgesModal } from "~/components/BadgesModal";
 import { AuctionAccountType } from "~/server/BeelieversAuction/types";
 import { TwitterShareButton } from "~/components/TwitterShareButton";
@@ -51,7 +52,7 @@ Securing my spot in the top 5810 at https://byield.gonative.cc/beelievers-auctio
 				<div className="flex flex-col gap-4 lg:gap-6 py-0 w-full lg:text-base leading-relaxed">
 					<div className="flex gap-4">
 						{[AuctionState.WILL_START, AuctionState.STARTED].includes(auctionState) && (
-							<div className="px-4 py-2 bg-primary/10 rounded-lg border border-primary/20 font-semibold text-primary">
+							<div className={primaryBadgeClasses()}>
 								<span className="text-2xl">⏰</span>
 								<span className="text-sm"> Auction {timeLabel} in </span>
 								<Countdown targetTime={targetTime} />
