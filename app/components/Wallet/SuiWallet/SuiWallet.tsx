@@ -60,11 +60,10 @@ function NetWorkOptions() {
 		return baseNetworks;
 	}, [isAuctionPathname, isDevMode]);
 
-	const suiWalletNetworks: Option[] = useMemo(() => networks, [networks]);
+	const suiWalletNetworks: Option<SuiNetwork>[] = useMemo(() => networks, [networks]);
 
-	// Ensure we always have a defined value to prevent uncontrolled/controlled switching
-	const currentNetwork = network || (isDevMode ? SuiNetwork.LocalNet : SuiNetwork.TestNet);
-    
+	const currentNetwork = (network as SuiNetwork) || (isDevMode ? SuiNetwork.LocalNet : SuiNetwork.TestNet);
+
 	return (
 		<SelectInput
 			options={suiWalletNetworks}
