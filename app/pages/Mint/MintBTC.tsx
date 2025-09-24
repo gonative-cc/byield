@@ -96,6 +96,7 @@ export function MintBTC() {
 	const cfg = useBitcoinConfig();
 	const mintTxFetcher = useFetcher();
 	const utxosFetcher = useFetcher();
+	const [pendingMint, setPendingMint] = useState<MintNBTCForm | null>(null);
 
 	const mintNBTCForm = useForm<MintNBTCForm>({
 		mode: "all",
@@ -114,6 +115,30 @@ export function MintBTC() {
 		setupBufferPolyfill();
 	}, []);
 
+	useEffect(() => {
+		if (pendingMint && utxosFetcher.data) {
+			nBTCMintTx(
+				currentAddress!,
+				Number(parseBTC(pendingMint.numberOfBTC)),
+				formatSuiAddress(pendingMint.suiAddress),
+				network,
+				cfg,
+				utxosFetcher.data,
+			).then((response) => {
+				if (response?.status === "success") {
+					setTxId(response.result.txid);
+					setShowConfirmationModal(true);
+					if (response.result.txid)
+						makeReq(mintTxFetcher, {
+							method: "putNBTCTx",
+							params: [network, response.result.txid],
+						});
+				}
+			});
+			setPendingMint(null);
+		}
+	}, [utxosFetcher.data, pendingMint]);
+
 	const handlenBTCMintTx = async ({ numberOfBTC, suiAddress }: MintNBTCForm) => {
 		if (currentAddress) {
 			if (!cfg.nBTC.depositAddress) {
@@ -126,32 +151,8 @@ export function MintBTC() {
 				return;
 			}
 
-			const utxos = await makeReq(utxosFetcher, {
-				method: "bitcoinService",
-				params: [network, currentAddress.address],
-			});
-			await new Promise((res) => setTimeout(res, 10000));
-
-			console.log("utxos", utxos);
-			console.log("utxosFetcher.data", utxosFetcher.data);
-
-			const response = await nBTCMintTx(
-				currentAddress,
-				Number(parseBTC(numberOfBTC)),
-				formatSuiAddress(suiAddress),
-				network,
-				cfg,
-				utxos,
-			);
-			if (response && response.status === "success") {
-				setTxId(response.result.txid);
-				setShowConfirmationModal(true);
-				if (response.result.txid)
-					await makeReq(mintTxFetcher, {
-						method: "putNBTCTx",
-						params: [network, response.result.txid],
-					});
-			}
+			setPendingMint({ numberOfBTC, suiAddress });
+			makeReq(utxosFetcher, { method: "bitcoinService", params: [network, currentAddress.address] });
 		}
 	};
 
