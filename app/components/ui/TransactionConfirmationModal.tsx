@@ -1,6 +1,7 @@
 import { CheckCircle, Clock, Info } from "lucide-react";
 import { Modal } from "./dialog";
 import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
+import { getAlertClasses, getCardClasses } from "~/util/tailwind";
 
 interface TxConfirmationModal {
 	isOpen: boolean;
@@ -18,7 +19,7 @@ export function TxConfirmationModal({ isOpen, onClose, txId: _txId }: TxConfirma
 	return (
 		<Modal open={isOpen} title="Transaction Sent Successfully" handleClose={onClose}>
 			<div className="space-y-4">
-				<div className="alert alert-success bg-primary border-primary">
+				<div className={getAlertClasses("orange_info")}>
 					<CheckCircle size={20} className="text-white" />
 					<span className="text-white">
 						Your transaction has been broadcasted to the Bitcoin network
@@ -36,7 +37,7 @@ export function TxConfirmationModal({ isOpen, onClose, txId: _txId }: TxConfirma
 					</p>
 				</div>
 
-				<div className="card bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20">
+				<div className={getCardClasses("gradient")}>
 					<div className="card-body p-4">
 						<div className="flex items-center gap-2 mb-2">
 							<Clock size={16} />
@@ -62,7 +63,7 @@ export function TxConfirmationModal({ isOpen, onClose, txId: _txId }: TxConfirma
 					</div>
 				</div>
 
-				<div className="alert alert-info bg-primary border-primary">
+				<div className={getAlertClasses("orange_info")}>
 					<Info size={16} className="text-white" />
 					<span className="text-white">
 						Track your transaction progress in the table below. Your nBTC tokens will be minted
