@@ -28,6 +28,6 @@ test("url", () => {
 	];
 	for (const tc of negativeCases) {
 		const tcCasted = tc as string;
-		expect(validate.url(tcCasted), tcCasted).toBe(false);
+		expect(validate.url(tcCasted), String(tc)).toBe(false);
 	}
 });
