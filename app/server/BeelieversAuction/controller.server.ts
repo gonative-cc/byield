@@ -11,6 +11,7 @@ import { isProductionMode } from "~/lib/appenv";
 import { Auction, type BidResult } from "./auction.server";
 
 import { mainnetCfg, testnetCfg } from "~/config/sui/contracts-config";
+import * as httpresp from "../http-resp";
 
 const maxTxIdSize = 44;
 
@@ -111,7 +112,7 @@ export default class Controller {
 				return this.getRaffle();
 			}
 			default:
-				return responseNotFound("Unknown method");
+				return httpresp.notFound("Unknown method");
 		}
 	}
 
@@ -122,16 +123,16 @@ export default class Controller {
 		userMessage?: string,
 	): Promise<BidResult | Response> {
 		const txDigest = await verifySignature(userAddr, txBytes, signature);
-		if (txDigest === null) return responseNotAuthorized();
+		if (txDigest === null) return httpresp.notAuthorized();
 		if (txDigest.length > maxTxIdSize) {
 			console.error("txDigest too long!", txDigest);
-			return responseBadRequest("Bad Tx Digest");
+			return httpresp.badRequest("Bad Tx Digest");
 		}
 		// TODO: Vu: extract timestamp from txBytes
 
 		const keyKv = this.kvKeyTxPrefix + txDigest;
 		const kvCheck = await this.kv.get(keyKv);
-		if (kvCheck !== null) return responseOK("already processed");
+		if (kvCheck !== null) return httpresp.textOK("already processed");
 
 		const suiClient = new SuiClient({ url: getFullnodeUrl(this.suiNet) });
 		try {
@@ -146,13 +147,13 @@ export default class Controller {
 				console.error("[Controller] On-chain validation failed:", bidEvent);
 				const keyKvNA = this.kvKeyTxPrefixNotAuthorized + txDigest;
 				await this.kv.put(keyKvNA, "");
-				return responseNotAuthorized();
+				return httpresp.notAuthorized();
 			}
 			await this.kv.put(keyKv, "");
 			const amount = Number(bidEvent.totalBidAmount);
 			const timestampMs = parseInt(bidEvent.timestampMs);
 			const [resp, err] = await this.auction.bid(userAddr, amount, timestampMs, userMessage);
-			if (err !== null) return responseBadRequest(err.message);
+			if (err !== null) return httpresp.badRequest(err.message);
 
 			return resp || { oldRank: 0, newRank: 0 };
 		} catch (error) {
@@ -160,7 +161,7 @@ export default class Controller {
 				"[Controller] An error occurred during postBidTx:",
 				error instanceof Error ? error.message : String(error),
 			);
-			return responseServerError(String(error));
+			return httpresp.serverError(String(error));
 		}
 	}
 
@@ -186,34 +187,4 @@ export default class Controller {
 			totalAmount: 93650950,
 		};
 	}
-}
-
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
-function responseBadRequest(msg: string = "Bad Request"): Response {
-	return new Response(msg, { status: 400 });
-}
-
-function responseNotAuthorized(msg: string = "Not Authorized"): Response {
-	return new Response(msg, { status: 401 });
-}
-
-function responseNotFound(msg: string = "Not Found"): Response {
-	return new Response(msg, { status: 404 });
-}
-
-function responseNotImplemented(): Response {
-	return new Response("Not Implemented", { status: 501 });
-}
-
-function responseServerError(msg: string = "Server Error"): Response {
-	return new Response(msg, { status: 500 });
-}
-
-// TODO: make JSON RPC response
-function responseOK(o: string | null): Response {
-	return new Response(
-		o,
-		// {headers: {"Content-Type": "application/json",},}
-	);
 }
