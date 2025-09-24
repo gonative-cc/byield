@@ -51,7 +51,8 @@ export default class Controller {
 			return responseBadRequest();
 		}
 		try {
-			const indexerResponse = await fetch(this.indexerBaseUrl + `?sui_recipient=${suiAddr}`);
+			const url = this.indexerBaseUrl + `/nbtc?sui_recipient=${suiAddr}`;
+			const indexerResponse = await fetch(url);
 			const data: IndexerTransaction[] = await indexerResponse.json();
 			const mintTxs: MintTransaction[] = data.map((tx) => this.convertIndexerTransaction(tx));
 			return mintTxs;
