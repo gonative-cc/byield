@@ -6,7 +6,6 @@ import {
 	useSwitchAccount,
 } from "@mysten/dapp-kit";
 import { SelectInput, type Option } from "../../ui/select";
-import { Button } from "../../ui/button";
 import { useCallback, useContext, useMemo } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
@@ -16,6 +15,7 @@ import { NumericFormat } from "react-number-format";
 import { formatSUI } from "~/lib/denoms";
 import { useLocation } from "react-router";
 import { isProductionMode } from "~/lib/appenv";
+import { CopyButton } from "~/components/ui/CopyButton";
 
 enum SuiNetwork {
 	LocalNet = "localnet",
@@ -64,7 +64,7 @@ function NetWorkOptions() {
 
 	// Ensure we always have a defined value to prevent uncontrolled/controlled switching
 	const currentNetwork = network || (isDevMode ? SuiNetwork.LocalNet : SuiNetwork.TestNet);
-
+    
 	return (
 		<SelectInput
 			options={suiWalletNetworks}
@@ -89,7 +89,6 @@ function Accounts() {
 	return (
 		<SelectInput
 			options={options}
-			placeholder="Select account"
 			onValueChange={(address) => {
 				const newAccount = accounts.find((a) => a.address === address);
 				if (!newAccount) return;
@@ -101,15 +100,19 @@ function Accounts() {
 				);
 			}}
 			value={currentSelectedAccount?.address}
+			optionItemRenderer={(val) => (
+				<div className="flex gap-2 items-center">
+					{val.label} <CopyButton text={val.value} />
+				</div>
+			)}
 			className="w-full md:w-1/4"
 		/>
 	);
 }
 
-function SuiWalletMobileView() {
+function SuiWalletMobileView({ balance }: { balance: bigint }) {
 	const { mutate: disconnect } = useDisconnectWallet();
 	const { handleWalletConnect } = useContext(WalletContext);
-	const { balance } = useCoinBalance();
 
 	return (
 		<div className="flex w-full flex-col gap-4 items-center md:hidden">
@@ -127,14 +130,15 @@ function SuiWalletMobileView() {
 						className="shrink-0 text-primary"
 					/>
 				</p>
-				<Button
+				<button
 					onClick={() => {
 						disconnect();
 						handleWalletConnect(Wallets.SuiWallet, false);
 					}}
+					className="btn btn-primary"
 				>
-					Disconnect
-				</Button>
+					Disconnect Sui Wallet
+				</button>
 			</div>
 		</div>
 	);
@@ -157,17 +161,18 @@ export function SuiWallet() {
 					suffix=" SUI"
 					className="shrink-0"
 				/>
-				<Button
+				<button
 					onClick={() => {
 						disconnect();
 						handleWalletConnect(Wallets.SuiWallet, false);
 					}}
+					className="btn btn-primary"
 				>
-					Disconnect
-				</Button>
+					Disconnect Sui Wallet
+				</button>
 			</div>
 			{/* handles below md screen sizes */}
-			<SuiWalletMobileView />
+			<SuiWalletMobileView balance={balance} />
 		</>
 	);
 }

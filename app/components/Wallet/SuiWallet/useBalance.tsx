@@ -1,6 +1,6 @@
 import { useSuiClient, useCurrentAccount } from "@mysten/dapp-kit";
 import { useState, useEffect, useCallback } from "react";
-import { type CoinBalance } from "@mysten/sui/client";
+import { SuiClient, type CoinBalance } from "@mysten/sui/client";
 
 export interface UseCoinBalanceResult {
 	balance: bigint;
@@ -9,54 +9,63 @@ export interface UseCoinBalanceResult {
 	refetch: () => void;
 }
 
+async function fetchBalance(
+	suiClient: SuiClient,
+	owner: string,
+	coin?: string,
+): Promise<CoinBalance | Error> {
+	try {
+		return suiClient.getBalance({ owner, coinType: coin });
+	} catch (err) {
+		return err instanceof Error ? err : new Error("Failed to fetch balance: " + err);
+	}
+}
+
 // Coin address is a coin package ID followed by the type. Default to 0x2::sui::SUI.
 export function useCoinBalance(coinAddr?: string): UseCoinBalanceResult {
 	const suiClient = useSuiClient();
 	const account = useCurrentAccount();
+	const userAddr = account?.address || null;
 
 	const [balance, setBalance] = useState<CoinBalance | null>(null);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [error, setError] = useState<Error | null>(null);
 
-	// callback restricts re-creation of the function again if dependency has not changed
-	const fetchBalance = useCallback(async () => {
-		if (!account?.address) {
+	const refetch = useCallback(() => {
+		if (userAddr === null) {
 			setBalance(null);
 			setIsLoading(false);
 			setError(null);
 			return;
 		}
-		// TODO: need to optimize this
-		console.log("Call fetch balance", account?.address);
 
-		try {
-			setIsLoading(true);
-			setError(null);
+		let cancelled = false;
 
-			const result = await suiClient.getBalance({
-				owner: account.address,
-				coinType: coinAddr,
-			});
+		console.log(`Fetching coin (${coinAddr}) balance for`, userAddr);
+		setIsLoading(true);
+		setError(null);
 
-			setBalance(result);
-		} catch (err) {
-			setError(err instanceof Error ? err : new Error("Failed to fetch balance: " + err));
-			setBalance(null);
-		} finally {
+		fetchBalance(suiClient, userAddr, coinAddr).then((resOrErr) => {
+			if (cancelled) {
+				return;
+			}
 			setIsLoading(false);
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [account?.address || null, coinAddr, suiClient]);
+			if (resOrErr instanceof Error) setError(resOrErr);
+			else setBalance(resOrErr);
+		});
 
-	useEffect(() => {
-		fetchBalance();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [account?.address || null, fetchBalance]);
+		// cleanup function
+		return () => {
+			cancelled = true;
+		};
+	}, [suiClient, coinAddr, userAddr]);
+
+	useEffect(refetch, [refetch]);
 
 	return {
 		balance: balance === null ? 0n : BigInt(balance.totalBalance),
 		isLoading,
 		error,
-		refetch: fetchBalance,
+		refetch,
 	};
 }

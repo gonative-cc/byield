@@ -6,9 +6,7 @@ import { Transaction } from "@mysten/sui/transactions";
 
 import { formatSUI, parseSUI, SUI } from "~/lib/denoms";
 import { delay } from "~/lib/batteries";
-import { Card, CardContent } from "~/components/ui/card";
 import { FormNumericInput } from "~/components/form/FormNumericInput";
-import { Button } from "~/components/ui/button";
 import { FormInput } from "~/components/form/FormInput";
 import { SuiModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import type { User } from "~/server/BeelieversAuction/types";
@@ -17,9 +15,10 @@ import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { toast } from "~/hooks/use-toast";
 import { useNetworkVariables } from "~/networkConfig";
 import { SUIIcon } from "~/components/icons";
-
 import { moveCallTarget, type BeelieversAuctionCfg } from "~/config/sui/contracts-config";
+import { buttonEffectClasses, classNames, cardShowcaseClasses, cn, infoBoxClasses } from "~/util/tailwind";
 
+const MINIMUM_FIRST_BID_MIST = 1e9;
 interface NewTotalBidAmountProps {
 	currentBidInMist: number;
 	entryBidMist: number;
@@ -42,7 +41,7 @@ function NewTotalBidAmount({ currentBidInMist, additionalBidInSUI, entryBidMist 
 	}
 
 	return (
-		<div className="p-3 bg-primary/10 rounded-lg border border-primary/20">
+		<div className={infoBoxClasses()}>
 			<div className="flex justify-between items-center mb-2">
 				<span className="text-sm text-muted-foreground">New total bid amount:</span>
 				<div className="text-lg font-semibold text-primary">{formatSUI(newTotal)} SUI</div>
@@ -91,9 +90,6 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 			note: "",
 		},
 	});
-
-	// TODO: remove WalletContext usage, use useCurrentAccount() or useSuiClient() instead!
-	// const { suiAddr } = useContext(WalletContext);
 
 	if (account === null) return <SuiModal />;
 
@@ -158,8 +154,13 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 		<FormProvider {...bidForm}>
 			<form onSubmit={onSubmit} className="flex justify-center w-full">
 				<div className="w-full lg:w-2/3 xl:w-1/2 space-y-6">
-					<Card className="shadow-2xl border-primary/20 hover:border-primary/40 transition-all duration-300 animate-in slide-in-from-bottom-2 duration-700">
-						<CardContent className="p-6 lg:p-8 rounded-lg text-white flex flex-col w-full gap-6 bg-gradient-to-br from-azure-10 via-azure-15 to-azure-20">
+					<div
+						className={cn(
+							cardShowcaseClasses(),
+							"card animate-in slide-in-from-bottom-2 duration-700",
+						)}
+					>
+						<div className="card-body p-6 lg:p-8 rounded-lg text-white flex flex-col w-full gap-6 bg-gradient-to-br from-azure-10 via-azure-15 to-azure-20">
 							<div className="flex items-center justify-between">
 								<div className="flex items-center gap-3">
 									<div className="w-12 h-12 rounded-full bg-gradient-to-r from-primary to-orange-400 flex items-center justify-center animate-pulse-glow">
@@ -234,8 +235,8 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 								</div>
 								{submitButton(isPending, hasUserBidBefore)}
 							</div>
-						</CardContent>
-					</Card>
+						</div>
+					</div>
 				</div>
 			</form>
 		</FormProvider>
@@ -244,9 +245,9 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 
 function submitButton(isPending: boolean, hasUserBidBefore: boolean) {
 	return (
-		<Button
+		<button
 			disabled={isPending}
-			className="h-14 lg:h-16 text-lg font-semibold bg-gradient-to-r from-primary to-orange-400 hover:from-orange-400 hover:to-primary transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+			className={classNames("btn btn-primary h-16 text-lg", buttonEffectClasses())}
 		>
 			<span className="flex items-center gap-2">
 				{isPending ? (
@@ -257,7 +258,7 @@ function submitButton(isPending: boolean, hasUserBidBefore: boolean) {
 					</>
 				)}
 			</span>
-		</Button>
+		</button>
 	);
 }
 
@@ -286,8 +287,7 @@ function validateBidAmount(val: string, hasUserBidBefore: boolean) {
 	if (mistAmount < 1e6) {
 		return "minimum amount: 0.001";
 	}
-	// TODO: use config and change to 1e9
-	if (!hasUserBidBefore && mistAmount < 1e7) {
+	if (!hasUserBidBefore && mistAmount < MINIMUM_FIRST_BID_MIST) {
 		return "First-time bidders must bid at least 1 SUI";
 	}
 

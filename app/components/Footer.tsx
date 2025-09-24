@@ -1,4 +1,3 @@
-import { Link } from "react-router";
 import { socials, redirects } from "~/config/footer.json";
 
 export function Footer() {
@@ -11,9 +10,9 @@ export function Footer() {
 					</div>
 					<div className="flex gap-3">
 						{socials.map(({ id, src, link }) => (
-							<Link key={id} to={link} target="_blank" rel="noreferrer">
+							<a key={id} href={link} target="_blank" rel="noreferrer">
 								<img src={src} alt={id} className="md:h-10 md:w-10" />
-							</Link>
+							</a>
 						))}
 					</div>
 				</div>
@@ -23,11 +22,11 @@ export function Footer() {
 							<span className="text-sm md:text-base">{heading}</span>
 							<div className="flex flex-col gap-2">
 								{subHeaders.map(({ title, link }) => (
-									<Link key={title} to={link} target="_blank" rel="noreferrer">
+									<a key={title} href={link} target="_blank" rel="noreferrer">
 										<span className="text-muted-foreground text-sm md:text-base hover:text-white md:text-nowrap">
 											{title}
 										</span>
-									</Link>
+									</a>
 								))}
 							</div>
 						</div>

@@ -1,5 +1,4 @@
 import { useContext, useEffect } from "react";
-import { Card, CardContent } from "~/components/ui/card";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
@@ -9,7 +8,6 @@ import { BuyNBTCTabContent } from "./BuyNBTCTabContent";
 import { SellNBTCTabContent } from "./SellNBTCTabContent";
 import { ArrowUpRight } from "lucide-react";
 import { useDisconnectWallet, useSuiClientContext } from "@mysten/dapp-kit";
-import { Tabs } from "react-daisyui";
 
 export function BuyNBTC() {
 	const { network } = useSuiClientContext();
@@ -36,29 +34,49 @@ export function BuyNBTC() {
 				Native enables <span className="text-2xl text-primary md:text-3xl">BTCFi</span> in the{" "}
 				<span className="text-2xl text-primary md:text-3xl">Web3 native</span> way!
 			</p>
-			<Card>
-				<CardContent className="p-6 rounded-lg text-white flex flex-col gap-4 bg-azure-10">
+			<div className="card max-w-lg w-full">
+				<div className="card-body p-6 text-white flex flex-col gap-4">
 					{isSuiWalletConnected && <NBTCBalance balance={nBTCBalance} />}
 					<Instructions />
-					<Tabs>
-						<Tabs.RadioTab name="buy_sell_nbtc" color="primary" label="Buy" defaultChecked={true}>
-							<BuyNBTCTabContent />
-						</Tabs.RadioTab>
-						<Tabs.RadioTab name="buy_sell_nbtc" label="Sell" color="primary">
-							<SellNBTCTabContent />
-						</Tabs.RadioTab>
-					</Tabs>
-					<a
-						href={transactionHistoryLink}
-						target="_blank"
-						rel="noreferrer"
-						className="flex gap-1 items-center text-primary hover:underline"
-					>
-						Check Transaction History
-						<ArrowUpRight size="22" />
-					</a>
-				</CardContent>
-			</Card>
+					<BuyNBTCTabs />
+					{isSuiWalletConnected && (
+						<a
+							href={transactionHistoryLink}
+							target="_blank"
+							rel="noreferrer"
+							className="flex gap-1 items-center text-primary hover:underline"
+						>
+							Check Transaction History
+							<ArrowUpRight size="22" />
+						</a>
+					)}
+				</div>
+			</div>
 		</div>
 	);
 }
+
+// TODO: Ravindra, if we decide to use rounded tabs, then we need to update the theme / style to make it
+// default for tabs-boxed, rather than specifying here
+const renderTabHeader = (title: string, checked = false) => (
+	<input
+		type="radio"
+		name="tab_nbtc_buy_sell"
+		className="tab rounded-full checked:bg-primary"
+		aria-label={title}
+		defaultChecked={checked}
+	/>
+);
+
+const BuyNBTCTabs = () => (
+	<div className="tabs tabs-boxed rounded-full p-1">
+		{renderTabHeader("Buy", true)}
+		<div className="tab-content py-6">
+			<BuyNBTCTabContent />
+		</div>
+		{renderTabHeader("Sell")}
+		<div className="tab-content py-6">
+			<SellNBTCTabContent />
+		</div>
+	</div>
+);

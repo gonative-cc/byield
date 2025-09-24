@@ -1,15 +1,11 @@
 import { Zap } from "lucide-react";
-import { Card, CardContent } from "./ui/card";
 import { Table } from "./ui/table";
 import type { Column, CellProps } from "react-table";
-import { Link } from "react-router";
 import { SelectInput } from "./ui/select";
 import { Input } from "./ui/input";
-import { Button } from "./ui/button";
 import { action } from "../config/market.json";
 import { formatNBTC } from "~/lib/denoms";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
-import { Badge } from "react-daisyui";
 
 enum MarketIntegration {
 	TURBOS = "TURBOS",
@@ -59,7 +55,7 @@ export const columns: Column<DApp>[] = [
 		accessor: "type",
 		Cell: ({ row }: CellProps<DApp>) => (
 			<div className="flex space-x-2">
-				<Badge color="primary">{row.original.type}</Badge>
+				<div className="badge badge-primary">{row.original.type}</div>
 			</div>
 		),
 	},
@@ -70,10 +66,10 @@ export const columns: Column<DApp>[] = [
 			<div className="flex space-x-2">
 				{row.original.labels.map((label) => (
 					<div key={label}>
-						<Badge className="flex gap-2 justify-between">
+						<div className="badge badge-primary flex gap-2 justify-between">
 							<Zap size={16} />
 							{label}
-						</Badge>
+						</div>
 					</div>
 				))}
 			</div>
@@ -100,12 +96,12 @@ export const columns: Column<DApp>[] = [
 			if (!action) return null;
 			return (
 				<div className="flex space-x-2">
-					<Link to={action.trade} target="_blank">
-						<Button variant="secondary">Trade nBTC</Button>
-					</Link>
-					<Link to={action.deposit} target="_blank">
-						<Button variant="ghost">Deposit</Button>
-					</Link>
+					<a href={action.trade} target="_blank" rel="noreferrer" className="btn">
+						Trade nBTC
+					</a>
+					<a href={action.deposit} target="_blank" rel="noreferrer" className="btn btn-primary">
+						Deposit
+					</a>
 				</div>
 			);
 		},
@@ -114,14 +110,12 @@ export const columns: Column<DApp>[] = [
 
 function DepositCard({ title, value }: DepositData) {
 	return (
-		<Card className="flex flex-1 max-w-1/4">
-			<CardContent className="p-6 rounded-lg text-white flex flex-col gap-2 bg-azure-10 w-full">
-				<div className="flex gap-2">
-					<span className="text-base font-medium">{title}</span>
-				</div>
+		<div className="card card-border flex flex-1 max-w-1/4">
+			<div className="card-body p-6 rounded-lg text-white flex flex-col gap-2 w-full">
+				<span className="text-base font-medium">{title}</span>
 				<span className="text-base font-medium">{value}</span>
-			</CardContent>
-		</Card>
+			</div>
+		</div>
 	);
 }
 

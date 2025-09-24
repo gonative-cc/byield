@@ -6,6 +6,7 @@ import { toBadgeRecord, type BadgeRecord } from "~/lib/badgeSystem";
 import type { Bidder, User } from "~/server/BeelieversAuction/types";
 import { BadgesModal } from "~/components/BadgesModal";
 import { formatSUI } from "~/lib/denoms";
+import { avatarGradientClasses, primaryHeadingClasses } from "~/util/tailwind";
 
 const MAX_LEADERBOARD_ROWS = 21;
 
@@ -88,7 +89,6 @@ const createColumns = (): Column<Bidder>[] => [
 	},
 ];
 
-// TODO: suiAddr is not needed here!
 export function AuctionTable({ data, user, suiAddr }: AuctionTableProps) {
 	const getDisplayData = (): Bidder[] => {
 		const top21: Bidder[] = data.slice(0, MAX_LEADERBOARD_ROWS);
@@ -120,11 +120,11 @@ export function AuctionTable({ data, user, suiAddr }: AuctionTableProps) {
 		<div className="w-full space-y-4">
 			<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-2 pt-4">
 				<div className="flex items-center gap-3">
-					<div className="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-orange-400 flex items-center justify-center">
+					<div className={avatarGradientClasses()}>
 						<span className="text-xl">🏆</span>
 					</div>
 					<div>
-						<h2 className="text-2xl font-bold text-primary">Leaderboard</h2>
+						<h2 className={primaryHeadingClasses()}>Leaderboard</h2>
 						<p className="text-sm text-muted-foreground">Top {MAX_LEADERBOARD_ROWS} bidders</p>
 					</div>
 				</div>

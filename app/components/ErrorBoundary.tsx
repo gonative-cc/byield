@@ -1,7 +1,6 @@
 import { isRouteErrorResponse, useRouteError, Link, type ErrorResponse } from "react-router";
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { Button } from "~/components/ui/button";
 import { AlertTriangle, Home, RefreshCw } from "lucide-react";
+import { pageBgClasses, cn } from "~/util/tailwind";
 
 export function ErrorBoundary() {
 	const error = useRouteError();
@@ -12,61 +11,57 @@ export function ErrorBoundary() {
 
 	const routerError = (err: ErrorResponse) => (
 		<>
-			<CardHeader className="text-center">
+			<div className="text-center">
 				<div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10">
 					<AlertTriangle className="h-8 w-8 text-destructive" />
 				</div>
-				<CardTitle className="text-2xl font-bold">
+				<h2 className="text-2xl font-bold">
 					{err.status} {err.statusText}
-				</CardTitle>
-			</CardHeader>
-			<CardContent className="text-center space-y-4 border-0 bg-transparent">
-				<p className="text-muted-foreground">
-					{err.data || "The page you're looking for doesn't exist or something went wrong."}
-				</p>
+				</h2>
+			</div>
+			<div className="text-center space-y-4">
+				<p>{err.data || "The page you're looking for doesn't exist or something went wrong."}</p>
 				<div className="flex gap-2 justify-center">
-					<Button asChild variant="outline">
-						<Link to="/">
+					<Link to="/">
+						<button className="btn btn-primary btn-outline">
 							<Home />
 							Home
-						</Link>
-					</Button>
-					<Button onClick={handleRefresh}>
+						</button>
+					</Link>
+					<button onClick={handleRefresh} className="btn btn-primary">
 						<RefreshCw />
 						Retry
-					</Button>
+					</button>
 				</div>
-			</CardContent>
+			</div>
 		</>
 	);
 
 	const nonRouterError = () => (
 		<>
-			<CardHeader className="text-center">
+			<div className="text-center">
 				<div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10">
 					<AlertTriangle className="h-8 w-8 text-destructive" />
 				</div>
-				<CardTitle className="text-2xl font-bold">Oops!</CardTitle>
-			</CardHeader>
-			<CardContent className="text-center space-y-4 border-0 bg-transparent">
-				<p className="text-muted-foreground">
-					Something unexpected happened. Please try refreshing the page.
-				</p>
+				<h2 className="text-2xl font-bold">Oops!</h2>
+			</div>
+			<div className="text-center space-y-4">
+				<p>Something unexpected happened. Please try refreshing the page.</p>
 				<div className="flex gap-2 justify-center">
-					<Button onClick={handleRefresh}>
+					<button onClick={handleRefresh} className="btn btn-primary">
 						<RefreshCw />
 						Retry
-					</Button>
+					</button>
 				</div>
-			</CardContent>
+			</div>
 		</>
 	);
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-background via-azure-20 to-azure-25 flex items-center justify-center p-4">
-			<Card className="w-full max-w-md border-0 bg-transparent">
+		<div className={cn(pageBgClasses(), "min-h-screen flex items-center justify-center p-4")}>
+			<div className="w-full max-w-md border-0 bg-transparent">
 				{isRouteErrorResponse(error) ? routerError(error) : nonRouterError()}
-			</Card>
+			</div>
 		</div>
 	);
 }

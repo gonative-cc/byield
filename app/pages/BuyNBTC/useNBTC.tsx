@@ -7,6 +7,7 @@ import type { TransactionResult } from "@mysten/sui/transactions";
 import { toast } from "~/hooks/use-toast";
 import { formatSUI } from "~/lib/denoms";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
+import type { UseCoinBalanceResult } from "~/components/Wallet/SuiWallet/useBalance";
 import { GA_EVENT_NAME, GA_CATEGORY, useGoogleAnalytics } from "~/lib/googleAnalytics";
 import { useNetworkVariables } from "~/networkConfig";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
@@ -106,8 +107,10 @@ export const useBuySellNBTC = ({ variant }: NBTCProps): UseNBTCReturn => {
 	const isSuiWalletConnected = isWalletConnected(Wallets.SuiWallet);
 
 	const nbtcCoin = nbtcCfg.pkgId + nbtcCfg.coinType;
-	const nbtcBalanceRes = useCoinBalance(nbtcCoin);
-	const suiBalanceRes = useCoinBalance();
+
+	// Always call hooks in a consistent order to satisfy rules-of-hooks
+	const nbtcBalanceRes: UseCoinBalanceResult = useCoinBalance(nbtcCoin);
+	const suiBalanceRes: UseCoinBalanceResult = useCoinBalance();
 
 	const {
 		mutate: signAndExecuteTransaction,

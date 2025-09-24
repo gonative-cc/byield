@@ -1,7 +1,7 @@
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "~/components/ui/dialog";
-import { Button } from "./ui/button";
+import { primaryHeadingClasses } from "~/util/tailwind";
 
 interface BadgeInfo {
 	name: string;
@@ -169,13 +169,11 @@ export function BadgesModal({ msg = "View All Badges" }: { msg?: string }) {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<Button type="button" variant="outline">
-					🏆 {msg}
-				</Button>
+				<button className="btn btn-primary btn-outline">🏆 {msg}</button>
 			</DialogTrigger>
 			<DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto w-[95vw] sm:w-full">
 				<DialogHeader>
-					<DialogTitle className="text-2xl font-bold text-primary">🏆 Auction Badges</DialogTitle>
+					<DialogTitle className={primaryHeadingClasses()}>🏆 Auction Badges</DialogTitle>
 				</DialogHeader>
 
 				<div className="flex flex-col lg:flex-row gap-6">

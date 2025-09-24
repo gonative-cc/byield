@@ -1,39 +1,48 @@
-import { opcodes, Psbt, script } from "bitcoinjs-lib";
-import Wallet from "sats-connect";
+import Wallet, { BitcoinNetworkType } from "sats-connect";
 import { type Address, type RpcResult } from "sats-connect";
-import { fetchUTXOs, fetchValidateAddress } from "~/api/btcrpc";
-import type { UTXO, ValidateAddressI } from "~/api/btcrpc";
-import { getBitcoinNetworkConfig } from "~/components/Wallet/XverseWallet/useWallet";
+import { fetchUTXOs, type UTXO } from "~/lib/external-apis";
+import {
+	getBitcoinNetworkConfig,
+	createPsbt,
+	compileScript,
+	getOpReturnOpcode,
+	getBitcoinLib,
+} from "./bitcoin.client";
 import { toast } from "~/hooks/use-toast";
-import type { ExtendedBitcoinNetworkType } from "~/hooks/useBitcoinConfig";
+import type { BitcoinConfig } from "~/hooks/useBitcoinConfig";
 
 export const PRICE_PER_NBTC_IN_SUI = 25000n;
 const DUST_THRESHOLD_SATOSHI = 546;
 
+// Enum for OP_RETURN flags
+export enum OpReturnFlag {
+	MINT = 0x00,
+}
+
+// TODO: this function is too long
 export async function nBTCMintTx(
 	bitcoinAddress: Address,
 	mintAmountInSatoshi: number,
 	opReturn: string,
-	bitcoinNetworkType: ExtendedBitcoinNetworkType,
-	depositAddress: string,
+	network: BitcoinNetworkType,
+	cfg: BitcoinConfig,
 ): Promise<RpcResult<"signPsbt"> | undefined> {
+	const networkCfg = await getBitcoinNetworkConfig(network);
+	if (!networkCfg) {
+		const description = "can't fetch bitcoin network config for network: " + network;
+		console.error(description);
+		toast({
+			title: "Bitcoin network",
+			description,
+			variant: "destructive",
+		});
+		return;
+	}
 	try {
-		const network = getBitcoinNetworkConfig(bitcoinNetworkType);
-
-		if (!network) {
-			console.error("network config not found");
-			toast?.({
-				title: "Bitcoin network",
-				description: "Bitcoin network not found",
-				variant: "destructive",
-			});
-			return;
-		}
-
-		const utxos: UTXO[] = await fetchUTXOs(bitcoinAddress.address);
+		const utxos: UTXO[] = await fetchUTXOs(bitcoinAddress.address, network, cfg);
 		if (!utxos?.length) {
 			console.error("utxos not found.");
-			toast?.({
+			toast({
 				title: "UTXO",
 				description: "UTXOs not found for this address.",
 				variant: "destructive",
@@ -41,21 +50,46 @@ export async function nBTCMintTx(
 			return;
 		}
 
-		const validateAddress: ValidateAddressI = await fetchValidateAddress(
-			bitcoinAddress.address,
-		);
-		if (!validateAddress) {
-			console.error("Not able to validate the address.");
-			toast?.({
+		const bitcoinjs = await getBitcoinLib();
+		let validateAddress: {
+			isValid: boolean;
+			address: string;
+			scriptPubKey: string;
+			isScript: boolean;
+			isWitness: boolean;
+			witnessVersion: number;
+			witnessProgram: string;
+		};
+		try {
+			const outputScript = bitcoinjs.address.toOutputScript(
+				bitcoinAddress.address,
+				networkCfg,
+			);
+			validateAddress = {
+				isValid: true,
+				address: bitcoinAddress.address,
+				scriptPubKey: outputScript.toString("hex"),
+				isScript: false,
+				isWitness:
+					bitcoinAddress.address.startsWith("bc1") ||
+					bitcoinAddress.address.startsWith("tb1") ||
+					bitcoinAddress.address.startsWith("bcrt1"),
+				witnessVersion: 0,
+				witnessProgram: "",
+			};
+		} catch (error) {
+			console.error("Invalid Bitcoin address:", error);
+			toast({
 				title: "Address",
-				description: "Unable to validate the Bitcoin address.",
+				description: "Invalid Bitcoin address format.",
 				variant: "destructive",
 			});
 			return;
 		}
 
-		// TODO: dynamic fee calculation
-		const estimatedFee = 1000;
+		// TODO: handle case when miner fee is zero - user should be able to change it,
+		// so it should be an input to the function, and we should use the value from cfg as a fallback.
+		const estimatedFee = cfg.minerFeeSats || 0;
 
 		// Check if we have sufficient funds
 		const totalAvailable = utxos[0].value;
@@ -63,7 +97,7 @@ export async function nBTCMintTx(
 
 		if (totalAvailable < totalRequired) {
 			console.error("Insufficient funds for transaction and fee.");
-			toast?.({
+			toast({
 				title: "Insufficient Funds",
 				description: `Need ${totalRequired} satoshis but only have ${totalAvailable} available.`,
 				variant: "destructive",
@@ -71,8 +105,7 @@ export async function nBTCMintTx(
 			return;
 		}
 
-		const psbt = new Psbt({ network });
-
+		const psbt = await createPsbt(networkCfg);
 		psbt.addInput({
 			hash: utxos[0].txid,
 			index: utxos[0].vout,
@@ -83,24 +116,35 @@ export async function nBTCMintTx(
 		});
 
 		psbt.addOutput({
-			address: depositAddress,
+			address: cfg.nBTC.depositAddress,
 			value: mintAmountInSatoshi,
 		});
 
 		let opReturnData: Buffer;
 		try {
-			opReturnData = Buffer.from(opReturn, "hex");
+			if (!opReturn.startsWith("0x") || opReturn.length !== 66) {
+				throw new Error(
+					`Sui address must be in format 0x... with 64 hex chars, got ${opReturn}`,
+				);
+			}
+			const cleanHex = opReturn.replace(/^0x/, "").toLowerCase();
+			const flagByte = Buffer.from([OpReturnFlag.MINT]);
+			const addressBytes = Buffer.from(cleanHex, "hex");
+			opReturnData = Buffer.concat([flagByte, addressBytes]);
 		} catch (error) {
 			console.error("Invalid OP_RETURN data:", error);
-			toast?.({
+			toast({
 				title: "Invalid Data",
-				description: "Invalid OP_RETURN data format.",
+				description:
+					error instanceof Error ? error.message : "Invalid OP_RETURN data format.",
 				variant: "destructive",
 			});
 			return;
 		}
 
-		const opReturnScript = script.compile([opcodes.OP_RETURN, opReturnData]);
+		const OP_RETURN = await getOpReturnOpcode();
+		const opReturnScript = await compileScript([OP_RETURN, opReturnData]);
+
 		psbt.addOutput({
 			script: opReturnScript,
 			value: 0,
@@ -117,28 +161,34 @@ export async function nBTCMintTx(
 			});
 		}
 
-		const txHex = psbt.toBase64();
-
+		const shouldBroadcast = true;
 		const response = await Wallet.request("signPsbt", {
-			psbt: txHex,
+			psbt: psbt.toBase64(),
 			signInputs: {
 				[bitcoinAddress.address]: [0],
 			},
-			broadcast: true,
+			broadcast: shouldBroadcast,
 		});
 
+		if (!shouldBroadcast && response.status === "success") {
+			toast({
+				title: "Transaction Signed",
+				description: "PSBT signed successfully. Broadcast manually if needed.",
+				variant: "default",
+			});
+		}
+
 		if (response.status !== "success") {
-			toast?.({
+			toast({
 				title: "Transaction Failed",
 				description: "Failed to broadcast the transaction.",
 				variant: "destructive",
 			});
-			console.error("Transaction failed:", response);
 		}
 		return response;
 	} catch (error) {
 		console.error("nBTC Mint Transaction Error:", error);
-		toast?.({
+		toast({
 			title: "Transaction Error",
 			description: error instanceof Error ? error.message : "An unexpected error occurred.",
 			variant: "destructive",

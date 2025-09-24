@@ -1,6 +1,6 @@
 import React from "react";
-import { Card, CardContent } from "~/components/ui/card";
 import { Countdown } from "~/components/ui/countdown";
+import { primaryBadgeClasses } from "~/util/tailwind";
 import { BadgesModal } from "~/components/BadgesModal";
 import { AuctionAccountType } from "~/server/BeelieversAuction/types";
 import { TwitterShareButton } from "~/components/TwitterShareButton";
@@ -33,8 +33,8 @@ export function Info({ user, auctionInfo, auctionState }: InfoProps) {
 Securing my spot in the top 5810 at https://byield.gonative.cc/beelievers-auction`;
 
 	return (
-		<Card className="w-full lg:w-[85%] xl:w-[75%] shadow-2xl border-primary/20 hover:border-primary/40 transition-all duration-300">
-			<CardContent className="p-4 lg:p-8 rounded-lg text-white flex flex-col lg:flex-row gap-6 lg:gap-8 bg-gradient-to-br from-azure-25 via-azure-20 to-azure-15">
+		<div className="card w-full lg:w-[85%] xl:w-[75%] shadow-2xl card-border border transition-all duration-300">
+			<div className="card-body p-4 lg:p-8 rounded-lg text-white flex flex-col lg:flex-row gap-6 lg:gap-8 bg-gradient-to-br from-azure-25 via-azure-20 to-azure-15">
 				<div className="flex-shrink-0 flex justify-center lg:justify-start">
 					<div className="animate-float">
 						<img
@@ -52,7 +52,7 @@ Securing my spot in the top 5810 at https://byield.gonative.cc/beelievers-auctio
 				<div className="flex flex-col gap-4 lg:gap-6 py-0 w-full lg:text-base leading-relaxed">
 					<div className="flex gap-4">
 						{[AuctionState.WILL_START, AuctionState.STARTED].includes(auctionState) && (
-							<div className="px-4 py-2 bg-primary/10 rounded-lg border border-primary/20 font-semibold text-primary">
+							<div className={primaryBadgeClasses()}>
 								<span className="text-2xl">⏰</span>
 								<span className="text-sm"> Auction {timeLabel} in </span>
 								<Countdown targetTime={targetTime} />
@@ -81,8 +81,8 @@ Securing my spot in the top 5810 at https://byield.gonative.cc/beelievers-auctio
 
 					<Instructions />
 				</div>
-			</CardContent>
-		</Card>
+			</div>
+		</div>
 	);
 }
 
