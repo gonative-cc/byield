@@ -6,7 +6,7 @@ import { formatBTC } from "~/lib/denoms";
 import { type MintingTxStatus, type MintTransaction } from "~/server/Mint/types";
 import { Info, ChevronDown, ChevronUp } from "lucide-react";
 import { CopyButton } from "~/components/ui/CopyButton";
-import { ExpandableTransactionDetails } from "~/components/ui/ExpandableTransactionDetails";
+import { ExpandableTransactionDetails } from "~/pages/Mint/ExpandableTransactionDetails";
 import { AnimatedHourglass } from "~/components/ui/AnimatedHourglass";
 import { useState, useMemo, useCallback } from "react";
 import { useNetworkVariable } from "~/networkConfig";
