@@ -9,7 +9,7 @@ import {
 	getBitcoinLib,
 } from "./bitcoin.client";
 import { toast } from "~/hooks/use-toast";
-import type { BitcoinConfig } from "~/hooks/useBitcoinConfig";
+import type { BitcoinConfig } from "~/config/bitcoin/contracts-config";
 
 export const PRICE_PER_NBTC_IN_SUI = 25000n;
 const DUST_THRESHOLD_SATOSHI = 546;
