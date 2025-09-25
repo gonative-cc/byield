@@ -1,6 +1,6 @@
 import { Info, CheckCircle, XCircle } from "lucide-react";
 import { type MintTransaction, MintingStatus } from "~/server/Mint/types";
-import { AnimatedHourglass } from "./AnimatedHourglass";
+import { AnimatedHourglass } from "~/components/ui/AnimatedHourglass";
 import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import { NumericFormat } from "react-number-format";
 import { formatBTC } from "~/lib/denoms";
