@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { orangeInfoCardClasses } from "~/util/tailwind";
 
 interface FAQ {
 	id: string;
@@ -13,10 +14,7 @@ interface FAQProps {
 
 export function FAQ({ faqs, description = "" }: FAQProps) {
 	const renderQuestion = (key: string, question: string, answer: FAQ["answer"]) => (
-		<div
-			key={key}
-			className="p-6 bg-gradient-to-r from-primary/5 to-primary/10 rounded-2xl border border-primary/20 hover:border-primary/40 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10"
-		>
+		<div key={key} className={orangeInfoCardClasses}>
 			<h3 className="text-xl font-semibold text-primary mb-3 flex items-center gap-2">{question}</h3>
 			{typeof answer === "string" ? <p className="text-muted-foreground">{answer}</p> : answer}
 		</div>
