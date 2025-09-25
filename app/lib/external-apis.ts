@@ -1,5 +1,5 @@
 import { BitcoinNetworkType } from "sats-connect";
-import type { BitcoinConfig } from "~/hooks/useBitcoinConfig";
+import type { BitcoinConfig } from "~/config/bitcoin/contracts-config";
 import { type MintTransaction, type MintingTxStatus, MintingStatus } from "~/server/Mint/types";
 
 export type UTXO = {

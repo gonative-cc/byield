@@ -1,31 +1,8 @@
 import { BitcoinNetworkType } from "sats-connect";
 
 import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
-import regtestConfig from "~/config/bitcoin-regtest.json";
+import { type BitcoinConfig, bitcoinConfigs } from "~/config/bitcoin/contracts-config";
 import * as validate from "~/lib/validate";
-
-export interface BitcoinConfig {
-	confirmationDepth: number;
-	blockTimeSec: number;
-	bitcoinBroadcastLink: string;
-	mempoolApiUrl: string;
-	indexerUrl: string;
-	btcRPCUrl: string;
-	minerFeeSats?: number;
-	nBTC: {
-		depositAddress: string;
-		mintingFee: number;
-	};
-}
-
-// TODO: this should be in /app/config!
-const bitcoinConfigs: Record<BitcoinNetworkType, BitcoinConfig | undefined> = {
-	Mainnet: undefined,
-	Testnet: undefined,
-	Testnet4: undefined,
-	Signet: undefined,
-	Regtest: { ...regtestConfig },
-};
 
 // return config for related Bitcoin network. Throws an error if network is not supported.
 export function mustGetBitcoinConfig(network: BitcoinNetworkType): BitcoinConfig {
