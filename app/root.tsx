@@ -8,7 +8,7 @@ import { SuiClientProvider, WalletProvider as SuiWalletProvider } from "@mysten/
 import { Toaster } from "~/components/ui/toaster";
 import { ByieldWalletProvider } from "./providers/ByieldWalletProvider";
 import { isProductionMode, printAppEnv } from "./lib/appenv";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Footer } from "~/components/Footer";
 import { SideBarProvider } from "./providers/SiderBarProvider";
 import { SideBar } from "~/components/SideBar";
