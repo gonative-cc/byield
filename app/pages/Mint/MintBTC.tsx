@@ -1,4 +1,3 @@
-import { BitcoinBalance } from "../../components/BitcoinBalance";
 import { FormProvider, useForm } from "react-hook-form";
 import { FormInput } from "../../components/form/FormInput";
 import { useXverseConnect, useXverseWallet } from "../../components/Wallet/XverseWallet/useWallet";
