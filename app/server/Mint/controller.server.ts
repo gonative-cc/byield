@@ -7,7 +7,7 @@ import {
 } from "./types";
 import type { QueryMintTxResp, Req } from "./jsonrpc";
 import type { BitcoinNetworkType } from "sats-connect";
-import { bitcoinConfigs } from "~/hooks/useBitcoinConfig";
+import { mustGetBitcoinConfig } from "~/hooks/useBitcoinConfig";
 
 export default class Controller {
 	indexerBaseUrl: string | null = null;
@@ -63,7 +63,7 @@ export default class Controller {
 	}
 
 	private handleNetwork(network: BitcoinNetworkType) {
-		const networkConfig = bitcoinConfigs[network];
+		const networkConfig = mustGetBitcoinConfig(network);
 		this.indexerBaseUrl = networkConfig?.indexerUrl || null;
 	}
 

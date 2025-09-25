@@ -7,7 +7,7 @@ import type { Route } from "./+types/mint";
 import Controller from "~/server/Mint/controller.server";
 import { useFetcher } from "react-router";
 import { makeReq, type QueryMintTxResp } from "~/server/Mint/jsonrpc";
-import { useContext, useEffect, useRef, useCallback } from "react";
+import { useContext, useEffect, useRef, useCallback, useMemo } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { BlockInfoCard } from "~/components/ui/BlockInfoCard";
 import { FAQ } from "~/components/FAQ";
@@ -102,7 +102,7 @@ export default function Mint() {
 	const prevSuiAddrRef = useRef<string | null>(null);
 	const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-	const mintTxs = mintTxFetcher.data ?? null;
+	const mintTxs = useMemo(() =>  mintTxFetcher.data || [] ,[mintTxFetcher.data]);
 	const isLoading = mintTxFetcher.state !== "idle";
 	const hasError = mintTxFetcher.state === "idle" && mintTxFetcher.data === undefined && suiAddr;
 	const error = hasError ? "Failed to load transactions" : null;

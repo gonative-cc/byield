@@ -11,6 +11,7 @@ export enum MintingStatus {
 
 export type MintingTxStatus = `${MintingStatus}`;
 
+// TODO: this type should be imported from a worker, to assure we have consistent behaviour
 export interface IndexerTransaction {
 	btc_tx_id: string;
 	amount_sats: number;
