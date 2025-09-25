@@ -17,6 +17,8 @@ import { toast } from "~/hooks/use-toast";
 import { setupBufferPolyfill } from "~/lib/buffer-polyfill";
 import { TxConfirmationModal } from "~/components/ui/TransactionConfirmationModal";
 import { putNBTCTX } from "~/server/Mint/mint";
+import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
+import { NBTCBalance } from "~/components/NBTCBalance";
 
 function formatSuiAddress(suiAddress: string) {
 	if (!suiAddress.toLowerCase().startsWith("0x")) {
@@ -87,12 +89,14 @@ interface MintNBTCForm {
 }
 
 export function MintBTC() {
+	const { balance: nBTCBalance } = useCoinBalance();
 	const [txId, setTxId] = useState<string | undefined>(undefined);
 	const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 	const { connectWallet } = useXverseConnect();
 	const { balance: walletBalance, currentAddress, network } = useXverseWallet();
 	const { isWalletConnected, suiAddr } = useContext(WalletContext);
 	const isBitCoinWalletConnected = isWalletConnected(Wallets.Xverse);
+	const isSuiWalletConnected = isWalletConnected(Wallets.SuiWallet);
 	const cfg = useBitcoinConfig();
 
 	const mintNBTCForm = useForm<MintNBTCForm>({
@@ -149,9 +153,7 @@ export function MintBTC() {
 			>
 				<div className="card w-full">
 					<div className="card-body p-4 sm:p-6 rounded-lg flex flex-col space-y-4">
-						{isBitCoinWalletConnected && walletBalance && (
-							<BitcoinBalance availableBalance={walletBalance} />
-						)}
+						{isSuiWalletConnected && <NBTCBalance balance={nBTCBalance} />}
 						<FormNumericInput
 							required
 							name="numberOfBTC"
