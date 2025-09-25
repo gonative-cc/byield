@@ -5,7 +5,7 @@ import { twMerge } from "tailwind-merge";
 import { primaryHeadingClasses, avatarGradientClasses } from "~/util/tailwind";
 
 const TableHead = <T extends object>({ headerGroups }: { headerGroups: HeaderGroup<T>[] }) => (
-	<thead className="sticky top-0 z-10">
+	<thead className="sticky top-0">
 		{headerGroups.map((headerGroup) => (
 			<tr
 				{...headerGroup.getHeaderGroupProps()}

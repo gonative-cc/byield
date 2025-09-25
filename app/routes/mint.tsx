@@ -160,7 +160,7 @@ export default function Mint() {
 						Mint<span className="text-primary"> nBTC</span>
 					</span>
 					<p className="text-muted-foreground text-lg">
-						Deposit Bitcoin and mint native Bitcoin tokens on Sui network
+						Deposit Bitcoin and mint Native Bitcoin tokens on Sui network
 					</p>
 				</div>
 			</div>
