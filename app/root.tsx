@@ -74,19 +74,21 @@ export function Layout({ children }: { children: React.ReactNode }) {
 function NativeApp({ children }: { children: React.ReactNode }) {
 	// TODO: remove this after auction. enforce network change
 	// TODO: use wallet API to switch the network
-	const [network, setNetwork] = useState<"testnet" | "mainnet">("testnet");
+
 	const location = useLocation();
 	const pathname = location.pathname;
 
-	useEffect(() => {
+	// Default network based on environment and route - but allow wallet to override
+	const defaultNetwork = (() => {
 		if (isProductionMode()) {
 			if (pathname === "/beelievers-auction") {
-				setNetwork("mainnet");
-			} else if (pathname === "/") {
-				setNetwork("testnet");
+				return "mainnet";
 			}
+			return "testnet";
 		}
-	}, [pathname]);
+		// In dev mode, default to localnet
+		return "localnet";
+	})();
 
 	useEffect(() => {
 		if (!isProductionMode()) {
@@ -98,7 +100,7 @@ function NativeApp({ children }: { children: React.ReactNode }) {
 		<>
 			<div className="flex flex-col min-h-screen w-full gap-4">
 				<QueryClientProvider client={queryClient}>
-					<SuiClientProvider networks={networkConfig} network={network}>
+					<SuiClientProvider networks={networkConfig} defaultNetwork={defaultNetwork}>
 						<SuiWalletProvider autoConnect>
 							<ByieldWalletProvider>
 								<main className="flex-1">{children}</main>
