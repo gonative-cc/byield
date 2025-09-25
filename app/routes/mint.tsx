@@ -102,7 +102,7 @@ export default function Mint() {
 	const prevSuiAddrRef = useRef<string | null>(null);
 	const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-	const mintTxs = useMemo(() =>  mintTxFetcher.data || [] ,[mintTxFetcher.data]);
+	const mintTxs = useMemo(() => mintTxFetcher.data || [], [mintTxFetcher.data]);
 	const isLoading = mintTxFetcher.state !== "idle";
 	const hasError = mintTxFetcher.state === "idle" && mintTxFetcher.data === undefined && suiAddr;
 	const error = hasError ? "Failed to load transactions" : null;
@@ -187,7 +187,7 @@ export default function Mint() {
 						<button
 							onClick={fetchMintTxs}
 							disabled={isLoading}
-							className="btn btn-sm btn-ghost flex items-center gap-2 hover:bg-base-200"
+							className="btn btn-sm btn-accent"
 							title="Refresh transactions"
 						>
 							<RefreshCw size={16} className={isLoading ? "animate-spin" : ""} />

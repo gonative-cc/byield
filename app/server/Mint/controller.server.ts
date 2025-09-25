@@ -8,10 +8,12 @@ import {
 import type { QueryMintTxResp, Req } from "./jsonrpc";
 import type { BitcoinNetworkType } from "sats-connect";
 import { mustGetBitcoinConfig } from "~/hooks/useBitcoinConfig";
+import { badRequest, serverError, notFound } from "../http-resp";
 
 export default class Controller {
 	indexerBaseUrl: string | null = null;
 
+	// TODO: remove this and use types from indexer.
 	private mapIndexerStatus(status: string): MintingTxStatus {
 		switch (status?.toLowerCase()) {
 			case "confirming":
@@ -48,7 +50,7 @@ export default class Controller {
 
 	private async getMintTxs(suiAddr: string): Promise<QueryMintTxResp | Response> {
 		if (!isValidSuiAddress(suiAddr)) {
-			return responseBadRequest();
+			return badRequest();
 		}
 		try {
 			const url = this.indexerBaseUrl + `/nbtc?sui_recipient=${suiAddr}`;
@@ -58,7 +60,7 @@ export default class Controller {
 			return mintTxs;
 		} catch (error) {
 			console.error("Failed to fetch the mint txs: ", error);
-			return responseServerError();
+			return serverError();
 		}
 	}
 
@@ -84,19 +86,7 @@ export default class Controller {
 			case "queryMintTx":
 				return this.getMintTxs(reqData.params[1]);
 			default:
-				return responseNotFound("Unknown method");
+				return notFound("Unknown method");
 		}
 	}
-}
-
-function responseBadRequest(msg: string = "Bad Request"): Response {
-	return new Response(msg, { status: 400 });
-}
-
-function responseNotFound(msg: string = "Not Found"): Response {
-	return new Response(msg, { status: 404 });
-}
-
-function responseServerError(msg: string = "Server Error"): Response {
-	return new Response(msg, { status: 500 });
 }
