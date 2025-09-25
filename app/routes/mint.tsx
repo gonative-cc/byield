@@ -98,7 +98,7 @@ export async function action({ request }: Route.ActionArgs) {
 export default function Mint() {
 	const { network } = useXverseWallet();
 	const { suiAddr } = useContext(WalletContext);
-	const mintTxFetcher = useFetcher<QueryMintTxResp>();
+	const mintTxFetcher = useFetcher<QueryMintTxResp>({ key: suiAddr || undefined });
 	const prevSuiAddrRef = useRef<string | null>(null);
 	const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -114,48 +114,29 @@ export default function Mint() {
 		}
 	}, [suiAddr, mintTxFetcher, network]);
 
-	// Refetch when suiAddr changes
-	useEffect(() => {
-		if (prevSuiAddrRef.current !== suiAddr) {
-			prevSuiAddrRef.current = suiAddr;
-			if (suiAddr) {
-				fetchMintTxs();
-			}
-		}
-	}, [suiAddr, fetchMintTxs]);
-
-	// Set up 2-minute interval for automatic refetching
+	// Handle address changes, interval setup, and initial fetch
 	useEffect(() => {
 		// Clear existing interval
 		if (intervalRef.current) {
 			clearInterval(intervalRef.current);
 		}
 
-		// Set up new interval if suiAddr exists
-		if (suiAddr) {
-			intervalRef.current = setInterval(() => {
-				fetchMintTxs();
-			}, 120000); // 2 minutes = 120,000ms
+		// Handle address change or initial fetch
+		if (prevSuiAddrRef.current !== suiAddr || (mintTxFetcher.state === "idle" && !mintTxs)) {
+			prevSuiAddrRef.current = suiAddr;
+			fetchMintTxs();
 		}
 
-		// Cleanup interval on unmount or when suiAddr changes
+		// Set up interval for automatic refetching
+		intervalRef.current = setInterval(fetchMintTxs, 120000);
+
+		// Cleanup interval
 		return () => {
 			if (intervalRef.current) {
 				clearInterval(intervalRef.current);
 			}
 		};
-	}, [suiAddr, fetchMintTxs]);
-
-	// Initial fetch when component mounts and suiAddr is available
-	useEffect(() => {
-		if (mintTxFetcher.state === "idle" && suiAddr && !mintTxs) {
-			fetchMintTxs();
-		}
-		// reset fetcher on wallet disconnect
-		if (suiAddr === null) {
-			mintTxFetcher.submit(null);
-		}
-	}, [mintTxFetcher.state, suiAddr, mintTxs, fetchMintTxs, mintTxFetcher]);
+	}, [suiAddr, fetchMintTxs, mintTxFetcher.state, mintTxs, mintTxFetcher]);
 
 	return (
 		<div className="mx-auto px-4 py-4 space-y-6">
