@@ -1,5 +1,3 @@
- 
-
 export function badRequest(msg: string = "Bad Request"): Response {
 	return new Response(msg, { status: 400 });
 }
