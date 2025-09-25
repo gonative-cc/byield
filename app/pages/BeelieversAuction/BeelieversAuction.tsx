@@ -10,10 +10,23 @@ import { removeDuplicates, sortAndCheckDuplicate } from "~/lib/batteries";
 import { RaffleTable } from "./RaffleTable";
 import { MintInfo } from "./MintInfo";
 import { Info as AuctionInfoSection } from "./Info";
-import { FAQ } from "./FAQ";
 import { Collapse } from "~/components/ui/collapse";
 import { NBTCRaw } from "~/components/icons";
 import { formatSUI } from "~/lib/denoms";
+import { FAQ } from "~/components/FAQ";
+
+const FAQS = [
+	{
+		id: "faq-1",
+		question: "Can I trade Beelievers NFTs after the mint?",
+		answer: "Yes. After mint, Beelievers NFTs will be available for secondary trading on Tradeport and other supported marketplaces.",
+	},
+	{
+		id: "faq-2",
+		question: "What's the total supply?",
+		answer: "The Beelievers collection includes 6,021 NFTs.",
+	},
+];
 
 function getAuctionState(startMs: number, endMs: number, clearingPrice: number | null): AuctionState {
 	const nowMs = new Date().getTime();
@@ -122,7 +135,7 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 				alt="partners"
 				className="text-center mx-auto w-auto"
 			/>
-			<FAQ />
+			<FAQ faqs={FAQS} description="Everything you need to know about Beelievers NFTs" />
 		</div>
 	);
 }
