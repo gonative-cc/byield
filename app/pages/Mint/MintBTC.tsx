@@ -95,7 +95,6 @@ export function MintBTC() {
 	const { balance: walletBalance, currentAddress, network } = useXverseWallet();
 	const { isWalletConnected, suiAddr } = useContext(WalletContext);
 	const isBitCoinWalletConnected = isWalletConnected(Wallets.Xverse);
-	const isSuiWalletConnected = isWalletConnected(Wallets.SuiWallet);
 	const cfg = useBitcoinConfig();
 
 	const mintNBTCForm = useForm<MintNBTCForm>({
@@ -152,7 +151,7 @@ export function MintBTC() {
 			>
 				<div className="card w-full">
 					<div className="card-body p-4 sm:p-6 rounded-lg flex flex-col space-y-4">
-						{isSuiWalletConnected && <NBTCBalance balance={nBTCBalance} />}
+						<NBTCBalance balance={nBTCBalance} />
 						<FormNumericInput
 							required
 							name="numberOfBTC"
