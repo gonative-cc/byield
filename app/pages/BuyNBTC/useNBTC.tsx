@@ -6,12 +6,11 @@ import type { TransactionResult } from "@mysten/sui/transactions";
 
 import { toast } from "~/hooks/use-toast";
 import { formatSUI } from "~/lib/denoms";
-import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
-import type { UseCoinBalanceResult } from "~/components/Wallet/SuiWallet/useBalance";
 import { GA_EVENT_NAME, GA_CATEGORY, useGoogleAnalytics } from "~/lib/googleAnalytics";
 import { useNetworkVariables } from "~/networkConfig";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
+import type { BalanceProps } from "~/types/balance";
 
 import { moveCallTarget, type NbtcOtcCfg } from "~/config/sui/contracts-config";
 
@@ -90,27 +89,23 @@ interface UseNBTCReturn {
 	isSuiWalletConnected: boolean;
 }
 
-interface NBTCProps {
+interface NBTCProps extends BalanceProps {
 	variant: "BUY" | "SELL";
 }
 
-// TODO: need to update this function. It is doing too many things!
-// Ideally it is only handling a transaction, and balance tracking should be done separately,
-// in another component, higher level up.
-export const useBuySellNBTC = ({ variant }: NBTCProps): UseNBTCReturn => {
+export const useBuySellNBTC = ({
+	variant,
+	nbtcBalanceRes,
+	suiBalanceRes,
+	nbtcCoin,
+}: NBTCProps): UseNBTCReturn => {
 	const shouldBuy = variant === "BUY";
 	const account = useCurrentAccount();
 	const client = useSuiClient();
 	const { isWalletConnected } = useContext(WalletContext);
 	const { trackEvent } = useGoogleAnalytics();
-	const { nbtcOTC, nbtc: nbtcCfg } = useNetworkVariables();
+	const { nbtcOTC } = useNetworkVariables();
 	const isSuiWalletConnected = isWalletConnected(Wallets.SuiWallet);
-
-	const nbtcCoin = nbtcCfg.pkgId + nbtcCfg.coinType;
-
-	// Always call hooks in a consistent order to satisfy rules-of-hooks
-	const nbtcBalanceRes: UseCoinBalanceResult = useCoinBalance(nbtcCoin);
-	const suiBalanceRes: UseCoinBalanceResult = useCoinBalance();
 
 	const {
 		mutate: signAndExecuteTransaction,
