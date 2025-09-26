@@ -1,4 +1,3 @@
-import { BitcoinBalance } from "../../components/BitcoinBalance";
 import { FormProvider, useForm } from "react-hook-form";
 import { FormInput } from "../../components/form/FormInput";
 import { useXverseConnect, useXverseWallet } from "../../components/Wallet/XverseWallet/useWallet";
@@ -17,6 +16,8 @@ import { toast } from "~/hooks/use-toast";
 import { setupBufferPolyfill } from "~/lib/buffer-polyfill";
 import { TxConfirmationModal } from "~/components/ui/TransactionConfirmationModal";
 import { putNBTCTX } from "~/server/Mint/mint";
+import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
+import { NBTCBalance } from "~/components/NBTCBalance";
 
 function formatSuiAddress(suiAddress: string) {
 	if (!suiAddress.toLowerCase().startsWith("0x")) {
@@ -91,6 +92,7 @@ interface MintBTCProps {
 }
 
 export function MintBTC({ onTransactionBroadcast }: MintBTCProps = {}) {
+	const { balance: nBTCBalance } = useCoinBalance();
 	const [txId, setTxId] = useState<string | undefined>(undefined);
 	const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 	const { connectWallet } = useXverseConnect();
@@ -161,9 +163,7 @@ export function MintBTC({ onTransactionBroadcast }: MintBTCProps = {}) {
 			>
 				<div className="card w-full">
 					<div className="card-body p-4 sm:p-6 rounded-lg flex flex-col space-y-4">
-						{isBitCoinWalletConnected && walletBalance && (
-							<BitcoinBalance availableBalance={walletBalance} />
-						)}
+						<NBTCBalance balance={nBTCBalance} />
 						<FormNumericInput
 							required
 							name="numberOfBTC"

@@ -24,22 +24,6 @@ export function TransactionStatus({ isSuccess, txnId, handleRetry }: Transaction
 				{isSuccess ? "Success" : "Failed"}
 			</div>
 			<div className="flex flex-col gap-2 items-center">
-				{isSuccess && (
-					<div className="max-w-md mx-auto p-4 text-center">
-						<p className="text-sm leading-relaxed">
-							If you want to increase your chances to be whitelisted for BTCFi Beelievers NFT,
-							please fill this{" "}
-							<a
-								target="_blank"
-								href="https://forms.gle/Hu4WUSfgQkp1xsyNA"
-								rel="noreferrer"
-								className="text-primary btn-link"
-							>
-								form.
-							</a>
-						</p>
-					</div>
-				)}
 				{txnId && (
 					<Link
 						target="_blank"
