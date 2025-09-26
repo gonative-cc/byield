@@ -11,6 +11,14 @@ export enum MintingStatus {
 
 export type MintingTxStatus = `${MintingStatus}`;
 
+// scriptPubKey hex of the locking script (NOT a public key)
+export type UTXO = {
+	scriptpubkey: string;
+	txid: string;
+	value: number;
+	vout: number;
+};
+
 // TODO: this type should be imported from a worker, to assure we have consistent behaviour
 export interface IndexerTransaction {
 	btc_tx_id: string;

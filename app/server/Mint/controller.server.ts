@@ -7,6 +7,7 @@ import { badRequest, serverError, notFound } from "../http-resp";
 
 export default class Controller {
 	indexerBaseUrl: string | null = null;
+	btcRPCUrl: string | null = null;
 
 	private convertIndexerTransaction(tx: IndexerTransaction): MintTransaction {
 		return {
@@ -36,14 +37,41 @@ export default class Controller {
 			const mintTxs: MintTransaction[] = data.map((tx) => this.convertIndexerTransaction(tx));
 			return mintTxs;
 		} catch (error) {
-			console.error("Failed to fetch the mint txs: ", error);
+			console.error({ msg: "Failed to fetch the mint txs", error, url: this.indexerBaseUrl });
 			return serverError();
 		}
+	}
+
+	private async queryUTXOsByAddr(address: string) {
+		const rpcUrl = `${this.btcRPCUrl}/address/${encodeURIComponent(address!)}/utxo`;
+		console.trace({ msg: "Querying UTXOs by address", rpcUrl, address });
+		const rpcResponse = await fetch(rpcUrl);
+		if (!rpcResponse.ok) {
+			console.error({
+				msg: "Bitcoin RPC responded with error",
+				status: rpcResponse.status,
+				statusText: rpcResponse.statusText,
+				rpcUrl,
+				address,
+			});
+			return serverError(
+				`Bitcoin RPC error: ${rpcResponse.status} ${rpcResponse.statusText}`,
+			);
+		}
+
+		const data = await rpcResponse.json();
+		console.debug({
+			msg: "Fetched UTXOs",
+			count: Array.isArray(data) ? data.length : undefined,
+			address,
+		});
+		return Response.json(data);
 	}
 
 	private handleNetwork(network: BitcoinNetworkType) {
 		const networkConfig = mustGetBitcoinConfig(network);
 		this.indexerBaseUrl = networkConfig?.indexerUrl || null;
+		this.btcRPCUrl = networkConfig?.btcRPCUrl || null;
 	}
 
 	async handleJsonRPC(r: Request) {
@@ -51,7 +79,7 @@ export default class Controller {
 		try {
 			reqData = await r.json<Req>();
 		} catch (_err) {
-			console.log(">>>>> Expected JSON content type:", _err);
+			console.error({ msg: "Expecting JSON Content-Type and JSON body", error: _err });
 			return new Response("Expecting JSON Content-Type and JSON body", {
 				status: 400,
 			});
@@ -62,6 +90,9 @@ export default class Controller {
 		switch (reqData.method) {
 			case "queryMintTx":
 				return this.getMintTxs(reqData.params[1]);
+			case "queryUTXOsByAddr":
+				return this.queryUTXOsByAddr(reqData.params[1]);
+			// TODO: implement putNBTCTx case and method for transaction submission to indexer)
 			default:
 				return notFound("Unknown method");
 		}
