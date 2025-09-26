@@ -1,10 +1,5 @@
 import { isValidSuiAddress } from "@mysten/sui/utils";
-import {
-	MintingStatus,
-	type IndexerTransaction,
-	type MintingTxStatus,
-	type MintTransaction,
-} from "./types";
+import { type IndexerTransaction, type MintTransaction } from "./types";
 import type { QueryMintTxResp, Req } from "./jsonrpc";
 import type { BitcoinNetworkType } from "sats-connect";
 import { mustGetBitcoinConfig } from "~/hooks/useBitcoinConfig";
@@ -13,29 +8,11 @@ import { badRequest, serverError, notFound } from "../http-resp";
 export default class Controller {
 	indexerBaseUrl: string | null = null;
 
-	// TODO: remove this and use types from indexer.
-	private mapIndexerStatus(status: string): MintingTxStatus {
-		switch (status?.toLowerCase()) {
-			case "confirming":
-				return MintingStatus.Confirming;
-			case "finalized":
-				return MintingStatus.Finalized;
-			case "minted":
-				return MintingStatus.Minted;
-			case "failed":
-				return MintingStatus.Failed;
-			case "reorg":
-				return MintingStatus.Reorg;
-			default:
-				return MintingStatus.Unknown;
-		}
-	}
-
 	private convertIndexerTransaction(tx: IndexerTransaction): MintTransaction {
 		return {
 			bitcoinTxId: tx.btc_tx_id,
 			amountInSatoshi: tx.amount_sats,
-			status: this.mapIndexerStatus(tx.status),
+			status: tx.status,
 			suiAddress: tx.sui_recipient,
 			suiTxId: tx.sui_tx_id,
 			timestamp: tx.created_at,
