@@ -15,7 +15,7 @@ export type MintingTxStatus = `${MintingStatus}`;
 export interface IndexerTransaction {
 	btc_tx_id: string;
 	amount_sats: number;
-	status: string;
+	status: MintingTxStatus;
 	sui_recipient: string;
 	sui_tx_id?: string;
 	created_at: number;
