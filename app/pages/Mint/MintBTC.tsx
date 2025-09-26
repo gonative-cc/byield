@@ -7,7 +7,6 @@ import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
 import { FormNumericInput } from "../../components/form/FormNumericInput";
 import { BTC, formatBTC, parseBTC, formatNBTC } from "~/lib/denoms";
-
 import { nBTCMintTx } from "~/lib/nbtc";
 import { BitcoinIcon } from "lucide-react";
 import { buttonEffectClasses, classNames } from "~/util/tailwind";
@@ -16,7 +15,8 @@ import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import { toast } from "~/hooks/use-toast";
 import { setupBufferPolyfill } from "~/lib/buffer-polyfill";
 import { TxConfirmationModal } from "~/components/ui/TransactionConfirmationModal";
-import { putNBTCTX } from "~/server/Mint/mint";
+import { makeReq } from "~/server/Mint/jsonrpc";
+import { useFetcher } from "react-router";
 
 function formatSuiAddress(suiAddress: string) {
 	if (!suiAddress.toLowerCase().startsWith("0x")) {
@@ -94,6 +94,9 @@ export function MintBTC() {
 	const { isWalletConnected, suiAddr } = useContext(WalletContext);
 	const isBitCoinWalletConnected = isWalletConnected(Wallets.Xverse);
 	const cfg = useBitcoinConfig();
+	const mintTxFetcher = useFetcher();
+	const utxosFetcher = useFetcher();
+	const [pendingMint, setPendingMint] = useState<MintNBTCForm | null>(null);
 
 	const mintNBTCForm = useForm<MintNBTCForm>({
 		mode: "all",
@@ -112,6 +115,26 @@ export function MintBTC() {
 		setupBufferPolyfill();
 	}, []);
 
+	useEffect(() => {
+		if (pendingMint && utxosFetcher.data) {
+			nBTCMintTx(
+				currentAddress!,
+				Number(parseBTC(pendingMint.numberOfBTC)),
+				formatSuiAddress(pendingMint.suiAddress),
+				network,
+				cfg,
+				utxosFetcher.data,
+			).then((response) => {
+				if (response?.status === "success") {
+					setTxId(response.result.txid);
+					setShowConfirmationModal(true);
+				}
+				// TODO: implement putNBTCTx functionality to submit transaction to indexer
+			});
+			setPendingMint(null);
+		}
+	}, [utxosFetcher.data, pendingMint]);
+
 	const handlenBTCMintTx = async ({ numberOfBTC, suiAddress }: MintNBTCForm) => {
 		if (currentAddress) {
 			if (!cfg.nBTC.depositAddress) {
@@ -124,18 +147,8 @@ export function MintBTC() {
 				return;
 			}
 
-			const response = await nBTCMintTx(
-				currentAddress,
-				Number(parseBTC(numberOfBTC)),
-				formatSuiAddress(suiAddress),
-				network,
-				cfg,
-			);
-			if (response && response.status === "success") {
-				setTxId(response.result.txid);
-				setShowConfirmationModal(true);
-				if (response.result.txid) await putNBTCTX(response.result.txid, network);
-			}
+			setPendingMint({ numberOfBTC, suiAddress });
+			makeReq(utxosFetcher, { method: "bitcoinService", params: [network, currentAddress.address] });
 		}
 	};
 
