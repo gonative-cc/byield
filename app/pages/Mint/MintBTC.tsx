@@ -86,7 +86,11 @@ interface MintNBTCForm {
 	suiAddress: string;
 }
 
-export function MintBTC() {
+interface MintBTCProps {
+	fetchMintTxs: () => void;
+}
+
+export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 	const [txId, setTxId] = useState<string | undefined>(undefined);
 	const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 	const { connectWallet } = useXverseConnect();
@@ -140,6 +144,7 @@ export function MintBTC() {
 						method: "putNBTCTx",
 						params: [network, response.result.txid],
 					});
+				fetchMintTxs();
 			}
 		}
 	};
