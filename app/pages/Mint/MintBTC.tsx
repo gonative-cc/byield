@@ -112,6 +112,7 @@ export function MintBTC() {
 	useEffect(() => setValue("suiAddress", suiAddr || ""), [setValue, suiAddr]);
 
 	useEffect(() => {
+		console.debug({ msg: "Setting up buffer polyfill for MintBTC page" });
 		setupBufferPolyfill();
 	}, []);
 
@@ -148,7 +149,7 @@ export function MintBTC() {
 			}
 
 			setPendingMint({ numberOfBTC, suiAddress });
-			makeReq(utxosFetcher, { method: "bitcoinService", params: [network, currentAddress.address] });
+			makeReq(utxosFetcher, { method: "queryUTXOsByAddr", params: [network, currentAddress.address] });
 		}
 	};
 

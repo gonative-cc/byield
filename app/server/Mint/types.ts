@@ -11,6 +11,7 @@ export enum MintingStatus {
 
 export type MintingTxStatus = `${MintingStatus}`;
 
+// scriptPubKey hex of the locking script (NOT a public key)
 export type UTXO = {
 	scriptpubkey: string;
 	txid: string;

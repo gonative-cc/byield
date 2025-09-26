@@ -10,7 +10,7 @@ export type Req =
 	  }
 	// TODO: add putNBTCTx method for transaction submission to indexer
 	| {
-			method: "bitcoinService";
+			method: "queryUTXOsByAddr";
 			// network, address
 			params: [BitcoinNetworkType, string];
 	  };
