@@ -46,6 +46,27 @@ export default class Controller {
 		}
 	}
 
+	private async handleBitcoinServiceRPC(address: string) {
+		const rpcUrl = `${this.btcRPCUrl}/address/${encodeURIComponent(address!)}/utxo`;
+		console.log("rpcUrl", rpcUrl);
+		const rpcResponse = await fetch(rpcUrl);
+		console.log("rpcResponse", rpcResponse);
+		if (!rpcResponse.ok) {
+			console.error(
+				"Bitcoin RPC responded with error:",
+				rpcResponse.status,
+				rpcResponse.statusText,
+			);
+			return serverError(
+				`Bitcoin RPC error: ${rpcResponse.status} ${rpcResponse.statusText}`,
+			);
+		}
+
+		const data = await rpcResponse.json();
+		console.log("data", data);
+		return Response.json(data);
+	}
+
 	private handleNetwork(network: BitcoinNetworkType) {
 		const networkConfig = mustGetBitcoinConfig(network);
 		this.indexerBaseUrl = networkConfig?.indexerUrl || null;
@@ -93,6 +114,7 @@ export default class Controller {
 			console.error({ msg: "Error posting tx hex:", error });
 			return serverError();
 		}
+
 	}
 
 	async handleJsonRPC(r: Request) {
@@ -111,6 +133,8 @@ export default class Controller {
 				return this.getMintTxs(reqData.params[1]);
 			case "postNBTCTx":
 				return this.postNBTCTx(reqData.params[1]);
+			case "bitcoinService":
+				return this.handleBitcoinServiceRPC(reqData.params[1]);
 			default:
 				return notFound("Unknown method");
 		}

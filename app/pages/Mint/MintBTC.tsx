@@ -101,6 +101,9 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 	const isBitCoinWalletConnected = isWalletConnected(Wallets.Xverse);
 	const cfg = useBitcoinConfig();
 	const postMintTxRPC = useFetcher();
+	const mintTxFetcher = useFetcher();
+	const utxosFetcher = useFetcher();
+	const [pendingMint, setPendingMint] = useState<MintNBTCForm | null>(null);
 
 	const mintNBTCForm = useForm<MintNBTCForm>({
 		mode: "all",
@@ -119,7 +122,35 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 		setupBufferPolyfill();
 	}, []);
 
-	const handleBTCMintTx = async ({ numberOfBTC, suiAddress }: MintNBTCForm) => {
+	useEffect(() => {
+		if (pendingMint && utxosFetcher.data) {
+			nBTCMintTx(
+				currentAddress!,
+				Number(parseBTC(pendingMint.numberOfBTC)),
+				formatSuiAddress(pendingMint.suiAddress),
+				network,
+				cfg,
+				utxosFetcher.data,
+			).then(async (response) => {
+				if (response?.status === "success") {
+					setTxId(response.result.txid);
+					setShowConfirmationModal(true);
+
+					// ADD THIS: Post transaction to indexer
+					if (response.result.txid) {
+						await makeReq(postMintTxRPC, {
+							method: "postNBTCTx",
+							params: [network, response.result.txid],
+						});
+						fetchMintTxs();
+					}
+				}
+			});
+			setPendingMint(null);
+		}
+	}, [utxosFetcher.data, pendingMint]);
+
+	const handlenBTCMintTx = async ({ numberOfBTC, suiAddress }: MintNBTCForm) => {
 		if (currentAddress) {
 			if (!cfg.nBTC.depositAddress) {
 				console.error("ERROR: Missing depositAddress in bitcoin config for network:", network);
@@ -131,24 +162,8 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 				return;
 			}
 
-			const response = await nBTCMintTx(
-				currentAddress,
-				Number(parseBTC(numberOfBTC)),
-				formatSuiAddress(suiAddress),
-				network,
-				cfg,
-			);
-			if (response && response.status === "success") {
-				setTxId(response.result.txid);
-				setShowConfirmationModal(true);
-				if (response.result.txid)
-					// TODO: handle the response correctly: https://github.com/gonative-cc/byield/issues/501
-					await makeReq(postMintTxRPC, {
-						method: "postNBTCTx",
-						params: [network, response.result.txid],
-					});
-				fetchMintTxs();
-			}
+			setPendingMint({ numberOfBTC, suiAddress });
+			makeReq(utxosFetcher, { method: "bitcoinService", params: [network, currentAddress.address] });
 		}
 	};
 
@@ -156,7 +171,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 		<FormProvider {...mintNBTCForm}>
 			<form
 				onSubmit={handleSubmit(async (form) => {
-					handleBTCMintTx({ ...form });
+					handlenBTCMintTx({ ...form });
 				})}
 				className="w-full"
 			>
