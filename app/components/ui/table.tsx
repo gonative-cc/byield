@@ -53,7 +53,7 @@ const TableRows = <T extends object>({
 			const isLastRow = index === rows.length - 1;
 
 			const rowProps = row.getRowProps();
-			const { ...restRowProps } = rowProps;
+			const { key, ...restRowProps } = rowProps;
 
 			return (
 				<React.Fragment key={row.id}>
