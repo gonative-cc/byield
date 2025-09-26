@@ -6,7 +6,6 @@ import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
 import { FormNumericInput } from "../../components/form/FormNumericInput";
 import { BTC, formatBTC, parseBTC, formatNBTC } from "~/lib/denoms";
-
 import { nBTCMintTx } from "~/lib/nbtc";
 import { BitcoinIcon } from "lucide-react";
 import { buttonEffectClasses, classNames } from "~/util/tailwind";
@@ -15,7 +14,8 @@ import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import { toast } from "~/hooks/use-toast";
 import { setupBufferPolyfill } from "~/lib/buffer-polyfill";
 import { TxConfirmationModal } from "~/components/ui/TransactionConfirmationModal";
-import { putNBTCTX } from "~/server/Mint/mint";
+import { makeReq } from "~/server/Mint/jsonrpc";
+import { useFetcher } from "react-router";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { NBTCBalance } from "~/components/NBTCBalance";
 
@@ -96,6 +96,7 @@ export function MintBTC() {
 	const { isWalletConnected, suiAddr } = useContext(WalletContext);
 	const isBitCoinWalletConnected = isWalletConnected(Wallets.Xverse);
 	const cfg = useBitcoinConfig();
+	const mintTxFetcher = useFetcher();
 
 	const mintNBTCForm = useForm<MintNBTCForm>({
 		mode: "all",
@@ -136,7 +137,11 @@ export function MintBTC() {
 			if (response && response.status === "success") {
 				setTxId(response.result.txid);
 				setShowConfirmationModal(true);
-				if (response.result.txid) await putNBTCTX(response.result.txid, network);
+				if (response.result.txid)
+					await makeReq(mintTxFetcher, {
+						method: "putNBTCTx",
+						params: [network, response.result.txid],
+					});
 			}
 		}
 	};

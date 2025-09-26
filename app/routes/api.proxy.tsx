@@ -12,8 +12,6 @@ export async function loader({ request }: { request: Request }) {
 	try {
 		if (service === "bitcoin") {
 			return handleBitcoinService(url);
-		} else if (service === "indexer") {
-			return handleIndexerService(url);
 		} else {
 			return Response.json({ error: `Unknown service: ${service}` }, { status: 400 });
 		}
@@ -60,9 +58,6 @@ async function handleBitcoinService(url: URL) {
 		case "tx":
 			rpcUrl = `${bitcoinRpcUrl}/tx/${encodeURIComponent(txid!)}`;
 			break;
-		case "hex":
-			rpcUrl = `${bitcoinRpcUrl}/tx/${encodeURIComponent(txid!)}/hex`;
-			break;
 		default:
 			return Response.json({ error: `Unknown action: ${action}` }, { status: 400 });
 	}
@@ -83,80 +78,6 @@ async function handleBitcoinService(url: URL) {
 		);
 	}
 
-	if (action === "hex") {
-		return await rpcResponse.text();
-	}
 	const data = await rpcResponse.json();
-	return Response.json(data);
-}
-
-async function handleIndexerService(url: URL) {
-	const suiRecipient = url.searchParams.get("sui_recipient");
-	const bitcoinTxId = url.searchParams.get("bitcoin_tx_id");
-	const network = url.searchParams.get("network");
-	const action = url.searchParams.get("action");
-	const txHex = url.searchParams.get("txHex");
-
-	let nbtcUrl: URL;
-	try {
-		const indexerUrl = mustGetBitcoinConfig(network as BitcoinNetworkType).indexerUrl;
-		nbtcUrl = new URL("nbtc", indexerUrl);
-	} catch (error) {
-		const msg = `No bitcoin config for network: ${network}`;
-		console.error(msg, error);
-		// TODO: use standard functions to handle errors
-		return Response.json({ error: msg }, { status: 500 });
-	}
-
-	// TODO: we should use btcindexer/api client here, rather than making the requests ourselves.
-
-	// TODO: rename the action, this is post
-	// in general, we should use the RPC as we do in auction server
-	if (action === "putnbtctx") {
-		const indexerResponse = await fetch(nbtcUrl, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				"User-Agent": "BYield/1.0",
-			},
-			body: JSON.stringify({
-				txHex,
-			}),
-		});
-		return indexerResponse;
-	}
-
-	if (!suiRecipient && !bitcoinTxId) {
-		return Response.json(
-			{ error: "Missing required parameter: sui_recipient or bitcoin_tx_id" },
-			{ status: 400 },
-		);
-	}
-
-	const reqUrl = bitcoinTxId
-		? `${nbtcUrl}/tx/${encodeURIComponent(bitcoinTxId)}`
-		: `${nbtcUrl}?sui_recipient=${encodeURIComponent(suiRecipient!)}`;
-
-	const indexerResponse = await fetch(reqUrl, {
-		method: "GET",
-		headers: {
-			"Content-Type": "application/json",
-			"User-Agent": "Byield-Frontend/1.0",
-		},
-	});
-
-	if (!indexerResponse.ok) {
-		const errorText = await indexerResponse.text();
-		console.error("Indexer error:", indexerResponse.status, errorText);
-		return Response.json(
-			{
-				error: `Indexer service error: ${indexerResponse.status} ${indexerResponse.statusText}`,
-				details: errorText,
-			},
-			{ status: indexerResponse.status },
-		);
-	}
-
-	const data = await indexerResponse.json();
 	return Response.json(data);
 }
