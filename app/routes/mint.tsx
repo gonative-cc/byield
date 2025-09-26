@@ -2,10 +2,16 @@ import { RegtestInstructions } from "~/pages/Mint/RegtestInstructions";
 import { MintBTC } from "~/pages/Mint/MintBTC";
 import { MintBTCTable } from "~/pages/Mint/MintBTCTable";
 import { Collapse } from "~/components/ui/collapse";
-import { useNbtcTxs } from "~/hooks/useNbtcTransactions";
 import { RefreshCw } from "lucide-react";
+import type { Route } from "./+types/mint";
+import Controller from "~/server/Mint/controller.server";
+import { useFetcher } from "react-router";
+import { makeReq, type QueryMintTxResp } from "~/server/Mint/jsonrpc";
+import { useContext, useEffect, useRef, useCallback, useMemo } from "react";
+import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { BlockInfoCard } from "~/components/ui/BlockInfoCard";
 import { FAQ } from "~/components/FAQ";
+import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
 
 const FAQS = [
 	{
@@ -83,8 +89,54 @@ const FAQS = [
 	},
 ];
 
+// This is a server mint to post data to server (data mutations)
+export async function action({ request }: Route.ActionArgs) {
+	const ctrl = new Controller();
+	return ctrl.handleJsonRPC(request);
+}
+
 export default function Mint() {
-	const { txs: transactions, isLoading, error, refetch, addPendingTx } = useNbtcTxs();
+	const { network } = useXverseWallet();
+	const { suiAddr } = useContext(WalletContext);
+	const mintTxFetcher = useFetcher<QueryMintTxResp>({ key: suiAddr || undefined });
+	const prevSuiAddrRef = useRef<string | null>(null);
+	const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+	const mintTxs = useMemo(() => mintTxFetcher.data || [], [mintTxFetcher.data]);
+	const isLoading = mintTxFetcher.state !== "idle";
+	const hasError = mintTxFetcher.state === "idle" && mintTxFetcher.data === undefined && suiAddr;
+	const error = hasError ? "Failed to load transactions" : null;
+
+	// Function to fetch mint transactions
+	const fetchMintTxs = useCallback(() => {
+		if (suiAddr) {
+			makeReq<QueryMintTxResp>(mintTxFetcher, { method: "queryMintTx", params: [network, suiAddr] });
+		}
+	}, [suiAddr, mintTxFetcher, network]);
+
+	// Handle address changes, interval setup, and initial fetch
+	useEffect(() => {
+		// Clear existing interval
+		if (intervalRef.current) {
+			clearInterval(intervalRef.current);
+		}
+
+		// Handle address change or initial fetch
+		if (prevSuiAddrRef.current !== suiAddr || (mintTxFetcher.state === "idle" && !mintTxs)) {
+			prevSuiAddrRef.current = suiAddr;
+			fetchMintTxs();
+		}
+
+		// Set up interval for automatic refetching
+		intervalRef.current = setInterval(fetchMintTxs, 120000);
+
+		// Cleanup interval
+		return () => {
+			if (intervalRef.current) {
+				clearInterval(intervalRef.current);
+			}
+		};
+	}, [suiAddr, fetchMintTxs, mintTxFetcher.state, mintTxs, mintTxFetcher]);
 
 	return (
 		<div className="mx-auto px-4 py-4 space-y-6">
@@ -105,38 +157,39 @@ export default function Mint() {
 						<RegtestInstructions />
 					</Collapse>
 					<BlockInfoCard />
-					<MintBTC onTransactionBroadcast={addPendingTx} />
+					<MintBTC />
 				</div>
 			</div>
 
 			{/* Transaction Table Section */}
-			<div className="space-y-4">
-				<div className="flex justify-end">
-					<button
-						onClick={refetch}
-						disabled={isLoading}
-						className="btn btn-sm btn-ghost flex items-center gap-2 hover:bg-base-200"
-						title="Refresh transactions"
-					>
-						<RefreshCw size={16} className={isLoading ? "animate-spin" : ""} />
-						Refresh
-					</button>
-				</div>
-
-				{error && (
-					<div className="alert">
-						<div>
-							<div className="font-medium">Failed to load transactions</div>
-							<div className="text-sm opacity-80">{error}</div>
-							<button onClick={refetch} className="btn btn-sm mt-2">
-								Retry
-							</button>
-						</div>
+			{suiAddr && (
+				<div className="space-y-4">
+					<div className="flex justify-end">
+						<button
+							onClick={fetchMintTxs}
+							disabled={isLoading}
+							className="btn btn-sm btn-accent"
+							title="Refresh transactions"
+						>
+							<RefreshCw size={16} className={isLoading ? "animate-spin" : ""} />
+							Refresh
+						</button>
 					</div>
-				)}
 
-				<MintBTCTable data={transactions} isLoading={isLoading} />
-			</div>
+					{error && (
+						<div className="alert">
+							<div>
+								<div className="font-medium">Failed to load transactions</div>
+								<div className="text-sm opacity-80">{error}</div>
+								<button onClick={fetchMintTxs} className="btn btn-sm mt-2">
+									Retry
+								</button>
+							</div>
+						</div>
+					)}
+					<MintBTCTable data={mintTxs || []} isLoading={isLoading} />
+				</div>
+			)}
 			<div className="flex justify-center">
 				<FAQ faqs={FAQS} />
 			</div>
