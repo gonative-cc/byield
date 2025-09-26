@@ -64,7 +64,7 @@ export default class Controller {
 			}
 			return await response.text();
 		} catch (error) {
-			console.error("Error fetching tx hex:", error);
+			console.error({ msg: "Error fetching tx hex:", error });
 			return serverError();
 		}
 	}
@@ -90,7 +90,7 @@ export default class Controller {
 			}
 			return response;
 		} catch (error) {
-			console.error("Error posting tx hex:", error);
+			console.error({ msg: "Error posting tx hex:", error });
 			return serverError();
 		}
 	}
