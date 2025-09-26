@@ -41,29 +41,34 @@ export default class Controller {
 			const mintTxs: MintTransaction[] = data.map((tx) => this.convertIndexerTransaction(tx));
 			return mintTxs;
 		} catch (error) {
-			console.error("Failed to fetch the mint txs: ", error);
+			console.error({ msg: "Failed to fetch the mint txs", error, url: this.indexerBaseUrl });
 			return serverError();
 		}
 	}
 
-	private async handleBitcoinServiceRPC(address: string) {
+	private async queryUTXOsByAddr(address: string) {
 		const rpcUrl = `${this.btcRPCUrl}/address/${encodeURIComponent(address!)}/utxo`;
-		console.log("rpcUrl", rpcUrl);
+		console.trace({ msg: "Querying UTXOs by address", rpcUrl, address });
 		const rpcResponse = await fetch(rpcUrl);
-		console.log("rpcResponse", rpcResponse);
 		if (!rpcResponse.ok) {
-			console.error(
-				"Bitcoin RPC responded with error:",
-				rpcResponse.status,
-				rpcResponse.statusText,
-			);
+			console.error({
+				msg: "Bitcoin RPC responded with error",
+				status: rpcResponse.status,
+				statusText: rpcResponse.statusText,
+				rpcUrl,
+				address,
+			});
 			return serverError(
 				`Bitcoin RPC error: ${rpcResponse.status} ${rpcResponse.statusText}`,
 			);
 		}
 
 		const data = await rpcResponse.json();
-		console.log("data", data);
+		console.debug({
+			msg: "Fetched UTXOs",
+			count: Array.isArray(data) ? data.length : undefined,
+			address,
+		});
 		return Response.json(data);
 	}
 
@@ -122,7 +127,7 @@ export default class Controller {
 		try {
 			reqData = await r.json<Req>();
 		} catch (_err) {
-			console.log(">>>>> Expected JSON content type:", _err);
+			console.error({ msg: "Expecting JSON Content-Type and JSON body", error: _err });
 			return new Response("Expecting JSON Content-Type and JSON body", {
 				status: 400,
 			});
@@ -133,8 +138,8 @@ export default class Controller {
 				return this.getMintTxs(reqData.params[1]);
 			case "postNBTCTx":
 				return this.postNBTCTx(reqData.params[1]);
-			case "bitcoinService":
-				return this.handleBitcoinServiceRPC(reqData.params[1]);
+			case "queryUTXOsByAddr":
+				return this.queryUTXOsByAddr(reqData.params[1]);
 			default:
 				return notFound("Unknown method");
 		}

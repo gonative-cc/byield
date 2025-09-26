@@ -14,7 +14,7 @@ export type Req =
 			params: [BitcoinNetworkType, string];
 	  }
 	| {
-			method: "bitcoinService";
+			method: "queryUTXOsByAddr";
 			// network, address
 			params: [BitcoinNetworkType, string];
 	  };
