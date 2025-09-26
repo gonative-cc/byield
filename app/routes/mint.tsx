@@ -181,7 +181,7 @@ export default function Mint() {
 						/>
 					</div>
 					<BlockInfoCard />
-					<MintBTC />
+					<MintBTC fetchMintTxs={fetchMintTxs} />
 				</div>
 			</div>
 
