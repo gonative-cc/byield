@@ -12,6 +12,7 @@ import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { BlockInfoCard } from "~/components/ui/BlockInfoCard";
 import { FAQ } from "~/components/FAQ";
 import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
+import type { BitcoinNetworkType } from "sats-connect";
 
 const FAQS = [
 	{
@@ -91,7 +92,9 @@ const FAQS = [
 
 // This is a server mint to post data to server (data mutations)
 export async function action({ request }: Route.ActionArgs) {
-	const ctrl = new Controller();
+	const reqData = await request.clone().json();
+	const network = (reqData as { params: [BitcoinNetworkType] }).params[0];
+	const ctrl = new Controller(network);
 	return ctrl.handleJsonRPC(request);
 }
 
