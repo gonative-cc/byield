@@ -55,21 +55,21 @@
 		"tailwindcss-animate": "^1.0.7"
 	},
 	"devDependencies": {
-		"@cloudflare/vite-plugin": "^1.13.3",
-		"@cloudflare/vitest-pool-workers": "^0.9.3",
+		"@cloudflare/vite-plugin": "^1.13.7",
+		"@cloudflare/vitest-pool-workers": "^0.9.7",
 		"@eslint/compat": "^1.4.0",
 		"@eslint/js": "^9.36.0",
 		"@mysten/utils": "^0.2.0",
-		"@react-router/dev": "^7.9.1",
+		"@react-router/dev": "^7.9.3",
 		"@tailwindcss/postcss": "^4.1.13",
 		"@tailwindcss/vite": "^4.1.13",
 		"@testing-library/jest-dom": "^6.8.0",
 		"@testing-library/react": "^16.3.0",
 		"@types/node": "^24.5.2",
-		"@types/react": "^19.1.13",
+		"@types/react": "^19.1.15",
 		"@types/react-dom": "^19.1.9",
 		"@types/react-router": "^5.1.20",
-		"daisyui": "^5.1.14",
+		"daisyui": "^5.1.25",
 		"eslint": "^9.36.0",
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-jsx-a11y": "^6.10.2",
@@ -79,8 +79,8 @@
 		"globals": "^16.4.0",
 		"jiti": "^2.6.0",
 		"jsdom": "^27.0.0",
-		"lint-staged": "^16.2.0",
-		"miniflare": "^4.20250917.0",
+		"lint-staged": "^16.2.3",
+		"miniflare": "^4.20250924.0",
 		"postcss": "^8.5.6",
 		"tailwindcss": "^4.1.13",
 		"typescript": "^5.9.2",
@@ -88,7 +88,7 @@
 		"vite": "^6.3.6",
 		"vite-tsconfig-paths": "^5.1.4",
 		"vitest": "^3.2.4",
-		"wrangler": "^4.38.0"
+		"wrangler": "^4.40.2"
 	},
 	"lint-staged": {
 		"*.{js,cjs,mjs,jsx,ts,tsx}": [
