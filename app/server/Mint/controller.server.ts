@@ -51,25 +51,17 @@ export default class Controller {
 		console.trace({ msg: "Querying nBTCUTXOs", address });
 		const rpcResponse = await fetch(rpcUrl);
 		if (!rpcResponse.ok) {
+			const error = await rpcResponse.text();
 			console.error({
 				msg: "Bitcoin RPC responded with error",
 				status: rpcResponse.status,
-				statusText: rpcResponse.statusText,
+				error,
 				rpcUrl,
 				address,
 			});
-			return serverError(
-				`Bitcoin RPC error: ${rpcResponse.status} ${rpcResponse.statusText}`,
-			);
+			return serverError(`Bitcoin RPC error: status: ${rpcResponse.status}, error: ${error}`);
 		}
-
-		const data = await rpcResponse.json();
-		console.debug({
-			msg: "Fetched UTXOs",
-			count: Array.isArray(data) ? data.length : undefined,
-			address,
-		});
-		return Response.json(data);
+		return rpcResponse;
 	}
 
 	private handleNetwork(network: BitcoinNetworkType) {

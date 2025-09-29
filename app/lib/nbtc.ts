@@ -30,9 +30,14 @@ export enum OpReturnFlag {
  * - Input: User's UTXO (funding source)
  * - Output 1: nBTC deposit address (BTC amount)
  * - Output 2: OP_RETURN with Sui recipient address
+ * - Output 3: Change back to user
+ *
+ * ## Change Handling:
+ * If UTXO value > (mint amount + fees + dust threshold), remainder goes back to user.
+ * Example: 1 BTC UTXO → mint 0.1 nBTC → 0.9 BTC change output created.
  *
  * ## OP_RETURN Format:
- * `[MINT_FLAG(0x00)][Sui_Address(32 bytes)]`
+ * `[op_return type:(0x00)][Sui_Address(32 bytes)]`
  *
  * @param bitcoinAddress - User's Bitcoin wallet address
  * @param mintAmountInSatoshi - BTC amount to deposit (satoshis)

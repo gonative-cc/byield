@@ -120,7 +120,6 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 	useEffect(() => setValue("suiAddress", suiAddr || ""), [setValue, suiAddr]);
 
 	useEffect(() => {
-		console.debug({ msg: "Setting up buffer polyfill for MintBTC page" });
 		setupBufferPolyfill();
 	}, []);
 

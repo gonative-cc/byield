@@ -87,7 +87,7 @@ function NativeApp({ children }: { children: React.ReactNode }) {
 			return "testnet";
 		}
 		// In dev mode, default to localnet
-		return "localnet";
+		return "testnet";
 	})();
 
 	useEffect(() => {
