@@ -100,7 +100,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 	const { isWalletConnected, suiAddr } = useContext(WalletContext);
 	const isBitCoinWalletConnected = isWalletConnected(Wallets.Xverse);
 	const cfg = useBitcoinConfig();
-	const mintTxFetcher = useFetcher();
+	const putMintTxFetcher = useFetcher();
 
 	const mintNBTCForm = useForm<MintNBTCForm>({
 		mode: "all",
@@ -142,7 +142,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 				setTxId(response.result.txid);
 				setShowConfirmationModal(true);
 				if (response.result.txid)
-					await makeReq(mintTxFetcher, {
+					await makeReq(putMintTxFetcher, {
 						method: "putNBTCTx",
 						params: [network, response.result.txid],
 					});
