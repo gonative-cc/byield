@@ -14,7 +14,8 @@ export type Req =
 			params: [BitcoinNetworkType, string];
 	  }
 	| {
-			method: "queryUTXOsByAddr";
+			// query all UTXOs associate with a give address / spending key
+			method: "queryUTXOs";
 			// network, address
 			params: [BitcoinNetworkType, string];
 	  };

@@ -46,9 +46,9 @@ export default class Controller {
 		}
 	}
 
-	private async queryUTXOsByAddr(address: string) {
+	private async queryUTXOs(address: string) {
 		const rpcUrl = `${this.btcRPCUrl}/address/${encodeURIComponent(address!)}/utxo`;
-		console.trace({ msg: "Querying UTXOs by address", rpcUrl, address });
+		console.trace({ msg: "Querying nBTCUTXOs", address });
 		const rpcResponse = await fetch(rpcUrl);
 		if (!rpcResponse.ok) {
 			console.error({
@@ -138,8 +138,8 @@ export default class Controller {
 				return this.getMintTxs(reqData.params[1]);
 			case "postNBTCTx":
 				return this.postNBTCTx(reqData.params[1]);
-			case "queryUTXOsByAddr":
-				return this.queryUTXOsByAddr(reqData.params[1]);
+			case "queryUTXOs":
+				return this.queryUTXOs(reqData.params[1]);
 			default:
 				return notFound("Unknown method");
 		}

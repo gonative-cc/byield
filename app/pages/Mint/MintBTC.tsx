@@ -102,7 +102,8 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 	const cfg = useBitcoinConfig();
 	const postMintTxRPC = useFetcher();
 	const mintTxFetcher = useFetcher();
-	const utxosFetcher = useFetcher();
+	// we need to query available user UTXOs to properly construct deposit TX with OP_RETURN
+	const userUtxosFetcher = useFetcher();
 	const [pendingMint, setPendingMint] = useState<MintNBTCForm | null>(null);
 
 	const mintNBTCForm = useForm<MintNBTCForm>({
@@ -124,14 +125,15 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 	}, []);
 
 	useEffect(() => {
-		if (pendingMint && utxosFetcher.data) {
+		if (pendingMint && userUtxosFetcher.data) {
 			nBTCMintTx(
 				currentAddress!,
 				Number(parseBTC(pendingMint.numberOfBTC)),
 				formatSuiAddress(pendingMint.suiAddress),
 				network,
 				cfg,
-				utxosFetcher.data,
+
+				userUtxosFetcher.data,
 			).then(async (response) => {
 				if (response?.status === "success") {
 					setTxId(response.result.txid);
@@ -149,7 +151,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 			});
 			setPendingMint(null);
 		}
-	}, [utxosFetcher.data, pendingMint]);
+	}, [userUtxosFetcher.data, pendingMint]);
 
 	const handlenBTCMintTx = async ({ numberOfBTC, suiAddress }: MintNBTCForm) => {
 		if (currentAddress) {
@@ -164,7 +166,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 			}
 
 			setPendingMint({ numberOfBTC, suiAddress });
-			makeReq(utxosFetcher, { method: "queryUTXOsByAddr", params: [network, currentAddress.address] });
+			makeReq(userUtxosFetcher, { method: "queryUTXOs", params: [network, currentAddress.address] });
 		}
 	};
 
