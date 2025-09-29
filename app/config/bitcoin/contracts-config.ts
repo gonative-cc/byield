@@ -14,6 +14,7 @@ export interface BitcoinConfig {
 	nBTC: NBTCConfig;
 	indexerUrl: string;
 	btcRPCUrl: string;
+	btcRPCAuthToken?: string;
 }
 
 export const mainnetCfg: BitcoinConfig = {
@@ -41,7 +42,8 @@ export const regtestCfg: BitcoinConfig = {
 		mintingFee: 10,
 	},
 	indexerUrl: "https://btcindexer.gonative-cc.workers.dev:443",
-	btcRPCUrl: "http://142.93.46.134:3002",
+	btcRPCUrl: import.meta.env.BTC_RPC_PROXY_URL || "http://142.93.46.134:3002",
+	btcRPCAuthToken: import.meta.env.BTC_RPC_AUTH_TOKEN,
 };
 
 export const bitcoinConfigs: Record<BitcoinNetworkType, BitcoinConfig | undefined> = {

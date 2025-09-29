@@ -8,6 +8,7 @@ import { badRequest, serverError, notFound } from "../http-resp";
 export default class Controller {
 	indexerBaseUrl: string | null = null;
 	btcRPCUrl: string | null = null;
+	btcRPCAuthToken: string | null = null;
 
 	private convertIndexerTransaction(tx: IndexerTransaction): MintTransaction {
 		return {
@@ -45,7 +46,16 @@ export default class Controller {
 	private async queryUTXOsByAddr(address: string) {
 		const rpcUrl = `${this.btcRPCUrl}/address/${encodeURIComponent(address!)}/utxo`;
 		console.trace({ msg: "Querying UTXOs by address", rpcUrl, address });
-		const rpcResponse = await fetch(rpcUrl);
+
+		const headers: Record<string, string> = {
+			"Content-Type": "application/json",
+		};
+
+		if (this.btcRPCAuthToken) {
+			headers["Authorization"] = `Bearer ${this.btcRPCAuthToken}`;
+		}
+
+		const rpcResponse = await fetch(rpcUrl, { headers });
 		if (!rpcResponse.ok) {
 			console.error({
 				msg: "Bitcoin RPC responded with error",
@@ -72,6 +82,7 @@ export default class Controller {
 		const networkConfig = mustGetBitcoinConfig(network);
 		this.indexerBaseUrl = networkConfig?.indexerUrl || null;
 		this.btcRPCUrl = networkConfig?.btcRPCUrl || null;
+		this.btcRPCAuthToken = networkConfig?.btcRPCAuthToken || null;
 	}
 
 	async handleJsonRPC(r: Request) {

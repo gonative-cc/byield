@@ -52,9 +52,12 @@
 	 * Environment Variables
 	 * https://developers.cloudflare.com/workers/wrangler/configuration/#environment-variables
 	 */
-	// "vars": { "AUCTION_PACKAGE_ID": "0x12345", },
+	"vars": {
+		// "BTC_RPC_PROXY_URL": "",
+	},
 	/**
 	 * Note: Use secrets to store sensitive data.
+	 * Set BTC_RPC_AUTH_TOKEN via: wrangler secret put BTC_RPC_AUTH_TOKEN
 	 * https://developers.cloudflare.com/workers/configuration/secrets/
 	 */
 
