@@ -69,7 +69,7 @@ export default class Controller {
 		}
 	}
 
-	private async putNBTCTX(txId: string) {
+	private async postNBTCTx(txId: string) {
 		try {
 			const txHex = await this.fetchTxHexByTxId(txId);
 			if (!txHex) {
@@ -109,8 +109,8 @@ export default class Controller {
 		switch (reqData.method) {
 			case "queryMintTx":
 				return this.getMintTxs(reqData.params[1]);
-			case "putNBTCTx":
-				return this.putNBTCTX(reqData.params[1]);
+			case "postNBTCTx":
+				return this.postNBTCTx(reqData.params[1]);
 			default:
 				return notFound("Unknown method");
 		}

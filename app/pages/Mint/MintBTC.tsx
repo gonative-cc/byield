@@ -143,7 +143,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 				setShowConfirmationModal(true);
 				if (response.result.txid)
 					await makeReq(postMintTxRPC, {
-						method: "putNBTCTx",
+						method: "postNBTCTx",
 						params: [network, response.result.txid],
 					});
 				fetchMintTxs();
