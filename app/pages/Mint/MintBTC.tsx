@@ -86,11 +86,7 @@ interface MintNBTCForm {
 	suiAddress: string;
 }
 
-interface MintBTCProps {
-	onTransactionBroadcast?: (txId: string, amountInSatoshi: number, suiAddress: string) => void;
-}
-
-export function MintBTC({ onTransactionBroadcast }: MintBTCProps = {}) {
+export function MintBTC() {
 	const [txId, setTxId] = useState<string | undefined>(undefined);
 	const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 	const { connectWallet } = useXverseConnect();
@@ -139,14 +135,6 @@ export function MintBTC({ onTransactionBroadcast }: MintBTCProps = {}) {
 				setTxId(response.result.txid);
 				setShowConfirmationModal(true);
 				if (response.result.txid) await putNBTCTX(response.result.txid, network);
-				if (onTransactionBroadcast && response.result.txid) {
-					const formattedSuiAddress = formatSuiAddress(suiAddress);
-					onTransactionBroadcast(
-						response.result.txid,
-						Number(parseBTC(numberOfBTC)),
-						formattedSuiAddress,
-					);
-				}
 			}
 		}
 	};

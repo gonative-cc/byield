@@ -1,5 +1,4 @@
 import { BitcoinNetworkType } from "sats-connect";
-
 import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
 import { type BitcoinConfig, bitcoinConfigs } from "~/config/bitcoin/contracts-config";
 import * as validate from "~/lib/validate";
