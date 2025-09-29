@@ -7,11 +7,12 @@ import type { Route } from "./+types/mint";
 import Controller from "~/server/Mint/controller.server";
 import { useFetcher } from "react-router";
 import { makeReq, type QueryMintTxResp } from "~/server/Mint/jsonrpc";
-import { useContext, useEffect, useRef, useCallback, useMemo } from "react";
+import { useContext, useEffect, useRef, useCallback, useMemo, useState } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { BlockInfoCard } from "~/components/ui/BlockInfoCard";
 import { FAQ } from "~/components/FAQ";
 import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
+import { isValidSuiAddress } from "@mysten/sui/utils";
 
 const FAQS = [
 	{
@@ -98,21 +99,30 @@ export async function action({ request }: Route.ActionArgs) {
 export default function Mint() {
 	const { network } = useXverseWallet();
 	const { suiAddr } = useContext(WalletContext);
-	const mintTxFetcher = useFetcher<QueryMintTxResp>({ key: suiAddr || undefined });
+	const [manualSuiAddr, setManualSuiAddr] = useState<string>("");
+	const activeSuiAddr = (isValidSuiAddress(manualSuiAddr) ? manualSuiAddr : suiAddr) || "";
+	const mintTxFetcher = useFetcher<QueryMintTxResp>({ key: activeSuiAddr || undefined });
 	const prevSuiAddrRef = useRef<string | null>(null);
 	const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
 	const mintTxs = useMemo(() => mintTxFetcher.data || [], [mintTxFetcher.data]);
 	const isLoading = mintTxFetcher.state !== "idle";
-	const hasError = mintTxFetcher.state === "idle" && mintTxFetcher.data === undefined && suiAddr;
+	const hasError = mintTxFetcher.state === "idle" && mintTxFetcher.data === undefined && activeSuiAddr;
 	const error = hasError ? "Failed to load transactions" : null;
+
+	const onSuiAddressChange = (address: string) => {
+		setManualSuiAddr(address);
+	};
 
 	// Function to fetch mint transactions
 	const fetchMintTxs = useCallback(() => {
-		if (suiAddr) {
-			makeReq<QueryMintTxResp>(mintTxFetcher, { method: "queryMintTx", params: [network, suiAddr] });
+		if (activeSuiAddr) {
+			makeReq<QueryMintTxResp>(mintTxFetcher, {
+				method: "queryMintTx",
+				params: [network, activeSuiAddr],
+			});
 		}
-	}, [suiAddr, mintTxFetcher, network]);
+	}, [activeSuiAddr, mintTxFetcher, network]);
 
 	// Handle address changes, interval setup, and initial fetch
 	useEffect(() => {
@@ -122,13 +132,15 @@ export default function Mint() {
 		}
 
 		// Handle address change or initial fetch
-		if (prevSuiAddrRef.current !== suiAddr || (mintTxFetcher.state === "idle" && !mintTxs)) {
-			prevSuiAddrRef.current = suiAddr;
+		if (prevSuiAddrRef.current !== activeSuiAddr || (mintTxFetcher.state === "idle" && !mintTxs.length)) {
+			prevSuiAddrRef.current = activeSuiAddr;
 			fetchMintTxs();
 		}
 
 		// Set up interval for automatic refetching
-		intervalRef.current = setInterval(fetchMintTxs, 120000);
+		if (activeSuiAddr) {
+			intervalRef.current = setInterval(fetchMintTxs, 120000);
+		}
 
 		// Cleanup interval
 		return () => {
@@ -136,7 +148,7 @@ export default function Mint() {
 				clearInterval(intervalRef.current);
 			}
 		};
-	}, [suiAddr, fetchMintTxs, mintTxFetcher.state, mintTxs, mintTxFetcher]);
+	}, [activeSuiAddr, fetchMintTxs, mintTxFetcher.state, mintTxs, mintTxFetcher]);
 
 	return (
 		<div className="mx-auto px-4 py-4 space-y-6">
@@ -157,12 +169,12 @@ export default function Mint() {
 						<RegtestInstructions />
 					</Collapse>
 					<BlockInfoCard />
-					<MintBTC />
+					<MintBTC onSuiAddressChange={onSuiAddressChange} />
 				</div>
 			</div>
 
 			{/* Transaction Table Section */}
-			{suiAddr && (
+			{activeSuiAddr && (
 				<div className="space-y-4">
 					<div className="flex justify-end">
 						<button

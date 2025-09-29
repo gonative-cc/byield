@@ -86,7 +86,11 @@ interface MintNBTCForm {
 	suiAddress: string;
 }
 
-export function MintBTC() {
+interface MintBTCProps {
+	onSuiAddressChange?: (address: string) => void;
+}
+
+export function MintBTC({ onSuiAddressChange }: MintBTCProps = {}) {
 	const [txId, setTxId] = useState<string | undefined>(undefined);
 	const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 	const { connectWallet } = useXverseConnect();
@@ -104,9 +108,18 @@ export function MintBTC() {
 		},
 	});
 
-	const { handleSubmit, setValue } = mintNBTCForm;
+	const { handleSubmit, setValue, watch } = mintNBTCForm;
 
 	useEffect(() => setValue("suiAddress", suiAddr || ""), [setValue, suiAddr]);
+
+	useEffect(() => {
+		const subscription = watch((value, { name }) => {
+			if (name === "suiAddress" && onSuiAddressChange) {
+				onSuiAddressChange(value.suiAddress || "");
+			}
+		});
+		return () => subscription.unsubscribe();
+	}, [watch, onSuiAddressChange]);
 
 	useEffect(() => {
 		setupBufferPolyfill();
