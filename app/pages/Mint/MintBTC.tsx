@@ -119,7 +119,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 		setupBufferPolyfill();
 	}, []);
 
-	const handlenBTCMintTx = async ({ numberOfBTC, suiAddress }: MintNBTCForm) => {
+	const handleBTCMintTx = async ({ numberOfBTC, suiAddress }: MintNBTCForm) => {
 		if (currentAddress) {
 			if (!cfg.nBTC.depositAddress) {
 				console.error("ERROR: Missing depositAddress in bitcoin config for network:", network);
@@ -155,7 +155,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 		<FormProvider {...mintNBTCForm}>
 			<form
 				onSubmit={handleSubmit(async (form) => {
-					handlenBTCMintTx({ ...form });
+					handleBTCMintTx({ ...form });
 				})}
 				className="w-full"
 			>
