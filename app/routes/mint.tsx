@@ -160,7 +160,7 @@ export default function Mint() {
 						Mint<span className="text-primary"> nBTC</span>
 					</span>
 					<p className="text-muted-foreground text-lg">
-						Deposit Bitcoin and mint native Bitcoin tokens on Sui network
+						Deposit Bitcoin and mint Native Bitcoin tokens on Sui network
 					</p>
 				</div>
 			</div>
@@ -170,6 +170,16 @@ export default function Mint() {
 					<Collapse title="Regtest Configuration for Devnet Server" className="bg-base-200">
 						<RegtestInstructions />
 					</Collapse>
+					<div className="w-full">
+						<iframe
+							src="https://drive.google.com/file/d/1pZNX2RG5L97B0Vh8pPb0OJSaaGRCdLcr/preview"
+							width="100%"
+							height="315"
+							allow="autoplay"
+							className="rounded-lg"
+							title="TestnetV2Walkthrough"
+						/>
+					</div>
 					<BlockInfoCard />
 					<MintBTC />
 				</div>
