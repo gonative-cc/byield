@@ -8,6 +8,10 @@ import { badRequest, serverError, notFound } from "../http-resp";
 export default class Controller {
 	indexerBaseUrl: string | null = null;
 
+	constructor(network: BitcoinNetworkType) {
+		this.handleNetwork(network);
+	}
+
 	private convertIndexerTransaction(tx: IndexerTransaction): MintTransaction {
 		return {
 			bitcoinTxId: tx.btc_tx_id,
@@ -56,8 +60,6 @@ export default class Controller {
 				status: 400,
 			});
 		}
-		const network = reqData.params[0];
-		this.handleNetwork(network);
 
 		switch (reqData.method) {
 			case "queryMintTx":
