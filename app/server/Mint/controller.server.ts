@@ -111,7 +111,6 @@ export default class Controller {
 			console.error({ msg: "Error posting tx hex:", error });
 			return serverError();
 		}
-
 	}
 
 	async handleJsonRPC(r: Request) {
