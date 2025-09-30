@@ -18,6 +18,7 @@ import { makeReq } from "~/server/Mint/jsonrpc";
 import { useFetcher } from "react-router";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { NBTCBalance } from "~/components/NBTCBalance";
+import type { UTXO } from "~/server/Mint/types";
 
 function formatSuiAddress(suiAddress: string) {
 	if (!suiAddress.toLowerCase().startsWith("0x")) {
@@ -95,16 +96,15 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 	const { balance: nBTCBalance } = useCoinBalance();
 	const [txId, setTxId] = useState<string | undefined>(undefined);
 	const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+	const [isProcessing, setIsProcessing] = useState(false);
 	const { connectWallet } = useXverseConnect();
 	const { balance: walletBalance, currentAddress, network } = useXverseWallet();
 	const { isWalletConnected, suiAddr } = useContext(WalletContext);
 	const isBitCoinWalletConnected = isWalletConnected(Wallets.Xverse);
 	const cfg = useBitcoinConfig();
-	const postMintTxRPC = useFetcher();
-	const mintTxFetcher = useFetcher();
-	// we need to query available user UTXOs to properly construct deposit TX with OP_RETURN
-	const userUtxosFetcher = useFetcher();
-	const [pendingMint, setPendingMint] = useState<MintNBTCForm | null>(null);
+
+	const utxosRPC = useFetcher<UTXO[]>();
+	const postNBTCTxRPC = useFetcher();
 
 	const mintNBTCForm = useForm<MintNBTCForm>({
 		mode: "all",
@@ -120,63 +120,80 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 	useEffect(() => setValue("suiAddress", suiAddr || ""), [setValue, suiAddr]);
 
 	useEffect(() => {
+		console.debug({ msg: "Setting up buffer polyfill for MintBTC page" });
 		setupBufferPolyfill();
 	}, []);
 
+	// Fetch UTXOs when wallet connects
 	useEffect(() => {
-		if (pendingMint && userUtxosFetcher.data) {
-			nBTCMintTx(
-				currentAddress!,
-				Number(parseBTC(pendingMint.numberOfBTC)),
-				formatSuiAddress(pendingMint.suiAddress),
+		if (currentAddress && utxosRPC.state === "idle") {
+			makeReq(utxosRPC, {
+				method: "queryUTXOs",
+				params: [network, currentAddress.address],
+			});
+		}
+	}, [currentAddress, network, utxosRPC]);
+
+	// Event handler
+	const handlenBTCMintTx = async ({ numberOfBTC, suiAddress }: MintNBTCForm) => {
+		if (!currentAddress) return;
+
+		if (!cfg.nBTC.depositAddress) {
+			console.error("ERROR: Missing depositAddress in bitcoin config for network:", network);
+			toast({
+				title: "Network Configuration Error",
+				description: `Missing deposit address for network ${network}. Please switch to TestnetV2, Mainnet, or Devnet for nBTC minting.`,
+				variant: "destructive",
+			});
+			return;
+		}
+
+		setIsProcessing(true);
+
+		try {
+			if (!utxosRPC.data || utxosRPC.data.length === 0) {
+				throw new Error("No UTXOs available for transaction");
+			}
+			const response = await nBTCMintTx(
+				currentAddress,
+				Number(parseBTC(numberOfBTC)),
+				formatSuiAddress(suiAddress),
 				network,
 				cfg,
+				utxosRPC.data,
+			);
 
-				userUtxosFetcher.data,
-			).then(async (response) => {
-				if (response?.status === "success") {
-					setTxId(response.result.txid);
-					setShowConfirmationModal(true);
-
-					// ADD THIS: Post transaction to indexer
-					if (response.result.txid) {
-						await makeReq(postMintTxRPC, {
-							method: "postNBTCTx",
-							params: [network, response.result.txid],
-						});
-						fetchMintTxs();
-					}
-				}
-			});
-			setPendingMint(null);
-		}
-	}, [userUtxosFetcher.data, pendingMint]);
-
-	const handlenBTCMintTx = async ({ numberOfBTC, suiAddress }: MintNBTCForm) => {
-		if (currentAddress) {
-			if (!cfg.nBTC.depositAddress) {
-				console.error("ERROR: Missing depositAddress in bitcoin config for network:", network);
-				toast({
-					title: "Network Configuration Error",
-					description: `Missing deposit address for network ${network}. Please switch to TestnetV2, Mainnet, or Devnet for nBTC minting.`,
-					variant: "destructive",
+			if (response?.status === "success") {
+				const txid = response.result.txid;
+				setTxId(txid);
+				setShowConfirmationModal(true);
+				makeReq(postNBTCTxRPC, {
+					method: "postNBTCTx",
+					params: [network, txid!],
 				});
-				return;
+				fetchMintTxs();
+				makeReq(utxosRPC, {
+					method: "queryUTXOs",
+					params: [network, currentAddress.address],
+				});
+			} else {
+				throw new Error("Transaction signing failed");
 			}
-
-			setPendingMint({ numberOfBTC, suiAddress });
-			makeReq(userUtxosFetcher, { method: "queryUTXOs", params: [network, currentAddress.address] });
+		} catch (error) {
+			console.error({ msg: "nBTC mint transaction failed", error });
+			toast({
+				title: "Transaction Failed",
+				description: error instanceof Error ? error.message : "Unknown error occurred",
+				variant: "destructive",
+			});
+		} finally {
+			setIsProcessing(false);
 		}
 	};
 
 	return (
 		<FormProvider {...mintNBTCForm}>
-			<form
-				onSubmit={handleSubmit(async (form) => {
-					handlenBTCMintTx({ ...form });
-				})}
-				className="w-full"
-			>
+			<form onSubmit={handleSubmit(handlenBTCMintTx)} className="w-full">
 				<div className="card w-full">
 					<div className="card-body p-4 sm:p-6 rounded-lg flex flex-col space-y-4">
 						<NBTCBalance balance={nBTCBalance} />
@@ -233,9 +250,14 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 						{isBitCoinWalletConnected ? (
 							<button
 								type="submit"
-								className={classNames("btn btn-primary", buttonEffectClasses())}
+								disabled={isProcessing}
+								className={classNames(
+									"btn btn-primary",
+									buttonEffectClasses(),
+									isProcessing ? "loading" : "",
+								)}
 							>
-								Deposit BTC and mint nBTC
+								{isProcessing ? "Processing..." : "Deposit BTC and mint nBTC"}
 							</button>
 						) : (
 							<button onClick={connectWallet} className="btn btn-primary">

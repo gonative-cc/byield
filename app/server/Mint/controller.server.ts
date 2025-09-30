@@ -61,7 +61,9 @@ export default class Controller {
 			});
 			return serverError(`Bitcoin RPC error: status: ${rpcResponse.status}, error: ${error}`);
 		}
-		return rpcResponse;
+		// Should be like this otherwise the return is raw data
+		const data = await rpcResponse.json();
+		return data;
 	}
 
 	private handleNetwork(network: BitcoinNetworkType) {
