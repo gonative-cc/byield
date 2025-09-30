@@ -142,6 +142,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 				setTxId(response.result.txid);
 				setShowConfirmationModal(true);
 				if (response.result.txid)
+					// TODO: handle the response correctly: https://github.com/gonative-cc/byield/issues/501
 					await makeReq(postMintTxRPC, {
 						method: "postNBTCTx",
 						params: [network, response.result.txid],
