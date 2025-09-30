@@ -6,7 +6,6 @@ import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
 import { FormNumericInput } from "../../components/form/FormNumericInput";
 import { BTC, formatBTC, parseBTC, formatNBTC } from "~/lib/denoms";
-
 import { nBTCMintTx } from "~/lib/nbtc";
 import { BitcoinIcon } from "lucide-react";
 import { buttonEffectClasses, classNames } from "~/util/tailwind";
@@ -15,7 +14,8 @@ import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import { toast } from "~/hooks/use-toast";
 import { setupBufferPolyfill } from "~/lib/buffer-polyfill";
 import { TxConfirmationModal } from "~/components/ui/TransactionConfirmationModal";
-import { putNBTCTX } from "~/server/Mint/mint";
+import { makeReq } from "~/server/Mint/jsonrpc";
+import { useFetcher } from "react-router";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { NBTCBalance } from "~/components/NBTCBalance";
 
@@ -87,7 +87,11 @@ interface MintNBTCForm {
 	suiAddress: string;
 }
 
-export function MintBTC() {
+interface MintBTCProps {
+	fetchMintTxs: () => void;
+}
+
+export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 	const { balance: nBTCBalance } = useCoinBalance();
 	const [txId, setTxId] = useState<string | undefined>(undefined);
 	const [showConfirmationModal, setShowConfirmationModal] = useState(false);
@@ -96,6 +100,7 @@ export function MintBTC() {
 	const { isWalletConnected, suiAddr } = useContext(WalletContext);
 	const isBitCoinWalletConnected = isWalletConnected(Wallets.Xverse);
 	const cfg = useBitcoinConfig();
+	const postMintTxRPC = useFetcher();
 
 	const mintNBTCForm = useForm<MintNBTCForm>({
 		mode: "all",
@@ -114,7 +119,7 @@ export function MintBTC() {
 		setupBufferPolyfill();
 	}, []);
 
-	const handlenBTCMintTx = async ({ numberOfBTC, suiAddress }: MintNBTCForm) => {
+	const handleBTCMintTx = async ({ numberOfBTC, suiAddress }: MintNBTCForm) => {
 		if (currentAddress) {
 			if (!cfg.nBTC.depositAddress) {
 				console.error("ERROR: Missing depositAddress in bitcoin config for network:", network);
@@ -136,7 +141,13 @@ export function MintBTC() {
 			if (response && response.status === "success") {
 				setTxId(response.result.txid);
 				setShowConfirmationModal(true);
-				if (response.result.txid) await putNBTCTX(response.result.txid, network);
+				if (response.result.txid)
+					// TODO: handle the response correctly: https://github.com/gonative-cc/byield/issues/501
+					await makeReq(postMintTxRPC, {
+						method: "postNBTCTx",
+						params: [network, response.result.txid],
+					});
+				fetchMintTxs();
 			}
 		}
 	};
@@ -145,7 +156,7 @@ export function MintBTC() {
 		<FormProvider {...mintNBTCForm}>
 			<form
 				onSubmit={handleSubmit(async (form) => {
-					handlenBTCMintTx({ ...form });
+					handleBTCMintTx({ ...form });
 				})}
 				className="w-full"
 			>

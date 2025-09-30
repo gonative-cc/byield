@@ -6,6 +6,7 @@ import { mustGetBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import { badRequest, serverError, notFound } from "../http-resp";
 
 export default class Controller {
+	btcRPCUrl: string | null = null;
 	indexerBaseUrl: string | null = null;
 
 	constructor(network: BitcoinNetworkType) {
@@ -48,6 +49,50 @@ export default class Controller {
 	private handleNetwork(network: BitcoinNetworkType) {
 		const networkConfig = mustGetBitcoinConfig(network);
 		this.indexerBaseUrl = networkConfig?.indexerUrl || null;
+		this.btcRPCUrl = networkConfig?.btcRPCUrl || null;
+	}
+
+	private async fetchTxHexByTxId(txId: string) {
+		try {
+			const url = this.btcRPCUrl + `/tx/${txId}/hex`;
+			const response = await fetch(url);
+			if (!response.ok) {
+				if (response.status === 404) {
+					return notFound();
+				}
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+			return await response.text();
+		} catch (error) {
+			console.error({ msg: "Error fetching tx hex:", error });
+			return serverError();
+		}
+	}
+
+	private async postNBTCTx(txId: string) {
+		try {
+			const txHex = await this.fetchTxHexByTxId(txId);
+			if (!txHex) {
+				throw new Error(`Error fetching tx hex: ${txId}`);
+			}
+			const url = this.indexerBaseUrl + `/nbtc`;
+			const response = await fetch(url, {
+				method: "POST",
+				body: JSON.stringify({
+					txHex,
+				}),
+			});
+			if (!response.ok) {
+				if (response.status === 404) {
+					return notFound();
+				}
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+			return response;
+		} catch (error) {
+			console.error({ msg: "Error posting tx hex:", error });
+			return serverError();
+		}
 	}
 
 	async handleJsonRPC(r: Request) {
@@ -64,6 +109,8 @@ export default class Controller {
 		switch (reqData.method) {
 			case "queryMintTx":
 				return this.getMintTxs(reqData.params[1]);
+			case "postNBTCTx":
+				return this.postNBTCTx(reqData.params[1]);
 			default:
 				return notFound("Unknown method");
 		}
