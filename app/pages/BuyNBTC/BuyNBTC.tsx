@@ -30,12 +30,12 @@ export function BuyNBTC() {
 
 	return (
 		<div className="flex flex-col items-center gap-8 px-2 pt-2">
-			<p className="md:text-3xl text-2xl text-center font-semibold max-w-96">
-				Native enables <span className="text-2xl text-primary md:text-3xl">BTCFi</span> in the{" "}
-				<span className="text-2xl text-primary md:text-3xl">Web3 native</span> way!
+			<p className="max-w-96 text-center text-2xl font-semibold md:text-3xl">
+				Native enables <span className="text-primary text-2xl md:text-3xl">BTCFi</span> in the{" "}
+				<span className="text-primary text-2xl md:text-3xl">Web3 native</span> way!
 			</p>
-			<div className="card max-w-lg w-full">
-				<div className="card-body p-6 text-white flex flex-col gap-4">
+			<div className="card w-full max-w-lg">
+				<div className="card-body flex flex-col gap-4 p-6 text-white">
 					{isSuiWalletConnected && <NBTCBalance balance={nBTCBalance} />}
 					<Instructions />
 					<BuyNBTCTabs />
@@ -44,7 +44,7 @@ export function BuyNBTC() {
 							href={transactionHistoryLink}
 							target="_blank"
 							rel="noreferrer"
-							className="flex gap-1 items-center text-primary hover:underline"
+							className="text-primary flex items-center gap-1 hover:underline"
 						>
 							Check Transaction History
 							<ArrowUpRight size="22" />
@@ -62,7 +62,7 @@ const renderTabHeader = (title: string, checked = false) => (
 	<input
 		type="radio"
 		name="tab_nbtc_buy_sell"
-		className="tab rounded-full checked:bg-primary"
+		className="tab checked:bg-primary rounded-full"
 		aria-label={title}
 		defaultChecked={checked}
 	/>

@@ -39,12 +39,12 @@ function MintInfoItem({ title, value, isLastItem = false }: MintInfoItemProps) {
 	return (
 		<div
 			className={classNames({
-				"flex justify-between items-center py-2  border-primary/20": true,
+				"border-primary/20 flex items-center justify-between py-2": true,
 				"border-b": !isLastItem,
 			})}
 		>
-			<span className="text-base text-muted-foreground font-medium">{title}</span>
-			<div className="text-xl font-bold text-primary">{value}</div>
+			<span className="text-muted-foreground text-base font-medium">{title}</span>
+			<div className="text-primary text-xl font-bold">{value}</div>
 		</div>
 	);
 }
@@ -61,7 +61,7 @@ const createNftSuccessToast = (nftId: string, contractsConfig: ContractsCfg) => 
 					href={suiVisionUrl}
 					target="_blank"
 					rel="noopener noreferrer"
-					className="inline-flex items-center gap-1 text-primary hover:underline font-medium"
+					className="text-primary inline-flex items-center gap-1 font-medium hover:underline"
 				>
 					<ExternalLink size={16} />
 					View NFT on SuiVision
@@ -205,7 +205,7 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 	const isAnyActionPending = isRefundPending || isMinting;
 
 	return (
-		<div className="flex flex-col sm:flex-row gap-4">
+		<div className="flex flex-col gap-4 sm:flex-row">
 			{canMint && (
 				<button
 					disabled={isAnyActionPending}
@@ -221,12 +221,12 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 			{doRefund === DoRefund.Yes && (
 				<button
 					disabled={isAnyActionPending}
-					className="btn btn-primary btn-outline btn-lg flex-1 flex-col h-16"
+					className="btn btn-primary btn-outline btn-lg h-16 flex-1 flex-col"
 					onClick={handleRefund}
 				>
 					<LoadingSpinner isLoading={isRefundPending} />
 					💰 Refund
-					<div className="text-sm text-muted-foreground">
+					<div className="text-muted-foreground text-sm">
 						NOTE: if you already claimed refund, subsequent claim will fail
 					</div>
 				</button>
@@ -345,27 +345,27 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 
 	return (
 		<div
-			className={cn(cardShowcaseClasses(), "card lg:w-[85%] xl:w-[75%] w-full hover:shadow-primary/10")}
+			className={cn(cardShowcaseClasses(), "card hover:shadow-primary/10 w-full lg:w-[85%] xl:w-[75%]")}
 		>
-			<div className="card-body p-4 lg:p-8 rounded-lg text-white flex flex-col xl:flex-row gap-6 sm:gap-8 lg:gap-12 bg-gradient-to-br from-azure-25 via-azure-20 to-azure-15">
-				<div className="flex-shrink-0 flex justify-center xl:justify-start w-full xl:w-auto">
+			<div className="card-body from-azure-25 via-azure-20 to-azure-15 flex flex-col gap-6 rounded-lg bg-gradient-to-br p-4 text-white sm:gap-8 lg:gap-12 lg:p-8 xl:flex-row">
+				<div className="flex w-full flex-shrink-0 justify-center xl:w-auto xl:justify-start">
 					{nftId ? (
 						<NftDisplay nftId={nftId} />
 					) : (
 						<div className="animate-float">
-							<div className="absolute inset-0 bg-primary/20 rounded-xl blur-xl"></div>
+							<div className="bg-primary/20 absolute inset-0 rounded-xl blur-xl"></div>
 							<img
 								src="/assets/bee/beeliever-unknown.webp"
 								alt="bee-with-gonative"
-								className="rounded-xl w-64 h-64 lg:w-72 lg:h-72 object-cover border-2 border-primary/30"
+								className="border-primary/30 h-64 w-64 rounded-xl border-2 object-cover lg:h-72 lg:w-72"
 							/>
 						</div>
 					)}
 				</div>
-				<div className="flex flex-col w-full justify-between gap-8">
+				<div className="flex w-full flex-col justify-between gap-8">
 					<div className="space-y-4">
 						<h3 className={`${primaryHeadingClasses()} text-xl lg:text-2xl`}>Mint Details</h3>
-						<div className="p-4 bg-primary/15 rounded-xl border border-primary/30 backdrop-blur-sm space-y-4">
+						<div className="bg-primary/15 border-primary/30 space-y-4 rounded-xl border p-4 backdrop-blur-sm">
 							{!mintStarted && (
 								<div className={primaryBadgeClasses()}>
 									<span className="text-2xl">⏰</span>

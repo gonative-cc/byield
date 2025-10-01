@@ -12,7 +12,7 @@ export function TransactionStatus({ isSuccess, txnId, handleRetry }: Transaction
 	const Icon = isSuccess ? Check : CircleX;
 
 	return (
-		<div className="p-4 rounded-lg text-white flex flex-col gap-4">
+		<div className="flex flex-col gap-4 rounded-lg p-4 text-white">
 			<div className="flex flex-col items-center gap-2">
 				<Icon
 					className={classNames({
@@ -23,13 +23,13 @@ export function TransactionStatus({ isSuccess, txnId, handleRetry }: Transaction
 				/>{" "}
 				{isSuccess ? "Success" : "Failed"}
 			</div>
-			<div className="flex flex-col gap-2 items-center">
+			<div className="flex flex-col items-center gap-2">
 				{txnId && (
 					<Link
 						target="_blank"
 						to={`https://suiscan.xyz/testnet/tx/${txnId}`}
 						rel="noreferrer"
-						className="m-0 p-0 justify-center flex w-full text-primary max-w-fit text-sm"
+						className="text-primary m-0 flex w-full max-w-fit justify-center p-0 text-sm"
 					>
 						Check Transaction Details
 					</Link>

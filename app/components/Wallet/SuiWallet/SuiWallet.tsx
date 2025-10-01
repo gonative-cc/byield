@@ -114,8 +114,8 @@ function SuiWalletMobileView({ balance }: { balance: bigint }) {
 	const { handleWalletConnect } = useContext(WalletContext);
 
 	return (
-		<div className="flex w-full flex-col gap-4 items-center md:hidden">
-			<div className="flex gap-2 w-full justify-between">
+		<div className="flex w-full flex-col items-center gap-4 md:hidden">
+			<div className="flex w-full justify-between gap-2">
 				<NetWorkOptions />
 				<Accounts />
 			</div>
@@ -126,7 +126,7 @@ function SuiWalletMobileView({ balance }: { balance: bigint }) {
 						displayType="text"
 						value={formatSUI(balance)}
 						suffix=" SUI"
-						className="shrink-0 text-primary"
+						className="text-primary shrink-0"
 					/>
 				</p>
 				<button
@@ -151,7 +151,7 @@ export function SuiWallet() {
 	return (
 		<>
 			{/* handles md screen sizes */}
-			<div className="hidden gap-2 items-center md:flex">
+			<div className="hidden items-center gap-2 md:flex">
 				<NetWorkOptions />
 				<Accounts />
 				<NumericFormat

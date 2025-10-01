@@ -14,7 +14,7 @@ function FailedTransactionAlert({ transaction }: FailedTransactionAlertProps) {
 		<div className="alert alert-error">
 			<XCircle size={16} className="flex-shrink-0" />
 			<div>
-				<div className="font-medium mb-1">
+				<div className="mb-1 font-medium">
 					Transaction {transaction.status === MintingStatus.Reorg ? "Reorganized" : "Failed"}
 				</div>
 				<div className="text-sm opacity-80">
@@ -38,8 +38,8 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 
 	if (!bitcoinConfig?.confirmationDepth || !bitcoinConfig?.blockTimeSec) {
 		return (
-			<div className="p-6 bg-base-100 border-t border-base-300">
-				<div className="text-center text-base-content/60">
+			<div className="bg-base-100 border-base-300 border-t p-6">
+				<div className="text-base-content/60 text-center">
 					Please connect your wallet to view transaction details
 				</div>
 			</div>
@@ -79,9 +79,9 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 		estimatedTimeRemaining();
 
 	return (
-		<div className="p-6 bg-base-100 border-t border-base-300">
+		<div className="bg-base-100 border-base-300 border-t p-6">
 			<div className="space-y-4">
-				<div className="text-sm text-base-content/70">
+				<div className="text-base-content/70 text-sm">
 					<span className="font-semibold">Operation start:</span> {operationDate.toLocaleString()}
 				</div>
 
@@ -154,7 +154,7 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 
 				<div className="divider my-2"></div>
 
-				<div className="text-sm text-base-content/70">
+				<div className="text-base-content/70 text-sm">
 					<span className="font-semibold">Fees:</span> {transaction.fees ?? "-"} sats{" "}
 					<span className="text-base-content/50">
 						(~

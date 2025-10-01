@@ -47,7 +47,7 @@ const PERCENTAGES = [
 
 function Percentage({ onChange }: { onChange: (value: number) => void }) {
 	return (
-		<div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+		<div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
 			{PERCENTAGES.map(({ id, value }) => (
 				<button
 					key={id}
@@ -161,7 +161,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 				className="w-full"
 			>
 				<div className="card w-full">
-					<div className="card-body p-4 sm:p-6 rounded-lg flex flex-col space-y-4">
+					<div className="card-body flex flex-col space-y-4 rounded-lg p-4 sm:p-6">
 						<NBTCBalance balance={nBTCBalance} />
 						<FormNumericInput
 							required

@@ -8,10 +8,10 @@ interface StatsCardProps {
 
 export function StatsCard({ title, children }: StatsCardProps) {
 	return (
-		<div className={`card flex-1 group hover:scale-105`}>
-			<div className="card-body p-4 sm:p-6 text-center bg-gradient-to-br from-azure-15 to-azure-25 border transition-colors">
+		<div className={`card group flex-1 hover:scale-105`}>
+			<div className="card-body from-azure-15 to-azure-25 border bg-gradient-to-br p-4 text-center transition-colors sm:p-6">
 				<div
-					className={`${primaryHeadingClasses()} group-hover:text-orange-400 transition-colors duration-300 mb-2`}
+					className={`${primaryHeadingClasses()} mb-2 transition-colors duration-300 group-hover:text-orange-400`}
 				>
 					{title}
 				</div>

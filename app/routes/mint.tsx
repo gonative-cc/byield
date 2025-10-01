@@ -153,8 +153,8 @@ export default function Mint() {
 	}, [suiAddr, fetchMintTxs, mintTxFetcher.state, mintTxs, mintTxFetcher]);
 
 	return (
-		<div className="mx-auto px-4 py-4 space-y-6">
-			<div className="text-center space-y-4">
+		<div className="mx-auto space-y-6 px-4 py-4">
+			<div className="space-y-4 text-center">
 				<div className="space-y-2">
 					<span className="text-4xl">
 						Mint<span className="text-primary"> nBTC</span>

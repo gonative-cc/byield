@@ -66,7 +66,7 @@ export const columns: Column<DApp>[] = [
 			<div className="flex space-x-2">
 				{row.original.labels.map((label) => (
 					<div key={label}>
-						<div className="badge badge-primary flex gap-2 justify-between">
+						<div className="badge badge-primary flex justify-between gap-2">
 							<Zap size={16} />
 							{label}
 						</div>
@@ -110,8 +110,8 @@ export const columns: Column<DApp>[] = [
 
 function DepositCard({ title, value }: DepositData) {
 	return (
-		<div className="card card-border flex flex-1 max-w-1/4">
-			<div className="card-body p-6 rounded-lg text-white flex flex-col gap-2 w-full">
+		<div className="card card-border flex max-w-1/4 flex-1">
+			<div className="card-body flex w-full flex-col gap-2 rounded-lg p-6 text-white">
 				<span className="text-base font-medium">{title}</span>
 				<span className="text-base font-medium">{value}</span>
 			</div>
@@ -123,14 +123,14 @@ export function TotalDeposit() {
 	const { balance: nbtcBalance } = useCoinBalance();
 
 	return (
-		<div className="flex flex-col gap-10 w-full">
-			<div className="flex justify-between w-full gap-4">
+		<div className="flex w-full flex-col gap-10">
+			<div className="flex w-full justify-between gap-4">
 				<DepositCard id="nbtc-balance" title="nBTC Balance" value={formatNBTC(nbtcBalance)} />
 			</div>
 			<div className="flex flex-col gap-4">
-				<div className="flex justify-between items-center w-full">
-					<h1 className="text-2xl font-bold text-orange-500 mr-4">Markets</h1>
-					<div className="flex gap-4 justify-end w-full">
+				<div className="flex w-full items-center justify-between">
+					<h1 className="mr-4 text-2xl font-bold text-orange-500">Markets</h1>
+					<div className="flex w-full justify-end gap-4">
 						<SelectInput
 							options={[{ label: "Filter by Top APY", value: "filterbytop" }]}
 							placeholder="Filter by Top APY"

@@ -33,23 +33,23 @@ export function Info({ user, auctionInfo, auctionState }: InfoProps) {
 Securing my spot in the top 5810 at https://byield.gonative.cc/beelievers-auction`;
 
 	return (
-		<div className="card w-full lg:w-[85%] xl:w-[75%] shadow-2xl card-border border transition-all duration-300">
-			<div className="card-body p-4 lg:p-8 rounded-lg text-white flex flex-col lg:flex-row gap-6 lg:gap-8 bg-gradient-to-br from-azure-25 via-azure-20 to-azure-15">
-				<div className="flex-shrink-0 flex justify-center lg:justify-start">
+		<div className="card card-border w-full border shadow-2xl transition-all duration-300 lg:w-[85%] xl:w-[75%]">
+			<div className="card-body from-azure-25 via-azure-20 to-azure-15 flex flex-col gap-6 rounded-lg bg-gradient-to-br p-4 text-white lg:flex-row lg:gap-8 lg:p-8">
+				<div className="flex flex-shrink-0 justify-center lg:justify-start">
 					<div className="animate-float">
 						<img
 							src="/assets/bee/bee-with-hammer.webp"
 							alt="bee-with-hammer"
-							className="hidden lg:inline w-auto h-auto"
+							className="hidden h-auto w-auto lg:inline"
 						/>
 						<img
 							src="/assets/bee/bee-with-face-only.webp"
 							alt="bee-with-face-only"
-							className="lg:hidden w-auto h-auto"
+							className="h-auto w-auto lg:hidden"
 						/>
 					</div>
 				</div>
-				<div className="flex flex-col gap-4 lg:gap-6 py-0 w-full lg:text-base leading-relaxed">
+				<div className="flex w-full flex-col gap-4 py-0 leading-relaxed lg:gap-6 lg:text-base">
 					<div className="flex gap-4">
 						{[AuctionState.WILL_START, AuctionState.STARTED].includes(auctionState) && (
 							<div className={primaryBadgeClasses()}>
@@ -105,13 +105,13 @@ function InstructionDetails() {
 	const listStyle = "list-disc list-outside ml-6 space-y-2";
 	const headerStyle = "text-primary font-semibold text-lg flex items-center gap-2";
 	return (
-		<div className="text-foreground leading-7 animate-in slide-in-from-top-2 duration-500">
+		<div className="text-foreground animate-in slide-in-from-top-2 leading-7 duration-500">
 			<div className="space-y-6">
 				<h3 className={headerStyle}>
 					<span className="text-2xl">💰</span>
 					Auction Format: Fair & Transparent
 				</h3>
-				<p className="text-sm lg:text-base mb-4 text-foreground/90">
+				<p className="text-foreground/90 mb-4 text-sm lg:text-base">
 					We’re letting the community set the price through a price auction.
 				</p>
 				<ul className={listStyle}>
@@ -142,7 +142,7 @@ function InstructionDetails() {
 					<span className="text-2xl">📊</span>
 					Simple Example
 				</h3>
-				<p className="text-sm lg:text-base text-foreground/90">
+				<p className="text-foreground/90 text-sm lg:text-base">
 					Top 5,810 bids range from 12 SUI to 6.2 SUI. Everyone in the top 5,810 pays 6.2 SUI, and
 					extra amounts are refunded.
 				</p>
@@ -184,10 +184,10 @@ const EligibleStatusBadge = ({ userAccountType }: { userAccountType?: AuctionAcc
 	if (!msg) return null;
 
 	return (
-		<div className="p-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-lg border border-purple-400/40">
+		<div className="rounded-lg border border-purple-400/40 bg-gradient-to-r from-purple-500/20 to-pink-500/20 p-2">
 			<span className="text-lg">🤝 </span>
 			<span className="text-sm font-semibold">{msg}</span>
-			<span className="text-lg animate-bounce">✨</span>
+			<span className="animate-bounce text-lg">✨</span>
 		</div>
 	);
 };
@@ -230,7 +230,7 @@ const NotAWinnerNotifier = ({ user, auctionSize }: { user?: User; auctionSize: n
 	if (!user || user.amount === 0 || user.rank === null || user.rank < auctionSize) return null;
 
 	return (
-		<div className="p-2 bg-gradient-to-r from-orange-700/50 to-orange-700/40 rounded-lg border border-orange-500/70">
+		<div className="rounded-lg border border-orange-500/70 bg-gradient-to-r from-orange-700/50 to-orange-700/40 p-2">
 			<span className="text-lg">🔨</span> You slipped from the auction winning list (top 5810 spots).
 			Bid more to save your spot!
 		</div>

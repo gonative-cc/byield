@@ -42,15 +42,15 @@ function NewTotalBidAmount({ currentBidInMist, additionalBidInSUI, entryBidMist 
 
 	return (
 		<div className={infoBoxClasses()}>
-			<div className="flex justify-between items-center mb-2">
-				<span className="text-sm text-muted-foreground">New total bid amount:</span>
-				<div className="text-lg font-semibold text-primary">{formatSUI(newTotal)} SUI</div>
+			<div className="mb-2 flex items-center justify-between">
+				<span className="text-muted-foreground text-sm">New total bid amount:</span>
+				<div className="text-primary text-lg font-semibold">{formatSUI(newTotal)} SUI</div>
 			</div>
 			{moreBidNeeded > 0 && (
-				<div className="flex justify-between items-center">
-					<span className="text-sm text-muted-foreground">
+				<div className="flex items-center justify-between">
+					<span className="text-muted-foreground text-sm">
 						You need to add at least
-						<span className="font-semibold text-primary">
+						<span className="text-primary font-semibold">
 							&nbsp; {formatSUI(moreBidNeeded)} SUI &nbsp;
 						</span>
 						to get into the winning list. Add more to increase your chance!
@@ -152,25 +152,25 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 
 	return (
 		<FormProvider {...bidForm}>
-			<form onSubmit={onSubmit} className="flex justify-center w-full">
-				<div className="w-full lg:w-2/3 xl:w-1/2 space-y-6">
+			<form onSubmit={onSubmit} className="flex w-full justify-center">
+				<div className="w-full space-y-6 lg:w-2/3 xl:w-1/2">
 					<div
 						className={cn(
 							cardShowcaseClasses(),
 							"card animate-in slide-in-from-bottom-2 duration-700",
 						)}
 					>
-						<div className="card-body p-6 lg:p-8 rounded-lg text-white flex flex-col w-full gap-6 bg-gradient-to-br from-azure-10 via-azure-15 to-azure-20">
+						<div className="card-body from-azure-10 via-azure-15 to-azure-20 flex w-full flex-col gap-6 rounded-lg bg-gradient-to-br p-6 text-white lg:p-8">
 							<div className="flex items-center justify-between">
 								<div className="flex items-center gap-3">
-									<div className="w-12 h-12 rounded-full bg-gradient-to-r from-primary to-orange-400 flex items-center justify-center animate-pulse-glow">
+									<div className="from-primary animate-pulse-glow flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-r to-orange-400">
 										<span className="text-2xl">🐝</span>
 									</div>
 									<div>
-										<h2 className="text-2xl lg:text-3xl font-bold text-primary">
+										<h2 className="text-primary text-2xl font-bold lg:text-3xl">
 											Place Your Bid
 										</h2>
-										<p className="text-sm text-muted-foreground">
+										<p className="text-muted-foreground text-sm">
 											{hasUserBidBefore
 												? "Increase your bid to improve your rank"
 												: "Join the auction and secure your NFT"}
@@ -179,9 +179,9 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 								</div>
 							</div>
 
-							<div className="flex flex-col w-full space-y-4">
+							<div className="flex w-full flex-col space-y-4">
 								<div className="space-y-2">
-									<div className="text-sm font-medium text-foreground/80">
+									<div className="text-foreground/80 text-sm font-medium">
 										<span className="text-lg">💰 </span>
 										{hasUserBidBefore
 											? "Enter SUI amount you want to add to your previous bid"
@@ -195,7 +195,7 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 												? "Enter SUI amount you want to add"
 												: "Minimum: 1 SUI for the first bid"
 										}
-										className="h-14 lg:h-16 text-lg border-primary/30 focus:border-primary hover:border-primary/50 transition-colors"
+										className="border-primary/30 focus:border-primary hover:border-primary/50 h-14 text-lg transition-colors lg:h-16"
 										inputMode="decimal"
 										decimalScale={SUI}
 										allowNegative={false}
@@ -203,7 +203,7 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 										rightAdornments={
 											<SUIIcon
 												prefix={"SUI"}
-												className="flex justify-end mr-1"
+												className="mr-1 flex justify-end"
 												containerClassName="w-full justify-end"
 											/>
 										}
@@ -221,14 +221,14 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 									)}
 								</div>
 								<div className="space-y-2">
-									<div className="text-sm font-medium text-foreground/80 flex items-center gap-2">
+									<div className="text-foreground/80 flex items-center gap-2 text-sm font-medium">
 										<span className="text-lg">📝</span>
 										Message to Beelievers (optional)
 									</div>
 									<FormInput
 										name="note"
 										placeholder="Add a personal note (max 30 characters)..."
-										className="h-14 lg:h-16 border-primary/30 focus:border-primary hover:border-primary/50 transition-colors"
+										className="border-primary/30 focus:border-primary hover:border-primary/50 h-14 transition-colors lg:h-16"
 										createEmptySpace
 										maxLength={30}
 									/>
@@ -251,7 +251,7 @@ function submitButton(isPending: boolean, hasUserBidBefore: boolean) {
 		>
 			<span className="flex items-center gap-2">
 				{isPending ? (
-					<LoaderCircle className="animate-spin w-64 h-64" />
+					<LoaderCircle className="h-64 w-64 animate-spin" />
 				) : (
 					<>
 						<span className="text-xl">🚀</span> {hasUserBidBefore ? "Bid more" : "Place Bid"}

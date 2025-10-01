@@ -13,7 +13,7 @@ import { routes } from "~/config/walletVisibility";
 
 function LoadingSkeleton() {
 	return (
-		<div className="flex gap-2 w-full">
+		<div className="flex w-full gap-2">
 			<Skeleton className="h-10 flex-1" />
 			<Skeleton className="h-10 flex-1" />
 		</div>
@@ -27,7 +27,7 @@ interface SelectWalletProps {
 function WalletSection({ title, children }: { title: string; children: React.ReactNode }) {
 	return (
 		<div className="space-y-2">
-			<h4 className="font-medium text-sm">{title}</h4>
+			<h4 className="text-sm font-medium">{title}</h4>
 			{children}
 		</div>
 	);
@@ -51,7 +51,7 @@ function MobileWalletModal({ children }: { children: React.ReactNode }) {
 }
 
 function DesktopWallets({ children }: { children: React.ReactNode }) {
-	return <div className="hidden md:flex md:gap-4 md:items-center">{children}</div>;
+	return <div className="hidden md:flex md:items-center md:gap-4">{children}</div>;
 }
 
 export function SelectWallet({ isProductionMode }: SelectWalletProps) {
@@ -72,7 +72,7 @@ export function SelectWallet({ isProductionMode }: SelectWalletProps) {
 		(isBitcoinConnected ? (
 			<XverseWallet />
 		) : (
-			<button onClick={connectWallet} className="btn btn-primary md:w-auto w-full">
+			<button onClick={connectWallet} className="btn btn-primary w-full md:w-auto">
 				<BitcoinIcon className="h-5 w-5" />
 				Connect Bitcoin Wallet
 			</button>
