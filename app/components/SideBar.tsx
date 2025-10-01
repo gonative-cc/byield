@@ -142,7 +142,7 @@ export function SideBar() {
 									<img
 										src="/assets/app-logos/logo.svg"
 										alt="Native"
-										className="hidden md:block"
+										className="hidden md:inline"
 									/>
 								</div>
 							</Link>

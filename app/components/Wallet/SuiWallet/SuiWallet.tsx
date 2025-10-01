@@ -99,12 +99,12 @@ function Accounts() {
 				);
 			}}
 			value={currentSelectedAccount?.address}
-			optionItemRenderer={(val) => (
-				<div className="flex gap-2 items-center">
-					{val.label} <CopyButton text={val.value} />
+			optionItemRenderer={(val, handleOptionClick) => (
+				<div>
+					<button onClick={() => handleOptionClick(val)}>{val.label}</button>
+					<CopyButton text={val.value} />
 				</div>
 			)}
-			className="w-full md:w-1/4"
 		/>
 	);
 }
