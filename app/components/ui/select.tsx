@@ -1,3 +1,6 @@
+import { ChevronDown } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+
 interface Option<T = string> {
 	label: string;
 	value: T;
@@ -9,11 +12,10 @@ interface SelectInputProps<T = string> {
 	onValueChange?: (value: T) => void;
 	className?: string;
 	value?: T;
-	optionItemRenderer?: (option: Option<T>) => React.ReactNode;
-}
-
-function isOptionValueNumberOrString<T>(value: T) {
-	return typeof value === "number" || typeof value === "string";
+	optionItemRenderer?: (
+		option: Option<T>,
+		handleOptionClick: (option: Option<T>) => void,
+	) => React.ReactNode;
 }
 
 function SelectInput<T = string>({
@@ -22,42 +24,54 @@ function SelectInput<T = string>({
 	placeholder,
 	onValueChange,
 	optionItemRenderer,
+	className,
 }: SelectInputProps<T>) {
-	const handleOnChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-		if (onValueChange) {
-			const selectedOption = options.find((opt) => {
-				const optValue = isOptionValueNumberOrString(opt.value) ? opt.value : String(opt.value);
-				return optValue === event.target.value;
-			});
-			if (selectedOption) onValueChange(selectedOption.value);
-		}
+	const [isOpen, setIsOpen] = useState(false);
+	const dropdownRef = useRef<HTMLDivElement>(null);
+
+	const selectedOption = options.find((opt) => opt.value === value);
+
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+				setIsOpen(false);
+			}
+		};
+
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => document.removeEventListener("mousedown", handleClickOutside);
+	}, []);
+
+	const handleOptionClick = (option: Option<T>) => {
+		onValueChange?.(option.value);
+		setIsOpen(false);
 	};
 
-	const defaultValue = isOptionValueNumberOrString(value) ? value : String(value);
-	const isThereOptions = options.length;
-
 	return (
-		<select value={defaultValue || "default"} onChange={handleOnChange} className="select">
-			{placeholder && (
-				<option value="default" disabled>
-					{placeholder}
-				</option>
+		<div className={`dropdown ${isOpen ? "dropdown-open" : ""} ${className || ""}`} ref={dropdownRef}>
+			<button className="btn" onClick={() => setIsOpen(!isOpen)}>
+				{selectedOption?.label || placeholder || "Select option"} <ChevronDown />
+			</button>
+			{isOpen && (
+				<ul className="dropdown-content menu bg-base-100 rounded-box w-full shadow">
+					{options.length ? (
+						options.map((option) => (
+							<li key={String(option.value)}>
+								{optionItemRenderer ? (
+									optionItemRenderer(option, handleOptionClick)
+								) : (
+									<button onClick={() => handleOptionClick(option)}>{option.label}</button>
+								)}
+							</li>
+						))
+					) : (
+						<li>
+							<span className="disabled">No options available</span>
+						</li>
+					)}
+				</ul>
 			)}
-			{isThereOptions ? (
-				options?.map((option) => (
-					<option
-						key={String(option.value)}
-						value={
-							isOptionValueNumberOrString(option.value) ? option.value : String(option.value)
-						}
-					>
-						{optionItemRenderer ? optionItemRenderer(option) : option.label}
-					</option>
-				))
-			) : (
-				<option disabled>No options available</option>
-			)}
-		</select>
+		</div>
 	);
 }
 

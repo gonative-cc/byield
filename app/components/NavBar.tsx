@@ -15,7 +15,7 @@ export function NavBar() {
 				<button className="md:hidden focus:outline-hidden mr-2" onClick={toggleMobileMenu}>
 					<Menu className="h-6 w-6" />
 				</button>
-				<img src="/assets/app-logos/logo-mobile.svg" alt="Remix" className="block md:hidden" />
+				<img src="/assets/app-logos/logo-mobile.svg" alt="Remix" className="md:hidden" />
 			</div>
 			<div className="flex items-center gap-4">
 				<BeelieversBadge />
