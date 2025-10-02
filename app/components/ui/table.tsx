@@ -5,19 +5,19 @@ import { twMerge } from "tailwind-merge";
 import { primaryHeadingClasses, avatarGradientClasses } from "~/util/tailwind";
 
 const TableHead = <T extends object>({ headerGroups }: { headerGroups: HeaderGroup<T>[] }) => (
-	<thead className="sticky top-0 z-10">
+	<thead className="sticky top-0">
 		{headerGroups.map((headerGroup) => (
 			<tr
 				{...headerGroup.getHeaderGroupProps()}
 				key={headerGroup.getHeaderGroupProps().key}
-				className="text-foreground/80 font-semibold text-sm bg-gradient-to-r from-azure-15 to-azure-20 backdrop-blur-sm"
+				className="text-foreground/80 from-azure-15 to-azure-20 bg-gradient-to-r text-sm font-semibold backdrop-blur-sm"
 			>
 				{headerGroup.headers.map((column, index) => (
 					<th
 						{...column.getHeaderProps()}
 						key={column.getHeaderProps().key}
 						className={twMerge(
-							"p-4 text-left border-b border-primary/20 transition-colors hover:text-primary",
+							"border-primary/20 hover:text-primary border-b p-4 text-left transition-colors",
 							index === 0 && "rounded-tl-2xl",
 							index === headerGroup.headers.length - 1 && "rounded-tr-2xl",
 						)}
@@ -60,7 +60,7 @@ const TableRows = <T extends object>({
 					<tr
 						{...restRowProps}
 						className={twMerge(
-							"border-t border-gray-700/30 text-sm hover:bg-primary/5 transition-colors group",
+							"hover:bg-primary/5 group border-t border-gray-700/30 text-sm transition-colors",
 							customRowProps.className,
 						)}
 					>
@@ -72,7 +72,7 @@ const TableRows = <T extends object>({
 									{...restCellProps}
 									key={cellKey}
 									className={twMerge(
-										"p-4 group-hover:text-foreground transition-colors",
+										"group-hover:text-foreground p-4 transition-colors",
 										cellIndex === 0 && isLastRow && !isExpanded && "rounded-bl-2xl",
 										cellIndex === row.cells.length - 1 &&
 											isLastRow &&
@@ -143,9 +143,9 @@ export const Table = <T extends object>({
 	const isTableEmpty = !data.length;
 	const renderNoDataMessage = (
 		<tr className="animate-in fade-in-0 duration-500">
-			<td colSpan={columns.length} className="p-8 text-center text-base text-muted-foreground">
+			<td colSpan={columns.length} className="text-muted-foreground p-8 text-center text-base">
 				<div className="flex flex-col items-center gap-3">
-					<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+					<div className="bg-primary/10 flex h-12 w-12 items-center justify-center rounded-full">
 						<span className="text-2xl">📊</span>
 					</div>
 					<p>No data available</p>
@@ -156,10 +156,10 @@ export const Table = <T extends object>({
 
 	const renderLoadingMessage = (
 		<tr className="animate-in fade-in-0 duration-500">
-			<td colSpan={columns.length} className="p-8 text-center text-base text-muted-foreground">
+			<td colSpan={columns.length} className="text-muted-foreground p-8 text-center text-base">
 				<div className="flex flex-col items-center gap-3">
-					<div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-						<div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+					<div className="bg-primary/10 flex h-12 w-12 items-center justify-center rounded-full">
+						<div className="border-primary h-6 w-6 animate-spin rounded-full border-b-2"></div>
 					</div>
 					<p>{loadingMessage}</p>
 				</div>
@@ -170,7 +170,7 @@ export const Table = <T extends object>({
 	return (
 		<>
 			{header && (
-				<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-2 pt-4">
+				<div className="flex flex-col items-start justify-between gap-4 px-2 pt-4 sm:flex-row sm:items-center">
 					<div className="flex items-center gap-3">
 						{header.icon && (
 							<div className={avatarGradientClasses()}>
@@ -187,14 +187,14 @@ export const Table = <T extends object>({
 			)}
 			<div
 				className={twMerge(
-					"w-full overflow-hidden rounded-2xl shadow-2xl border border-primary/10",
+					"border-primary/10 w-full overflow-hidden rounded-2xl border shadow-2xl",
 					className,
 				)}
 			>
 				<div className="overflow-x-auto">
 					<table
 						{...getTableProps()}
-						className="w-full text-left bg-gradient-to-br from-azure-10 via-azure-15 to-azure-20 min-w-[600px]"
+						className="from-azure-10 via-azure-15 to-azure-20 w-full min-w-[600px] bg-gradient-to-br text-left"
 					>
 						<TableHead headerGroups={headerGroups} />
 						<tbody {...getTableBodyProps()}>

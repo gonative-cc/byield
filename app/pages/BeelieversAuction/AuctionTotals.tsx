@@ -26,14 +26,14 @@ export function AuctionTotals({ info }: AuctionTotalsProps) {
 	}
 
 	return (
-		<div className="flex flex-col sm:flex-row gap-2 sm:gap-6 w-full max-w-3xl">
+		<div className="flex w-full max-w-3xl flex-col gap-2 sm:flex-row sm:gap-6">
 			<StatsCard title={info.uniqueBidders.toLocaleString()}>Unique Bidders</StatsCard>
 			<StatsCard title={info.totalBids.toLocaleString()}>Total Bids</StatsCard>
 			<StatsCard title={formatSUI(price) + " SUI"}>
 				<Tooltip tooltip={tooltip}>
-					<div className="text-muted-foreground flex items-center justify-center gap-1 group-hover:text-foreground/80 transition-colors">
+					<div className="text-muted-foreground group-hover:text-foreground/80 flex items-center justify-center gap-1 transition-colors">
 						{priceTitle}
-						<Info size="16" className="text-primary hover:text-orange-400 transition-colors" />
+						<Info size="16" className="text-primary transition-colors hover:text-orange-400" />
 					</div>
 				</Tooltip>
 			</StatsCard>

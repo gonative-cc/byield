@@ -8,7 +8,7 @@ import { SuiClientProvider, WalletProvider as SuiWalletProvider } from "@mysten/
 import { Toaster } from "~/components/ui/toaster";
 import { ByieldWalletProvider } from "./providers/ByieldWalletProvider";
 import { isProductionMode, printAppEnv } from "./lib/appenv";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Footer } from "~/components/Footer";
 import { SideBarProvider } from "./providers/SiderBarProvider";
 import { SideBar } from "~/components/SideBar";
@@ -58,7 +58,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<SideBarProvider>
 					<div className="flex w-full">
 						<SideBar />
-						<div className="flex flex-col gap-2 w-full">
+						<div className="flex w-full flex-col gap-2">
 							<NativeApp>
 								<NavBar />
 								{children}
@@ -98,7 +98,7 @@ function NativeApp({ children }: { children: React.ReactNode }) {
 
 	return (
 		<>
-			<div className="flex flex-col min-h-screen w-full gap-4">
+			<div className="flex min-h-screen w-full flex-col gap-4">
 				<QueryClientProvider client={queryClient}>
 					<SuiClientProvider networks={networkConfig} defaultNetwork={defaultNetwork}>
 						<SuiWalletProvider autoConnect>

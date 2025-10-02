@@ -79,21 +79,21 @@ export function NftDisplay({ nftId }: NftDisplayProps) {
 	const nameCls = "font-bold my-2 text-base " + (nftType === "Mythic" ? "text-yellow-400" : "text-primary");
 
 	return (
-		<div className="md:min-w-xs w-full md:max-w-xs p-6 bg-gradient-to-br from-primary/5 to-yellow-400/5 rounded-2xl">
+		<div className="from-primary/5 w-full rounded-2xl bg-gradient-to-br to-yellow-400/5 p-6 md:max-w-xs md:min-w-xs">
 			<div className="flex flex-col items-center gap-3">
-				<p className="text-xl font-bold text-primary">Your BTCFi Beeliever</p>
+				<p className="text-primary text-xl font-bold">Your BTCFi Beeliever</p>
 				{imageUrl ? (
 					<a
 						href={imageUrl}
 						target="_blank"
 						rel="noopener noreferrer"
-						className="rounded-2xl hover:scale-105 transition-transform"
+						className="rounded-2xl transition-transform hover:scale-105"
 						title="Click to view full-size image"
 					>
 						<img
 							src={imageUrl}
 							alt={metadata.name || "Beeliever NFT"}
-							className="object-cover border-2 border-primary/20 rounded-2xl"
+							className="border-primary/20 rounded-2xl border-2 object-cover"
 							onError={(e) => {
 								e.currentTarget.style.display = "none";
 								const fallback = e.currentTarget.parentElement
@@ -103,12 +103,12 @@ export function NftDisplay({ nftId }: NftDisplayProps) {
 						/>
 					</a>
 				) : (
-					<div className="w-48 h-48 rounded-2xl bg-gradient-to-br from-primary/20 to-orange-400/20 flex items-center justify-center text-6xl border-2 border-primary/20">
+					<div className="from-primary/20 border-primary/20 flex h-48 w-48 items-center justify-center rounded-2xl border-2 bg-gradient-to-br to-orange-400/20 text-6xl">
 						🐝
 					</div>
 				)}
 
-				<div className="w-full text-sm text-muted-foreground">
+				<div className="text-muted-foreground w-full text-sm">
 					<p className={nameCls}>{name}</p>
 					<p>Beeliever #{metadata.token_id}</p>
 					<p>Object ID: {trimAddress(nftId)}</p>
@@ -117,11 +117,11 @@ export function NftDisplay({ nftId }: NftDisplayProps) {
 					{metadata.badges && metadata.badges.length > 0 && (
 						<>
 							<p> Badges: </p>
-							<div className="flex flex-wrap justify-center gap-2 my-2">
+							<div className="my-2 flex flex-wrap justify-center gap-2">
 								{metadata.badges.map((badge, index) => (
 									<span
 										key={index}
-										className="px-2 py-1 bg-blue-500/20 text-blue-400 rounded-full border border-blue-400/30"
+										className="rounded-full border border-blue-400/30 bg-blue-500/20 px-2 py-1 text-blue-400"
 									>
 										{badge}
 									</span>
@@ -130,7 +130,7 @@ export function NftDisplay({ nftId }: NftDisplayProps) {
 						</>
 					)}
 
-					<div className="pt-3 justify-center w-full flex text-foreground">
+					<div className="text-foreground flex w-full justify-center pt-3">
 						<a
 							href={mkSuiVisionUrl(nftId, contractsConfig)}
 							target="_blank"

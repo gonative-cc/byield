@@ -27,7 +27,7 @@ export const FormInput = ({ name, required, rules, createEmptySpace = false, ...
 			render={({ field: { onChange, value }, fieldState: { error } }) => (
 				<div>
 					<Input value={value} onChange={onChange} {...rest} />
-					<div className={classNames({ "min-h-[1.3rem] mt-0.5": createEmptySpace })}>
+					<div className={classNames({ "mt-0.5 min-h-[1.3rem]": createEmptySpace })}>
 						{error && <p className="text-sm text-red-500">{error.message}</p>}
 					</div>
 				</div>

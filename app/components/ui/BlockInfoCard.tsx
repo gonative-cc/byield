@@ -30,7 +30,7 @@ export function BlockInfoCard() {
 					Your Bitcoin transactions need time to be securely confirmed
 				</p>
 
-				<div className="stats stats-horizontal shadow-none bg-transparent">
+				<div className="stats stats-horizontal bg-transparent shadow-none">
 					<div className="stat">
 						<div className="stat-figure text-orange-500">
 							<Timer size={18} />

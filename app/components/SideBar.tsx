@@ -125,30 +125,30 @@ export function SideBar() {
 			<div
 				ref={sidebarRef}
 				className={classNames({
-					"md:translate-x-0 fixed md:static top-0 border-r left-0 h-full text-white transition-all duration-300 ease-in-out z-50 bg-slate-950 md:bg-background": true,
-					"translate-x-0 mt-6 md:mt-0": isMobileOpen,
+					"md:bg-background fixed top-0 left-0 z-50 h-full border-r bg-slate-950 text-white transition-all duration-300 ease-in-out md:static md:translate-x-0": true,
+					"mt-6 translate-x-0 md:mt-0": isMobileOpen,
 					"-translate-x-full": !isMobileOpen,
 					"w-16": isCollapsed,
 					"w-60": !isCollapsed,
 				})}
 			>
 				{/* Sidebar Content */}
-				<div className="flex flex-col h-full">
+				<div className="flex h-full flex-col">
 					{/* Logo/Title */}
-					<div className="p-4 flex items-center">
+					<div className="flex items-center p-4">
 						{!isCollapsed && (
-							<Link to="/" className="font-bold text-lg">
+							<Link to="/" className="text-lg font-bold">
 								<div className="md:w-32">
 									<img
 										src="/assets/app-logos/logo.svg"
 										alt="Native"
-										className="hidden md:block"
+										className="hidden md:inline"
 									/>
 								</div>
 							</Link>
 						)}
 						{isCollapsed && (
-							<Link to="/" className="font-bold text-lg">
+							<Link to="/" className="text-lg font-bold">
 								<div className="md:w-32">
 									<img src="/assets/app-logos/logo-mobile.svg" alt="Native" />
 								</div>
@@ -172,7 +172,7 @@ export function SideBar() {
 			{isMobileOpen && (
 				<button
 					type="button"
-					className="fixed inset-0 bg-opacity-50 md:hidden"
+					className="bg-opacity-50 fixed inset-0 md:hidden"
 					onClick={toggleMobileMenu}
 				/>
 			)}
@@ -191,7 +191,7 @@ function ParentItem(item: MenuItem, currentPath: string, collapsed: boolean) {
 				"cursor-default": item.link === "",
 			})}
 		>
-			<img src={item.icon} alt="" className="flex h-8 w-8 object-fit" />
+			<img src={item.icon} alt="" className="object-fit flex h-8 w-8" />
 			{!collapsed && (
 				<div className="flex w-full justify-between">
 					<span className="text-sm">{item.title}</span>
@@ -208,7 +208,7 @@ function SubItems(subItems: MenuSubItem[], currentPath: string) {
 	if (!subItems.length) return "";
 
 	return (
-		<div className="pl-10 ml-4 border-l-2">
+		<div className="ml-4 border-l-2 pl-10">
 			{subItems.map((subItem) => (
 				<Link
 					key={subItem.id}

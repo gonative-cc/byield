@@ -47,7 +47,7 @@ export default function BeelieversAuctionPage({ loaderData }: Route.ComponentPro
 	return (
 		<div className={cn(pageBgClasses(), "p-4 sm:p-6 lg:p-8")}>
 			<div className="flex justify-center">
-				<div className="w-full max-w-7xl animate-in fade-in-0 duration-700">
+				<div className="animate-in fade-in-0 w-full max-w-7xl duration-700">
 					<BeelieversAuction info={loaderData.details} leaderboard={loaderData.leaderboard} />
 				</div>
 			</div>

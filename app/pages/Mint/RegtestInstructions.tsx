@@ -5,53 +5,51 @@ export function RegtestInstructions() {
 		</a>
 	);
 
-	const instructions = [
-		{
-			id: "instruction-1",
-			content: renderLink(
-				"Install Xverse Wallet",
-				"https://chromewebstore.google.com/detail/xverse-bitcoin-crypto-wal/idnnbdplmphpflfnlkomgpfbpcgelopg?pli=1",
-			),
-		},
-		{
-			id: "instruction-2",
-			content: "Open Xverse wallet",
-		},
-		{
-			id: "instruction-3",
-			content: "On top right corner, click on ☰ icon and select Settings",
-		},
-		{
-			id: "instruction-4",
-			content: "Click on Network",
-		},
-		{
-			id: "instruction-5",
-			content: "Select Regtest as Network",
-		},
-		{
-			id: "instruction-6",
-			content: "Click on ⋮ icon on Regtest",
-		},
-		{
-			id: "instruction-7",
-			content: "Click on `Change network configuration`",
-		},
-		{
-			id: "instruction-8",
-			content: "In the BTC URL, put `http://142.93.46.134:3002`",
-		},
-		{
-			id: "instruction-9",
-			content: "Press Save",
-		},
-	];
-
 	return (
-		<ul className="space-y-3 list-disc list-inside text-base">
-			{instructions.map(({ id, content }) => (
-				<li key={id}>{content}</li>
-			))}
+		<ul className="list-inside list-decimal space-y-3 text-base">
+			<li>
+				{renderLink(
+					"Install Xverse Wallet:",
+					"https://chromewebstore.google.com/detail/xverse-bitcoin-crypto-wal/idnnbdplmphpflfnlkomgpfbpcgelopg?pli=1",
+				)}{" "}
+				Download and install the Xverse wallet extension for your browser
+			</li>
+			<li>
+				<strong>Open Xverse Wallet:</strong> Click on the extension to open it.
+			</li>
+			<li>
+				<strong>Navigate to Settings:</strong> On the top right corner, click the ☰ icon and select
+				Settings.
+			</li>
+			<li>
+				<strong>Select Network:</strong> Click on Network.
+			</li>
+			<li>
+				<strong>Enable Testnet Mode:</strong> Switch over to On.
+			</li>
+			<li>
+				<strong>Add Network:</strong> Click on the “Add Network” button to add the details of the
+				network.
+			</li>
+			<li>
+				<strong>Add Name:</strong> Name it “Native Devnet”.
+			</li>
+			<li>
+				<strong>Add BTC URL:</strong> In the field labeled <strong>BTC URL</strong>, paste the
+				following address: http://142.93.46.134:3002
+			</li>
+			<li>
+				<strong>Save:</strong> Press <strong>Save.</strong>
+			</li>
+			<li>
+				<strong>Change the Network:</strong> Now that you have set up the Network, you have to scroll
+				down and click on the “Native Devnet” to make sure you have switched over to it.
+			</li>
+			<li>
+				<strong>Get Testnet Tokens:</strong> Now that you have setup the network and switched over to
+				it, copy your testnet address and complete the{"  "}
+				{renderLink("form", "https://forms.gle/nxSr94kN4BiVpJpx6")} to get BTC.
+			</li>
 		</ul>
 	);
 }

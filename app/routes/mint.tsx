@@ -12,6 +12,7 @@ import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { BlockInfoCard } from "~/components/ui/BlockInfoCard";
 import { FAQ } from "~/components/FAQ";
 import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
+import { BitcoinNetworkType } from "sats-connect";
 
 const FAQS = [
 	{
@@ -89,9 +90,22 @@ const FAQS = [
 	},
 ];
 
+const validNetworks: BitcoinNetworkType[] = [
+	BitcoinNetworkType.Mainnet,
+	BitcoinNetworkType.Testnet4,
+	BitcoinNetworkType.Regtest,
+];
+
 // This is a server mint to post data to server (data mutations)
 export async function action({ request }: Route.ActionArgs) {
-	const ctrl = new Controller();
+	const reqData = await request.clone().json();
+	const network = (reqData as { params: [BitcoinNetworkType] }).params[0];
+
+	if (!network || !validNetworks.includes(network)) {
+		throw new Error("Invalid network type");
+	}
+
+	const ctrl = new Controller(network);
 	return ctrl.handleJsonRPC(request);
 }
 
@@ -139,14 +153,14 @@ export default function Mint() {
 	}, [suiAddr, fetchMintTxs, mintTxFetcher.state, mintTxs, mintTxFetcher]);
 
 	return (
-		<div className="mx-auto px-4 py-4 space-y-6">
-			<div className="text-center space-y-4">
+		<div className="mx-auto space-y-6 px-4 py-4">
+			<div className="space-y-4 text-center">
 				<div className="space-y-2">
 					<span className="text-4xl">
 						Mint<span className="text-primary"> nBTC</span>
 					</span>
 					<p className="text-muted-foreground text-lg">
-						Deposit Bitcoin and mint native Bitcoin tokens on Sui network
+						Deposit Bitcoin and mint Native Bitcoin tokens on Sui network
 					</p>
 				</div>
 			</div>
@@ -156,8 +170,18 @@ export default function Mint() {
 					<Collapse title="Regtest Configuration for Devnet Server" className="bg-base-200">
 						<RegtestInstructions />
 					</Collapse>
+					<div className="w-full">
+						<iframe
+							src="https://drive.google.com/file/d/1pZNX2RG5L97B0Vh8pPb0OJSaaGRCdLcr/preview"
+							width="100%"
+							height="315"
+							allow="autoplay"
+							className="rounded-lg"
+							title="TestnetV2Walkthrough"
+						/>
+					</div>
 					<BlockInfoCard />
-					<MintBTC />
+					<MintBTC fetchMintTxs={fetchMintTxs} />
 				</div>
 			</div>
 
