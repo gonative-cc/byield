@@ -78,13 +78,13 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 	}, [raffleFetcher, raffle, auctionState]);
 
 	return (
-		<div className="flex flex-col items-center gap-6 sm:gap-8 lg:gap-10 w-full relative">
+		<div className="relative flex w-full flex-col items-center gap-6 sm:gap-8 lg:gap-10">
 			<Header>
 				<p>
 					🐝 BTCFi Beelievers
 					<span className="text-foreground"> Mint</span>
 				</p>
-				<p className="text-lg mt-3 text-muted-foreground">
+				<p className="text-muted-foreground mt-3 text-lg">
 					➡️{" "}
 					<a
 						className="link-raw"
@@ -97,7 +97,7 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 				</p>
 			</Header>
 
-			<div className="w-full flex justify-center">
+			<div className="flex w-full justify-center">
 				{auctionState === AuctionState.RECONCILLED ? (
 					<MintInfo user={user} auctionInfo={info} />
 				) : (
@@ -107,7 +107,7 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 
 			<Collapse
 				className="lg:w-[85%] xl:w-[75%]"
-				title={<span className="text-xl text-primary md:text-2xl">Raffle Results</span>}
+				title={<span className="text-primary text-xl md:text-2xl">Raffle Results</span>}
 			>
 				<RaffleResults raffle={raffle} />
 			</Collapse>
@@ -118,11 +118,11 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 						<span className="text-primary"> 🔨 Auction</span>
 					</Header>
 
-					<div className="w-full flex justify-center">
+					<div className="flex w-full justify-center">
 						<AuctionTotals info={info} />
 					</div>
-					<div className="animate-in slide-in-from-bottom-4 duration-1000 delay-600 w-full">
-						<div className="flex flex-col-reverse lg:flex-row gap-6 w-full">
+					<div className="animate-in slide-in-from-bottom-4 w-full delay-600 duration-1000">
+						<div className="flex w-full flex-col-reverse gap-6 lg:flex-row">
 							<AuctionTable data={leaderboard} user={user} suiAddr={suiAddr} />
 						</div>
 					</div>
@@ -133,7 +133,7 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 			<img
 				src="/assets/auction/partner/partners.webp"
 				alt="partners"
-				className="text-center mx-auto w-auto"
+				className="mx-auto w-auto text-center"
 			/>
 			<FAQ faqs={FAQS} description="Everything you need to know about Beelievers NFTs" />
 		</div>
@@ -142,7 +142,7 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 
 function Header({ children }: { children: ReactNode }) {
 	return (
-		<h1 className="flex flex-col items-center md:text-3xl text-2xl text-primary font-semibold max-w-120">
+		<h1 className="text-primary flex max-w-120 flex-col items-center text-2xl font-semibold md:text-3xl">
 			{children}
 		</h1>
 	);
@@ -153,9 +153,9 @@ function RaffleResults({ raffle }: { raffle: QueryRaffleResp }) {
 
 	return (
 		<>
-			<section className="w-full mb-6">
-				<div className="text-xl font-bold text-primary group-hover:text-orange-400 transition-colors duration-300 mb-2">
-					<NBTCRaw className="inline mr-2 h-[1.1em] w-auto align-middle" /> Total winnings:{" "}
+			<section className="mb-6 w-full">
+				<div className="text-primary mb-2 text-xl font-bold transition-colors duration-300 group-hover:text-orange-400">
+					<NBTCRaw className="mr-2 inline h-[1.1em] w-auto align-middle" /> Total winnings:{" "}
 					{formatSUI(raffle.totalAmount)} nBTC
 				</div>
 				This represents 10% of the{" "}
@@ -170,7 +170,7 @@ function RaffleResults({ raffle }: { raffle: QueryRaffleResp }) {
 				exchanged to BTC on 2025-08-26. Winners will be able to claim nBTC once the mainnet is live.
 			</section>
 
-			<div className="flex flex-col-reverse lg:flex-row gap-6 w-full">
+			<div className="flex w-full flex-col-reverse gap-6 lg:flex-row">
 				<RaffleTable data={raffle?.winners} />
 			</div>
 		</>

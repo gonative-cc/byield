@@ -171,20 +171,20 @@ export function BadgesModal({ msg = "View All Badges" }: { msg?: string }) {
 			<DialogTrigger asChild>
 				<button className="btn btn-primary btn-outline">🏆 {msg}</button>
 			</DialogTrigger>
-			<DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto w-[95vw] sm:w-full">
+			<DialogContent className="max-h-[80vh] w-[95vw] max-w-4xl overflow-y-auto sm:w-full">
 				<DialogHeader>
 					<DialogTitle className={primaryHeadingClasses()}>🏆 Auction Badges</DialogTitle>
 				</DialogHeader>
 
-				<div className="flex flex-col lg:flex-row gap-6">
+				<div className="flex flex-col gap-6 lg:flex-row">
 					{/* Left side - Badges grid */}
 					<div className="flex-1">
-						<div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-5 gap-2 sm:gap-3">
+						<div className="grid grid-cols-4 gap-2 sm:grid-cols-6 sm:gap-3 lg:grid-cols-5">
 							{BADGES.map((badge) => (
 								<button
 									key={badge.filename}
 									onClick={() => setSelectedBadge(badge)}
-									className={`bg-orange-500/50 text-white flex flex-col items-center p-2 rounded-lg border transition-all duration-200 group ${
+									className={`group flex flex-col items-center rounded-lg border bg-orange-500/50 p-2 text-white transition-all duration-200 ${
 										selectedBadge?.filename === badge.filename
 											? "border-primary bg-orange-500/70"
 											: "border-primary/20 hover:border-primary/50 hover:bg-orange-500/60"
@@ -193,9 +193,9 @@ export function BadgesModal({ msg = "View All Badges" }: { msg?: string }) {
 									<img
 										src={badge.src}
 										alt={badge.name}
-										className="md:w-16 md:h-16 w-10 h-10 object-contain group-hover:scale-110 transition-transform duration-200"
+										className="h-10 w-10 object-contain transition-transform duration-200 group-hover:scale-110 md:h-16 md:w-16"
 									/>
-									<span className="mt-1 text-center font-medium leading-tight">
+									<span className="mt-1 text-center leading-tight font-medium">
 										{badge.name}
 									</span>
 								</button>
@@ -205,17 +205,17 @@ export function BadgesModal({ msg = "View All Badges" }: { msg?: string }) {
 
 					{/* Right side - Badge details */}
 					{selectedBadge && (
-						<div className="lg:w-80 lg:border-l border-primary/20 lg:border-t-0 pt-4 lg:pt-0 flex justify-center">
+						<div className="border-primary/20 flex justify-center pt-4 lg:w-80 lg:border-t-0 lg:border-l lg:pt-0">
 							<div className="flex flex-col items-center space-y-3 sm:space-y-4">
 								<img
 									src={selectedBadge.src}
 									alt={selectedBadge.name}
-									className="bg-orange-500/50 rounded-lg text-white w-60 h-60 object-contain"
+									className="h-60 w-60 rounded-lg bg-orange-500/50 object-contain text-white"
 								/>
-								<h3 className="text-lg sm:text-xl font-bold text-primary text-center">
+								<h3 className="text-primary text-center text-lg font-bold sm:text-xl">
 									{selectedBadge.name}
 								</h3>
-								<p className="text-sm sm:text-base text-center text-muted-foreground">
+								<p className="text-muted-foreground text-center text-sm sm:text-base">
 									{selectedBadge.description}
 								</p>
 							</div>

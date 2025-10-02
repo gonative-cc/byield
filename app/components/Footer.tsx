@@ -2,9 +2,9 @@ import { socials, redirects } from "~/config/footer.json";
 
 export function Footer() {
 	return (
-		<footer className="flex flex-col gap-4 md:bg-[url('https://cdn.prod.website-files.com/669384bb0581e8c6129231e2/6712eb0279b6b0c14fb24ba2_Line%209.svg')] md:bg-no-repeat md:bg-top md:pt-10">
-			<div className="flex justify-between md:px-40 px-10 flex-wrap gap-4">
-				<div className="flex flex-col w-full md:w-fit md:gap-8 gap-4 bg-[url('/assets/bee/bee.webp')] md:bg-none bg-no-repeat bg-right bg-contain">
+		<footer className="flex flex-col gap-4 md:bg-[url('https://cdn.prod.website-files.com/669384bb0581e8c6129231e2/6712eb0279b6b0c14fb24ba2_Line%209.svg')] md:bg-top md:bg-no-repeat md:pt-10">
+			<div className="flex flex-wrap justify-between gap-4 px-10 md:px-40">
+				<div className="flex w-full flex-col gap-4 bg-[url('/assets/bee/bee.webp')] bg-contain bg-right bg-no-repeat md:w-fit md:gap-8 md:bg-none">
 					<div className="max-w-32">
 						<img src="/assets/app-logos/logo.svg" alt="Remix" />
 					</div>
@@ -16,14 +16,14 @@ export function Footer() {
 						))}
 					</div>
 				</div>
-				<div className="flex md:gap-32 gap-4 flex-wrap">
+				<div className="flex flex-wrap gap-4 md:gap-32">
 					{redirects.map(({ heading, subHeaders }) => (
-						<div key={heading} className="flex flex-col gap-2 flex-1">
+						<div key={heading} className="flex flex-1 flex-col gap-2">
 							<span className="text-sm md:text-base">{heading}</span>
 							<div className="flex flex-col gap-2">
 								{subHeaders.map(({ title, link }) => (
 									<a key={title} href={link} target="_blank" rel="noreferrer">
-										<span className="text-muted-foreground text-sm md:text-base hover:text-white md:text-nowrap">
+										<span className="text-muted-foreground text-sm hover:text-white md:text-base md:text-nowrap">
 											{title}
 										</span>
 									</a>
@@ -33,8 +33,8 @@ export function Footer() {
 					))}
 				</div>
 			</div>
-			<div className="flex items-center justify-center h-20 md:h-44 md:bg-size-[auto,contain] md:bg-position-[center,left] bg-no-repeat md:bg-[url('https://cdn.prod.website-files.com/669384bb0581e8c6129231e2/671380f67b8e1b5fed9795ea_go-native-footer.svg'),url('/assets/bee/bee.webp')] bg-[url('https://cdn.prod.website-files.com/669384bb0581e8c6129231e2/671380f67b8e1b5fed9795ea_go-native-footer.svg')] bg-contain">
-				<span className="text-muted-foreground md:text-base text-sm">
+			<div className="flex h-20 items-center justify-center bg-[url('https://cdn.prod.website-files.com/669384bb0581e8c6129231e2/671380f67b8e1b5fed9795ea_go-native-footer.svg')] bg-contain bg-no-repeat md:h-44 md:bg-[url('https://cdn.prod.website-files.com/669384bb0581e8c6129231e2/671380f67b8e1b5fed9795ea_go-native-footer.svg'),url('/assets/bee/bee.webp')] md:bg-size-[auto,contain] md:bg-position-[center,left]">
+				<span className="text-muted-foreground text-sm md:text-base">
 					Copyright © {new Date().getFullYear()} Native | All Rights Reserved
 				</span>
 			</div>

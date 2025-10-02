@@ -7,7 +7,7 @@ export const meta: MetaFunction = () => {
 
 export default function Index() {
 	return (
-		<div className="flex justify-center w-full">
+		<div className="flex w-full justify-center">
 			<BuyNBTC />
 		</div>
 	);

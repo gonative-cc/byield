@@ -3,15 +3,15 @@ import { useCurrentAccount } from "@mysten/dapp-kit";
 export function Instructions() {
 	const account = useCurrentAccount();
 	return (
-		<div className="card card-border bg-base-300 md:bg-[url('/assets/bee/bee-with-question-mark.webp')] bg-no-repeat bg-right-bottom bg-[length:min(150px,100%)]">
+		<div className="card card-border bg-base-300 bg-[length:min(150px,100%)] bg-right-bottom bg-no-repeat md:bg-[url('/assets/bee/bee-with-question-mark.webp')]">
 			<div className="card-body flex flex-col justify-between p-4">
 				<h2 className="mb-2 font-semibold text-gray-900 dark:text-white">Instructions:</h2>
-				<ul className="space-y-2  list-disc list-inside dark:text-gray-400">
+				<ul className="list-inside list-disc space-y-2 dark:text-gray-400">
 					<li>Click on Connect Sui Wallet button, if not already connected.</li>
 					<li>Connect your wallet. Slush recommended.</li>
 					<li>
 						Make sure you have testnet Sui tokens:
-						<ul className="ps-8 mt-2 space-y-1 list-disc list-outside">
+						<ul className="mt-2 list-outside list-disc space-y-1 ps-8">
 							<li>
 								<a
 									target="_blank"

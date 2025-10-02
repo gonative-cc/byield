@@ -6,7 +6,6 @@
 	"packageManager": "bun@1.2.20",
 	"scripts": {
 		"prepare": "cd .git/hooks; ln -s -f ../../contrib/git-hooks/pre-commit ./",
-		"postinstall": "bun run cf-typegen",
 		"cf-typegen": "wrangler types",
 		"build": "react-router build",
 		"build:dev": "react-router build --mode dev",
@@ -81,6 +80,7 @@
 		"lint-staged": "^16.2.3",
 		"miniflare": "^4.20250927.0",
 		"postcss": "^8.5.6",
+		"prettier-plugin-tailwindcss": "^0.6.14",
 		"tailwindcss": "^4.1.13",
 		"typescript": "^5.9.3",
 		"typescript-eslint": "^8.45.0",

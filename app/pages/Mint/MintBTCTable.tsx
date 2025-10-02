@@ -16,7 +16,7 @@ function MintTableTooltip({ tooltip, label }: { tooltip: string; label: string }
 		<Tooltip tooltip={tooltip}>
 			<div className="flex items-center gap-2">
 				{label}
-				<Info size="16" className="text-primary hover:text-orange-400 transition-colors" />
+				<Info size="16" className="text-primary transition-colors hover:text-orange-400" />
 			</div>
 		</Tooltip>
 	);
@@ -58,7 +58,7 @@ const createColumns = (
 		accessor: "bitcoinTxId",
 		Cell: ({ value }: CellProps<MintTransaction>) => (
 			<Tooltip tooltip={value}>
-				<div className="flex items-center gap-2 font-mono cursor-pointer">
+				<div className="flex cursor-pointer items-center gap-2 font-mono">
 					<span className="text-sm">{trimAddress(value)}</span>
 					<CopyButton text={value} />
 				</div>
@@ -85,7 +85,7 @@ const createColumns = (
 		accessor: "suiAddress",
 		Cell: ({ row }: CellProps<MintTransaction>) => (
 			<Tooltip tooltip={row.original.suiAddress}>
-				<div className="flex items-center gap-2 font-mono cursor-pointer">
+				<div className="flex cursor-pointer items-center gap-2 font-mono">
 					<span className="text-sm">{trimAddress(row.original.suiAddress)}</span>
 					<CopyButton text={row.original.suiAddress} />
 				</div>
@@ -119,7 +119,7 @@ const createColumns = (
 							href={explorerUrl}
 							target="_blank"
 							rel="noopener noreferrer"
-							className="link text-sm text-white hover:text-orange-400 !no-underline"
+							className="link text-sm text-white !no-underline hover:text-orange-400"
 						>
 							{trimAddress(suiTxId)}
 						</a>

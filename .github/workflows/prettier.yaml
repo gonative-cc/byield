@@ -20,11 +20,19 @@ jobs:
           # This is important to fetch the changes to the previous commit
           fetch-depth: 0
 
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@24d32ffd492484c1d75e0c0b894501ddb9d30d62 # v47
+
+      - uses: oven-sh/setup-bun@22457c87c1b161cf7dde222c3e82b2b5f8d2bed2 # @v2
+        if: steps.changed-files.outputs.any_changed == 'true'
+
+      - run: bun ci
+        if: steps.changed-files.outputs.any_changed == 'true'
+
       - name: format
-        uses: creyD/prettier_action@v4.6
-        with:
-          prettier_options: -c .
-          only_changed: true
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: bun prettier -c --ignore-unknown ${{ steps.changed-files.outputs.all_changed_files }}
 
   test:
     runs-on: ubuntu-latest

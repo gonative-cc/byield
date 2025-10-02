@@ -27,7 +27,7 @@ function NBTCRightAdornment({ maxNBTCAmount, onMaxClick }: NBTCRightAdornmentPro
 					<p className="text-xs whitespace-nowrap">Balance: {totalNBTCBalance} nBTC</p>
 					<button
 						onClick={() => onMaxClick(totalNBTCBalance)}
-						className="btn btn-primary btn-link text-xs w-fit p-0 pr-2 h-fit"
+						className="btn btn-primary btn-link h-fit w-fit p-0 pr-2 text-xs"
 					>
 						Max
 					</button>
@@ -35,7 +35,7 @@ function NBTCRightAdornment({ maxNBTCAmount, onMaxClick }: NBTCRightAdornmentPro
 			)}
 			<NBTCIcon
 				prefix={"nBTC"}
-				className="flex justify-end mr-1"
+				className="mr-1 flex justify-end"
 				containerClassName="w-full justify-end"
 			/>
 		</div>
@@ -119,7 +119,7 @@ export function SellNBTCTabContent() {
 					decimalScale={NBTC}
 					allowNegative={false}
 				/>
-				<ArrowDown className="text-primary justify-center w-full flex p-0 m-0" />
+				<ArrowDown className="text-primary m-0 flex w-full justify-center p-0" />
 				<FormNumericInput
 					name="SUIAmountReceived"
 					value={formatNBTC(SUIAmountReceived)}
@@ -128,10 +128,10 @@ export function SellNBTCTabContent() {
 					rightAdornments={<SUIIcon className="mr-2" />}
 				/>
 				<div className="flex flex-col gap-2">
-					<span className="tracking-tighter text-gray-500 text-sm dark:text-gray-400">
+					<span className="text-sm tracking-tighter text-gray-500 dark:text-gray-400">
 						This is a fixed price sell. The nBTC will be sold at price 12,500.
 					</span>
-					<span className="tracking-tighter text-gray-500 text-sm dark:text-gray-400">
+					<span className="text-sm tracking-tighter text-gray-500 dark:text-gray-400">
 						<span className="font-bold">Testnet measure:</span>To reduce testnet bot spam, nBTC to
 						SUI swaps have a 50% reduction.
 					</span>
