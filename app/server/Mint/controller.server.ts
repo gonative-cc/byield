@@ -47,7 +47,7 @@ export default class Controller {
 	}
 
 	private async queryUTXOs(address: string) {
-		const rpcUrl = `${this.btcRPCUrl}/address/${encodeURIComponent(address!)}/utxo`;
+		const rpcUrl = `${this.btcRPCUrl}/address/${encodeURIComponent(address)}/utxo`;
 		console.trace({ msg: "Querying nBTCUTXOs", address });
 		const rpcResponse = await fetch(rpcUrl);
 		if (!rpcResponse.ok) {
@@ -61,9 +61,12 @@ export default class Controller {
 			});
 			return serverError(`Bitcoin RPC error: status: ${rpcResponse.status}, error: ${error}`);
 		}
-		// Should be like this otherwise the return is raw data
-		const data = await rpcResponse.json();
-		return data;
+		return new Response(rpcResponse.body, {
+			status: rpcResponse.status,
+			headers: {
+				"Content-Type": rpcResponse.headers.get("content-type") ?? "application/json",
+			},
+		});
 	}
 
 	private handleNetwork(network: BitcoinNetworkType) {

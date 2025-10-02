@@ -120,7 +120,6 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 	useEffect(() => setValue("suiAddress", suiAddr || ""), [setValue, suiAddr]);
 
 	useEffect(() => {
-		console.debug({ msg: "Setting up buffer polyfill for MintBTC page" });
 		setupBufferPolyfill();
 	}, []);
 
@@ -139,7 +138,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 		if (!currentAddress) return;
 
 		if (!cfg.nBTC.depositAddress) {
-			console.error("ERROR: Missing depositAddress in bitcoin config for network:", network);
+			console.error({ msg: "Missing depositAddress in bitcoin config", network });
 			toast({
 				title: "Network Configuration Error",
 				description: `Missing deposit address for network ${network}. Please switch to TestnetV2, Mainnet, or Devnet for nBTC minting.`,
