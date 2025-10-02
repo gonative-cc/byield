@@ -82,10 +82,10 @@ function AvailableWallets() {
 		return (
 			<div className="flex flex-col gap-2">
 				{installedWallet && (
-					<div className="flex gap-2 w-full">
+					<div className="flex w-full gap-2">
 						<button
 							onClick={() => walletConnectClick(installedWallet)}
-							className="btn btn-primary btn-soft justify-between flex w-full h-16"
+							className="btn btn-primary btn-soft flex h-16 w-full justify-between"
 						>
 							<img
 								src={installedWallet.icon}
@@ -106,10 +106,10 @@ function AvailableWallets() {
 	return (
 		<div className="flex flex-col gap-2">
 			{wallets.map((wallet) => (
-				<div key={wallet.name} className="flex justify-center w-full">
+				<div key={wallet.name} className="flex w-full justify-center">
 					<button
 						onClick={() => walletConnectClick(wallet)}
-						className="btn btn-primary btn-soft justify-between flex w-full h-16"
+						className="btn btn-primary btn-soft flex h-16 w-full justify-between"
 					>
 						<img src={wallet.icon} alt={wallet.name} width={40} height={40} />
 						{wallet.name}
@@ -128,7 +128,7 @@ export function SuiModal({ label = "Connect Sui Wallet" }: SuiModalProps) {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<button className="btn btn-primary md:w-auto w-full">
+				<button className="btn btn-primary w-full md:w-auto">
 					<SUIIcon prefix="" className="h-5 w-5" /> {label}
 				</button>
 			</DialogTrigger>

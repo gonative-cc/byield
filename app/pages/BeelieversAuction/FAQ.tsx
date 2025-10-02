@@ -15,17 +15,17 @@ export function FAQ() {
 	const renderQuestion = (key: string, question: string, answer: string) => (
 		<div
 			key={key}
-			className="p-6 bg-gradient-to-r from-primary/5 to-primary/10 rounded-2xl border border-primary/20 hover:border-primary/40 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10"
+			className="from-primary/5 to-primary/10 border-primary/20 hover:border-primary/40 hover:shadow-primary/10 rounded-2xl border bg-gradient-to-r p-6 transition-all duration-300 hover:shadow-lg"
 		>
-			<h3 className="text-xl font-semibold text-primary mb-3 flex items-center gap-2">{question}</h3>
+			<h3 className="text-primary mb-3 flex items-center gap-2 text-xl font-semibold">{question}</h3>
 			<p className="text-muted-foreground">{answer}</p>
 		</div>
 	);
 
 	return (
-		<div className="animate-in slide-in-from-bottom-4 duration-1000 delay-700 w-full max-w-5xl bg-card/50 backdrop-blur-sm rounded-2xl p-4 lg:p-8 border border-primary/20 shadow-2xl">
-			<div className="text-center mb-6">
-				<h2 className="text-3xl font-bold text-primary mb-3">🤔 Frequently Asked Questions</h2>
+		<div className="animate-in slide-in-from-bottom-4 bg-card/50 border-primary/20 w-full max-w-5xl rounded-2xl border p-4 shadow-2xl backdrop-blur-sm delay-700 duration-1000 lg:p-8">
+			<div className="mb-6 text-center">
+				<h2 className="text-primary mb-3 text-3xl font-bold">🤔 Frequently Asked Questions</h2>
 				<p className="text-muted-foreground">Everything you need to know about Beelievers NFTs</p>
 			</div>
 			<div className="space-y-6">

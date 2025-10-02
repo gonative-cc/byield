@@ -27,7 +27,7 @@ function SUIRightAdornment({ maxSUIAmount, onMaxClick }: SUIRightAdornmentProps)
 					<p className="text-xs whitespace-nowrap">Balance: {maxSUIAmount.substring(0, 4)} SUI</p>
 					<button
 						onClick={() => onMaxClick(maxSUIAmount)}
-						className="btn btn-primary btn-link text-xs w-fit p-0 pr-2 h-fit"
+						className="btn btn-primary btn-link h-fit w-fit p-0 pr-2 text-xs"
 					>
 						Max
 					</button>
@@ -35,7 +35,7 @@ function SUIRightAdornment({ maxSUIAmount, onMaxClick }: SUIRightAdornmentProps)
 			)}
 			<SUIIcon
 				prefix={"SUI"}
-				className="flex justify-end mr-1"
+				className="mr-1 flex justify-end"
 				containerClassName="w-full justify-end"
 			/>
 		</div>
@@ -124,7 +124,7 @@ export function BuyNBTCTabContent() {
 					}
 					rules={suiAmountInputRules}
 				/>
-				<ArrowDown className="text-primary justify-center w-full flex mb-2 p-0 m-0" />
+				<ArrowDown className="text-primary m-0 mb-2 flex w-full justify-center p-0" />
 				<YouReceive isSuiWalletConnected={isSuiWalletConnected} mistAmount={mistAmount} />
 				{isSuiWalletConnected ? (
 					<button className="btn btn-primary" type="submit" disabled={isPending}>

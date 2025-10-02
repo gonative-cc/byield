@@ -66,12 +66,12 @@ function XverseWalletMobileView() {
 	const { balance, disconnectWallet } = useXverseWallet();
 
 	return (
-		<div className="flex flex-col gap-4 items-center justify-between md:hidden">
-			<div className="flex gap-2 w-full justify-between">
+		<div className="flex flex-col items-center justify-between gap-4 md:hidden">
+			<div className="flex w-full justify-between gap-2">
 				<NetWorkOptions />
 				<Accounts />
 			</div>
-			<div className="flex gap-4 items-center justify-between w-full">
+			<div className="flex w-full items-center justify-between gap-4">
 				{balance && (
 					<p>
 						Balance:{" "}
@@ -79,7 +79,7 @@ function XverseWalletMobileView() {
 							displayType="text"
 							value={formatBTC(BigInt(balance))}
 							suffix=" BTC"
-							className="shrink-0 text-primary"
+							className="text-primary shrink-0"
 						/>
 					</p>
 				)}
@@ -97,7 +97,7 @@ export function XverseWallet() {
 
 	return (
 		<>
-			<div className="hidden gap-2 items-center md:flex">
+			<div className="hidden items-center gap-2 md:flex">
 				<NetWorkOptions />
 				<Accounts />
 				{balance && (

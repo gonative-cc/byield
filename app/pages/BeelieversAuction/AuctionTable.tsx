@@ -38,7 +38,7 @@ const createColumns = (): Column<Bidder>[] => [
 		accessor: "amount",
 		Cell: ({ row }: CellProps<Bidder>) => (
 			<div className="flex items-center space-x-2 font-semibold">
-				<SUIIcon prefix="" className="h-5 w-5 text-primary" />
+				<SUIIcon prefix="" className="text-primary h-5 w-5" />
 				<span className="text-primary">{formatSUI(row.original.amount)}</span>
 				<span className="text-muted-foreground text-sm">SUI</span>
 			</div>
@@ -48,14 +48,14 @@ const createColumns = (): Column<Bidder>[] => [
 		Header: "📝 User Message",
 		accessor: "note",
 		Cell: ({ row }: CellProps<Bidder>) => (
-			<span className="text-sm text-muted-foreground max-w-32 truncate block">
+			<span className="text-muted-foreground block max-w-32 truncate text-sm">
 				{row.original.note || "-"}
 			</span>
 		),
 	},
 	{
 		Header: () => (
-			<div className="flex items-center justify-between gap-2 w-full">
+			<div className="flex w-full items-center justify-between gap-2">
 				<span className="font-semibold">🏅Badges</span>
 				<BadgesModal />
 			</div>
@@ -70,14 +70,14 @@ const createColumns = (): Column<Bidder>[] => [
 			}
 
 			return (
-				<div className="flex flex-wrap gap-2 justify-center">
+				<div className="flex flex-wrap justify-center gap-2">
 					{badges.length > 0 ? (
 						badges.map((badge, index) => (
 							<img
 								key={index}
 								src={badge.src}
 								alt={String(badge!.name)}
-								className={`bg-orange-500/60 rounded w-8 h-8 hover:scale-110 transition-transform`}
+								className={`h-8 w-8 rounded bg-orange-500/60 transition-transform hover:scale-110`}
 							/>
 						))
 					) : (
@@ -118,14 +118,14 @@ export function AuctionTable({ data, user, suiAddr }: AuctionTableProps) {
 
 	return (
 		<div className="w-full space-y-4">
-			<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-2 pt-4">
+			<div className="flex flex-col items-start justify-between gap-4 px-2 pt-4 sm:flex-row sm:items-center">
 				<div className="flex items-center gap-3">
 					<div className={avatarGradientClasses()}>
 						<span className="text-xl">🏆</span>
 					</div>
 					<div>
 						<h2 className={primaryHeadingClasses()}>Leaderboard</h2>
-						<p className="text-sm text-muted-foreground">Top {MAX_LEADERBOARD_ROWS} bidders</p>
+						<p className="text-muted-foreground text-sm">Top {MAX_LEADERBOARD_ROWS} bidders</p>
 					</div>
 				</div>
 			</div>

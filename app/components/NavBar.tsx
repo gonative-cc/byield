@@ -9,9 +9,9 @@ export function NavBar() {
 	const { toggleMobileMenu } = useContext(SideBarContext);
 
 	return (
-		<header className="flex w-full h-14 items-center px-1 md:pr-10 sticky top-0 z-50 border-b bg-background/95 backdrop-blur-sm supports-backdrop-filter:bg-background/60 justify-end">
+		<header className="bg-background/95 supports-backdrop-filter:bg-background/60 sticky top-0 z-50 flex h-14 w-full items-center justify-end border-b px-1 backdrop-blur-sm md:pr-10">
 			<div className="flex w-full md:hidden">
-				<button className="md:hidden focus:outline-hidden mr-2" onClick={toggleMobileMenu}>
+				<button className="mr-2 focus:outline-hidden md:hidden" onClick={toggleMobileMenu}>
 					<Menu className="h-6 w-6" />
 				</button>
 				<img src="/assets/app-logos/logo-mobile.svg" alt="Remix" className="md:hidden" />

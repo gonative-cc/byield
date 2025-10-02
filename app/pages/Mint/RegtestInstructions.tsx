@@ -6,7 +6,7 @@ export function RegtestInstructions() {
 	);
 
 	return (
-		<ul className="space-y-3 list-decimal list-inside text-base">
+		<ul className="list-inside list-decimal space-y-3 text-base">
 			<li>
 				{renderLink(
 					"Install Xverse Wallet:",

@@ -29,7 +29,7 @@ export function TxConfirmationModal({ isOpen, onClose, txId: _txId }: TxConfirma
 				<div className="divider" />
 
 				<div>
-					<h3 className="text-lg font-semibold mb-3">What happens next?</h3>
+					<h3 className="mb-3 text-lg font-semibold">What happens next?</h3>
 					<p className="text-sm">
 						Your transaction is now in the Bitcoin mempool and will be included in upcoming
 						blocks. It needs <strong>{confirmationDepth} confirmations</strong> to be considered
@@ -39,12 +39,12 @@ export function TxConfirmationModal({ isOpen, onClose, txId: _txId }: TxConfirma
 
 				<div className={gradientCardClasses()}>
 					<div className="card-body p-4">
-						<div className="flex items-center gap-2 mb-2">
+						<div className="mb-2 flex items-center gap-2">
 							<Clock size={16} />
 							<span className="text-sm font-medium">Timeline</span>
 						</div>
 
-						<div className="stats stats-horizontal shadow-none bg-transparent">
+						<div className="stats stats-horizontal bg-transparent shadow-none">
 							<div className="stat p-2">
 								<div className="stat-title text-xs">Block Time</div>
 								<div className="stat-value text-base">{blockTime / 60} min</div>
@@ -58,7 +58,7 @@ export function TxConfirmationModal({ isOpen, onClose, txId: _txId }: TxConfirma
 						<div className="divider my-2"></div>
 						<div className="text-center">
 							<div className="text-xs opacity-70">Estimated completion time</div>
-							<div className="text-xl font-bold text-primary">~{estimatedTime} minutes</div>
+							<div className="text-primary text-xl font-bold">~{estimatedTime} minutes</div>
 						</div>
 					</div>
 				</div>
