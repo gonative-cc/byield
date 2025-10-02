@@ -41,9 +41,32 @@ export default class Controller {
 			const mintTxs: MintTransaction[] = data.map((tx) => this.convertIndexerTransaction(tx));
 			return mintTxs;
 		} catch (error) {
-			console.error("Failed to fetch the mint txs: ", error);
+			console.error({ msg: "Failed to fetch the mint txs", error, url: this.indexerBaseUrl });
 			return serverError();
 		}
+	}
+
+	private async queryUTXOs(address: string) {
+		const rpcUrl = `${this.btcRPCUrl}/address/${encodeURIComponent(address)}/utxo`;
+		console.trace({ msg: "Querying nBTCUTXOs", address });
+		const rpcResponse = await fetch(rpcUrl);
+		if (!rpcResponse.ok) {
+			const error = await rpcResponse.text();
+			console.error({
+				msg: "Bitcoin RPC responded with error",
+				status: rpcResponse.status,
+				error,
+				rpcUrl,
+				address,
+			});
+			return serverError(`Bitcoin RPC error: status: ${rpcResponse.status}, error: ${error}`);
+		}
+		return new Response(rpcResponse.body, {
+			status: rpcResponse.status,
+			headers: {
+				"Content-Type": rpcResponse.headers.get("content-type") ?? "application/json",
+			},
+		});
 	}
 
 	private handleNetwork(network: BitcoinNetworkType) {
@@ -100,7 +123,7 @@ export default class Controller {
 		try {
 			reqData = await r.json<Req>();
 		} catch (_err) {
-			console.log(">>>>> Expected JSON content type:", _err);
+			console.error({ msg: "Expecting JSON Content-Type and JSON body", error: _err });
 			return new Response("Expecting JSON Content-Type and JSON body", {
 				status: 400,
 			});
@@ -111,6 +134,8 @@ export default class Controller {
 				return this.getMintTxs(reqData.params[1]);
 			case "postNBTCTx":
 				return this.postNBTCTx(reqData.params[1]);
+			case "queryUTXOs":
+				return this.queryUTXOs(reqData.params[1]);
 			default:
 				return notFound("Unknown method");
 		}
