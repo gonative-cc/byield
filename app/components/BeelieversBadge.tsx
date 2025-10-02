@@ -1,43 +1,42 @@
 import { useState, useEffect } from "react";
 import { useCurrentAccount, useSuiClientContext } from "@mysten/dapp-kit";
 import { useNetworkVariables } from "~/networkConfig";
-import { Transaction } from "@mysten/sui/transactions";
+import { Network } from "@mysten/kiosk";
+import { initializeKioskInfo } from "~/pages/BeelieversAuction/kiosk";
+import { findExistingNft } from "~/pages/BeelieversAuction/nft";
 
 export function BeelieversBadge() {
-	const [hasMinted, setHasMinted] = useState(false);
+	const [ownsNft, setOwnsNft] = useState(false);
 	const account = useCurrentAccount();
-	const { client } = useSuiClientContext();
+	const { client, network } = useSuiClientContext();
 	const { beelieversMint } = useNetworkVariables();
 
 	useEffect(() => {
-		async function checkMinted() {
+		async function checkNftOwnership() {
 			if (!account?.address || !beelieversMint.pkgId) {
-				setHasMinted(false);
+				setOwnsNft(false);
 				return;
 			}
 
 			try {
-				const txb = new Transaction();
-				txb.moveCall({
-					target: `${beelieversMint.pkgId}::mint::has_minted`,
-					arguments: [txb.object(beelieversMint.collectionId), txb.pure.address(account.address)],
-				});
+				const kioskInfo = await initializeKioskInfo(account.address, client, network as Network);
+				const nftId = await findExistingNft(
+					account.address,
+					client,
+					beelieversMint.pkgId,
+					kioskInfo?.kioskId,
+				);
 
-				const result = await client.devInspectTransactionBlock({
-					sender: account.address,
-					transactionBlock: txb,
-				});
-
-				setHasMinted(result.results?.[0]?.returnValues?.[0]?.[0]?.[0] === 1);
+				setOwnsNft(!!nftId);
 			} catch {
-				setHasMinted(false);
+				setOwnsNft(false);
 			}
 		}
 
-		checkMinted();
-	}, [account?.address, client, beelieversMint]);
+		checkNftOwnership();
+	}, [account?.address, client, beelieversMint, network]);
 
-	if (!hasMinted) {
+	if (!ownsNft) {
 		return null;
 	}
 
