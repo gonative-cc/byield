@@ -167,7 +167,7 @@ export default function Mint() {
 
 			<div className="flex justify-center">
 				<div className="w-full max-w-xl space-y-6">
-					<Collapse title="Regtest Configuration for Devnet Server" className="bg-base-200">
+					<Collapse title="Bitcoin Wallet configuration for our testnet" className="bg-base-200">
 						<RegtestInstructions />
 					</Collapse>
 					<div className="w-full">
