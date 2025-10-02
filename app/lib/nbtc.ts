@@ -1,6 +1,6 @@
 import Wallet, { BitcoinNetworkType } from "sats-connect";
 import { type Address, type RpcResult } from "sats-connect";
-import { fetchUTXOs, type UTXO } from "~/lib/external-apis";
+import { type UTXO } from "~/server/Mint/types";
 import {
 	getBitcoinNetworkConfig,
 	createPsbt,
@@ -20,12 +20,40 @@ export enum OpReturnFlag {
 }
 
 // TODO: this function is too long
+/**
+ * Constructs and signs a Bitcoin transaction for minting nBTC tokens.
+ *
+ * Bitcoin wallets only provide low-level `signPsbt()` APIs, requiring DApps to construct
+ * complete PSBTs with custom OP_RETURN data. This follows standard Bitcoin DApp patterns.
+ *
+ * ## Transaction Structure:
+ * - Input: User's UTXO (funding source)
+ * - Output 1: nBTC deposit address (BTC amount)
+ * - Output 2: OP_RETURN with Sui recipient address
+ * - Output 3: Change back to user
+ *
+ * ## Change Handling:
+ * If UTXO value > (mint amount + fees + dust threshold), remainder goes back to user.
+ * Example: 1 BTC UTXO → mint 0.1 nBTC → 0.9 BTC change output created.
+ *
+ * ## OP_RETURN Format:
+ * `[op_return type:(0x00)][Sui_Address(32 bytes)]`
+ *
+ * @param bitcoinAddress - User's Bitcoin wallet address
+ * @param mintAmountInSatoshi - BTC amount to deposit (satoshis)
+ * @param opReturn - Sui address for nBTC minting (0x... format)
+ * @param network - Bitcoin network type
+ * @param cfg - Bitcoin config (deposit address, fees)
+ * @param utxos - User's available UTXOs (from queryUTXOs)
+ * @returns Transaction response with txid if successful
+ */
 export async function nBTCMintTx(
 	bitcoinAddress: Address,
 	mintAmountInSatoshi: number,
 	opReturn: string,
 	network: BitcoinNetworkType,
 	cfg: BitcoinConfig,
+	utxos: UTXO[],
 ): Promise<RpcResult<"signPsbt"> | undefined> {
 	const networkCfg = await getBitcoinNetworkConfig(network);
 	if (!networkCfg) {
@@ -39,7 +67,6 @@ export async function nBTCMintTx(
 		return;
 	}
 	try {
-		const utxos: UTXO[] = await fetchUTXOs(bitcoinAddress.address, network, cfg);
 		if (!utxos?.length) {
 			console.error("utxos not found.");
 			toast({
