@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { useCurrentAccount, useSuiClientContext } from "@mysten/dapp-kit";
 import { useNetworkVariables } from "~/networkConfig";
-import { Network } from "@mysten/kiosk";
-import { initializeKioskInfo } from "~/pages/BeelieversAuction/kiosk";
-import { findExistingNft } from "~/pages/BeelieversAuction/nft";
+import { KioskClient, Network } from "@mysten/kiosk";
+import { queryNftFromKiosk, queryNftByModule } from "~/pages/BeelieversAuction/nft";
 
 export function BeelieversBadge() {
 	const [ownsNft, setOwnsNft] = useState(false);
@@ -19,16 +18,35 @@ export function BeelieversBadge() {
 			}
 
 			try {
-				const kioskInfo = await initializeKioskInfo(account.address, client, network as Network);
-				const nftId = await findExistingNft(
-					account.address,
-					client,
-					beelieversMint.pkgId,
-					kioskInfo?.kioskId,
-				);
+				// Check direct ownership first
+				const directNft = await queryNftByModule(account.address, client, beelieversMint.pkgId);
+				if (directNft) {
+					setOwnsNft(true);
+					return;
+				}
 
-				setOwnsNft(!!nftId);
-			} catch {
+				// Query all kiosks owned by user on-chain
+				const kioskClient = new KioskClient({ client, network: network as Network });
+				const { kioskOwnerCaps } = await kioskClient.getOwnedKiosks({ address: account.address });
+
+				// Check each kiosk for Beelievers NFTs
+				if (kioskOwnerCaps && kioskOwnerCaps.length > 0) {
+					for (const kiosk of kioskOwnerCaps) {
+						const nftInKiosk = await queryNftFromKiosk(
+							kiosk.kioskId,
+							beelieversMint.pkgId,
+							client,
+						);
+						if (nftInKiosk) {
+							setOwnsNft(true);
+							return;
+						}
+					}
+				}
+
+				setOwnsNft(false);
+			} catch (error) {
+				console.error("Error checking NFT ownership:", error);
 				setOwnsNft(false);
 			}
 		}
