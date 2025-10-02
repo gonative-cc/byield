@@ -60,7 +60,7 @@ export function BeelieversBadge() {
 
 	return (
 		<div className="badge badge-primary badge-sm gap-1">
-			<img src="/assets/ui-icons/beelievers-badge2.svg" alt="Beeliever" className="w-4 h-4" />
+			<img src="/assets/ui-icons/beelievers-badge2.svg" alt="Beeliever" className="h-4 w-4" />
 			Beeliever
 		</div>
 	);
