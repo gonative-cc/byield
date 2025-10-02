@@ -12,6 +12,12 @@ export type Req =
 			method: "postNBTCTx";
 			// network, tx id
 			params: [BitcoinNetworkType, string];
+	  }
+	| {
+			// query all UTXOs associate with a give address / spending key
+			method: "queryUTXOs";
+			// network, address
+			params: [BitcoinNetworkType, string];
 	  };
 
 export async function makeReq<T>(

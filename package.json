@@ -49,7 +49,7 @@
 		"react-number-format": "^5.4.4",
 		"react-router": "^7.9.3",
 		"react-table": "^7.8.0",
-		"sats-connect": "^3.6.1",
+		"sats-connect": "^4.1.1",
 		"tailwind-merge": "^3.3.1",
 		"tailwindcss-animate": "^1.0.7"
 	},
