@@ -7,6 +7,7 @@ import eslintConfigPrettier from "eslint-config-prettier";
 import jsxA11y from "eslint-plugin-jsx-a11y";
 import pluginReact from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
+import tailwind from "eslint-plugin-tailwindcss";
 
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -60,6 +61,8 @@ export default defineConfig([
       ],
     },
   },
+
+  tailwind.configs["flat/recommended"],
 
   // Prettier config to disable eslint formatting rules and avoid formatting conflicts.
   // THIS MUST ALWAYS BE THE LAST CONFIGURATION.
