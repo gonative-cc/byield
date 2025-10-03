@@ -166,12 +166,12 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 				const txid = response.result.txid;
 				setTxId(txid);
 				setShowConfirmationModal(true);
-				makeReq(postNBTCTxRPC, {
+				await makeReq(postNBTCTxRPC, {
 					method: "postNBTCTx",
 					params: [network, txid!],
 				});
 				fetchMintTxs();
-				makeReq(utxosRPC, {
+				await makeReq(utxosRPC, {
 					method: "queryUTXOs",
 					params: [network, currentAddress.address],
 				});
