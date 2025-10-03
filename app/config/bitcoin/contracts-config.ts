@@ -30,18 +30,18 @@ export const mainnetCfg: BitcoinConfig = {
 	btcRPCUrl: "",
 };
 
-export const regtestCfg: BitcoinConfig = {
-	bitcoinBroadcastLink: "http://142.93.46.134:3002/tx/",
+export const devnetCfg: BitcoinConfig = {
+	bitcoinBroadcastLink: "http://bitcoin-devnet.gonative.cc:3002/tx/",
 	confirmationDepth: 4,
 	blockTimeSec: 120,
-	mempoolApiUrl: "http://142.93.46.134:3002",
+	mempoolApiUrl: "http://bitcoin-devnet.gonative.cc:3002",
 	minerFeeSats: 1000,
 	nBTC: {
 		depositAddress: "bcrt1q90xm34jqm0kcpfclkdmn868rw6vcv9fzvfg6p6",
 		mintingFee: 10,
 	},
 	indexerUrl: "https://btcindexer.gonative-cc.workers.dev:443",
-	btcRPCUrl: "http://142.93.46.134:3002",
+	btcRPCUrl: "http://bitcoin-devnet.gonative.cc:3002",
 };
 
 export const bitcoinConfigs: Record<BitcoinNetworkType, BitcoinConfig | undefined> = {
@@ -49,5 +49,5 @@ export const bitcoinConfigs: Record<BitcoinNetworkType, BitcoinConfig | undefine
 	Testnet: undefined,
 	Testnet4: undefined,
 	Signet: undefined,
-	Regtest: regtestCfg,
+	Regtest: devnetCfg,
 };
