@@ -130,7 +130,6 @@ export default function Mint() {
 
 	// Handle address changes, interval setup, and initial fetch
 	useEffect(() => {
-		// Clear existing interval
 		if (intervalRef.current) {
 			clearInterval(intervalRef.current);
 		}
@@ -144,7 +143,6 @@ export default function Mint() {
 		// Set up interval for automatic refetching
 		intervalRef.current = setInterval(fetchMintTxs, 120000);
 
-		// Cleanup interval
 		return () => {
 			if (intervalRef.current) {
 				clearInterval(intervalRef.current);
@@ -153,69 +151,81 @@ export default function Mint() {
 	}, [suiAddr, fetchMintTxs, mintTxFetcher.state, mintTxs, mintTxFetcher]);
 
 	return (
-		<div className="mx-auto space-y-6 px-4 py-4">
-			<div className="space-y-4 text-center">
-				<div className="space-y-2">
-					<span className="text-4xl">
-						Mint<span className="text-primary"> nBTC</span>
-					</span>
-					<p className="text-muted-foreground text-lg">
-						Deposit Bitcoin and mint Native Bitcoin tokens on Sui network
-					</p>
-				</div>
+		<div className="mx-auto max-w-7xl space-y-6 px-4 py-4">
+			{/* Header */}
+			<div className="space-y-2 text-center">
+				<h1 className="text-4xl font-bold">
+					Mint<span className="text-primary"> nBTC</span>
+				</h1>
+				<p className="text-base-content/70 text-lg">
+					Deposit Bitcoin and mint Native Bitcoin tokens on Sui network
+				</p>
 			</div>
 
-			<div className="flex justify-center">
-				<div className="w-full max-w-xl space-y-6">
-					<Collapse title="Bitcoin Wallet configuration for our testnet" className="bg-base-200">
-						<RegtestInstructions />
-					</Collapse>
-					<div className="w-full">
-						<iframe
-							src="https://drive.google.com/file/d/1pZNX2RG5L97B0Vh8pPb0OJSaaGRCdLcr/preview"
-							width="100%"
-							height="315"
-							allow="autoplay"
-							className="rounded-lg"
-							title="TestnetV2Walkthrough"
-						/>
-					</div>
-					<BlockInfoCard />
+			{/* Main Content Grid */}
+			<div className="grid gap-4 lg:grid-cols-[1fr_400px]">
+				{/* Left Column */}
+				<div className="space-y-6">
 					<MintBTC fetchMintTxs={fetchMintTxs} />
-				</div>
-			</div>
 
-			{/* Transaction Table Section */}
-			{suiAddr && (
-				<div className="space-y-4">
-					<div className="flex justify-end">
-						<button
-							onClick={fetchMintTxs}
-							disabled={isLoading}
-							className="btn btn-sm btn-accent"
-							title="Refresh transactions"
-						>
-							<RefreshCw size={16} className={isLoading ? "animate-spin" : ""} />
-							Refresh
-						</button>
-					</div>
-
-					{error && (
-						<div className="alert">
-							<div>
-								<div className="font-medium">Failed to load transactions</div>
-								<div className="text-sm opacity-80">{error}</div>
-								<button onClick={fetchMintTxs} className="btn btn-sm mt-2">
-									Retry
+					{/* Transaction Table Section */}
+					{suiAddr && (
+						<div className="space-y-4">
+							<div className="flex items-center justify-between">
+								<h2 className="text-2xl font-bold">Your Mint Transactions</h2>
+								<button
+									onClick={fetchMintTxs}
+									disabled={isLoading}
+									className="btn btn-sm btn-accent"
+									title="Refresh transactions"
+								>
+									<RefreshCw size={16} className={isLoading ? "animate-spin" : ""} />
+									Refresh
 								</button>
 							</div>
+
+							{error && (
+								<div className="alert alert-error">
+									<div>
+										<div className="font-medium">Failed to load transactions</div>
+										<div className="text-sm opacity-80">{error}</div>
+										<button onClick={fetchMintTxs} className="btn btn-sm mt-2">
+											Retry
+										</button>
+									</div>
+								</div>
+							)}
+							<MintBTCTable data={mintTxs || []} isLoading={isLoading} />
 						</div>
 					)}
-					<MintBTCTable data={mintTxs || []} isLoading={isLoading} />
+
+					<FAQ faqs={FAQS} />
 				</div>
-			)}
-			<div className="flex justify-center">
-				<FAQ faqs={FAQS} />
+
+				{/* Right Column - Info & Instructions */}
+				<div className="space-y-4">
+					<BlockInfoCard />
+
+					<div className="card">
+						<div className="card-body">
+							<h2 className="card-title text-lg">Tutorial Video</h2>
+							<div className="aspect-video w-full">
+								<iframe
+									src="https://drive.google.com/file/d/1pZNX2RG5L97B0Vh8pPb0OJSaaGRCdLcr/preview"
+									width="100%"
+									height="100%"
+									allow="autoplay"
+									className="h-full w-full rounded-lg"
+									title="TestnetV2Walkthrough"
+								/>
+							</div>
+						</div>
+					</div>
+
+					<Collapse title="Wallet Setup Instructions">
+						<RegtestInstructions />
+					</Collapse>
+				</div>
 			</div>
 		</div>
 	);
