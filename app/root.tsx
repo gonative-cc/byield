@@ -78,17 +78,8 @@ function NativeApp({ children }: { children: React.ReactNode }) {
 	const location = useLocation();
 	const pathname = location.pathname;
 
-	// Default network based on environment and route - but allow wallet to override
-	const defaultNetwork = (() => {
-		if (isProductionMode()) {
-			if (pathname === "/beelievers-auction") {
-				return "mainnet";
-			}
-			return "testnet";
-		}
-		// default to testnet (localnet still available via wallet switching)
-		return "testnet";
-	})();
+	const defaultSuiNet: "testnet" | "mainnet" =
+		isProductionMode() && pathname === "/beelievers-auction" ? "mainnet" : "testnet";
 
 	useEffect(() => {
 		if (!isProductionMode()) {
@@ -100,7 +91,7 @@ function NativeApp({ children }: { children: React.ReactNode }) {
 		<>
 			<div className="flex min-h-screen w-full flex-col gap-4">
 				<QueryClientProvider client={queryClient}>
-					<SuiClientProvider networks={networkConfig} defaultNetwork={defaultNetwork}>
+					<SuiClientProvider networks={networkConfig} defaultNetwork={defaultSuiNet}>
 						<SuiWalletProvider autoConnect>
 							<ByieldWalletProvider>
 								<main className="flex-1">{children}</main>
