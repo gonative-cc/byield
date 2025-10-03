@@ -1,6 +1,6 @@
 // This file defines denoms and  the convertion factors.
 //
-import { parseUnits, formatUnits } from "@ethersproject/units";
+import { parseUnits, formatUnits } from '@ethersproject/units';
 
 export const BTC = 8; // BTC -> sats decimals
 export const SUI = 9; // SUI -> mist decimals

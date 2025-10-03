@@ -1,4 +1,4 @@
-import type { AuctionAccountType } from "~/server/BeelieversAuction/types";
+import type { AuctionAccountType } from '~/server/BeelieversAuction/types';
 
 export interface EligibilityData {
 	type?: AuctionAccountType;
@@ -6,8 +6,8 @@ export interface EligibilityData {
 }
 
 export enum AuctionState {
-	WILL_START = "WILL_START",
-	STARTED = "STARTED",
-	ENDED = "ENDED",
-	RECONCILLED = "RECONCILLED",
+	WILL_START = 'WILL_START',
+	STARTED = 'STARTED',
+	ENDED = 'ENDED',
+	RECONCILLED = 'RECONCILLED',
 }

@@ -1,5 +1,5 @@
-import { ChevronDown } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { ChevronDown } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 
 interface Option<T = string> {
 	label: string;
@@ -38,8 +38,8 @@ function SelectInput<T = string>({
 			}
 		};
 
-		document.addEventListener("mousedown", handleClickOutside);
-		return () => document.removeEventListener("mousedown", handleClickOutside);
+		document.addEventListener('mousedown', handleClickOutside);
+		return () => document.removeEventListener('mousedown', handleClickOutside);
 	}, []);
 
 	const handleOptionClick = (option: Option<T>) => {
@@ -48,9 +48,12 @@ function SelectInput<T = string>({
 	};
 
 	return (
-		<div className={`dropdown ${isOpen ? "dropdown-open" : ""} ${className || ""}`} ref={dropdownRef}>
+		<div
+			className={`dropdown ${isOpen ? 'dropdown-open' : ''} ${className || ''}`}
+			ref={dropdownRef}
+		>
 			<button className="btn" onClick={() => setIsOpen(!isOpen)}>
-				{selectedOption?.label || placeholder || "Select option"} <ChevronDown />
+				{selectedOption?.label || placeholder || 'Select option'} <ChevronDown />
 			</button>
 			{isOpen && (
 				<ul className="dropdown-content menu bg-base-100 rounded-box w-full shadow">

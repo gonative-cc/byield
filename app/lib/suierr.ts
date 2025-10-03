@@ -1,4 +1,4 @@
-import { extractFirstInteger } from "./parser";
+import { extractFirstInteger } from './parser';
 
 export interface MoveAbort {
 	funName?: string;
@@ -15,27 +15,27 @@ export function parseTxError(err: string): MoveAbort | string | unknown {
 
 	if (!err) return undefined;
 
-	const trpcErr = "TRPCClientError: ";
-	const userErr = "TRPCClientError: User";
+	const trpcErr = 'TRPCClientError: ';
+	const userErr = 'TRPCClientError: User';
 	const userErrIdx = err.indexOf(userErr);
 	if (userErrIdx >= 0) {
 		return err.slice(userErrIdx + trpcErr.length);
 	}
 
-	const abortIdx = err.indexOf("MoveAbort");
+	const abortIdx = err.indexOf('MoveAbort');
 	if (abortIdx < 0) return undefined;
 
 	try {
 		err = err.slice(abortIdx);
-		const funNameIdentifier = "function_name:";
-		err = err.slice(err.indexOf("function_name:") + funNameIdentifier.length + 1);
-		const endFunIdx = err.indexOf(")") + 1;
+		const funNameIdentifier = 'function_name:';
+		err = err.slice(err.indexOf('function_name:') + funNameIdentifier.length + 1);
+		const endFunIdx = err.indexOf(')') + 1;
 		const funName = err.slice(0, endFunIdx);
 		err = err.slice(endFunIdx);
 		const errCode = extractFirstInteger(err) || undefined;
 		return { funName, errCode };
 	} catch {
-		return { funName: "unknown" };
+		return { funName: 'unknown' };
 	}
 }
 
@@ -53,7 +53,7 @@ export function formatSuiErr(
 ): string {
 	// Handle both string and Error object inputs
 	let errMsg: string;
-	if (typeof error === "string") {
+	if (typeof error === 'string') {
 		errMsg = error;
 	} else {
 		errMsg = (error as Error).message;
@@ -62,11 +62,11 @@ export function formatSuiErr(
 	if (!errMsg) return defaultMsg;
 
 	const txErr = parseTxError(errMsg);
-	if (!txErr) return "Sui tx failed, unknown error";
-	if (typeof txErr === "string") return txErr;
+	if (!txErr) return 'Sui tx failed, unknown error';
+	if (typeof txErr === 'string') return txErr;
 
-	if (typeof txErr === "object" && txErr !== null && "errCode" in txErr && "funName" in txErr) {
-		const errCode = typeof txErr.errCode === "number" ? txErr.errCode : 0;
+	if (typeof txErr === 'object' && txErr !== null && 'errCode' in txErr && 'funName' in txErr) {
+		const errCode = typeof txErr.errCode === 'number' ? txErr.errCode : 0;
 		const reason = errCodeFormatter(errCode);
 		return `Tx aborted, function: ${txErr.funName} reason: "${reason}"`;
 	}

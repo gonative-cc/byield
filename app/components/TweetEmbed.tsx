@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect } from 'react';
 
 interface TweetEmbedProps {
 	src: string;
@@ -14,8 +14,8 @@ export function TweetEmbed({ src }: TweetEmbedProps) {
 				return;
 			}
 
-			const script = document.createElement("script");
-			script.src = "https://platform.twitter.com/widgets.js";
+			const script = document.createElement('script');
+			script.src = 'https://platform.twitter.com/widgets.js';
 			script.async = true;
 			document.body.appendChild(script);
 
@@ -30,7 +30,7 @@ export function TweetEmbed({ src }: TweetEmbedProps) {
 
 	return (
 		<blockquote className="twitter-tweet" data-media-max-width="560">
-			<a href={`${src}?ref_src=twsrc%5Etfw`}>{""}</a>
+			<a href={`${src}?ref_src=twsrc%5Etfw`}>{''}</a>
 		</blockquote>
 	);
 }

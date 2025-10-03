@@ -1,13 +1,13 @@
-import { BitcoinNetworkType } from "sats-connect";
-import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
-import { type BitcoinConfig, bitcoinConfigs } from "~/config/bitcoin/contracts-config";
-import * as validate from "~/lib/validate";
+import { BitcoinNetworkType } from 'sats-connect';
+import { useXverseWallet } from '~/components/Wallet/XverseWallet/useWallet';
+import { type BitcoinConfig, bitcoinConfigs } from '~/config/bitcoin/contracts-config';
+import * as validate from '~/lib/validate';
 
 // return config for related Bitcoin network. Throws an error if network is not supported.
 export function mustGetBitcoinConfig(network: BitcoinNetworkType): BitcoinConfig {
 	const cfg = bitcoinConfigs[network];
 	if (cfg === undefined) {
-		throw new Error("`Not supported Bitcoin network: " + network);
+		throw new Error('`Not supported Bitcoin network: ' + network);
 	}
 	const err = verify(cfg);
 	if (err !== null) throw err;
@@ -23,15 +23,15 @@ export default useBitcoinConfig;
 
 function verify(cfg: BitcoinConfig): Error | null {
 	const errors = [];
-	if (cfg.confirmationDepth < 0) errors.push("confirmationDepth must be >= 0");
-	if (cfg.blockTimeSec === 0) errors.push("blockTimeSec must be bigger than 0");
-	if (!validate.url(cfg.bitcoinBroadcastLink)) errors.push("bitcoinBroadcastLink is not valid");
-	if (!validate.url(cfg.mempoolApiUrl)) errors.push("mempoolApiUrl is not valid");
-	if (!validate.url(cfg.indexerUrl)) errors.push("indexerUrl is not valid");
-	if (!validate.url(cfg.btcRPCUrl)) errors.push("btcRPCUrl is not valid");
-	if (!cfg.nBTC.depositAddress) errors.push("nbtc.depositAddress is not set");
-	if (cfg.nBTC.mintingFee < 0) errors.push("nbtc.mintingFee is not set");
-	if (errors.length > 0) return new Error("Invalid BitcoinConfig: " + JSON.stringify(errors));
+	if (cfg.confirmationDepth < 0) errors.push('confirmationDepth must be >= 0');
+	if (cfg.blockTimeSec === 0) errors.push('blockTimeSec must be bigger than 0');
+	if (!validate.url(cfg.bitcoinBroadcastLink)) errors.push('bitcoinBroadcastLink is not valid');
+	if (!validate.url(cfg.mempoolApiUrl)) errors.push('mempoolApiUrl is not valid');
+	if (!validate.url(cfg.indexerUrl)) errors.push('indexerUrl is not valid');
+	if (!validate.url(cfg.btcRPCUrl)) errors.push('btcRPCUrl is not valid');
+	if (!cfg.nBTC.depositAddress) errors.push('nbtc.depositAddress is not set');
+	if (cfg.nBTC.mintingFee < 0) errors.push('nbtc.mintingFee is not set');
+	if (errors.length > 0) return new Error('Invalid BitcoinConfig: ' + JSON.stringify(errors));
 
 	return null;
 }

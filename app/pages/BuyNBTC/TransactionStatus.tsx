@@ -1,6 +1,6 @@
-import { Check, CircleX } from "lucide-react";
-import { classNames } from "~/util/tailwind";
-import { Link } from "react-router";
+import { Check, CircleX } from 'lucide-react';
+import { classNames } from '~/util/tailwind';
+import { Link } from 'react-router';
 
 interface TransactionStatusProps {
 	isSuccess: boolean;
@@ -16,12 +16,12 @@ export function TransactionStatus({ isSuccess, txnId, handleRetry }: Transaction
 			<div className="flex flex-col items-center gap-2">
 				<Icon
 					className={classNames({
-						"text-green-500": isSuccess,
-						"text-red-500": !isSuccess,
+						'text-green-500': isSuccess,
+						'text-red-500': !isSuccess,
 					})}
 					size={30}
-				/>{" "}
-				{isSuccess ? "Success" : "Failed"}
+				/>{' '}
+				{isSuccess ? 'Success' : 'Failed'}
 			</div>
 			<div className="flex flex-col items-center gap-2">
 				{txnId && (
@@ -36,7 +36,7 @@ export function TransactionStatus({ isSuccess, txnId, handleRetry }: Transaction
 				)}
 			</div>
 			<button onClick={handleRetry} className="btn btn-primary">
-				{isSuccess ? "Ok" : "Retry"}
+				{isSuccess ? 'Ok' : 'Retry'}
 			</button>
 		</div>
 	);

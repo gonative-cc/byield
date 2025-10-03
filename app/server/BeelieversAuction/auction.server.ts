@@ -1,8 +1,8 @@
-import type { Bidder, User, User_ } from "./types";
+import type { Bidder, User, User_ } from './types';
 // import { AuctionAccountType } from "./types";
-import { Badge } from "./types";
+import { Badge } from './types';
 
-import { cmpNum } from "~/lib/batteries";
+import { cmpNum } from '~/lib/batteries';
 
 export interface BidResult {
 	newRank: number | null;
@@ -89,21 +89,21 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 		bidder: string,
 		amount: number,
 		bidTxTimestampMs: number,
-		note: string = "",
+		note: string = '',
 	): Promise<[BidResult | null, Error | null]> {
 		try {
 			if (bidTxTimestampMs < this.startDate.getTime()) {
-				return [null, new Error("Auction has not started yet.")];
+				return [null, new Error('Auction has not started yet.')];
 			}
 			if (bidTxTimestampMs > this.endDate.getTime()) {
-				return [null, new Error("Auction has already ended.")];
+				return [null, new Error('Auction has already ended.')];
 			}
 
 			const prevBid = await this.getBidder(bidder, false);
 			const oldRank = prevBid?.rank ?? null;
 
 			if (!Number.isInteger(amount) || amount <= 0) {
-				return [null, new Error("Bid amount must be a positive integer.")];
+				return [null, new Error('Bid amount must be a positive integer.')];
 			}
 
 			// apply boost
@@ -166,9 +166,7 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 			return [{ oldRank, newRank }, null];
 		} catch (e) {
 			const error =
-				e instanceof Error
-					? e
-					: new Error("An unknown error occurred during the bid process.");
+				e instanceof Error ? e : new Error('An unknown error occurred during the bid process.');
 			return [null, error];
 		}
 	}
@@ -257,7 +255,7 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 		const row = await this.db
 			.prepare(`SELECT totalBids, uniqueBidders FROM stats WHERE key = 'auction_stats'`)
 			.first<AuctionAggStats>();
-		if (!row) throw new Error("Statistics table not initialized.");
+		if (!row) throw new Error('Statistics table not initialized.');
 		return row;
 	}
 
@@ -265,7 +263,7 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 	async getStats(): Promise<AuctionStats> {
 		const row = (await this.getAuctionTopStats()) as AuctionStats;
 		const topBids = await this.getTopLeaderboard();
-		if (!row) throw new Error("Statistics table not initialized.");
+		if (!row) throw new Error('Statistics table not initialized.');
 
 		row.topBids = topBids;
 		return row;
@@ -312,7 +310,7 @@ INSERT OR IGNORE INTO stats (key) VALUES ('auction_stats');
 		wlStatus: number = 0,
 	): Promise<D1Result> {
 		return await this.db
-			.prepare("INSERT INTO bids (bidder, amount, timestamp, wlStatus) VALUES (?, ?, ?, ?)")
+			.prepare('INSERT INTO bids (bidder, amount, timestamp, wlStatus) VALUES (?, ?, ?, ?)')
 			.bind(bidder, amount, +timestamp, wlStatus)
 			.run();
 	}

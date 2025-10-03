@@ -1,4 +1,4 @@
-import { socials, redirects } from "~/config/footer.json";
+import { socials, redirects } from '~/config/footer.json';
 
 export function Footer() {
 	return (

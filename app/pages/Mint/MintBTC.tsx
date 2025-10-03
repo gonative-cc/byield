@@ -1,47 +1,47 @@
-import { FormProvider, useForm } from "react-hook-form";
-import { FormInput } from "../../components/form/FormInput";
-import { useXverseConnect, useXverseWallet } from "../../components/Wallet/XverseWallet/useWallet";
-import { useContext, useEffect, useState } from "react";
-import { WalletContext } from "~/providers/ByieldWalletProvider";
-import { Wallets } from "~/components/Wallet";
-import { FormNumericInput } from "../../components/form/FormNumericInput";
-import { BTC, formatBTC, parseBTC, formatNBTC } from "~/lib/denoms";
-import { nBTCMintTx } from "~/lib/nbtc";
-import { BitcoinIcon } from "lucide-react";
-import { buttonEffectClasses, classNames } from "~/util/tailwind";
-import { isValidSuiAddress } from "@mysten/sui/utils";
-import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
-import { toast } from "~/hooks/use-toast";
-import { setupBufferPolyfill } from "~/lib/buffer-polyfill";
-import { TxConfirmationModal } from "~/components/ui/TransactionConfirmationModal";
-import { makeReq } from "~/server/Mint/jsonrpc";
-import { useFetcher } from "react-router";
-import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
-import { NBTCBalance } from "~/components/NBTCBalance";
-import type { UTXO } from "~/server/Mint/types";
+import { FormProvider, useForm } from 'react-hook-form';
+import { FormInput } from '../../components/form/FormInput';
+import { useXverseConnect, useXverseWallet } from '../../components/Wallet/XverseWallet/useWallet';
+import { useContext, useEffect, useState } from 'react';
+import { WalletContext } from '~/providers/ByieldWalletProvider';
+import { Wallets } from '~/components/Wallet';
+import { FormNumericInput } from '../../components/form/FormNumericInput';
+import { BTC, formatBTC, parseBTC, formatNBTC } from '~/lib/denoms';
+import { nBTCMintTx } from '~/lib/nbtc';
+import { BitcoinIcon } from 'lucide-react';
+import { buttonEffectClasses, classNames } from '~/util/tailwind';
+import { isValidSuiAddress } from '@mysten/sui/utils';
+import { useBitcoinConfig } from '~/hooks/useBitcoinConfig';
+import { toast } from '~/hooks/use-toast';
+import { setupBufferPolyfill } from '~/lib/buffer-polyfill';
+import { TxConfirmationModal } from '~/components/ui/TransactionConfirmationModal';
+import { makeReq } from '~/server/Mint/jsonrpc';
+import { useFetcher } from 'react-router';
+import { useCoinBalance } from '~/components/Wallet/SuiWallet/useBalance';
+import { NBTCBalance } from '~/components/NBTCBalance';
+import type { UTXO } from '~/server/Mint/types';
 
 function formatSuiAddress(suiAddress: string) {
-	if (!suiAddress.toLowerCase().startsWith("0x")) {
-		return "0x" + suiAddress;
+	if (!suiAddress.toLowerCase().startsWith('0x')) {
+		return '0x' + suiAddress;
 	}
 	return suiAddress;
 }
 
 const PERCENTAGES = [
 	{
-		id: "percentage-1",
+		id: 'percentage-1',
 		value: 25,
 	},
 	{
-		id: "percentage-2",
+		id: 'percentage-2',
 		value: 50,
 	},
 	{
-		id: "percentage-3",
+		id: 'percentage-3',
 		value: 75,
 	},
 	{
-		id: "percentage-4",
+		id: 'percentage-4',
 		value: 100,
 	},
 ];
@@ -107,17 +107,17 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 	const postNBTCTxRPC = useFetcher();
 
 	const mintNBTCForm = useForm<MintNBTCForm>({
-		mode: "all",
-		reValidateMode: "onChange",
+		mode: 'all',
+		reValidateMode: 'onChange',
 		defaultValues: {
-			numberOfBTC: "",
-			suiAddress: suiAddr || "",
+			numberOfBTC: '',
+			suiAddress: suiAddr || '',
 		},
 	});
 
 	const { handleSubmit, setValue } = mintNBTCForm;
 
-	useEffect(() => setValue("suiAddress", suiAddr || ""), [setValue, suiAddr]);
+	useEffect(() => setValue('suiAddress', suiAddr || ''), [setValue, suiAddr]);
 
 	useEffect(() => {
 		setupBufferPolyfill();
@@ -125,9 +125,9 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 
 	// Fetch UTXOs when wallet connects
 	useEffect(() => {
-		if (currentAddress && utxosRPC.state === "idle") {
+		if (currentAddress && utxosRPC.state === 'idle') {
 			makeReq(utxosRPC, {
-				method: "queryUTXOs",
+				method: 'queryUTXOs',
 				params: [network, currentAddress.address],
 			});
 		}
@@ -138,11 +138,11 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 		if (!currentAddress) return;
 
 		if (!cfg.nBTC.depositAddress) {
-			console.error({ msg: "Missing depositAddress in bitcoin config", network });
+			console.error({ msg: 'Missing depositAddress in bitcoin config', network });
 			toast({
-				title: "Network Configuration Error",
+				title: 'Network Configuration Error',
 				description: `Missing deposit address for network ${network}. Please switch to TestnetV2, Mainnet, or Devnet for nBTC minting.`,
-				variant: "destructive",
+				variant: 'destructive',
 			});
 			return;
 		}
@@ -151,7 +151,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 
 		try {
 			if (!utxosRPC.data || utxosRPC.data.length === 0) {
-				throw new Error("No UTXOs available for transaction");
+				throw new Error('No UTXOs available for transaction');
 			}
 			const response = await nBTCMintTx(
 				currentAddress,
@@ -162,28 +162,28 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 				utxosRPC.data,
 			);
 
-			if (response?.status === "success") {
+			if (response?.status === 'success') {
 				const txid = response.result.txid;
 				setTxId(txid);
 				setShowConfirmationModal(true);
 				makeReq(postNBTCTxRPC, {
-					method: "postNBTCTx",
+					method: 'postNBTCTx',
 					params: [network, txid!],
 				});
 				fetchMintTxs();
 				makeReq(utxosRPC, {
-					method: "queryUTXOs",
+					method: 'queryUTXOs',
 					params: [network, currentAddress.address],
 				});
 			} else {
-				throw new Error("Transaction signing failed");
+				throw new Error('Transaction signing failed');
 			}
 		} catch (error) {
-			console.error({ msg: "nBTC mint transaction failed", error });
+			console.error({ msg: 'nBTC mint transaction failed', error });
 			toast({
-				title: "Transaction Failed",
-				description: error instanceof Error ? error.message : "Unknown error occurred",
-				variant: "destructive",
+				title: 'Transaction Failed',
+				description: error instanceof Error ? error.message : 'Unknown error occurred',
+				variant: 'destructive',
 			});
 		} finally {
 			setIsProcessing(false);
@@ -208,13 +208,13 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 							rules={{
 								validate: {
 									isWalletConnected: () =>
-										isBitCoinWalletConnected || "Please connect Bitcoin wallet",
+										isBitCoinWalletConnected || 'Please connect Bitcoin wallet',
 									enoughBalance: (value: string) => {
 										if (walletBalance) {
 											if (parseBTC(value) <= BigInt(walletBalance)) {
 												return true;
 											}
-											return "Not enough balance";
+											return 'Not enough balance';
 										}
 									},
 								},
@@ -224,7 +224,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 							onChange={(value: number) => {
 								if (walletBalance) {
 									const val = (BigInt(walletBalance) * BigInt(value)) / 100n;
-									setValue("numberOfBTC", formatBTC(BigInt(val)));
+									setValue('numberOfBTC', formatBTC(BigInt(val)));
 								}
 							}}
 						/>
@@ -240,7 +240,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 										if (isValidSuiAddress(value)) {
 											return true;
 										}
-										return "Enter valid Sui address";
+										return 'Enter valid Sui address';
 									},
 								},
 							}}
@@ -251,12 +251,12 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 								type="submit"
 								disabled={isProcessing}
 								className={classNames(
-									"btn btn-primary",
+									'btn btn-primary',
 									buttonEffectClasses(),
-									isProcessing ? "loading" : "",
+									isProcessing ? 'loading' : '',
 								)}
 							>
-								{isProcessing ? "Processing..." : "Deposit BTC and mint nBTC"}
+								{isProcessing ? 'Processing...' : 'Deposit BTC and mint nBTC'}
 							</button>
 						) : (
 							<button onClick={connectWallet} className="btn btn-primary">

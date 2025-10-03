@@ -1,6 +1,6 @@
-import { formatSUI } from "~/lib/denoms";
-import { FormNumericInput } from "~/components/form/FormNumericInput";
-import { NBTCIcon } from "~/components/icons";
+import { formatSUI } from '~/lib/denoms';
+import { FormNumericInput } from '~/components/form/FormNumericInput';
+import { NBTCIcon } from '~/components/icons';
 
 const PRICE_PER_NBTC_IN_SUI = 25000n;
 
@@ -21,9 +21,9 @@ export function YouReceive({ mistAmount, isSuiWalletConnected }: YouReceiveProps
 			<FormNumericInput
 				name="amountOfNBTC"
 				className="h-16"
-				value={isSuiWalletConnected && youReceive && youReceive > 0 ? formatSUI(youReceive) : "0.0"}
+				value={isSuiWalletConnected && youReceive && youReceive > 0 ? formatSUI(youReceive) : '0.0'}
 				allowNegative={false}
-				placeholder={isSuiWalletConnected && youReceive && youReceive <= 0 ? "0.0" : ""}
+				placeholder={isSuiWalletConnected && youReceive && youReceive <= 0 ? '0.0' : ''}
 				readOnly
 				rightAdornments={<NBTCIcon className="mr-5" />}
 			/>

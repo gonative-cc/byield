@@ -1,13 +1,14 @@
 const FAQS = [
 	{
-		id: "faq-1",
-		question: "Can I trade Beelievers NFTs after the mint?",
-		answer: "Yes. After mint, Beelievers NFTs will be available for secondary trading on Tradeport and other supported marketplaces.",
+		id: 'faq-1',
+		question: 'Can I trade Beelievers NFTs after the mint?',
+		answer:
+			'Yes. After mint, Beelievers NFTs will be available for secondary trading on Tradeport and other supported marketplaces.',
 	},
 	{
-		id: "faq-2",
+		id: 'faq-2',
 		question: "What's the total supply?",
-		answer: "The Beelievers collection includes 6,021 NFTs.",
+		answer: 'The Beelievers collection includes 6,021 NFTs.',
 	},
 ];
 
@@ -17,7 +18,9 @@ export function FAQ() {
 			key={key}
 			className="from-primary/5 to-primary/10 border-primary/20 hover:border-primary/40 hover:shadow-primary/10 rounded-2xl border bg-gradient-to-r p-6 transition-all duration-300 hover:shadow-lg"
 		>
-			<h3 className="text-primary mb-3 flex items-center gap-2 text-xl font-semibold">{question}</h3>
+			<h3 className="text-primary mb-3 flex items-center gap-2 text-xl font-semibold">
+				{question}
+			</h3>
 			<p className="text-muted-foreground">{answer}</p>
 		</div>
 	);

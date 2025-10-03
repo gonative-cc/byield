@@ -1,9 +1,9 @@
-import { Info, CheckCircle, XCircle } from "lucide-react";
-import { type MintTransaction, MintingStatus } from "~/server/Mint/types";
-import { AnimatedHourglass } from "~/components/ui/AnimatedHourglass";
-import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
-import { NumericFormat } from "react-number-format";
-import { formatBTC } from "~/lib/denoms";
+import { Info, CheckCircle, XCircle } from 'lucide-react';
+import { type MintTransaction, MintingStatus } from '~/server/Mint/types';
+import { AnimatedHourglass } from '~/components/ui/AnimatedHourglass';
+import { useBitcoinConfig } from '~/hooks/useBitcoinConfig';
+import { NumericFormat } from 'react-number-format';
+import { formatBTC } from '~/lib/denoms';
 
 interface FailedTransactionAlertProps {
 	transaction: MintTransaction;
@@ -15,12 +15,12 @@ function FailedTransactionAlert({ transaction }: FailedTransactionAlertProps) {
 			<XCircle size={16} className="flex-shrink-0" />
 			<div>
 				<div className="mb-1 font-medium">
-					Transaction {transaction.status === MintingStatus.Reorg ? "Reorganized" : "Failed"}
+					Transaction {transaction.status === MintingStatus.Reorg ? 'Reorganized' : 'Failed'}
 				</div>
 				<div className="text-sm opacity-80">
 					{transaction.errorMessage ||
 						(transaction.status === MintingStatus.Reorg
-							? "The transaction was reorganized due to a blockchain reorganization"
+							? 'The transaction was reorganized due to a blockchain reorganization'
 							: "The transaction was not included in the block (the transaction didn't happen)")}
 				</div>
 				<button className="btn btn-sm btn-error mt-2">Retry Transaction</button>
@@ -56,14 +56,17 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 			transaction.status !== MintingStatus.Broadcasting
 		)
 			return null;
-		const remainingConfirmations = Math.max(0, confirmationDepth - transaction.numberOfConfirmation);
+		const remainingConfirmations = Math.max(
+			0,
+			confirmationDepth - transaction.numberOfConfirmation,
+		);
 		const estimatedMinutes = remainingConfirmations * (blockTime / 60);
 		return Math.ceil(estimatedMinutes);
 	};
 
 	const formatTimeRemaining = (minutes: number | null) => {
 		if (!minutes || minutes <= 0) return null;
-		if (minutes === 1) return "~1 minute";
+		if (minutes === 1) return '~1 minute';
 		return `~${minutes} minutes`;
 	};
 
@@ -97,10 +100,10 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 					)}
 					<span>
 						{isFailed
-							? "Bitcoin Tx Broadcast failed"
+							? 'Bitcoin Tx Broadcast failed'
 							: isBroadcasted
-								? "Bitcoin Tx broadcasted"
-								: "Bitcoin Tx broadcasting"}
+								? 'Bitcoin Tx broadcasted'
+								: 'Bitcoin Tx broadcasting'}
 					</span>
 					{transaction.bitcoinExplorerUrl && isBroadcasted && (
 						<a
@@ -121,7 +124,7 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 						<AnimatedHourglass size="md" />
 					) : null}
 					<span>
-						Bitcoin confirmations:{" "}
+						Bitcoin confirmations:{' '}
 						{isFailed ? 0 : Math.min(transaction.numberOfConfirmation, confirmationDepth)}/
 						{confirmationDepth}
 					</span>
@@ -149,18 +152,18 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 					) : isConfirmed ? (
 						<AnimatedHourglass size="md" />
 					) : null}
-					<span>{isMinted ? "nBTC minted" : isConfirmed ? "nBTC minting" : "nBTC minting"}</span>
+					<span>{isMinted ? 'nBTC minted' : isConfirmed ? 'nBTC minting' : 'nBTC minting'}</span>
 				</div>
 
 				<div className="divider my-2"></div>
 
 				<div className="text-base-content/70 text-sm">
-					<span className="font-semibold">Fees:</span> {transaction.fees ?? "-"} sats{" "}
+					<span className="font-semibold">Fees:</span> {transaction.fees ?? '-'} sats{' '}
 					<span className="text-base-content/50">
 						(~
 						<NumericFormat
 							displayType="text"
-							value={transaction.fees != null ? formatBTC(BigInt(transaction.fees)) : "-"}
+							value={transaction.fees != null ? formatBTC(BigInt(transaction.fees)) : '-'}
 							suffix=" BTC"
 							className="font-mono"
 						/>

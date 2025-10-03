@@ -1,15 +1,15 @@
-import Wallet, { BitcoinNetworkType } from "sats-connect";
-import { type Address, type RpcResult } from "sats-connect";
-import { type UTXO } from "~/server/Mint/types";
+import Wallet, { BitcoinNetworkType } from 'sats-connect';
+import { type Address, type RpcResult } from 'sats-connect';
+import { type UTXO } from '~/server/Mint/types';
 import {
 	getBitcoinNetworkConfig,
 	createPsbt,
 	compileScript,
 	getOpReturnOpcode,
 	getBitcoinLib,
-} from "./bitcoin.client";
-import { toast } from "~/hooks/use-toast";
-import type { BitcoinConfig } from "~/config/bitcoin/contracts-config";
+} from './bitcoin.client';
+import { toast } from '~/hooks/use-toast';
+import type { BitcoinConfig } from '~/config/bitcoin/contracts-config';
 
 export const PRICE_PER_NBTC_IN_SUI = 25000n;
 const DUST_THRESHOLD_SATOSHI = 546;
@@ -54,25 +54,25 @@ export async function nBTCMintTx(
 	network: BitcoinNetworkType,
 	cfg: BitcoinConfig,
 	utxos: UTXO[],
-): Promise<RpcResult<"signPsbt"> | undefined> {
+): Promise<RpcResult<'signPsbt'> | undefined> {
 	const networkCfg = await getBitcoinNetworkConfig(network);
 	if (!networkCfg) {
 		const description = "can't fetch bitcoin network config for network: " + network;
 		console.error(description);
 		toast({
-			title: "Bitcoin network",
+			title: 'Bitcoin network',
 			description,
-			variant: "destructive",
+			variant: 'destructive',
 		});
 		return;
 	}
 	try {
 		if (!utxos?.length) {
-			console.error("utxos not found.");
+			console.error('utxos not found.');
 			toast({
-				title: "UTXO",
-				description: "UTXOs not found for this address.",
-				variant: "destructive",
+				title: 'UTXO',
+				description: 'UTXOs not found for this address.',
+				variant: 'destructive',
 			});
 			return;
 		}
@@ -88,28 +88,25 @@ export async function nBTCMintTx(
 			witnessProgram: string;
 		};
 		try {
-			const outputScript = bitcoinjs.address.toOutputScript(
-				bitcoinAddress.address,
-				networkCfg,
-			);
+			const outputScript = bitcoinjs.address.toOutputScript(bitcoinAddress.address, networkCfg);
 			validateAddress = {
 				isValid: true,
 				address: bitcoinAddress.address,
-				scriptPubKey: outputScript.toString("hex"),
+				scriptPubKey: outputScript.toString('hex'),
 				isScript: false,
 				isWitness:
-					bitcoinAddress.address.startsWith("bc1") ||
-					bitcoinAddress.address.startsWith("tb1") ||
-					bitcoinAddress.address.startsWith("bcrt1"),
+					bitcoinAddress.address.startsWith('bc1') ||
+					bitcoinAddress.address.startsWith('tb1') ||
+					bitcoinAddress.address.startsWith('bcrt1'),
 				witnessVersion: 0,
-				witnessProgram: "",
+				witnessProgram: '',
 			};
 		} catch (error) {
-			console.error("Invalid Bitcoin address:", error);
+			console.error('Invalid Bitcoin address:', error);
 			toast({
-				title: "Address",
-				description: "Invalid Bitcoin address format.",
-				variant: "destructive",
+				title: 'Address',
+				description: 'Invalid Bitcoin address format.',
+				variant: 'destructive',
 			});
 			return;
 		}
@@ -123,11 +120,11 @@ export async function nBTCMintTx(
 		const totalRequired = mintAmountInSatoshi + estimatedFee;
 
 		if (totalAvailable < totalRequired) {
-			console.error("Insufficient funds for transaction and fee.");
+			console.error('Insufficient funds for transaction and fee.');
 			toast({
-				title: "Insufficient Funds",
+				title: 'Insufficient Funds',
 				description: `Need ${totalRequired} satoshis but only have ${totalAvailable} available.`,
-				variant: "destructive",
+				variant: 'destructive',
 			});
 			return;
 		}
@@ -137,7 +134,7 @@ export async function nBTCMintTx(
 			hash: utxos[0].txid,
 			index: utxos[0].vout,
 			witnessUtxo: {
-				script: Buffer.from(validateAddress.scriptPubKey, "hex"),
+				script: Buffer.from(validateAddress.scriptPubKey, 'hex'),
 				value: utxos[0].value,
 			},
 		});
@@ -149,22 +146,19 @@ export async function nBTCMintTx(
 
 		let opReturnData: Buffer;
 		try {
-			if (!opReturn.startsWith("0x") || opReturn.length !== 66) {
-				throw new Error(
-					`Sui address must be in format 0x... with 64 hex chars, got ${opReturn}`,
-				);
+			if (!opReturn.startsWith('0x') || opReturn.length !== 66) {
+				throw new Error(`Sui address must be in format 0x... with 64 hex chars, got ${opReturn}`);
 			}
-			const cleanHex = opReturn.replace(/^0x/, "").toLowerCase();
+			const cleanHex = opReturn.replace(/^0x/, '').toLowerCase();
 			const flagByte = Buffer.from([OpReturnFlag.MINT]);
-			const addressBytes = Buffer.from(cleanHex, "hex");
+			const addressBytes = Buffer.from(cleanHex, 'hex');
 			opReturnData = Buffer.concat([flagByte, addressBytes]);
 		} catch (error) {
-			console.error("Invalid OP_RETURN data:", error);
+			console.error('Invalid OP_RETURN data:', error);
 			toast({
-				title: "Invalid Data",
-				description:
-					error instanceof Error ? error.message : "Invalid OP_RETURN data format.",
-				variant: "destructive",
+				title: 'Invalid Data',
+				description: error instanceof Error ? error.message : 'Invalid OP_RETURN data format.',
+				variant: 'destructive',
 			});
 			return;
 		}
@@ -189,7 +183,7 @@ export async function nBTCMintTx(
 		}
 
 		const shouldBroadcast = true;
-		const response = await Wallet.request("signPsbt", {
+		const response = await Wallet.request('signPsbt', {
 			psbt: psbt.toBase64(),
 			signInputs: {
 				[bitcoinAddress.address]: [0],
@@ -197,28 +191,28 @@ export async function nBTCMintTx(
 			broadcast: shouldBroadcast,
 		});
 
-		if (!shouldBroadcast && response.status === "success") {
+		if (!shouldBroadcast && response.status === 'success') {
 			toast({
-				title: "Transaction Signed",
-				description: "PSBT signed successfully. Broadcast manually if needed.",
-				variant: "default",
+				title: 'Transaction Signed',
+				description: 'PSBT signed successfully. Broadcast manually if needed.',
+				variant: 'default',
 			});
 		}
 
-		if (response.status !== "success") {
+		if (response.status !== 'success') {
 			toast({
-				title: "Transaction Failed",
-				description: "Failed to broadcast the transaction.",
-				variant: "destructive",
+				title: 'Transaction Failed',
+				description: 'Failed to broadcast the transaction.',
+				variant: 'destructive',
 			});
 		}
 		return response;
 	} catch (error) {
-		console.error("nBTC Mint Transaction Error:", error);
+		console.error('nBTC Mint Transaction Error:', error);
 		toast({
-			title: "Transaction Error",
-			description: error instanceof Error ? error.message : "An unexpected error occurred.",
-			variant: "destructive",
+			title: 'Transaction Error',
+			description: error instanceof Error ? error.message : 'An unexpected error occurred.',
+			variant: 'destructive',
 		});
 	}
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 
 function calcLeft(target: number) {
 	const diff = target - new Date().getTime();
@@ -7,7 +7,7 @@ function calcLeft(target: number) {
 }
 
 // Helper for daisyUI countdown CSS variable
-const styleV = (value: number) => ({ "--value": value }) as React.CSSProperties;
+const styleV = (value: number) => ({ '--value': value }) as React.CSSProperties;
 
 export interface CountdownProps {
 	/// target epoch time in ms
@@ -18,7 +18,7 @@ export interface CountdownProps {
 }
 
 function padNumber(n: number): string {
-	return String(n).padStart(2, "0");
+	return String(n).padStart(2, '0');
 }
 
 export const Countdown: React.FC<CountdownProps> = ({ targetTime, onTimeUp, className }) => {
@@ -44,7 +44,7 @@ export const Countdown: React.FC<CountdownProps> = ({ targetTime, onTimeUp, clas
 	const hours = Math.floor(secLeft / 3600);
 	const minutes = Math.floor((secLeft % 3600) / 60);
 	const seconds = secLeft % 60;
-	let cls = "countdown font-mono ";
+	let cls = 'countdown font-mono ';
 	if (className) cls += className;
 
 	return (

@@ -1,18 +1,18 @@
-import { useCallback, useEffect } from "react";
-import { ArrowDown } from "lucide-react";
-import { FormProvider, useForm } from "react-hook-form";
-import { SuiModal } from "~/components/Wallet/SuiWallet/SuiModal";
-import { formatSUI, parseSUI, SUI } from "~/lib/denoms";
-import { FormNumericInput } from "~/components/form/FormNumericInput";
-import { Modal } from "~/components/ui/dialog";
-import { TransactionStatus } from "./TransactionStatus";
-import { YouReceive } from "./YouReceive";
-import { classNames } from "~/util/tailwind";
-import { SUIIcon } from "~/components/icons";
-import { useBuySellNBTC } from "./useNBTC";
-import { LoadingSpinner } from "~/components/LoadingSpinner";
+import { useCallback, useEffect } from 'react';
+import { ArrowDown } from 'lucide-react';
+import { FormProvider, useForm } from 'react-hook-form';
+import { SuiModal } from '~/components/Wallet/SuiWallet/SuiModal';
+import { formatSUI, parseSUI, SUI } from '~/lib/denoms';
+import { FormNumericInput } from '~/components/form/FormNumericInput';
+import { Modal } from '~/components/ui/dialog';
+import { TransactionStatus } from './TransactionStatus';
+import { YouReceive } from './YouReceive';
+import { classNames } from '~/util/tailwind';
+import { SUIIcon } from '~/components/icons';
+import { useBuySellNBTC } from './useNBTC';
+import { LoadingSpinner } from '~/components/LoadingSpinner';
 
-const BUY_NBTC_GAS = parseSUI("0.01");
+const BUY_NBTC_GAS = parseSUI('0.01');
 
 interface SUIRightAdornmentProps {
 	maxSUIAmount: string;
@@ -34,7 +34,7 @@ function SUIRightAdornment({ maxSUIAmount, onMaxClick }: SUIRightAdornmentProps)
 				</div>
 			)}
 			<SUIIcon
-				prefix={"SUI"}
+				prefix={'SUI'}
 				className="mr-1 flex justify-end"
 				containerClassName="w-full justify-end"
 			/>
@@ -56,22 +56,22 @@ export function BuyNBTCTabContent() {
 		data,
 		suiBalance,
 		isSuiWalletConnected,
-	} = useBuySellNBTC({ variant: "BUY" });
+	} = useBuySellNBTC({ variant: 'BUY' });
 
 	const buyNBTCForm = useForm<BuyNBTCForm>({
-		mode: "all",
-		reValidateMode: "onChange",
+		mode: 'all',
+		reValidateMode: 'onChange',
 		disabled: isPending || isSuccess || isError,
 	});
 	const { watch, trigger, handleSubmit, reset, setValue } = buyNBTCForm;
-	const suiAmount = watch("suiAmount");
+	const suiAmount = watch('suiAmount');
 
-	const mistAmount: bigint = parseSUI(suiAmount?.length > 0 && suiAmount !== "." ? suiAmount : "0");
+	const mistAmount: bigint = parseSUI(suiAmount?.length > 0 && suiAmount !== '.' ? suiAmount : '0');
 
 	const resetForm = useCallback(() => {
 		resetMutation();
 		reset({
-			suiAmount: "",
+			suiAmount: '',
 		});
 	}, [reset, resetMutation]);
 
@@ -82,11 +82,11 @@ export function BuyNBTCTabContent() {
 	}, [isSuiWalletConnected, suiAmount, trigger]);
 
 	const suiAmountAfterFee = suiBalance - BUY_NBTC_GAS;
-	const maxSUIAmount = suiAmountAfterFee > 0 ? formatSUI(suiAmountAfterFee) : "";
+	const maxSUIAmount = suiAmountAfterFee > 0 ? formatSUI(suiAmountAfterFee) : '';
 
 	const suiAmountInputRules = {
 		validate: {
-			isWalletConnected: () => isSuiWalletConnected || "Please connect SUI wallet",
+			isWalletConnected: () => isSuiWalletConnected || 'Please connect SUI wallet',
 			enoughBalance: (value: string) => {
 				if (suiBalance > 0n) {
 					if (parseSUI(value) + BUY_NBTC_GAS <= suiBalance) {
@@ -109,8 +109,8 @@ export function BuyNBTCTabContent() {
 					name="suiAmount"
 					placeholder="Enter SUI amount"
 					className={classNames({
-						"h-16": true,
-						"pt-8": suiAmountAfterFee > 0,
+						'h-16': true,
+						'pt-8': suiAmountAfterFee > 0,
 					})}
 					inputMode="decimal"
 					decimalScale={SUI}
@@ -118,7 +118,7 @@ export function BuyNBTCTabContent() {
 					createEmptySpace
 					rightAdornments={
 						<SUIRightAdornment
-							onMaxClick={(val: string) => setValue("suiAmount", val)}
+							onMaxClick={(val: string) => setValue('suiAmount', val)}
 							maxSUIAmount={maxSUIAmount}
 						/>
 					}
@@ -136,9 +136,9 @@ export function BuyNBTCTabContent() {
 				)}
 			</form>
 			{(isSuccess || isError) && (
-				<Modal title={"Buy nBTC Transaction Status"} open handleClose={resetForm}>
+				<Modal title={'Buy nBTC Transaction Status'} open handleClose={resetForm}>
 					<TransactionStatus
-						isSuccess={data?.effects?.status?.status === "success"}
+						isSuccess={data?.effects?.status?.status === 'success'}
 						handleRetry={resetForm}
 						txnId={data?.digest}
 					/>

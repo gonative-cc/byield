@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
-import { orangeInfoCardClasses } from "~/util/tailwind";
+import type { ReactNode } from 'react';
+import { orangeInfoCardClasses } from '~/util/tailwind';
 
 interface FAQ {
 	id: string;
@@ -12,11 +12,13 @@ interface FAQProps {
 	description?: string;
 }
 
-export function FAQ({ faqs, description = "" }: FAQProps) {
-	const renderQuestion = (key: string, question: string, answer: FAQ["answer"]) => (
+export function FAQ({ faqs, description = '' }: FAQProps) {
+	const renderQuestion = (key: string, question: string, answer: FAQ['answer']) => (
 		<div key={key} className={orangeInfoCardClasses}>
-			<h3 className="text-primary mb-3 flex items-center gap-2 text-xl font-semibold">{question}</h3>
-			{typeof answer === "string" ? <p className="text-muted-foreground">{answer}</p> : answer}
+			<h3 className="text-primary mb-3 flex items-center gap-2 text-xl font-semibold">
+				{question}
+			</h3>
+			{typeof answer === 'string' ? <p className="text-muted-foreground">{answer}</p> : answer}
 		</div>
 	);
 

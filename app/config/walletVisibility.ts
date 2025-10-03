@@ -4,19 +4,19 @@ interface WalletVisibility {
 }
 
 export const routes: Record<string, WalletVisibility> = {
-	"/": {
+	'/': {
 		bitcoin: false,
 		sui: true,
 	},
-	"/market": {
+	'/market': {
 		bitcoin: true,
 		sui: true,
 	},
-	"/mint": {
+	'/mint': {
 		bitcoin: true,
 		sui: true,
 	},
-	"/beelievers-auction": {
+	'/beelievers-auction': {
 		bitcoin: false,
 		sui: true,
 	},

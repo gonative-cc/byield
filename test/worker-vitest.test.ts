@@ -24,8 +24,8 @@ describe("Hello World worker", () => {
 });
 */
 
-import { assert, test } from "vitest";
+import { assert, test } from 'vitest';
 
-test("check ok", () => {
+test('check ok', () => {
 	assert.isOk(1);
 });

@@ -1,4 +1,4 @@
-import { useConnectWallet, useWallets } from "@mysten/dapp-kit";
+import { useConnectWallet, useWallets } from '@mysten/dapp-kit';
 import {
 	DialogHeader,
 	Dialog,
@@ -6,12 +6,12 @@ import {
 	DialogContent,
 	DialogTitle,
 	DialogDescription,
-} from "../../ui/dialog";
-import { useContext } from "react";
-import { WalletContext } from "~/providers/ByieldWalletProvider";
-import { Wallets } from "~/components/Wallet";
-import { toast } from "~/hooks/use-toast";
-import { SUIIcon } from "~/components/icons";
+} from '../../ui/dialog';
+import { useContext } from 'react';
+import { WalletContext } from '~/providers/ByieldWalletProvider';
+import { Wallets } from '~/components/Wallet';
+import { toast } from '~/hooks/use-toast';
+import { SUIIcon } from '~/components/icons';
 
 interface InstallWalletProps {
 	link: string;
@@ -41,9 +41,9 @@ function AvailableWallets() {
 				onSuccess: () => handleWalletConnect(Wallets.SuiWallet, true),
 				onError: () =>
 					toast({
-						title: "Sui Wallet Connect",
+						title: 'Sui Wallet Connect',
 						description: `Failed to connect ${installedWallet.name}`,
-						variant: "destructive",
+						variant: 'destructive',
 					}),
 			},
 		);
@@ -52,8 +52,8 @@ function AvailableWallets() {
 	};
 
 	// Find Slush and Phantom wallets
-	const slushWallet = wallets.find((w) => w.name === "Slush");
-	const phantomWallet = wallets.find((w) => w.name === "Phantom");
+	const slushWallet = wallets.find((w) => w.name === 'Slush');
+	const phantomWallet = wallets.find((w) => w.name === 'Phantom');
 
 	// Case 1: No wallets installed
 	if (!slushWallet && !phantomWallet) {
@@ -87,12 +87,7 @@ function AvailableWallets() {
 							onClick={() => walletConnectClick(installedWallet)}
 							className="btn btn-primary btn-soft flex h-16 w-full justify-between"
 						>
-							<img
-								src={installedWallet.icon}
-								alt={installedWallet.name}
-								width={20}
-								height={20}
-							/>
+							<img src={installedWallet.icon} alt={installedWallet.name} width={20} height={20} />
 							{installedWallet.name}
 						</button>
 					</div>
@@ -124,7 +119,7 @@ interface SuiModalProps {
 	label?: string;
 }
 
-export function SuiModal({ label = "Connect Sui Wallet" }: SuiModalProps) {
+export function SuiModal({ label = 'Connect Sui Wallet' }: SuiModalProps) {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>

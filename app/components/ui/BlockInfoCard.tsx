@@ -1,7 +1,7 @@
-import { Timer, CheckCircle2, Info } from "lucide-react";
-import { toast } from "~/hooks/use-toast";
-import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
-import { gradientCardClasses } from "~/util/tailwind";
+import { Timer, CheckCircle2, Info } from 'lucide-react';
+import { toast } from '~/hooks/use-toast';
+import { useBitcoinConfig } from '~/hooks/useBitcoinConfig';
+import { gradientCardClasses } from '~/util/tailwind';
 
 export function BlockInfoCard() {
 	const bitcoinConfig = useBitcoinConfig();
@@ -11,9 +11,9 @@ export function BlockInfoCard() {
 
 	if (!blockTime || !confirmationDepth) {
 		return toast({
-			title: "Data not available",
-			description: "Data is not available at the moment",
-			variant: "info",
+			title: 'Data not available',
+			description: 'Data is not available at the moment',
+			variant: 'info',
 		});
 	}
 

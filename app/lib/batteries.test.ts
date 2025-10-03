@@ -1,7 +1,7 @@
-import { test, expect } from "vitest";
-import { sortAndCheckDuplicate } from "./batteries";
+import { test, expect } from 'vitest';
+import { sortAndCheckDuplicate } from './batteries';
 
-test("sortAndCheckDuplicate", () => {
+test('sortAndCheckDuplicate', () => {
 	expect(sortAndCheckDuplicate([1, 1])).toBe(true);
 	expect(sortAndCheckDuplicate([1, 2, 1])).toBe(true);
 	expect(sortAndCheckDuplicate([1, 2, 3, 4, 2])).toBe(true);

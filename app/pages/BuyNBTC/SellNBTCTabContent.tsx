@@ -1,16 +1,16 @@
-import { useCallback } from "react";
-import { ArrowDown, ChevronRight } from "lucide-react";
-import { SuiModal } from "~/components/Wallet/SuiWallet/SuiModal";
-import { Modal } from "~/components/ui/dialog";
-import { TransactionStatus } from "./TransactionStatus";
-import { NBTCIcon, SUIIcon } from "~/components/icons";
-import { useBuySellNBTC } from "./useNBTC";
-import { formatNBTC, NBTC, parseNBTC } from "~/lib/denoms";
-import { FormProvider, useForm } from "react-hook-form";
-import { FormNumericInput } from "~/components/form/FormNumericInput";
-import { classNames } from "~/util/tailwind";
-import { PRICE_PER_NBTC_IN_SUI } from "~/lib/nbtc";
-import { LoadingSpinner } from "~/components/LoadingSpinner";
+import { useCallback } from 'react';
+import { ArrowDown, ChevronRight } from 'lucide-react';
+import { SuiModal } from '~/components/Wallet/SuiWallet/SuiModal';
+import { Modal } from '~/components/ui/dialog';
+import { TransactionStatus } from './TransactionStatus';
+import { NBTCIcon, SUIIcon } from '~/components/icons';
+import { useBuySellNBTC } from './useNBTC';
+import { formatNBTC, NBTC, parseNBTC } from '~/lib/denoms';
+import { FormProvider, useForm } from 'react-hook-form';
+import { FormNumericInput } from '~/components/form/FormNumericInput';
+import { classNames } from '~/util/tailwind';
+import { PRICE_PER_NBTC_IN_SUI } from '~/lib/nbtc';
+import { LoadingSpinner } from '~/components/LoadingSpinner';
 
 interface NBTCRightAdornmentProps {
 	maxNBTCAmount: bigint;
@@ -34,7 +34,7 @@ function NBTCRightAdornment({ maxNBTCAmount, onMaxClick }: NBTCRightAdornmentPro
 				</div>
 			)}
 			<NBTCIcon
-				prefix={"nBTC"}
+				prefix={'nBTC'}
 				className="mr-1 flex justify-end"
 				containerClassName="w-full justify-end"
 			/>
@@ -56,31 +56,31 @@ export function SellNBTCTabContent() {
 		nbtcBalance,
 		data,
 		isSuiWalletConnected,
-	} = useBuySellNBTC({ variant: "SELL" });
+	} = useBuySellNBTC({ variant: 'SELL' });
 
 	const sellNBTCForm = useForm<SellNBTCForm>({
-		mode: "all",
-		reValidateMode: "onChange",
+		mode: 'all',
+		reValidateMode: 'onChange',
 		disabled: isPending || isSuccess || isError,
 	});
 
 	const { watch, handleSubmit, reset, setValue } = sellNBTCForm;
-	const inputNBTCAmount = watch("nBTCAmount");
+	const inputNBTCAmount = watch('nBTCAmount');
 	const nBTCAmount = parseNBTC(
-		inputNBTCAmount?.length > 0 && inputNBTCAmount !== "." ? inputNBTCAmount : "0",
+		inputNBTCAmount?.length > 0 && inputNBTCAmount !== '.' ? inputNBTCAmount : '0',
 	);
 	const SUIAmountReceived = nBTCAmount * (PRICE_PER_NBTC_IN_SUI / 2n);
 
 	const resetForm = useCallback(() => {
 		resetMutation();
 		reset({
-			nBTCAmount: "",
+			nBTCAmount: '',
 		});
 	}, [reset, resetMutation]);
 
 	const nBTCAmountInputRules = {
 		validate: {
-			isWalletConnected: () => isSuiWalletConnected || "Please connect SUI wallet",
+			isWalletConnected: () => isSuiWalletConnected || 'Please connect SUI wallet',
 			enoughBalance: (value: string) => {
 				if (parseNBTC(value) <= nbtcBalance) {
 					return true;
@@ -105,12 +105,12 @@ export function SellNBTCTabContent() {
 					name="nBTCAmount"
 					placeholder="Enter nBTC amount"
 					className={classNames({
-						"h-16": true,
-						"pt-8": nbtcBalance > 0,
+						'h-16': true,
+						'pt-8': nbtcBalance > 0,
 					})}
 					rightAdornments={
 						<NBTCRightAdornment
-							onMaxClick={(val: string) => setValue("nBTCAmount", val)}
+							onMaxClick={(val: string) => setValue('nBTCAmount', val)}
 							maxNBTCAmount={nbtcBalance}
 						/>
 					}
@@ -146,9 +146,9 @@ export function SellNBTCTabContent() {
 					<SuiModal />
 				)}
 				{(isSuccess || isError) && (
-					<Modal title={"Sell nBTC Transaction Status"} open handleClose={resetForm}>
+					<Modal title={'Sell nBTC Transaction Status'} open handleClose={resetForm}>
 						<TransactionStatus
-							isSuccess={data?.effects?.status?.status === "success"}
+							isSuccess={data?.effects?.status?.status === 'success'}
 							handleRetry={resetForm}
 							txnId={data?.digest}
 						/>

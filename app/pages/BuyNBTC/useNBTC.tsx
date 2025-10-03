@@ -1,24 +1,28 @@
-import { useCallback, useContext } from "react";
-import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
-import type { SuiClient, PaginatedCoins } from "@mysten/sui/client";
-import { coinWithBalance, Transaction } from "@mysten/sui/transactions";
-import type { TransactionResult } from "@mysten/sui/transactions";
+import { useCallback, useContext } from 'react';
+import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from '@mysten/dapp-kit';
+import type { SuiClient, PaginatedCoins } from '@mysten/sui/client';
+import { coinWithBalance, Transaction } from '@mysten/sui/transactions';
+import type { TransactionResult } from '@mysten/sui/transactions';
 
-import { toast } from "~/hooks/use-toast";
-import { formatSUI } from "~/lib/denoms";
-import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
-import type { UseCoinBalanceResult } from "~/components/Wallet/SuiWallet/useBalance";
-import { GA_EVENT_NAME, GA_CATEGORY, useGoogleAnalytics } from "~/lib/googleAnalytics";
-import { useNetworkVariables } from "~/networkConfig";
-import { WalletContext } from "~/providers/ByieldWalletProvider";
-import { Wallets } from "~/components/Wallet";
+import { toast } from '~/hooks/use-toast';
+import { formatSUI } from '~/lib/denoms';
+import { useCoinBalance } from '~/components/Wallet/SuiWallet/useBalance';
+import type { UseCoinBalanceResult } from '~/components/Wallet/SuiWallet/useBalance';
+import { GA_EVENT_NAME, GA_CATEGORY, useGoogleAnalytics } from '~/lib/googleAnalytics';
+import { useNetworkVariables } from '~/networkConfig';
+import { WalletContext } from '~/providers/ByieldWalletProvider';
+import { Wallets } from '~/components/Wallet';
 
-import { moveCallTarget, type NbtcOtcCfg } from "~/config/sui/contracts-config";
+import { moveCallTarget, type NbtcOtcCfg } from '~/config/sui/contracts-config';
 
-const buyNBTCFunction = "buy_nbtc";
-const sellNBTCFunction = "sell_nbtc";
+const buyNBTCFunction = 'buy_nbtc';
+const sellNBTCFunction = 'sell_nbtc';
 
-async function getNBTCCoins(owner: string, client: SuiClient, nbtcCoin: string): Promise<PaginatedCoins> {
+async function getNBTCCoins(
+	owner: string,
+	client: SuiClient,
+	nbtcCoin: string,
+): Promise<PaginatedCoins> {
 	return client.getCoins({
 		owner,
 		coinType: nbtcCoin,
@@ -53,11 +57,11 @@ async function createNBTCTxn(
 		txn.transferObjects([resultCoin], senderAddress);
 	} else {
 		if (nbtcBalance < amount) {
-			console.error("Not enough nBTC balance available.");
+			console.error('Not enough nBTC balance available.');
 			toast({
-				title: "Sell nBTC",
-				description: "Not enough nBTC balance available.",
-				variant: "destructive",
+				title: 'Sell nBTC',
+				description: 'Not enough nBTC balance available.',
+				variant: 'destructive',
 			});
 			return null;
 		}
@@ -91,14 +95,14 @@ interface UseNBTCReturn {
 }
 
 interface NBTCProps {
-	variant: "BUY" | "SELL";
+	variant: 'BUY' | 'SELL';
 }
 
 // TODO: need to update this function. It is doing too many things!
 // Ideally it is only handling a transaction, and balance tracking should be done separately,
 // in another component, higher level up.
 export const useBuySellNBTC = ({ variant }: NBTCProps): UseNBTCReturn => {
-	const shouldBuy = variant === "BUY";
+	const shouldBuy = variant === 'BUY';
 	const account = useCurrentAccount();
 	const client = useSuiClient();
 	const { isWalletConnected } = useContext(WalletContext);
@@ -134,13 +138,13 @@ export const useBuySellNBTC = ({ variant }: NBTCProps): UseNBTCReturn => {
 
 	const handleTransaction = useCallback(
 		async (amount: bigint) => {
-			const title = variant === "BUY" ? "Buy nBTC" : "Sell nBTC";
+			const title = variant === 'BUY' ? 'Buy nBTC' : 'Sell nBTC';
 			if (!account) {
-				console.error("Account is not available. Cannot proceed with the transaction.");
+				console.error('Account is not available. Cannot proceed with the transaction.');
 				toast({
 					title,
-					description: "Account is not available. Cannot proceed with the transaction.",
-					variant: "destructive",
+					description: 'Account is not available. Cannot proceed with the transaction.',
+					variant: 'destructive',
 				});
 				return;
 			}
@@ -153,9 +157,9 @@ export const useBuySellNBTC = ({ variant }: NBTCProps): UseNBTCReturn => {
 				nbtcBalanceRes.balance,
 				nbtcCoin,
 			);
-			const label = variant === "BUY" ? `user tried to buy ${formatSUI(amount)} SUI` : "";
+			const label = variant === 'BUY' ? `user tried to buy ${formatSUI(amount)} SUI` : '';
 			if (!transaction) {
-				console.error("Failed to create the transaction");
+				console.error('Failed to create the transaction');
 				return;
 			}
 			signAndExecuteTransaction(
@@ -164,14 +168,14 @@ export const useBuySellNBTC = ({ variant }: NBTCProps): UseNBTCReturn => {
 				},
 				{
 					onSuccess: () => {
-						if (variant === "BUY")
+						if (variant === 'BUY')
 							trackEvent(GA_EVENT_NAME.BUY_NBTC, {
 								category: GA_CATEGORY.BUY_NBTC_SUCCESS,
 								label,
 							});
 					},
 					onError: () => {
-						if (variant === "BUY")
+						if (variant === 'BUY')
 							trackEvent(GA_EVENT_NAME.BUY_NBTC, {
 								category: GA_CATEGORY.BUY_NBTC_ERROR,
 								label,

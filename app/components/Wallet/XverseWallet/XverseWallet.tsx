@@ -1,24 +1,24 @@
-import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
-import { type Option, SelectInput } from "../../ui/select";
-import { useMemo } from "react";
-import { trimAddress } from "../walletHelper";
-import { NumericFormat } from "react-number-format";
-import { formatBTC } from "~/lib/denoms";
-import { useLocation } from "react-router";
-import { BitcoinNetworkType } from "sats-connect";
-import { CopyButton } from "~/components/ui/CopyButton";
+import { useXverseWallet } from '~/components/Wallet/XverseWallet/useWallet';
+import { type Option, SelectInput } from '../../ui/select';
+import { useMemo } from 'react';
+import { trimAddress } from '../walletHelper';
+import { NumericFormat } from 'react-number-format';
+import { formatBTC } from '~/lib/denoms';
+import { useLocation } from 'react-router';
+import { BitcoinNetworkType } from 'sats-connect';
+import { CopyButton } from '~/components/ui/CopyButton';
 
 function NetWorkOptions() {
 	const { network, switchNetwork } = useXverseWallet();
 
 	const location = useLocation();
 	const pathname = location.pathname;
-	const isUserOnMintNBTCPage = pathname === "/mint";
+	const isUserOnMintNBTCPage = pathname === '/mint';
 
 	const bitcoinSupportedNetwork: Option[] = useMemo(
 		() =>
 			isUserOnMintNBTCPage
-				? [{ label: "Devnet", value: BitcoinNetworkType.Regtest }]
+				? [{ label: 'Devnet', value: BitcoinNetworkType.Regtest }]
 				: [
 						{ label: BitcoinNetworkType.Testnet4, value: BitcoinNetworkType.Testnet4 },
 						{ label: BitcoinNetworkType.Mainnet, value: BitcoinNetworkType.Mainnet },
@@ -74,7 +74,7 @@ function XverseWalletMobileView() {
 			<div className="flex w-full items-center justify-between gap-4">
 				{balance && (
 					<p>
-						Balance:{" "}
+						Balance:{' '}
 						<NumericFormat
 							displayType="text"
 							value={formatBTC(BigInt(balance))}

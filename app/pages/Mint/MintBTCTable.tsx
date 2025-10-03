@@ -1,15 +1,15 @@
-import type { CellProps, Column, Row } from "react-table";
-import { Table } from "~/components/ui/table";
-import { Tooltip } from "~/components/ui/tooltip";
-import { trimAddress } from "~/components/Wallet/walletHelper";
-import { formatBTC } from "~/lib/denoms";
-import { type MintingTxStatus, type MintTransaction } from "~/server/Mint/types";
-import { Info, ChevronDown, ChevronUp } from "lucide-react";
-import { CopyButton } from "~/components/ui/CopyButton";
-import { ExpandableTransactionDetails } from "~/pages/Mint/ExpandableTransactionDetails";
-import { AnimatedHourglass } from "~/components/ui/AnimatedHourglass";
-import { useState, useMemo, useCallback } from "react";
-import { useNetworkVariable } from "~/networkConfig";
+import type { CellProps, Column, Row } from 'react-table';
+import { Table } from '~/components/ui/table';
+import { Tooltip } from '~/components/ui/tooltip';
+import { trimAddress } from '~/components/Wallet/walletHelper';
+import { formatBTC } from '~/lib/denoms';
+import { type MintingTxStatus, type MintTransaction } from '~/server/Mint/types';
+import { Info, ChevronDown, ChevronUp } from 'lucide-react';
+import { CopyButton } from '~/components/ui/CopyButton';
+import { ExpandableTransactionDetails } from '~/pages/Mint/ExpandableTransactionDetails';
+import { AnimatedHourglass } from '~/components/ui/AnimatedHourglass';
+import { useState, useMemo, useCallback } from 'react';
+import { useNetworkVariable } from '~/networkConfig';
 
 function MintTableTooltip({ tooltip, label }: { tooltip: string; label: string }) {
 	return (
@@ -22,7 +22,11 @@ function MintTableTooltip({ tooltip, label }: { tooltip: string; label: string }
 	);
 }
 
-function buildSuiTransactionUrl(txId: string, explorerUrl?: string, configExplorerUrl?: string): string {
+function buildSuiTransactionUrl(
+	txId: string,
+	explorerUrl?: string,
+	configExplorerUrl?: string,
+): string {
 	if (explorerUrl) {
 		return explorerUrl;
 	}
@@ -34,7 +38,7 @@ function buildSuiTransactionUrl(txId: string, explorerUrl?: string, configExplor
 }
 
 const getStatusDisplay = (status: MintingTxStatus) => {
-	const isActive = ["broadcasting", "confirming", "finalized", "minting"].includes(status);
+	const isActive = ['broadcasting', 'confirming', 'finalized', 'minting'].includes(status);
 	return (
 		<div className="flex items-center gap-2">
 			{isActive && <AnimatedHourglass size="md" />}
@@ -55,7 +59,7 @@ const createColumns = (
 				tooltip="The Bitcoin transaction ID that initiated the mint process"
 			/>
 		),
-		accessor: "bitcoinTxId",
+		accessor: 'bitcoinTxId',
 		Cell: ({ value }: CellProps<MintTransaction>) => (
 			<Tooltip tooltip={value}>
 				<div className="flex cursor-pointer items-center gap-2 font-mono">
@@ -66,8 +70,10 @@ const createColumns = (
 		),
 	},
 	{
-		Header: () => <MintTableTooltip label="Amount" tooltip="The amount of Bitcoin being minted in BTC" />,
-		accessor: "amountInSatoshi",
+		Header: () => (
+			<MintTableTooltip label="Amount" tooltip="The amount of Bitcoin being minted in BTC" />
+		),
+		accessor: 'amountInSatoshi',
 		Cell: ({ row }: CellProps<MintTransaction>) => (
 			<div className="flex items-center gap-2 font-semibold">
 				<span className="text-primary">{formatBTC(BigInt(row.original.amountInSatoshi || 0))}</span>
@@ -82,7 +88,7 @@ const createColumns = (
 				tooltip="The Sui blockchain address where nBTC will be minted"
 			/>
 		),
-		accessor: "suiAddress",
+		accessor: 'suiAddress',
 		Cell: ({ row }: CellProps<MintTransaction>) => (
 			<Tooltip tooltip={row.original.suiAddress}>
 				<div className="flex cursor-pointer items-center gap-2 font-mono">
@@ -93,15 +99,20 @@ const createColumns = (
 		),
 	},
 	{
-		Header: () => <MintTableTooltip label="Status" tooltip="Current status of the mint transaction" />,
-		accessor: "status",
+		Header: () => (
+			<MintTableTooltip label="Status" tooltip="Current status of the mint transaction" />
+		),
+		accessor: 'status',
 		Cell: ({ row }: CellProps<MintTransaction>) => getStatusDisplay(row.original.status),
 	},
 	{
 		Header: () => (
-			<MintTableTooltip label="Sui TX" tooltip="The Sui transaction ID for the minted nBTC tokens" />
+			<MintTableTooltip
+				label="Sui TX"
+				tooltip="The Sui transaction ID for the minted nBTC tokens"
+			/>
 		),
-		accessor: "suiTxId",
+		accessor: 'suiTxId',
 		Cell: ({ row }: CellProps<MintTransaction>) => {
 			const suiTxId = row.original.suiTxId;
 			const suiExplorerUrl = row.original.suiExplorerUrl;
@@ -130,9 +141,9 @@ const createColumns = (
 		},
 	},
 	{
-		Header: "Details",
-		id: "details",
-		accessor: () => "details", // Custom accessor that doesn't conflict
+		Header: 'Details',
+		id: 'details',
+		accessor: () => 'details', // Custom accessor that doesn't conflict
 		Cell: ({ row }: CellProps<MintTransaction>) => {
 			const isExpanded = expandedRows.has(row.id);
 			return (
@@ -141,7 +152,7 @@ const createColumns = (
 						toggleExpanded(row.id);
 					}}
 					className="btn btn-ghost btn-sm"
-					aria-label={isExpanded ? "Collapse details" : "Expand details"}
+					aria-label={isExpanded ? 'Collapse details' : 'Expand details'}
 				>
 					{isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
 				</button>
@@ -157,7 +168,7 @@ interface MintBTCTableProps {
 
 export function MintBTCTable({ data, isLoading = false }: MintBTCTableProps) {
 	const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
-	const explorerUrl = useNetworkVariable("explorer");
+	const explorerUrl = useNetworkVariable('explorer');
 
 	const toggleExpanded = useCallback((txId: string) => {
 		setExpandedRows((prev) => {
@@ -184,8 +195,8 @@ export function MintBTCTable({ data, isLoading = false }: MintBTCTableProps) {
 		<div className="w-full space-y-4">
 			<Table
 				header={{
-					icon: "₿",
-					title: "nBTC Mint Transactions",
+					icon: '₿',
+					title: 'nBTC Mint Transactions',
 				}}
 				columns={columns}
 				data={data}

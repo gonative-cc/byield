@@ -1,5 +1,5 @@
-import type { Network } from "bitcoinjs-lib";
-import { BitcoinNetworkType } from "sats-connect";
+import type { Network } from 'bitcoinjs-lib';
+import { BitcoinNetworkType } from 'sats-connect';
 
 /**
  * Dynamic import for bitcoinjs-lib to avoid SSR issues.
@@ -11,11 +11,11 @@ import { BitcoinNetworkType } from "sats-connect";
  * This approach replaces the previous polyfill strategy that used @esbuild-plugins/node-globals-polyfill.
  * See: https://github.com/gonative-cc/byield/issues/335
  */
-let bitcoinLib: typeof import("bitcoinjs-lib") | null = null;
+let bitcoinLib: typeof import('bitcoinjs-lib') | null = null;
 
 export async function getBitcoinLib() {
 	if (!bitcoinLib) {
-		bitcoinLib = await import("bitcoinjs-lib");
+		bitcoinLib = await import('bitcoinjs-lib');
 	}
 	return bitcoinLib;
 }

@@ -1,8 +1,8 @@
-import { isProductionMode } from "~/lib/appenv";
-import { SelectWallet } from "./SelectWallet";
-import { Menu } from "lucide-react";
-import { useContext } from "react";
-import { SideBarContext } from "~/providers/SiderBarProvider";
+import { isProductionMode } from '~/lib/appenv';
+import { SelectWallet } from './SelectWallet';
+import { Menu } from 'lucide-react';
+import { useContext } from 'react';
+import { SideBarContext } from '~/providers/SiderBarProvider';
 
 export function NavBar() {
 	const isProd = isProductionMode();

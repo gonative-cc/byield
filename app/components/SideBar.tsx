@@ -1,8 +1,8 @@
-import { useContext, useRef, useEffect } from "react";
-import { Link, useLocation } from "react-router";
-import { SideBarContext } from "~/providers/SiderBarProvider";
-import { classNames } from "~/util/tailwind";
-import { isProductionMode } from "~/lib/appenv";
+import { useContext, useRef, useEffect } from 'react';
+import { Link, useLocation } from 'react-router';
+import { SideBarContext } from '~/providers/SiderBarProvider';
+import { classNames } from '~/util/tailwind';
+import { isProductionMode } from '~/lib/appenv';
 
 interface MenuItem {
 	icon: string;
@@ -23,32 +23,32 @@ function navMenuItems(): MenuItem[] {
 	if (isProd) {
 		return [
 			{
-				icon: "/assets/navigation/nBTC.svg",
-				id: "navigation-1",
-				title: "nBTC (testnet)",
-				link: "",
+				icon: '/assets/navigation/nBTC.svg',
+				id: 'navigation-1',
+				title: 'nBTC (testnet)',
+				link: '',
 				subNavItems: [
 					{
-						id: "navigation-2-1",
-						icon: "",
+						id: 'navigation-2-1',
+						icon: '',
 						subNavItems: [],
-						link: "/",
-						title: "Buy or Sell nBTC",
+						link: '/',
+						title: 'Buy or Sell nBTC',
 					},
 					{
-						id: "navigation-2-2",
-						link: "/mint",
-						icon: "",
+						id: 'navigation-2-2',
+						link: '/mint',
+						icon: '',
 						subNavItems: [],
-						title: "Mint nBTC",
+						title: 'Mint nBTC',
 					},
 				],
 			},
 			{
-				icon: "/assets/navigation/bee-with-bitcoin.svg",
-				id: "navigation-4",
-				title: "Beelievers Auction (mainnet)",
-				link: "/beelievers-auction",
+				icon: '/assets/navigation/bee-with-bitcoin.svg',
+				id: 'navigation-4',
+				title: 'Beelievers Auction (mainnet)',
+				link: '/beelievers-auction',
 				subNavItems: [],
 			},
 		];
@@ -56,39 +56,39 @@ function navMenuItems(): MenuItem[] {
 
 	return [
 		{
-			icon: "/assets/navigation/nBTC.svg",
-			id: "navigation-2",
-			title: "nBTC (testnet)",
-			link: "",
+			icon: '/assets/navigation/nBTC.svg',
+			id: 'navigation-2',
+			title: 'nBTC (testnet)',
+			link: '',
 			subNavItems: [
 				{
-					id: "navigation-2-1",
-					link: "/",
-					icon: "",
+					id: 'navigation-2-1',
+					link: '/',
+					icon: '',
 					subNavItems: [],
-					title: "Buy or Sell nBTC",
+					title: 'Buy or Sell nBTC',
 				},
 				{
-					id: "navigation-2-2",
-					link: "/mint",
-					icon: "",
+					id: 'navigation-2-2',
+					link: '/mint',
+					icon: '',
 					subNavItems: [],
-					title: "Mint nBTC",
+					title: 'Mint nBTC',
 				},
 			],
 		},
 		{
-			icon: "/assets/navigation/byield.svg",
-			id: "navigation-3",
-			title: "Market (testnet)",
-			link: "/market",
+			icon: '/assets/navigation/byield.svg',
+			id: 'navigation-3',
+			title: 'Market (testnet)',
+			link: '/market',
 			subNavItems: [],
 		},
 		{
-			icon: "/assets/navigation/bee-with-bitcoin.svg",
-			id: "navigation-4",
-			title: "Beelievers Auction (mainnet)",
-			link: "/beelievers-auction",
+			icon: '/assets/navigation/bee-with-bitcoin.svg',
+			id: 'navigation-4',
+			title: 'Beelievers Auction (mainnet)',
+			link: '/beelievers-auction',
 			subNavItems: [],
 		},
 	];
@@ -105,17 +105,21 @@ export function SideBar() {
 	useEffect(() => {
 		// handle auto dismiss of sidebar in mobile view
 		const handleClickOutside = (event: MouseEvent) => {
-			if (isMobileOpen && sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
+			if (
+				isMobileOpen &&
+				sidebarRef.current &&
+				!sidebarRef.current.contains(event.target as Node)
+			) {
 				toggleMobileMenu();
 			}
 		};
 
 		if (isMobileOpen) {
-			document.addEventListener("mousedown", handleClickOutside);
+			document.addEventListener('mousedown', handleClickOutside);
 		}
 
 		return () => {
-			document.removeEventListener("mousedown", handleClickOutside);
+			document.removeEventListener('mousedown', handleClickOutside);
 		};
 	}, [isMobileOpen, toggleMobileMenu]);
 
@@ -125,11 +129,11 @@ export function SideBar() {
 			<div
 				ref={sidebarRef}
 				className={classNames({
-					"md:bg-background fixed top-0 left-0 z-50 h-full border-r bg-slate-950 text-white transition-all duration-300 ease-in-out md:static md:translate-x-0": true,
-					"mt-6 translate-x-0 md:mt-0": isMobileOpen,
-					"-translate-x-full": !isMobileOpen,
-					"w-16": isCollapsed,
-					"w-60": !isCollapsed,
+					'md:bg-background fixed top-0 left-0 z-50 h-full border-r bg-slate-950 text-white transition-all duration-300 ease-in-out md:static md:translate-x-0': true,
+					'mt-6 translate-x-0 md:mt-0': isMobileOpen,
+					'-translate-x-full': !isMobileOpen,
+					'w-16': isCollapsed,
+					'w-60': !isCollapsed,
 				})}
 			>
 				{/* Sidebar Content */}
@@ -139,11 +143,7 @@ export function SideBar() {
 						{!isCollapsed && (
 							<Link to="/" className="text-lg font-bold">
 								<div className="md:w-32">
-									<img
-										src="/assets/app-logos/logo.svg"
-										alt="Native"
-										className="hidden md:inline"
-									/>
+									<img src="/assets/app-logos/logo.svg" alt="Native" className="hidden md:inline" />
 								</div>
 							</Link>
 						)}
@@ -180,15 +180,15 @@ export function SideBar() {
 	);
 }
 
-const itemCls = "flex items-center px-2 py-1 rounded mb-2";
+const itemCls = 'flex items-center px-2 py-1 rounded mb-2';
 
 function ParentItem(item: MenuItem, currentPath: string, collapsed: boolean) {
 	const component = (
 		<div
 			className={classNames(itemCls, {
-				"bg-primary": currentPath === item.link,
-				"hover:bg-accent": currentPath !== item.link,
-				"cursor-default": item.link === "",
+				'bg-primary': currentPath === item.link,
+				'hover:bg-accent': currentPath !== item.link,
+				'cursor-default': item.link === '',
 			})}
 		>
 			<img src={item.icon} alt="" className="object-fit flex h-8 w-8" />
@@ -205,7 +205,7 @@ function ParentItem(item: MenuItem, currentPath: string, collapsed: boolean) {
 }
 
 function SubItems(subItems: MenuSubItem[], currentPath: string) {
-	if (!subItems.length) return "";
+	if (!subItems.length) return '';
 
 	return (
 		<div className="ml-4 border-l-2 pl-10">
@@ -213,9 +213,9 @@ function SubItems(subItems: MenuSubItem[], currentPath: string) {
 				<Link
 					key={subItem.id}
 					to={subItem.link}
-					className={classNames(itemCls, "text-sm", {
-						"bg-primary": currentPath === subItem.link,
-						"hover:bg-accent": currentPath !== subItem.link,
+					className={classNames(itemCls, 'text-sm', {
+						'bg-primary': currentPath === subItem.link,
+						'hover:bg-accent': currentPath !== subItem.link,
 					})}
 				>
 					<span>{subItem.title}</span>

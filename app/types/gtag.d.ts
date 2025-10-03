@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export interface Gtag {
-	(command: "config", targetId: string, params?: { [key: string]: any }): void;
-	(command: "set", params: { [key: string]: any }): void;
-	(command: "event", eventName: string, params?: { [key: string]: any }): void;
+	(command: 'config', targetId: string, params?: { [key: string]: any }): void;
+	(command: 'set', params: { [key: string]: any }): void;
+	(command: 'event', eventName: string, params?: { [key: string]: any }): void;
 	(
-		command: "event",
+		command: 'event',
 		eventName: string,
 		eventParams: {
 			event_category?: string;

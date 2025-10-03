@@ -1,6 +1,6 @@
-import { NumericFormat } from "react-number-format";
-import { BitCoinIcon } from "./icons";
-import { formatBTC } from "~/lib/denoms";
+import { NumericFormat } from 'react-number-format';
+import { BitCoinIcon } from './icons';
+import { formatBTC } from '~/lib/denoms';
 
 interface BitcoinBalanceProps {
 	availableBalance: string;
@@ -8,7 +8,7 @@ interface BitcoinBalanceProps {
 
 export const BitcoinBalance = ({ availableBalance }: BitcoinBalanceProps) => {
 	// Convert satoshis to BTC format
-	const balanceInBTC = formatBTC(BigInt(availableBalance || "0"));
+	const balanceInBTC = formatBTC(BigInt(availableBalance || '0'));
 
 	return (
 		<div className="card card-border bg-base-300">

@@ -1,10 +1,10 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from 'react';
 
 type ToasterToast = {
 	id: string;
 	title?: ReactNode;
 	description?: ReactNode;
-	variant?: "default" | "destructive" | "warning" | "info" | null;
+	variant?: 'default' | 'destructive' | 'warning' | 'info' | null;
 };
 
 let count = 0;
@@ -22,7 +22,7 @@ function dispatch(toasts: ToasterToast[]) {
 	listeners.forEach((listener) => listener(toasts));
 }
 
-function toast(props: Omit<ToasterToast, "id">) {
+function toast(props: Omit<ToasterToast, 'id'>) {
 	const id = genId();
 	const newToast = { ...props, id };
 	dispatch([...memoryState, newToast]);

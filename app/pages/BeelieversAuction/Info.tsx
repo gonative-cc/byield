@@ -1,12 +1,12 @@
-import React from "react";
-import { Countdown } from "~/components/ui/countdown";
-import { primaryBadgeClasses } from "~/util/tailwind";
-import { BadgesModal } from "~/components/BadgesModal";
-import { AuctionAccountType } from "~/server/BeelieversAuction/types";
-import { TwitterShareButton } from "~/components/TwitterShareButton";
-import { AuctionState } from "./types";
-import type { User, AuctionInfo } from "~/server/BeelieversAuction/types";
-import { Collapse } from "~/components/ui/collapse";
+import React from 'react';
+import { Countdown } from '~/components/ui/countdown';
+import { primaryBadgeClasses } from '~/util/tailwind';
+import { BadgesModal } from '~/components/BadgesModal';
+import { AuctionAccountType } from '~/server/BeelieversAuction/types';
+import { TwitterShareButton } from '~/components/TwitterShareButton';
+import { AuctionState } from './types';
+import type { User, AuctionInfo } from '~/server/BeelieversAuction/types';
+import { Collapse } from '~/components/ui/collapse';
 
 interface InfoProps {
 	user?: User;
@@ -21,10 +21,10 @@ export function Info({ user, auctionInfo, auctionState }: InfoProps) {
 
 	let timeLabel, targetTime;
 	if (auctionState === AuctionState.WILL_START) {
-		timeLabel = "starts";
+		timeLabel = 'starts';
 		targetTime = auctionInfo.startsAt;
 	} else {
-		timeLabel = "ends";
+		timeLabel = 'ends';
 		targetTime = auctionInfo.endsAt;
 	}
 
@@ -102,8 +102,8 @@ const Instructions = () => {
 };
 
 function InstructionDetails() {
-	const listStyle = "list-disc list-outside ml-6 space-y-2";
-	const headerStyle = "text-primary font-semibold text-lg flex items-center gap-2";
+	const listStyle = 'list-disc list-outside ml-6 space-y-2';
+	const headerStyle = 'text-primary font-semibold text-lg flex items-center gap-2';
 	return (
 		<div className="text-foreground animate-in slide-in-from-top-2 leading-7 duration-500">
 			<div className="space-y-6">
@@ -116,25 +116,25 @@ function InstructionDetails() {
 				</p>
 				<ul className={listStyle}>
 					<li className="text-sm lg:text-base">
-						<strong>Place your bid</strong> – You can raise your bid anytime before the auction
-						ends to improve your chances.
+						<strong>Place your bid</strong> – You can raise your bid anytime before the auction ends
+						to improve your chances.
 					</li>
 					<li className="text-sm lg:text-base">
-						<strong>Top 5,810 bidders win</strong> – Only the highest 5,810 bids will have chance
-						to mint NFT.
+						<strong>Top 5,810 bidders win</strong> – Only the highest 5,810 bids will have chance to
+						mint NFT.
 					</li>
 					<li className="text-sm lg:text-base">
 						<strong>Fair clearing price</strong> – All winners pay <b>the same final price</b>,
 						which is the generalized &ldquo;N+1 price&rdquo;. This is a form of &nbsp;
 						<a href="https://en.wikipedia.org/wiki/Vickrey_auction" className="link">
 							Vickrey auction
-						</a>{" "}
-						- where everyone pays highest bid that didn&apos;t make it to the winning list. In
-						case of draw in the last postion, it is first in first served.
+						</a>{' '}
+						- where everyone pays highest bid that didn&apos;t make it to the winning list. In case
+						of draw in the last postion, it is first in first served.
 					</li>
 					<li className="text-sm lg:text-base">
-						<strong>Get refunds </strong> – If you bid higher than the clearing price, you can
-						claim the excess amount. If you don&apos;t win you can claim all the amount you bid.
+						<strong>Get refunds </strong> – If you bid higher than the clearing price, you can claim
+						the excess amount. If you don&apos;t win you can claim all the amount you bid.
 					</li>
 				</ul>
 
@@ -171,9 +171,9 @@ function InstructionDetails() {
 function auctionAccountTypeMsg(userAccountType?: AuctionAccountType) {
 	switch (userAccountType) {
 		case AuctionAccountType.TESTNET_WHITELIST:
-			return "Congrats! You have Testnet WL tier";
+			return 'Congrats! You have Testnet WL tier';
 		case AuctionAccountType.PARTNER_WHITELIST:
-			return "Congrats! You are verified Partner WL";
+			return 'Congrats! You are verified Partner WL';
 		default:
 			return null;
 	}
@@ -201,16 +201,16 @@ const FinalizedNotifier = ({
 	auctionSize: number;
 	state: AuctionState;
 }) => {
-	let msg: string = "";
+	let msg: string = '';
 	switch (state) {
 		case AuctionState.ENDED: {
-			msg = "Confirming results";
+			msg = 'Confirming results';
 			break;
 		}
 		case AuctionState.RECONCILLED: {
 			if (!user) break;
 			msg = "😒 Unfortunately, you didn't win the auction.";
-			if ((user.rank || 0) <= auctionSize) msg = "🏆 You made it to the winning list!";
+			if ((user.rank || 0) <= auctionSize) msg = '🏆 You made it to the winning list!';
 			break;
 		}
 		default:
@@ -231,15 +231,15 @@ const NotAWinnerNotifier = ({ user, auctionSize }: { user?: User; auctionSize: n
 
 	return (
 		<div className="rounded-lg border border-orange-500/70 bg-gradient-to-r from-orange-700/50 to-orange-700/40 p-2">
-			<span className="text-lg">🔨</span> You slipped from the auction winning list (top 5810 spots).
-			Bid more to save your spot!
+			<span className="text-lg">🔨</span> You slipped from the auction winning list (top 5810
+			spots). Bid more to save your spot!
 		</div>
 	);
 };
 
 function getEligibilityMessage(type?: AuctionAccountType): React.ReactNode | string {
-	const listStyle = "list-disc list-outside ml-10 space-y-2";
-	const listHeaderStyle = "text-sm lg:text-base text-foreground/90 pb-4";
+	const listStyle = 'list-disc list-outside ml-10 space-y-2';
+	const listHeaderStyle = 'text-sm lg:text-base text-foreground/90 pb-4';
 
 	const partnerBulletPoints = () => (
 		<ul className={listStyle}>
@@ -276,8 +276,8 @@ function getEligibilityMessage(type?: AuctionAccountType): React.ReactNode | str
 				</>
 			);
 		case AuctionAccountType.DEFAULT:
-			return "Participate in auction to buy NFT and stand a chance to win 10% of NFT sale amount in Bitcoin (nBTC) given to 21 lucky winners.";
+			return 'Participate in auction to buy NFT and stand a chance to win 10% of NFT sale amount in Bitcoin (nBTC) given to 21 lucky winners.';
 		default:
-			return "";
+			return '';
 	}
 }

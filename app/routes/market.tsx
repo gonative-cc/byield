@@ -1,4 +1,4 @@
-import { TotalDeposit } from "~/components/TotalDeposit";
+import { TotalDeposit } from '~/components/TotalDeposit';
 
 export default function Market() {
 	return (

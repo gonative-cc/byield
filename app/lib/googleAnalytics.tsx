@@ -1,6 +1,6 @@
-import { WalletContext } from "~/providers/ByieldWalletProvider";
-import { isProductionMode } from "./appenv";
-import { useContext } from "react";
+import { WalletContext } from '~/providers/ByieldWalletProvider';
+import { isProductionMode } from './appenv';
+import { useContext } from 'react';
 
 export type eventParam = {
 	label: string;
@@ -9,20 +9,20 @@ export type eventParam = {
 };
 
 export enum GA_EVENT_NAME {
-	BUY_NBTC = "TESTNET_BUY_NBTC",
+	BUY_NBTC = 'TESTNET_BUY_NBTC',
 }
 
 export enum GA_CATEGORY {
-	BUY_NBTC_SUCCESS = "SUCCESS",
-	BUY_NBTC_ERROR = "ERROR",
+	BUY_NBTC_SUCCESS = 'SUCCESS',
+	BUY_NBTC_ERROR = 'ERROR',
 }
 
 export function useGoogleAnalytics() {
 	const { network, suiAddr } = useContext(WalletContext);
 
 	function trackEvent(eventName: GA_EVENT_NAME, params: eventParam) {
-		if (typeof window !== "undefined" && window.gtag) {
-			window.gtag("event", eventName, {
+		if (typeof window !== 'undefined' && window.gtag) {
+			window.gtag('event', eventName, {
 				...params,
 				network,
 				suiAddr: suiAddr || undefined,

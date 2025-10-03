@@ -1,32 +1,32 @@
-import { Links, Meta, Outlet, Scripts, ScrollRestoration, useLocation } from "react-router";
-import type { LinksFunction } from "react-router";
-import tailwindStyle from "./tailwind.css?url";
-import { NavBar } from "~/components/NavBar";
-import { networkConfig } from "./networkConfig";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { SuiClientProvider, WalletProvider as SuiWalletProvider } from "@mysten/dapp-kit";
-import { Toaster } from "~/components/ui/toaster";
-import { ByieldWalletProvider } from "./providers/ByieldWalletProvider";
-import { isProductionMode, printAppEnv } from "./lib/appenv";
-import { useEffect } from "react";
-import { Footer } from "~/components/Footer";
-import { SideBarProvider } from "./providers/SiderBarProvider";
-import { SideBar } from "~/components/SideBar";
-import { ErrorBoundary } from "~/components/ErrorBoundary";
+import { Links, Meta, Outlet, Scripts, ScrollRestoration, useLocation } from 'react-router';
+import type { LinksFunction } from 'react-router';
+import tailwindStyle from './tailwind.css?url';
+import { NavBar } from '~/components/NavBar';
+import { networkConfig } from './networkConfig';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { SuiClientProvider, WalletProvider as SuiWalletProvider } from '@mysten/dapp-kit';
+import { Toaster } from '~/components/ui/toaster';
+import { ByieldWalletProvider } from './providers/ByieldWalletProvider';
+import { isProductionMode, printAppEnv } from './lib/appenv';
+import { useEffect } from 'react';
+import { Footer } from '~/components/Footer';
+import { SideBarProvider } from './providers/SiderBarProvider';
+import { SideBar } from '~/components/SideBar';
+import { ErrorBoundary } from '~/components/ErrorBoundary';
 
 const queryClient = new QueryClient();
 
 export const links: LinksFunction = () => [
-	{ rel: "stylesheet", href: tailwindStyle },
-	{ rel: "preconnect", href: "https://fonts.googleapis.com" },
+	{ rel: 'stylesheet', href: tailwindStyle },
+	{ rel: 'preconnect', href: 'https://fonts.googleapis.com' },
 	{
-		rel: "preconnect",
-		href: "https://fonts.gstatic.com",
-		crossOrigin: "anonymous",
+		rel: 'preconnect',
+		href: 'https://fonts.gstatic.com',
+		crossOrigin: 'anonymous',
 	},
 	{
-		rel: "stylesheet",
-		href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
+		rel: 'stylesheet',
+		href: 'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap',
 	},
 ];
 
@@ -81,13 +81,13 @@ function NativeApp({ children }: { children: React.ReactNode }) {
 	// Default network based on environment and route - but allow wallet to override
 	const defaultNetwork = (() => {
 		if (isProductionMode()) {
-			if (pathname === "/beelievers-auction") {
-				return "mainnet";
+			if (pathname === '/beelievers-auction') {
+				return 'mainnet';
 			}
-			return "testnet";
+			return 'testnet';
 		}
 		// In dev mode, default to localnet
-		return "localnet";
+		return 'localnet';
 	})();
 
 	useEffect(() => {

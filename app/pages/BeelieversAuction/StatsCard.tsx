@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
-import { primaryHeadingClasses } from "~/util/tailwind";
+import type { ReactNode } from 'react';
+import { primaryHeadingClasses } from '~/util/tailwind';
 
 interface StatsCardProps {
 	title: string | ReactNode;

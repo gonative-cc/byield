@@ -1,15 +1,15 @@
-import { Zap } from "lucide-react";
-import { Table } from "./ui/table";
-import type { Column, CellProps } from "react-table";
-import { SelectInput } from "./ui/select";
-import { Input } from "./ui/input";
-import { action } from "../config/market.json";
-import { formatNBTC } from "~/lib/denoms";
-import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
+import { Zap } from 'lucide-react';
+import { Table } from './ui/table';
+import type { Column, CellProps } from 'react-table';
+import { SelectInput } from './ui/select';
+import { Input } from './ui/input';
+import { action } from '../config/market.json';
+import { formatNBTC } from '~/lib/denoms';
+import { useCoinBalance } from '~/components/Wallet/SuiWallet/useBalance';
 
 enum MarketIntegration {
-	TURBOS = "TURBOS",
-	MAGMA = "MAGMA",
+	TURBOS = 'TURBOS',
+	MAGMA = 'MAGMA',
 }
 
 interface DepositData {
@@ -41,8 +41,8 @@ const getActionLinks = (integration: MarketIntegration) => {
 
 export const columns: Column<DApp>[] = [
 	{
-		Header: "Vault Name",
-		accessor: "name",
+		Header: 'Vault Name',
+		accessor: 'name',
 		Cell: ({ value, row }: CellProps<DApp>) => (
 			<div className="flex items-center gap-2">
 				<img src={row.original.logo} alt={value} className="h-6 w-6 object-contain" />
@@ -51,8 +51,8 @@ export const columns: Column<DApp>[] = [
 		),
 	},
 	{
-		Header: "Type",
-		accessor: "type",
+		Header: 'Type',
+		accessor: 'type',
 		Cell: ({ row }: CellProps<DApp>) => (
 			<div className="flex space-x-2">
 				<div className="badge badge-primary">{row.original.type}</div>
@@ -60,8 +60,8 @@ export const columns: Column<DApp>[] = [
 		),
 	},
 	{
-		Header: "Label",
-		accessor: "labels",
+		Header: 'Label',
+		accessor: 'labels',
 		Cell: ({ row }: CellProps<DApp>) => (
 			<div className="flex space-x-2">
 				{row.original.labels.map((label) => (
@@ -76,17 +76,17 @@ export const columns: Column<DApp>[] = [
 		),
 	},
 	{
-		Header: "7 Day APY",
-		accessor: "apy",
+		Header: '7 Day APY',
+		accessor: 'apy',
 		Cell: ({ row }: CellProps<DApp>) => (
 			<div className="flex space-x-2">
 				<span>{row.original.apy}%</span>
 			</div>
 		),
 	},
-	{ Header: "Chain", accessor: "chain" },
+	{ Header: 'Chain', accessor: 'chain' },
 	{
-		Header: "Action",
+		Header: 'Action',
 		Cell: ({
 			row: {
 				original: { integration },
@@ -132,7 +132,7 @@ export function TotalDeposit() {
 					<h1 className="mr-4 text-2xl font-bold text-orange-500">Markets</h1>
 					<div className="flex w-full justify-end gap-4">
 						<SelectInput
-							options={[{ label: "Filter by Top APY", value: "filterbytop" }]}
+							options={[{ label: 'Filter by Top APY', value: 'filterbytop' }]}
 							placeholder="Filter by Top APY"
 						/>
 						<Input type="text" placeholder="Search vaults..." />
@@ -146,21 +146,21 @@ export function TotalDeposit() {
 
 const VAULTS: DApp[] = [
 	{
-		name: "Turbos",
-		type: "DEX",
+		name: 'Turbos',
+		type: 'DEX',
 		integration: MarketIntegration.TURBOS,
-		labels: ["Farming"],
+		labels: ['Farming'],
 		apy: 11.71,
-		chain: "SUI",
-		logo: "/assets/ui-icons/market/turbos.svg",
+		chain: 'SUI',
+		logo: '/assets/ui-icons/market/turbos.svg',
 	},
 	{
-		name: "Magma",
-		type: "DEX",
+		name: 'Magma',
+		type: 'DEX',
 		integration: MarketIntegration.MAGMA,
-		labels: ["Farming"],
+		labels: ['Farming'],
 		apy: 11.71,
-		chain: "SUI",
-		logo: "/assets/ui-icons/market/magma.svg",
+		chain: 'SUI',
+		logo: '/assets/ui-icons/market/magma.svg',
 	},
 ];

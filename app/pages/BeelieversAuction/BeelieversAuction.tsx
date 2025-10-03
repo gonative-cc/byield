@@ -1,34 +1,43 @@
-import { useFetcher } from "react-router";
-import { useContext, useEffect, useRef, type ReactNode } from "react";
-import { AuctionTable } from "./AuctionTable";
-import { AuctionTotals } from "./AuctionTotals";
-import { AuctionState } from "./types";
-import type { AuctionInfo, Bidder } from "~/server/BeelieversAuction/types";
-import { makeReq, type QueryRaffleResp, type QueryUserResp } from "~/server/BeelieversAuction/jsonrpc";
-import { WalletContext } from "~/providers/ByieldWalletProvider";
-import { removeDuplicates, sortAndCheckDuplicate } from "~/lib/batteries";
-import { RaffleTable } from "./RaffleTable";
-import { MintInfo } from "./MintInfo";
-import { Info as AuctionInfoSection } from "./Info";
-import { Collapse } from "~/components/ui/collapse";
-import { NBTCRaw } from "~/components/icons";
-import { formatSUI } from "~/lib/denoms";
-import { FAQ } from "~/components/FAQ";
+import { useFetcher } from 'react-router';
+import { useContext, useEffect, useRef, type ReactNode } from 'react';
+import { AuctionTable } from './AuctionTable';
+import { AuctionTotals } from './AuctionTotals';
+import { AuctionState } from './types';
+import type { AuctionInfo, Bidder } from '~/server/BeelieversAuction/types';
+import {
+	makeReq,
+	type QueryRaffleResp,
+	type QueryUserResp,
+} from '~/server/BeelieversAuction/jsonrpc';
+import { WalletContext } from '~/providers/ByieldWalletProvider';
+import { removeDuplicates, sortAndCheckDuplicate } from '~/lib/batteries';
+import { RaffleTable } from './RaffleTable';
+import { MintInfo } from './MintInfo';
+import { Info as AuctionInfoSection } from './Info';
+import { Collapse } from '~/components/ui/collapse';
+import { NBTCRaw } from '~/components/icons';
+import { formatSUI } from '~/lib/denoms';
+import { FAQ } from '~/components/FAQ';
 
 const FAQS = [
 	{
-		id: "faq-1",
-		question: "Can I trade Beelievers NFTs after the mint?",
-		answer: "Yes. After mint, Beelievers NFTs will be available for secondary trading on Tradeport and other supported marketplaces.",
+		id: 'faq-1',
+		question: 'Can I trade Beelievers NFTs after the mint?',
+		answer:
+			'Yes. After mint, Beelievers NFTs will be available for secondary trading on Tradeport and other supported marketplaces.',
 	},
 	{
-		id: "faq-2",
+		id: 'faq-2',
 		question: "What's the total supply?",
-		answer: "The Beelievers collection includes 6,021 NFTs.",
+		answer: 'The Beelievers collection includes 6,021 NFTs.',
 	},
 ];
 
-function getAuctionState(startMs: number, endMs: number, clearingPrice: number | null): AuctionState {
+function getAuctionState(
+	startMs: number,
+	endMs: number,
+	clearingPrice: number | null,
+): AuctionState {
 	const nowMs = new Date().getTime();
 	if (nowMs < startMs) return AuctionState.WILL_START;
 	if (nowMs < endMs) return AuctionState.STARTED;
@@ -50,7 +59,7 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 	const raffle: QueryRaffleResp = raffleFetcher.data ?? null;
 	const auctionState = getAuctionState(info.startsAt, info.endsAt, info.clearingPrice);
 
-	console.log(">>>> user", user);
+	console.log('>>>> user', user);
 
 	for (const l of leaderboard) {
 		if (sortAndCheckDuplicate(l.badges)) {
@@ -60,10 +69,10 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 
 	useEffect(() => {
 		// query the user
-		if (suiAddr && suiAddr !== lastCheckedAddress.current && userFetcher.state === "idle") {
+		if (suiAddr && suiAddr !== lastCheckedAddress.current && userFetcher.state === 'idle') {
 			// Wallet connected or address changed - check eligibility
 			lastCheckedAddress.current = suiAddr;
-			makeReq<QueryUserResp>(userFetcher, { method: "queryUser", params: [suiAddr] });
+			makeReq<QueryUserResp>(userFetcher, { method: 'queryUser', params: [suiAddr] });
 		} else if (!suiAddr && lastCheckedAddress.current) {
 			// Wallet disconnected - reset state
 			lastCheckedAddress.current = null;
@@ -72,8 +81,8 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 
 	useEffect(() => {
 		// query the raffle
-		if (raffleFetcher.state === "idle" && !raffle && auctionState === AuctionState.RECONCILLED) {
-			makeReq<QueryRaffleResp>(raffleFetcher, { method: "queryRaffle", params: [] });
+		if (raffleFetcher.state === 'idle' && !raffle && auctionState === AuctionState.RECONCILLED) {
+			makeReq<QueryRaffleResp>(raffleFetcher, { method: 'queryRaffle', params: [] });
 		}
 	}, [raffleFetcher, raffle, auctionState]);
 
@@ -85,7 +94,7 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 					<span className="text-foreground"> Mint</span>
 				</p>
 				<p className="text-muted-foreground mt-3 text-lg">
-					➡️{" "}
+					➡️{' '}
 					<a
 						className="link-raw"
 						href="https://www.gonative.cc/beelievers"
@@ -155,10 +164,10 @@ function RaffleResults({ raffle }: { raffle: QueryRaffleResp }) {
 		<>
 			<section className="mb-6 w-full">
 				<div className="text-primary mb-2 text-xl font-bold transition-colors duration-300 group-hover:text-orange-400">
-					<NBTCRaw className="mr-2 inline h-[1.1em] w-auto align-middle" /> Total winnings:{" "}
+					<NBTCRaw className="mr-2 inline h-[1.1em] w-auto align-middle" /> Total winnings:{' '}
 					{formatSUI(raffle.totalAmount)} nBTC
 				</div>
-				This represents 10% of the{" "}
+				This represents 10% of the{' '}
 				<a
 					className="link"
 					href="https://suivision.xyz/txblock/E6PBgp5jA6vMs3rzS32nRseUiEBkDxf7WXjdsU6pL6Rz?tab=Events"
@@ -166,7 +175,7 @@ function RaffleResults({ raffle }: { raffle: QueryRaffleResp }) {
 					rel="noreferrer"
 				>
 					total NFT sale
-				</a>{" "}
+				</a>{' '}
 				exchanged to BTC on 2025-08-26. Winners will be able to claim nBTC once the mainnet is live.
 			</section>
 

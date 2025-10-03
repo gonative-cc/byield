@@ -1,11 +1,11 @@
-import footerConfig from "~/config/footer.json";
+import footerConfig from '~/config/footer.json';
 
 interface TwitterShareButtonProps {
 	shareContent: string;
 }
 
 export function TwitterShareButton({ shareContent }: TwitterShareButtonProps) {
-	const twitterIcon = footerConfig.socials.find((social) => social.id === "x")?.src;
+	const twitterIcon = footerConfig.socials.find((social) => social.id === 'x')?.src;
 	const text = encodeURIComponent(shareContent);
 
 	return (

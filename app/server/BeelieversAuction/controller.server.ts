@@ -1,26 +1,26 @@
-import { isValidSuiAddress } from "@mysten/sui/utils";
-import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
+import { isValidSuiAddress } from '@mysten/sui/utils';
+import { getFullnodeUrl, SuiClient } from '@mysten/sui/client';
 
-import type { LoaderDataResp, AuctionInfo } from "./types";
-import type { QueryRaffleResp, Req, QueryUserResp } from "./jsonrpc";
-import { defaultAuctionInfo, defaultUser, mainnetRaffleWinners } from "./defaults";
-import { checkTxOnChain, verifySignature } from "./auth.server";
+import type { LoaderDataResp, AuctionInfo } from './types';
+import type { QueryRaffleResp, Req, QueryUserResp } from './jsonrpc';
+import { defaultAuctionInfo, defaultUser, mainnetRaffleWinners } from './defaults';
+import { checkTxOnChain, verifySignature } from './auth.server';
 
-import { fromBase64 } from "@mysten/utils";
-import { isProductionMode } from "~/lib/appenv";
-import { Auction, type BidResult } from "./auction.server";
+import { fromBase64 } from '@mysten/utils';
+import { isProductionMode } from '~/lib/appenv';
+import { Auction, type BidResult } from './auction.server';
 
-import { mainnetCfg, testnetCfg } from "~/config/sui/contracts-config";
-import * as httpresp from "../http-resp";
+import { mainnetCfg, testnetCfg } from '~/config/sui/contracts-config';
+import * as httpresp from '../http-resp';
 
 const maxTxIdSize = 44;
 
 export default class Controller {
 	kv: KVNamespace;
-	kvKeyTxPrefix = "tx_";
-	kvKeyTxPrefixNotAuthorized = "txNA_";
+	kvKeyTxPrefix = 'tx_';
+	kvKeyTxPrefixNotAuthorized = 'txNA_';
 
-	suiNet: "mainnet" | "testnet" | "devnet" | "localnet";
+	suiNet: 'mainnet' | 'testnet' | 'devnet' | 'localnet';
 	auctionPkgId: string; // Sui package object ID
 	fallbackIndexerUrl: string;
 
@@ -34,17 +34,17 @@ export default class Controller {
 	constructor(kv: KVNamespace, d1: D1Database) {
 		this.isProduction = isProductionMode();
 		if (this.isProduction) {
-			this.suiNet = "mainnet";
+			this.suiNet = 'mainnet';
 			this.auctionPkgId = mainnetCfg.beelieversAuction.pkgId;
-			this.fallbackIndexerUrl = "https://sui-mainnet-endpoint.blockvision.org/";
+			this.fallbackIndexerUrl = 'https://sui-mainnet-endpoint.blockvision.org/';
 		} else {
-			this.suiNet = "testnet";
+			this.suiNet = 'testnet';
 			this.auctionPkgId = testnetCfg.beelieversAuction.pkgId;
-			this.fallbackIndexerUrl = "https://sui-testnet-endpoint.blockvision.org/";
+			this.fallbackIndexerUrl = 'https://sui-testnet-endpoint.blockvision.org/';
 		}
 		if (!this.auctionPkgId || !this.fallbackIndexerUrl) {
 			throw new Error(
-				"Missing required configuration values: auctionPkgId and fallbackIndexerUrl must be set in the config files.",
+				'Missing required configuration values: auctionPkgId and fallbackIndexerUrl must be set in the config files.',
 			);
 		}
 
@@ -91,28 +91,28 @@ export default class Controller {
 		try {
 			reqData = await r.json<Req>();
 		} catch (_err) {
-			console.log(">>>>> Expected JSON content type:", _err);
-			return new Response("Expecting JSON Content-Type and JSON body", {
+			console.log('>>>>> Expected JSON content type:', _err);
+			return new Response('Expecting JSON Content-Type and JSON body', {
 				status: 400,
 			});
 		}
-		console.log("handle RPC", reqData);
+		console.log('handle RPC', reqData);
 		switch (reqData.method) {
-			case "queryUser":
+			case 'queryUser':
 				return this.getUserData(reqData.params[0]);
-			case "postBidTx": {
+			case 'postBidTx': {
 				const [userAddr, txBytes, signature, userMessage] = reqData.params;
 				return this.postBidTx(userAddr, fromBase64(txBytes), signature, userMessage);
 			}
-			case "pageData": {
+			case 'pageData': {
 				const [suiAddr] = reqData.params;
 				return this.loadPageData(suiAddr);
 			}
-			case "queryRaffle": {
+			case 'queryRaffle': {
 				return this.getRaffle();
 			}
 			default:
-				return httpresp.notFound("Unknown method");
+				return httpresp.notFound('Unknown method');
 		}
 	}
 
@@ -125,14 +125,14 @@ export default class Controller {
 		const txDigest = await verifySignature(userAddr, txBytes, signature);
 		if (txDigest === null) return httpresp.notAuthorized();
 		if (txDigest.length > maxTxIdSize) {
-			console.error("txDigest too long!", txDigest);
-			return httpresp.badRequest("Bad Tx Digest");
+			console.error('txDigest too long!', txDigest);
+			return httpresp.badRequest('Bad Tx Digest');
 		}
 		// TODO: Vu: extract timestamp from txBytes
 
 		const keyKv = this.kvKeyTxPrefix + txDigest;
 		const kvCheck = await this.kv.get(keyKv);
-		if (kvCheck !== null) return httpresp.textOK("already processed");
+		if (kvCheck !== null) return httpresp.textOK('already processed');
 
 		const suiClient = new SuiClient({ url: getFullnodeUrl(this.suiNet) });
 		try {
@@ -143,13 +143,13 @@ export default class Controller {
 				this.auctionPkgId,
 				this.fallbackIndexerUrl,
 			);
-			if (typeof bidEvent === "string") {
-				console.error("[Controller] On-chain validation failed:", bidEvent);
+			if (typeof bidEvent === 'string') {
+				console.error('[Controller] On-chain validation failed:', bidEvent);
 				const keyKvNA = this.kvKeyTxPrefixNotAuthorized + txDigest;
-				await this.kv.put(keyKvNA, "");
+				await this.kv.put(keyKvNA, '');
 				return httpresp.notAuthorized();
 			}
-			await this.kv.put(keyKv, "");
+			await this.kv.put(keyKv, '');
 			const amount = Number(bidEvent.totalBidAmount);
 			const timestampMs = parseInt(bidEvent.timestampMs);
 			const [resp, err] = await this.auction.bid(userAddr, amount, timestampMs, userMessage);
@@ -158,7 +158,7 @@ export default class Controller {
 			return resp || { oldRank: 0, newRank: 0 };
 		} catch (error) {
 			console.error(
-				"[Controller] An error occurred during postBidTx:",
+				'[Controller] An error occurred during postBidTx:',
 				error instanceof Error ? error.message : String(error),
 			);
 			return httpresp.serverError(String(error));

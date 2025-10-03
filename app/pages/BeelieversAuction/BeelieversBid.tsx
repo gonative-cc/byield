@@ -1,22 +1,28 @@
-import { FormProvider, useForm } from "react-hook-form";
-import { useFetcher } from "react-router";
-import { LoaderCircle } from "lucide-react";
-import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
-import { Transaction } from "@mysten/sui/transactions";
+import { FormProvider, useForm } from 'react-hook-form';
+import { useFetcher } from 'react-router';
+import { LoaderCircle } from 'lucide-react';
+import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from '@mysten/dapp-kit';
+import { Transaction } from '@mysten/sui/transactions';
 
-import { formatSUI, parseSUI, SUI } from "~/lib/denoms";
-import { delay } from "~/lib/batteries";
-import { FormNumericInput } from "~/components/form/FormNumericInput";
-import { FormInput } from "~/components/form/FormInput";
-import { SuiModal } from "~/components/Wallet/SuiWallet/SuiModal";
-import type { User } from "~/server/BeelieversAuction/types";
-import { makeReq } from "~/server/BeelieversAuction/jsonrpc";
-import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
-import { toast } from "~/hooks/use-toast";
-import { useNetworkVariables } from "~/networkConfig";
-import { SUIIcon } from "~/components/icons";
-import { moveCallTarget, type BeelieversAuctionCfg } from "~/config/sui/contracts-config";
-import { buttonEffectClasses, classNames, cardShowcaseClasses, cn, infoBoxClasses } from "~/util/tailwind";
+import { formatSUI, parseSUI, SUI } from '~/lib/denoms';
+import { delay } from '~/lib/batteries';
+import { FormNumericInput } from '~/components/form/FormNumericInput';
+import { FormInput } from '~/components/form/FormInput';
+import { SuiModal } from '~/components/Wallet/SuiWallet/SuiModal';
+import type { User } from '~/server/BeelieversAuction/types';
+import { makeReq } from '~/server/BeelieversAuction/jsonrpc';
+import { useCoinBalance } from '~/components/Wallet/SuiWallet/useBalance';
+import { toast } from '~/hooks/use-toast';
+import { useNetworkVariables } from '~/networkConfig';
+import { SUIIcon } from '~/components/icons';
+import { moveCallTarget, type BeelieversAuctionCfg } from '~/config/sui/contracts-config';
+import {
+	buttonEffectClasses,
+	classNames,
+	cardShowcaseClasses,
+	cn,
+	infoBoxClasses,
+} from '~/util/tailwind';
 
 const MINIMUM_FIRST_BID_MIST = 1e9;
 interface NewTotalBidAmountProps {
@@ -25,7 +31,11 @@ interface NewTotalBidAmountProps {
 	additionalBidInSUI: string;
 }
 
-function NewTotalBidAmount({ currentBidInMist, additionalBidInSUI, entryBidMist }: NewTotalBidAmountProps) {
+function NewTotalBidAmount({
+	currentBidInMist,
+	additionalBidInSUI,
+	entryBidMist,
+}: NewTotalBidAmountProps) {
 	let newTotal = BigInt(currentBidInMist);
 	let moreBidNeeded = BigInt(0);
 
@@ -71,7 +81,7 @@ interface BeelieversBidProps {
 	entryBidMist: number;
 }
 
-const title = "Bid NFT";
+const title = 'Bid NFT';
 
 export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 	const { beelieversAuction } = useNetworkVariables();
@@ -83,11 +93,11 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 	const { mutate: signAndExecTx, isPending, reset } = useSignAndExecuteTransaction();
 
 	const bidForm = useForm<BeelieversBidForm>({
-		mode: "all",
-		reValidateMode: "onChange",
+		mode: 'all',
+		reValidateMode: 'onChange',
 		defaultValues: {
-			bid: "",
-			note: "",
+			bid: '',
+			note: '',
 		},
 	});
 
@@ -101,11 +111,11 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 			{
 				onSuccess: async (result, _variables) => {
 					console.log(
-						">>>> Bid tx submitted, digest: ",
+						'>>>> Bid tx submitted, digest: ',
 						result.digest,
-						"\n tx data:",
+						'\n tx data:',
 						result.bytes,
-						"\n signature",
+						'\n signature',
 						result.signature,
 					);
 
@@ -115,28 +125,28 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 						options: { showEffects: true },
 					});
 
-					if (effects?.status.status === "success") {
+					if (effects?.status.status === 'success') {
 						// delay to accomodate network propagation for sending proof of the TX
 						await delay(800);
-						toast({ title, description: "Bid successful" });
+						toast({ title, description: 'Bid successful' });
 						makeReq(fetcher, {
-							method: "postBidTx",
+							method: 'postBidTx',
 							params: [account.address, result.bytes, result.signature, note],
 						});
 					} else {
-						console.error("err", effects?.status.error);
+						console.error('err', effects?.status.error);
 						toast({
 							title,
-							description: "Bid failed. Please try again later.\n",
-							variant: "destructive",
+							description: 'Bid failed. Please try again later.\n',
+							variant: 'destructive',
 						});
 					}
 				},
 				onError: (error) => {
 					toast({
 						title,
-						description: "Bid failed. Please try again later.\n" + error.message,
-						variant: "destructive",
+						description: 'Bid failed. Please try again later.\n' + error.message,
+						variant: 'destructive',
 					});
 				},
 				onSettled: () => {
@@ -148,7 +158,7 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 	});
 
 	const hasUserBidBefore = (user && user.amount !== 0) || false;
-	const bidInputInSUI = bidForm.watch("bid");
+	const bidInputInSUI = bidForm.watch('bid');
 
 	return (
 		<FormProvider {...bidForm}>
@@ -157,7 +167,7 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 					<div
 						className={cn(
 							cardShowcaseClasses(),
-							"card animate-in slide-in-from-bottom-2 duration-700",
+							'card animate-in slide-in-from-bottom-2 duration-700',
 						)}
 					>
 						<div className="card-body from-azure-10 via-azure-15 to-azure-20 flex w-full flex-col gap-6 rounded-lg bg-gradient-to-br p-6 text-white lg:p-8">
@@ -167,13 +177,11 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 										<span className="text-2xl">🐝</span>
 									</div>
 									<div>
-										<h2 className="text-primary text-2xl font-bold lg:text-3xl">
-											Place Your Bid
-										</h2>
+										<h2 className="text-primary text-2xl font-bold lg:text-3xl">Place Your Bid</h2>
 										<p className="text-muted-foreground text-sm">
 											{hasUserBidBefore
-												? "Increase your bid to improve your rank"
-												: "Join the auction and secure your NFT"}
+												? 'Increase your bid to improve your rank'
+												: 'Join the auction and secure your NFT'}
 										</p>
 									</div>
 								</div>
@@ -184,16 +192,16 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 									<div className="text-foreground/80 text-sm font-medium">
 										<span className="text-lg">💰 </span>
 										{hasUserBidBefore
-											? "Enter SUI amount you want to add to your previous bid"
-											: "First-time bidders: minimum bid is 1 SUI"}
+											? 'Enter SUI amount you want to add to your previous bid'
+											: 'First-time bidders: minimum bid is 1 SUI'}
 									</div>
 									<FormNumericInput
 										required
 										name="bid"
 										placeholder={
 											hasUserBidBefore
-												? "Enter SUI amount you want to add"
-												: "Minimum: 1 SUI for the first bid"
+												? 'Enter SUI amount you want to add'
+												: 'Minimum: 1 SUI for the first bid'
 										}
 										className="border-primary/30 focus:border-primary hover:border-primary/50 h-14 text-lg transition-colors lg:h-16"
 										inputMode="decimal"
@@ -202,14 +210,13 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 										createEmptySpace
 										rightAdornments={
 											<SUIIcon
-												prefix={"SUI"}
+												prefix={'SUI'}
 												className="mr-1 flex justify-end"
 												containerClassName="w-full justify-end"
 											/>
 										}
 										rules={{
-											validate: (val: string) =>
-												validateBidAmount(val, hasUserBidBefore),
+											validate: (val: string) => validateBidAmount(val, hasUserBidBefore),
 										}}
 									/>
 									{hasUserBidBefore && (
@@ -247,14 +254,14 @@ function submitButton(isPending: boolean, hasUserBidBefore: boolean) {
 	return (
 		<button
 			disabled={isPending}
-			className={classNames("btn btn-primary h-16 text-lg", buttonEffectClasses())}
+			className={classNames('btn btn-primary h-16 text-lg', buttonEffectClasses())}
 		>
 			<span className="flex items-center gap-2">
 				{isPending ? (
 					<LoaderCircle className="h-64 w-64 animate-spin" />
 				) : (
 					<>
-						<span className="text-xl">🚀</span> {hasUserBidBefore ? "Bid more" : "Place Bid"}
+						<span className="text-xl">🚀</span> {hasUserBidBefore ? 'Bid more' : 'Place Bid'}
 					</>
 				)}
 			</span>
@@ -271,7 +278,7 @@ const createBidTxn = async (
 	txn.setSender(senderAddress);
 	const [coin] = txn.splitCoins(txn.gas, [txn.pure.u64(amountMist)]);
 	txn.moveCall({
-		target: moveCallTarget(cfg, "bid"),
+		target: moveCallTarget(cfg, 'bid'),
 		arguments: [txn.object(cfg.auctionId), coin, txn.object.clock()],
 	});
 	return txn;
@@ -282,13 +289,13 @@ function validateBidAmount(val: string, hasUserBidBefore: boolean) {
 	try {
 		mistAmount = parseSUI(val);
 	} catch (__error) {
-		return "wrong SUI number";
+		return 'wrong SUI number';
 	}
 	if (mistAmount < 1e6) {
-		return "minimum amount: 0.001";
+		return 'minimum amount: 0.001';
 	}
 	if (!hasUserBidBefore && mistAmount < MINIMUM_FIRST_BID_MIST) {
-		return "First-time bidders must bid at least 1 SUI";
+		return 'First-time bidders must bid at least 1 SUI';
 	}
 
 	return true;

@@ -1,6 +1,6 @@
-import { useSuiClient, useCurrentAccount } from "@mysten/dapp-kit";
-import { useState, useEffect, useCallback } from "react";
-import { SuiClient, type CoinBalance } from "@mysten/sui/client";
+import { useSuiClient, useCurrentAccount } from '@mysten/dapp-kit';
+import { useState, useEffect, useCallback } from 'react';
+import { SuiClient, type CoinBalance } from '@mysten/sui/client';
 
 export interface UseCoinBalanceResult {
 	balance: bigint;
@@ -17,7 +17,7 @@ async function fetchBalance(
 	try {
 		return suiClient.getBalance({ owner, coinType: coin });
 	} catch (err) {
-		return err instanceof Error ? err : new Error("Failed to fetch balance: " + err);
+		return err instanceof Error ? err : new Error('Failed to fetch balance: ' + err);
 	}
 }
 

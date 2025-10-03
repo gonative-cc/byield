@@ -1,8 +1,8 @@
 export interface TweetOptions {
-	theme?: "light" | "dark";
-	conversation?: "none";
-	align?: "left" | "right" | "center";
-	cards?: "hidden" | "visible";
+	theme?: 'light' | 'dark';
+	conversation?: 'none';
+	align?: 'left' | 'right' | 'center';
+	cards?: 'hidden' | 'visible';
 	dnt?: boolean;
 	lang?: string;
 }

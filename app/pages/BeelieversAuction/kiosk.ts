@@ -1,8 +1,8 @@
-import { Transaction } from "@mysten/sui/transactions";
-import { KioskClient, Network, KioskTransaction } from "@mysten/kiosk";
-import type { SuiClient } from "@mysten/sui/client";
-import { signAndExecTx, type TxSigner } from "~/lib/suienv";
-import { toast } from "~/hooks/use-toast";
+import { Transaction } from '@mysten/sui/transactions';
+import { KioskClient, Network, KioskTransaction } from '@mysten/kiosk';
+import type { SuiClient } from '@mysten/sui/client';
+import { signAndExecTx, type TxSigner } from '~/lib/suienv';
+import { toast } from '~/hooks/use-toast';
 
 export interface KioskInfo {
 	kioskId: string;
@@ -18,9 +18,9 @@ export async function createKiosk(
 	signer: TxSigner,
 ) {
 	toast({
-		title: "Creating Kiosk object",
-		variant: "info",
-		description: "Kiosk is used to store NFT",
+		title: 'Creating Kiosk object',
+		variant: 'info',
+		description: 'Kiosk is used to store NFT',
 	});
 
 	const kioskTx = createKioskTx(client, userAddr, network as Network);
@@ -39,12 +39,12 @@ export async function createKiosk(
 		});
 	}
 	if (!kioskId || !kioskCapId) {
-		throw new Error("Failed to retrieve kiosk or kiosk cap ID, tx ID:" + result.digest);
+		throw new Error('Failed to retrieve kiosk or kiosk cap ID, tx ID:' + result.digest);
 	}
 	console.log(
-		">>> Kiosk created, tx ID:",
+		'>>> Kiosk created, tx ID:',
 		result.digest,
-		"\nkiosk and kioskCap:",
+		'\nkiosk and kioskCap:',
 		kioskId,
 		kioskCapId,
 	);
@@ -90,7 +90,7 @@ export const verifyKiosk = async (
 		});
 		return !!(kioskObject.data && capObject.data);
 	} catch (error) {
-		console.error("Error verifying kiosk:", error);
+		console.error('Error verifying kiosk:', error);
 		return false;
 	}
 };
@@ -101,7 +101,7 @@ export const initializeKioskInfo = async (
 	network: Network,
 ): Promise<KioskInfo | null> => {
 	const stored = getStoredKioskInfo(address);
-	console.log("stored kiosk", stored);
+	console.log('stored kiosk', stored);
 
 	if (stored) {
 		const isValid = await verifyKiosk(stored.kioskId, stored.kioskCapId, client);
@@ -123,7 +123,7 @@ export const initializeKioskInfo = async (
 			}
 		}
 	} catch (error) {
-		console.error("Error fetching kiosks from network:", error);
+		console.error('Error fetching kiosks from network:', error);
 	}
 
 	return null;

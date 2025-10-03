@@ -1,12 +1,12 @@
 export enum MintingStatus {
-	Broadcasting = "broadcasting",
-	Confirming = "confirming",
-	Finalized = "finalized",
-	Minting = "minting",
-	Minted = "minted",
-	Failed = "failed",
-	Reorg = "reorg",
-	Unknown = "unknown",
+	Broadcasting = 'broadcasting',
+	Confirming = 'confirming',
+	Finalized = 'finalized',
+	Minting = 'minting',
+	Minted = 'minted',
+	Failed = 'failed',
+	Reorg = 'reorg',
+	Unknown = 'unknown',
 }
 
 export type MintingTxStatus = `${MintingStatus}`;

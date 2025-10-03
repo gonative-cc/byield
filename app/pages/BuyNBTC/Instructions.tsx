@@ -1,4 +1,4 @@
-import { useCurrentAccount } from "@mysten/dapp-kit";
+import { useCurrentAccount } from '@mysten/dapp-kit';
 
 export function Instructions() {
 	const account = useCurrentAccount();
@@ -23,7 +23,7 @@ export function Instructions() {
 								</a>
 							</li>
 							<li>
-								You can also check{" "}
+								You can also check{' '}
 								<a
 									target="_blank"
 									href="https://docs.sui.io/guides/developer/getting-started/get-coins"

@@ -1,8 +1,8 @@
-import React from "react";
-import { useTable } from "react-table";
-import type { Column, HeaderGroup, Row } from "react-table";
-import { twMerge } from "tailwind-merge";
-import { primaryHeadingClasses, avatarGradientClasses } from "~/util/tailwind";
+import React from 'react';
+import { useTable } from 'react-table';
+import type { Column, HeaderGroup, Row } from 'react-table';
+import { twMerge } from 'tailwind-merge';
+import { primaryHeadingClasses, avatarGradientClasses } from '~/util/tailwind';
 
 const TableHead = <T extends object>({ headerGroups }: { headerGroups: HeaderGroup<T>[] }) => (
 	<thead className="sticky top-0">
@@ -17,12 +17,12 @@ const TableHead = <T extends object>({ headerGroups }: { headerGroups: HeaderGro
 						{...column.getHeaderProps()}
 						key={column.getHeaderProps().key}
 						className={twMerge(
-							"border-primary/20 hover:text-primary border-b p-4 text-left transition-colors",
-							index === 0 && "rounded-tl-2xl",
-							index === headerGroup.headers.length - 1 && "rounded-tr-2xl",
+							'border-primary/20 hover:text-primary border-b p-4 text-left transition-colors',
+							index === 0 && 'rounded-tl-2xl',
+							index === headerGroup.headers.length - 1 && 'rounded-tr-2xl',
 						)}
 					>
-						<div className="flex items-center gap-2">{column.render("Header")}</div>
+						<div className="flex items-center gap-2">{column.render('Header')}</div>
 					</th>
 				))}
 			</tr>
@@ -60,7 +60,7 @@ const TableRows = <T extends object>({
 					<tr
 						{...restRowProps}
 						className={twMerge(
-							"hover:bg-primary/5 group border-t border-gray-700/30 text-sm transition-colors",
+							'hover:bg-primary/5 group border-t border-gray-700/30 text-sm transition-colors',
 							customRowProps.className,
 						)}
 					>
@@ -72,25 +72,22 @@ const TableRows = <T extends object>({
 									{...restCellProps}
 									key={cellKey}
 									className={twMerge(
-										"group-hover:text-foreground p-4 transition-colors",
-										cellIndex === 0 && isLastRow && !isExpanded && "rounded-bl-2xl",
+										'group-hover:text-foreground p-4 transition-colors',
+										cellIndex === 0 && isLastRow && !isExpanded && 'rounded-bl-2xl',
 										cellIndex === row.cells.length - 1 &&
 											isLastRow &&
 											!isExpanded &&
-											"rounded-br-2xl",
+											'rounded-br-2xl',
 									)}
 								>
-									{cell.render("Cell")}
+									{cell.render('Cell')}
 								</td>
 							);
 						})}
 					</tr>
 					{isExpanded && renderExpandedRow && (
 						<tr className="border-t border-gray-700/30">
-							<td
-								colSpan={columns.length}
-								className={twMerge("p-0", isLastRow && "rounded-b-2xl")}
-							>
+							<td colSpan={columns.length} className={twMerge('p-0', isLastRow && 'rounded-b-2xl')}>
 								{renderExpandedRow(row)}
 							</td>
 						</tr>
@@ -127,7 +124,7 @@ export const Table = <T extends object>({
 	renderExpandedRow,
 	getRowId,
 	isLoading = false,
-	loadingMessage = "Loading...",
+	loadingMessage = 'Loading...',
 }: TableProps<T>) => {
 	const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<T>({
 		columns,
@@ -137,7 +134,7 @@ export const Table = <T extends object>({
 			((row: T, index: number) => {
 				// Default fallback - try common ID properties or use index
 				const record = row as Record<string, unknown>;
-				return (typeof record.id === "string" ? record.id : null) || index.toString();
+				return (typeof record.id === 'string' ? record.id : null) || index.toString();
 			}),
 	});
 	const isTableEmpty = !data.length;
@@ -187,7 +184,7 @@ export const Table = <T extends object>({
 			)}
 			<div
 				className={twMerge(
-					"border-primary/10 w-full overflow-hidden rounded-2xl border shadow-2xl",
+					'border-primary/10 w-full overflow-hidden rounded-2xl border shadow-2xl',
 					className,
 				)}
 			>

@@ -1,7 +1,7 @@
-import { CheckCircle, Clock, Info } from "lucide-react";
-import { Modal } from "./dialog";
-import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
-import { alertPrimaryClasses, gradientCardClasses } from "~/util/tailwind";
+import { CheckCircle, Clock, Info } from 'lucide-react';
+import { Modal } from './dialog';
+import { useBitcoinConfig } from '~/hooks/useBitcoinConfig';
+import { alertPrimaryClasses, gradientCardClasses } from '~/util/tailwind';
 
 interface TxConfirmationModal {
 	isOpen: boolean;
@@ -31,9 +31,8 @@ export function TxConfirmationModal({ isOpen, onClose, txId: _txId }: TxConfirma
 				<div>
 					<h3 className="mb-3 text-lg font-semibold">What happens next?</h3>
 					<p className="text-sm">
-						Your transaction is now in the Bitcoin mempool and will be included in upcoming
-						blocks. It needs <strong>{confirmationDepth} confirmations</strong> to be considered
-						secure.
+						Your transaction is now in the Bitcoin mempool and will be included in upcoming blocks.
+						It needs <strong>{confirmationDepth} confirmations</strong> to be considered secure.
 					</p>
 				</div>
 

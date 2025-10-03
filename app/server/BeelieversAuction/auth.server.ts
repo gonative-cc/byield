@@ -1,8 +1,8 @@
-import { SuiClient, type SuiTransactionBlockResponse } from "@mysten/sui/client";
-import { verifyTransactionSignature } from "@mysten/sui/verify";
-import { TransactionDataBuilder } from "@mysten/sui/transactions";
+import { SuiClient, type SuiTransactionBlockResponse } from '@mysten/sui/client';
+import { verifyTransactionSignature } from '@mysten/sui/verify';
+import { TransactionDataBuilder } from '@mysten/sui/transactions';
 
-import { delay } from "~/lib/batteries";
+import { delay } from '~/lib/batteries';
 
 export type BidTxEvent = {
 	sender: string;
@@ -24,14 +24,14 @@ function processTransactionData(
 	data: SuiTransactionBlockResponse | undefined,
 	suiTxId: string,
 	bidderAddr: string,
-	source: "Primary" | "Fallback",
+	source: 'Primary' | 'Fallback',
 	trustedPackageId: string,
 ): BidTxEvent | TxCheckError {
 	if (!data) {
 		throw new Error(`[${source}] Response did not contain a result object for tx: ${suiTxId}`);
 	}
 
-	if (data.effects?.status?.status !== "success") {
+	if (data.effects?.status?.status !== 'success') {
 		const statusDetails = JSON.stringify(data.effects?.status, null, 2);
 		return `[${source}] Transaction ${suiTxId} was not successful. Status: ${statusDetails}`;
 	}
@@ -77,12 +77,12 @@ async function queryIndexerFallback(
 		try {
 			console.log(`[Fallback] Querying public Suivision indexer for tx: ${suiTxId}`);
 			const response = await fetch(indexerUrl, {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
-					jsonrpc: "2.0",
+					jsonrpc: '2.0',
 					id: suiTxId,
-					method: "sui_getTransactionBlock",
+					method: 'sui_getTransactionBlock',
 					params: [suiTxId, { showEffects: true, showEvents: true }],
 				}),
 			});
@@ -96,7 +96,7 @@ async function queryIndexerFallback(
 				jsonResponse.result,
 				suiTxId,
 				bidderAddr,
-				"Fallback",
+				'Fallback',
 				trustedPackageId,
 			);
 		} catch (error) {
@@ -127,10 +127,10 @@ export async function checkTxOnChain(
 				showEvents: true,
 			},
 		});
-		return processTransactionData(tx, suiTxId, bidderAddr, "Primary", trustedPackageId);
+		return processTransactionData(tx, suiTxId, bidderAddr, 'Primary', trustedPackageId);
 	} catch (error) {
 		console.error(`[Primary] Error querying Sui RPC for tx ${suiTxId}:`, error);
-		console.log("[Primary] RPC failed. Attempting to use fallback indexer...");
+		console.log('[Primary] RPC failed. Attempting to use fallback indexer...');
 		await delay(650);
 		return queryIndexerFallback(suiTxId, bidderAddr, trustedPackageId, indexerURL);
 	}

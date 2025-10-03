@@ -4,29 +4,29 @@ import {
 	useDisconnectWallet,
 	useSuiClientContext,
 	useSwitchAccount,
-} from "@mysten/dapp-kit";
-import { SelectInput, type Option } from "../../ui/select";
-import { useCallback, useContext, useMemo } from "react";
-import { WalletContext } from "~/providers/ByieldWalletProvider";
-import { Wallets } from "~/components/Wallet";
-import { trimAddress } from "../walletHelper";
-import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
-import { NumericFormat } from "react-number-format";
-import { formatSUI } from "~/lib/denoms";
-import { useLocation } from "react-router";
-import { isProductionMode } from "~/lib/appenv";
-import { CopyButton } from "~/components/ui/CopyButton";
+} from '@mysten/dapp-kit';
+import { SelectInput, type Option } from '../../ui/select';
+import { useCallback, useContext, useMemo } from 'react';
+import { WalletContext } from '~/providers/ByieldWalletProvider';
+import { Wallets } from '~/components/Wallet';
+import { trimAddress } from '../walletHelper';
+import { useCoinBalance } from '~/components/Wallet/SuiWallet/useBalance';
+import { NumericFormat } from 'react-number-format';
+import { formatSUI } from '~/lib/denoms';
+import { useLocation } from 'react-router';
+import { isProductionMode } from '~/lib/appenv';
+import { CopyButton } from '~/components/ui/CopyButton';
 
 enum SuiNetwork {
-	LocalNet = "localnet",
-	TestNet = "testnet",
-	MainNet = "mainnet",
+	LocalNet = 'localnet',
+	TestNet = 'testnet',
+	MainNet = 'mainnet',
 }
 
 const SuiNetworkLabel: Record<SuiNetwork, string> = {
-	[SuiNetwork.LocalNet]: "Localnet",
-	[SuiNetwork.TestNet]: "Testnet",
-	[SuiNetwork.MainNet]: "Mainnet",
+	[SuiNetwork.LocalNet]: 'Localnet',
+	[SuiNetwork.TestNet]: 'Testnet',
+	[SuiNetwork.MainNet]: 'Mainnet',
 };
 
 function NetWorkOptions() {
@@ -42,7 +42,7 @@ function NetWorkOptions() {
 	);
 
 	// TODO: remove this after auction. enforce network change
-	const isAuctionPathname = pathname === "/beelievers-auction" && isProductionMode();
+	const isAuctionPathname = pathname === '/beelievers-auction' && isProductionMode();
 	const isDevMode = !isProductionMode();
 
 	const networks = useMemo(() => {
@@ -50,11 +50,16 @@ function NetWorkOptions() {
 			return [{ label: SuiNetworkLabel[SuiNetwork.MainNet], value: SuiNetwork.MainNet }];
 		}
 
-		const baseNetworks = [{ label: SuiNetworkLabel[SuiNetwork.TestNet], value: SuiNetwork.TestNet }];
+		const baseNetworks = [
+			{ label: SuiNetworkLabel[SuiNetwork.TestNet], value: SuiNetwork.TestNet },
+		];
 
 		// Add localnet option in dev mode
 		if (isDevMode) {
-			baseNetworks.unshift({ label: SuiNetworkLabel[SuiNetwork.LocalNet], value: SuiNetwork.LocalNet });
+			baseNetworks.unshift({
+				label: SuiNetworkLabel[SuiNetwork.LocalNet],
+				value: SuiNetwork.LocalNet,
+			});
 		}
 
 		return baseNetworks;
@@ -62,7 +67,8 @@ function NetWorkOptions() {
 
 	const suiWalletNetworks: Option<SuiNetwork>[] = useMemo(() => networks, [networks]);
 
-	const currentNetwork = (network as SuiNetwork) || (isDevMode ? SuiNetwork.LocalNet : SuiNetwork.TestNet);
+	const currentNetwork =
+		(network as SuiNetwork) || (isDevMode ? SuiNetwork.LocalNet : SuiNetwork.TestNet);
 
 	return (
 		<SelectInput
@@ -121,7 +127,7 @@ function SuiWalletMobileView({ balance }: { balance: bigint }) {
 			</div>
 			<div className="flex w-full items-center justify-between gap-4">
 				<p>
-					Balance:{" "}
+					Balance:{' '}
 					<NumericFormat
 						displayType="text"
 						value={formatSUI(balance)}

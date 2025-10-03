@@ -1,12 +1,12 @@
-import { useCurrentAccount } from "@mysten/dapp-kit";
-import { createContext, useEffect, useRef, useState } from "react";
-import type { ReactNode } from "react";
-import { useXverseAddress } from "~/components/Wallet/XverseWallet/useXverseAddress";
-import { Wallets } from "~/components/Wallet";
+import { useCurrentAccount } from '@mysten/dapp-kit';
+import { createContext, useEffect, useRef, useState } from 'react';
+import type { ReactNode } from 'react';
+import { useXverseAddress } from '~/components/Wallet/XverseWallet/useXverseAddress';
+import { Wallets } from '~/components/Wallet';
 
 export enum Network {
-	MAINNET = "mainnet",
-	TESTNET = "testnet",
+	MAINNET = 'mainnet',
+	TESTNET = 'testnet',
 }
 
 interface ConnectedWallets {
@@ -76,9 +76,9 @@ export const ByieldWalletProvider = ({ children }: { children: ReactNode }) => {
 
 	useEffect(() => {
 		const updateModalVisibility = () => {
-			const modal = document.getElementById("sats-connect-wallet-provider-selector");
+			const modal = document.getElementById('sats-connect-wallet-provider-selector');
 			if (modal) {
-				modal.style.display = isModalHidden ? "none" : "block";
+				modal.style.display = isModalHidden ? 'none' : 'block';
 			}
 		};
 
@@ -137,7 +137,7 @@ export const ByieldWalletProvider = ({ children }: { children: ReactNode }) => {
 			<style>
 				{`
           #sats-connect-wallet-provider-selector {
-            display: ${isModalHidden ? "none !important" : "block"};
+            display: ${isModalHidden ? 'none !important' : 'block'};
           }
         `}
 			</style>

@@ -12,22 +12,22 @@ export function RegtestInstructions() {
 				obtain Bitcoin testnet tokens - often users have to buy them.
 			</p>
 			<p className="my-3">
-				To facilitate good user experience to test Native, we spinned a new Bitcoin network. However,
-				this requires wallet configuration that we explained below. The network we created has a
-				faster block time (2min instead of 10min)
+				To facilitate good user experience to test Native, we spinned a new Bitcoin network.
+				However, this requires wallet configuration that we explained below. The network we created
+				has a faster block time (2min instead of 10min)
 			</p>
 			<p className="my-3">
-				<strong>To get testnet tokens complete the setup</strong> below and copy your testnet address
-				AFTER and fill the{"  "}
-				{renderLink("form", "https://forms.gle/nxSr94kN4BiVpJpx6")} to get BTC.
+				<strong>To get testnet tokens complete the setup</strong> below and copy your testnet
+				address AFTER and fill the{'  '}
+				{renderLink('form', 'https://forms.gle/nxSr94kN4BiVpJpx6')} to get BTC.
 			</p>
 
 			<ul className="list-inside list-decimal space-y-3 text-base">
 				<li>
 					{renderLink(
-						"Install Xverse Wallet:",
-						"https://chromewebstore.google.com/detail/xverse-bitcoin-crypto-wal/idnnbdplmphpflfnlkomgpfbpcgelopg?pli=1",
-					)}{" "}
+						'Install Xverse Wallet:',
+						'https://chromewebstore.google.com/detail/xverse-bitcoin-crypto-wal/idnnbdplmphpflfnlkomgpfbpcgelopg?pli=1',
+					)}{' '}
 					XXDownload and install the Xverse wallet extension for your browser
 				</li>
 				<li>

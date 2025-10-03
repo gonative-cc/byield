@@ -1,8 +1,8 @@
-import { describe, test, expect, beforeEach, afterEach, vi, beforeAll, afterAll } from "vitest";
-import { Miniflare } from "miniflare";
-import type { User } from "./types";
+import { describe, test, expect, beforeEach, afterEach, vi, beforeAll, afterAll } from 'vitest';
+import { Miniflare } from 'miniflare';
+import type { User } from './types';
 
-import { Auction, addDynamicBadges } from "./auction.server";
+import { Auction, addDynamicBadges } from './auction.server';
 
 interface AmountBids {
 	amount: number;
@@ -21,25 +21,25 @@ function toAB(amount: number, bids: number) {
 	return { amount, bids };
 }
 
-describe("Auction Class with Tuple Error Handling", () => {
+describe('Auction Class with Tuple Error Handling', () => {
 	let worker: Miniflare;
 	let auction: Auction;
 
-	const timeBefore = new Date("2024-08-18T17:00:00");
-	const timeStart = new Date("2025-08-18T18:00:00");
-	const timeEnd = new Date("2025-08-18T19:00:00");
-	const now = new Date("2025-08-18T18:50:15");
+	const timeBefore = new Date('2024-08-18T17:00:00');
+	const timeStart = new Date('2025-08-18T18:00:00');
+	const timeEnd = new Date('2025-08-18T19:00:00');
+	const now = new Date('2025-08-18T18:50:15');
 	const minBid = 100;
 	const auctionSize = 4;
 
-	const alice = "alice";
+	const alice = 'alice';
 	const users = {
 		alice,
-		bob: "bob",
-		charl: "charl",
-		dylan: "dylan",
-		eve: "eve",
-		felix: "felix",
+		bob: 'bob',
+		charl: 'charl',
+		dylan: 'dylan',
+		eve: 'eve',
+		felix: 'felix',
 	};
 	const b_1_16 = [1, 2, 3, 4, 5, 6, 15, 16];
 	const b_2_16 = [2, 3, 4, 5, 6, 15, 16];
@@ -47,14 +47,14 @@ describe("Auction Class with Tuple Error Handling", () => {
 	const b_3_20 = [3, 4, 5, 6, 15, 16, 20];
 	const b_1_20 = [1, ...b_2_20];
 
-	const note = "Going for the win!";
+	const note = 'Going for the win!';
 
 	beforeAll(async () => {
 		worker = new Miniflare({
 			modules: true,
-			script: "",
-			kvNamespaces: ["KV"],
-			d1Databases: ["DB"],
+			script: '',
+			kvNamespaces: ['KV'],
+			d1Databases: ['DB'],
 			kvPersist: false,
 			d1Persist: false,
 			cachePersist: false,
@@ -67,8 +67,8 @@ describe("Auction Class with Tuple Error Handling", () => {
 
 	beforeEach(async () => {
 		vi.useFakeTimers();
-		const db = await worker.getD1Database("DB");
-		await db.exec("DROP TABLE IF EXISTS bids; DROP TABLE IF EXISTS stats;");
+		const db = await worker.getD1Database('DB');
+		await db.exec('DROP TABLE IF EXISTS bids; DROP TABLE IF EXISTS stats;');
 
 		// Setting auction window around the user's provided time for context
 		vi.setSystemTime(now);
@@ -80,8 +80,8 @@ describe("Auction Class with Tuple Error Handling", () => {
 		vi.useRealTimers();
 	});
 
-	describe("Initialization", () => {
-		test("initialize and stats", async () => {
+	describe('Initialization', () => {
+		test('initialize and stats', async () => {
 			// The auction is initialized in beforeEach, we can re-initialize to test
 			// await expect(auction.initialize()).resolves.toBeUndefined();
 
@@ -91,7 +91,7 @@ describe("Auction Class with Tuple Error Handling", () => {
 		});
 	});
 
-	test("queryBidder-insertBidder", async () => {
+	test('queryBidder-insertBidder', async () => {
 		let b = await auction.getBidder(alice);
 		expect(b).toBeNull();
 
@@ -115,25 +115,25 @@ describe("Auction Class with Tuple Error Handling", () => {
 		l = await auction.getTopLeaderboard();
 		const badges = [1, 2, 3, 4, 5, 6];
 		// bids is zero because we manually insert
-		expect(l).toEqual([{ amount: 200, badges, bidder: "bob", note: null, rank: 1, bids: 0 }]);
+		expect(l).toEqual([{ amount: 200, badges, bidder: 'bob', note: null, rank: 1, bids: 0 }]);
 	});
 
-	describe("bid", () => {
-		test("successful bid", async () => {
-			let [res, err] = await auction.bid(alice, minBid, now.getTime(), "Success!");
+	describe('bid', () => {
+		test('successful bid', async () => {
+			let [res, err] = await auction.bid(alice, minBid, now.getTime(), 'Success!');
 			expect(err).toBeNull();
 			expect(res).toEqual({ oldRank: null, newRank: 1 });
 			let bidder = await auction.getBidder(alice);
 			expect(extractAB(bidder)).toEqual(toAB(minBid, 1));
 
-			[res, err] = await auction.bid(alice, 101, now.getTime(), "Success2!");
+			[res, err] = await auction.bid(alice, 101, now.getTime(), 'Success2!');
 			expect(err).toBeNull();
 			expect(res).toEqual({ oldRank: 1, newRank: 1 });
 			bidder = await auction.getBidder(alice);
-			expect(bidder?.note).toEqual("Success2!");
+			expect(bidder?.note).toEqual('Success2!');
 			expect(extractAB(bidder)).toEqual(toAB(101, 2));
 
-			[res, err] = await auction.bid(alice, 102, now.getTime(), ""); // no note
+			[res, err] = await auction.bid(alice, 102, now.getTime(), ''); // no note
 			expect(err).toBeNull();
 
 			const l = await auction.getTopLeaderboard();
@@ -141,8 +141,8 @@ describe("Auction Class with Tuple Error Handling", () => {
 				{
 					amount: 102,
 					badges: [...b_1_20, 24],
-					bidder: "alice",
-					note: "Success2!",
+					bidder: 'alice',
+					note: 'Success2!',
 					rank: 1,
 					bids: 3,
 				},
@@ -160,7 +160,7 @@ describe("Auction Class with Tuple Error Handling", () => {
 			expect(r[0].results[0]).toEqual({ uniqueBidders: 11 });
 		});
 
-		test("error: subsequent bid too low", async () => {
+		test('error: subsequent bid too low', async () => {
 			// first bid OK
 			const firstBid = minBid * 2;
 			let [res, err] = await auction.bid(alice, firstBid, now.getTime());
@@ -169,11 +169,11 @@ describe("Auction Class with Tuple Error Handling", () => {
 
 			[res, err] = await auction.bid(alice, firstBid, now.getTime());
 			expect(err).toBeInstanceOf(Error);
-			expect(err?.message).toContain("must be greater than the previous effective bid");
+			expect(err?.message).toContain('must be greater than the previous effective bid');
 
 			[res, err] = await auction.bid(alice, firstBid - 1, now.getTime());
 			expect(err).toBeInstanceOf(Error);
-			expect(err?.message).toContain("must be greater than the previous effective bid");
+			expect(err?.message).toContain('must be greater than the previous effective bid');
 
 			// data shouldn't change
 			const bidder = await auction.getBidder(alice);
@@ -181,49 +181,41 @@ describe("Auction Class with Tuple Error Handling", () => {
 				amount: firstBid,
 				badges: b_1_20,
 				bids: 1,
-				note: "",
+				note: '',
 				rank: 1,
 				wlStatus: 0,
 			});
 		});
 
-		test("error: auction has not started", async () => {
-			const [result, error] = await auction.bid(
-				alice,
-				minBid,
-				auction.startDate.getTime() - 1,
-			);
+		test('error: auction has not started', async () => {
+			const [result, error] = await auction.bid(alice, minBid, auction.startDate.getTime() - 1);
 
 			expect(result).toBeNull();
 			expect(error).toBeInstanceOf(Error);
-			expect(error?.message).toBe("Auction has not started yet.");
+			expect(error?.message).toBe('Auction has not started yet.');
 			const bidder = await auction.getBidder(alice);
 			expect(bidder).toBeNull();
 		});
 
-		test("error: auction has ended", async () => {
-			const [result, error] = await auction.bid(
-				"user1",
-				minBid,
-				auction.endDate.getTime() + 1,
-			);
+		test('error: auction has ended', async () => {
+			const [result, error] = await auction.bid('user1', minBid, auction.endDate.getTime() + 1);
 
 			expect(result).toBeNull();
 			expect(error).toBeInstanceOf(Error);
-			expect(error?.message).toBe("Auction has already ended.");
+			expect(error?.message).toBe('Auction has already ended.');
 		});
 
-		test("boost", async () => {
+		test('boost', async () => {
 			const r = await auction._insertBidder(alice, 0, now, 2);
 			expect(r.success, r.error).toBeTruthy();
 
-			let [res, err] = await auction.bid(alice, minBid, now.getTime(), "Success!");
+			let [res, err] = await auction.bid(alice, minBid, now.getTime(), 'Success!');
 			expect(err).toBeNull();
 			expect(res).toEqual({ oldRank: null, newRank: 1 });
 			const b = await auction.getBidder(alice);
 			expect(b?.amount).toEqual(minBid * 1.05);
 
-			[res, err] = await auction.bid(alice, 1000, now.getTime(), "Success!");
+			[res, err] = await auction.bid(alice, 1000, now.getTime(), 'Success!');
 			expect(err).toBeNull();
 			expect(res).toEqual({ oldRank: 1, newRank: 1 });
 
@@ -232,8 +224,8 @@ describe("Auction Class with Tuple Error Handling", () => {
 		});
 	});
 
-	describe("Full Auction Flow with Tuple Handling", () => {
-		test("should correctly handle the auction lifecycle", async () => {
+	describe('Full Auction Flow with Tuple Handling', () => {
+		test('should correctly handle the auction lifecycle', async () => {
 			// 1. BIDDING PHASE - successful bids
 			let [res, err] = await auction.bid(users.alice, 600, now.getTime(), note);
 			expect(res).toEqual({ oldRank: null, newRank: 1 });
@@ -253,10 +245,10 @@ describe("Auction Class with Tuple Error Handling", () => {
 						amount: 700,
 						bidder: users.bob,
 						badges: [...b_1_16, 26],
-						note: "",
+						note: '',
 					},
 					{ rank: 2, bids: 1, amount: 600, bidder: users.alice, badges: b_2_16, note },
-					{ rank: 3, bids: 1, amount: 500, bidder: "charl", badges: b_2_20, note: "" },
+					{ rank: 3, bids: 1, amount: 500, bidder: 'charl', badges: b_2_20, note: '' },
 				],
 			});
 
@@ -287,8 +279,8 @@ describe("Auction Class with Tuple Error Handling", () => {
 
 			// 3. AUCTION ENDS
 			auction.endDate = timeBefore;
-			[res, err] = await auction.bid("another_user", 900, now.getTime());
-			expect(err?.message).toBe("Auction has already ended.");
+			[res, err] = await auction.bid('another_user', 900, now.getTime());
+			expect(err?.message).toBe('Auction has already ended.');
 			expect(res).toBeNull();
 
 			// 4. RESULTS VERIFICATION
@@ -308,7 +300,7 @@ describe("Auction Class with Tuple Error Handling", () => {
 						amount: 800,
 						bidder: users.charl,
 						badges: [1, 2, 3, 4, 5, 6, 15, 16, 23, 26], // TODO: dup
-						note: "",
+						note: '',
 					},
 					{
 						rank: 2,
@@ -316,7 +308,7 @@ describe("Auction Class with Tuple Error Handling", () => {
 						amount: 750,
 						bidder: users.bob,
 						badges: [...b_2_16, 24, 26],
-						note: "",
+						note: '',
 					},
 					{
 						rank: 3,
@@ -324,7 +316,7 @@ describe("Auction Class with Tuple Error Handling", () => {
 						amount: 600,
 						bidder: users.alice,
 						badges: b_2_16,
-						note: "Going for the win!",
+						note: 'Going for the win!',
 					},
 					{
 						rank: 4,
@@ -332,7 +324,7 @@ describe("Auction Class with Tuple Error Handling", () => {
 						amount: 320,
 						bidder: users.eve,
 						badges: b_3_20,
-						note: "",
+						note: '',
 					},
 					{
 						rank: 5,
@@ -340,7 +332,7 @@ describe("Auction Class with Tuple Error Handling", () => {
 						amount: 310,
 						bidder: users.dylan,
 						badges: b_3_16,
-						note: "",
+						note: '',
 					},
 					{
 						rank: 6,
@@ -348,7 +340,7 @@ describe("Auction Class with Tuple Error Handling", () => {
 						amount: 300,
 						bidder: users.felix,
 						badges: b_3_16,
-						note: "",
+						note: '',
 					},
 				],
 			});
@@ -357,12 +349,12 @@ describe("Auction Class with Tuple Error Handling", () => {
 		});
 	});
 
-	describe("badges", () => {
-		test("dynamic add", () => {
+	describe('badges', () => {
+		test('dynamic add', () => {
 			const charl = {
 				amount: 800,
 				badges: [15, 16, 26],
-				note: "",
+				note: '',
 				wlStatus: 0,
 				bids: 2,
 				rank: 1,

@@ -1,9 +1,9 @@
-import { isValidSuiAddress } from "@mysten/sui/utils";
-import { type IndexerTransaction, type MintTransaction } from "./types";
-import type { QueryMintTxResp, Req } from "./jsonrpc";
-import type { BitcoinNetworkType } from "sats-connect";
-import { mustGetBitcoinConfig } from "~/hooks/useBitcoinConfig";
-import { badRequest, serverError, notFound } from "../http-resp";
+import { isValidSuiAddress } from '@mysten/sui/utils';
+import { type IndexerTransaction, type MintTransaction } from './types';
+import type { QueryMintTxResp, Req } from './jsonrpc';
+import type { BitcoinNetworkType } from 'sats-connect';
+import { mustGetBitcoinConfig } from '~/hooks/useBitcoinConfig';
+import { badRequest, serverError, notFound } from '../http-resp';
 
 export default class Controller {
 	btcRPCUrl: string | null = null;
@@ -41,19 +41,19 @@ export default class Controller {
 			const mintTxs: MintTransaction[] = data.map((tx) => this.convertIndexerTransaction(tx));
 			return mintTxs;
 		} catch (error) {
-			console.error({ msg: "Failed to fetch the mint txs", error, url: this.indexerBaseUrl });
+			console.error({ msg: 'Failed to fetch the mint txs', error, url: this.indexerBaseUrl });
 			return serverError();
 		}
 	}
 
 	private async queryUTXOs(address: string) {
 		const rpcUrl = `${this.btcRPCUrl}/address/${encodeURIComponent(address)}/utxo`;
-		console.trace({ msg: "Querying nBTCUTXOs", address });
+		console.trace({ msg: 'Querying nBTCUTXOs', address });
 		const rpcResponse = await fetch(rpcUrl);
 		if (!rpcResponse.ok) {
 			const error = await rpcResponse.text();
 			console.error({
-				msg: "Bitcoin RPC responded with error",
+				msg: 'Bitcoin RPC responded with error',
 				status: rpcResponse.status,
 				error,
 				rpcUrl,
@@ -64,7 +64,7 @@ export default class Controller {
 		return new Response(rpcResponse.body, {
 			status: rpcResponse.status,
 			headers: {
-				"Content-Type": rpcResponse.headers.get("content-type") ?? "application/json",
+				'Content-Type': rpcResponse.headers.get('content-type') ?? 'application/json',
 			},
 		});
 	}
@@ -87,7 +87,7 @@ export default class Controller {
 			}
 			return await response.text();
 		} catch (error) {
-			console.error({ msg: "Error fetching tx hex:", error });
+			console.error({ msg: 'Error fetching tx hex:', error });
 			return serverError();
 		}
 	}
@@ -100,7 +100,7 @@ export default class Controller {
 			}
 			const url = this.indexerBaseUrl + `/nbtc`;
 			const response = await fetch(url, {
-				method: "POST",
+				method: 'POST',
 				body: JSON.stringify({
 					txHex,
 				}),
@@ -113,7 +113,7 @@ export default class Controller {
 			}
 			return response;
 		} catch (error) {
-			console.error({ msg: "Error posting tx hex:", error });
+			console.error({ msg: 'Error posting tx hex:', error });
 			return serverError();
 		}
 	}
@@ -123,21 +123,21 @@ export default class Controller {
 		try {
 			reqData = await r.json<Req>();
 		} catch (_err) {
-			console.error({ msg: "Expecting JSON Content-Type and JSON body", error: _err });
-			return new Response("Expecting JSON Content-Type and JSON body", {
+			console.error({ msg: 'Expecting JSON Content-Type and JSON body', error: _err });
+			return new Response('Expecting JSON Content-Type and JSON body', {
 				status: 400,
 			});
 		}
 
 		switch (reqData.method) {
-			case "queryMintTx":
+			case 'queryMintTx':
 				return this.getMintTxs(reqData.params[1]);
-			case "postNBTCTx":
+			case 'postNBTCTx':
 				return this.postNBTCTx(reqData.params[1]);
-			case "queryUTXOs":
+			case 'queryUTXOs':
 				return this.queryUTXOs(reqData.params[1]);
 			default:
-				return notFound("Unknown method");
+				return notFound('Unknown method');
 		}
 	}
 }

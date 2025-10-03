@@ -1,13 +1,13 @@
-import { useContext, useEffect } from "react";
-import { WalletContext } from "~/providers/ByieldWalletProvider";
-import { Wallets } from "~/components/Wallet";
-import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
-import { NBTCBalance } from "~/components/NBTCBalance";
-import { Instructions } from "./Instructions";
-import { BuyNBTCTabContent } from "./BuyNBTCTabContent";
-import { SellNBTCTabContent } from "./SellNBTCTabContent";
-import { ArrowUpRight } from "lucide-react";
-import { useDisconnectWallet, useSuiClientContext } from "@mysten/dapp-kit";
+import { useContext, useEffect } from 'react';
+import { WalletContext } from '~/providers/ByieldWalletProvider';
+import { Wallets } from '~/components/Wallet';
+import { useCoinBalance } from '~/components/Wallet/SuiWallet/useBalance';
+import { NBTCBalance } from '~/components/NBTCBalance';
+import { Instructions } from './Instructions';
+import { BuyNBTCTabContent } from './BuyNBTCTabContent';
+import { SellNBTCTabContent } from './SellNBTCTabContent';
+import { ArrowUpRight } from 'lucide-react';
+import { useDisconnectWallet, useSuiClientContext } from '@mysten/dapp-kit';
 
 export function BuyNBTC() {
 	const { network } = useSuiClientContext();
@@ -21,7 +21,7 @@ export function BuyNBTC() {
 
 	// TODO: remove this after auction. enforce network change
 	// TODO: use wallet API to switch the network
-	const isMainnet = network === "mainnet";
+	const isMainnet = network === 'mainnet';
 	useEffect(() => {
 		if (isMainnet) {
 			disconnect();
@@ -31,7 +31,7 @@ export function BuyNBTC() {
 	return (
 		<div className="flex flex-col items-center gap-8 px-2 pt-2">
 			<p className="max-w-96 text-center text-2xl font-semibold md:text-3xl">
-				Native enables <span className="text-primary text-2xl md:text-3xl">BTCFi</span> in the{" "}
+				Native enables <span className="text-primary text-2xl md:text-3xl">BTCFi</span> in the{' '}
 				<span className="text-primary text-2xl md:text-3xl">Web3 native</span> way!
 			</p>
 			<div className="card w-full max-w-lg">
@@ -70,11 +70,11 @@ const renderTabHeader = (title: string, checked = false) => (
 
 const BuyNBTCTabs = () => (
 	<div className="tabs tabs-boxed rounded-full p-1">
-		{renderTabHeader("Buy", true)}
+		{renderTabHeader('Buy', true)}
 		<div className="tab-content py-6">
 			<BuyNBTCTabContent />
 		</div>
-		{renderTabHeader("Sell")}
+		{renderTabHeader('Sell')}
 		<div className="tab-content py-6">
 			<SellNBTCTabContent />
 		</div>

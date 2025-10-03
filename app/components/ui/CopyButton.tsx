@@ -1,5 +1,5 @@
-import { Check, Copy } from "lucide-react";
-import { useState } from "react";
+import { Check, Copy } from 'lucide-react';
+import { useState } from 'react';
 
 interface CopyButtonProps {
 	text: string;
@@ -14,12 +14,12 @@ export function CopyButton({ text }: CopyButtonProps) {
 			setCopied(true);
 			setTimeout(() => setCopied(false), 2000);
 		} catch (err) {
-			console.error("Failed to copy text: ", err);
+			console.error('Failed to copy text: ', err);
 		}
 	};
 
 	return (
-		<button onClick={handleCopy} className={"hover:bg-primary/10"}>
+		<button onClick={handleCopy} className={'hover:bg-primary/10'}>
 			{copied ? (
 				<Check className="text-green-500" size={16} />
 			) : (

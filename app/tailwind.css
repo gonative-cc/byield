@@ -1,26 +1,26 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 @plugin "daisyui";
 
 @plugin 'tailwindcss-animate';
 
 /* TODO: remove this when react daisy component is integrated */
 @theme {
-  --font-sans:
-    Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji,
-    Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
-  --color-azure-10: rgba(19, 23, 32, 1);
-  --color-azure-15: rgba(31, 36, 47, 1);
-  --color-azure-20: rgba(12, 17, 29, 1);
-  --color-azure-25: rgba(18, 25, 42, 1);
+	--font-sans:
+		Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol,
+		Noto Color Emoji;
+	--color-azure-10: rgba(19, 23, 32, 1);
+	--color-azure-15: rgba(31, 36, 47, 1);
+	--color-azure-20: rgba(12, 17, 29, 1);
+	--color-azure-25: rgba(18, 25, 42, 1);
 
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
-  --color-primary-foreground: var(--primary-foreground);
-  --color-muted-foreground: rgba(165, 165, 165, 1);
+	--color-background: hsl(var(--background));
+	--color-foreground: hsl(var(--foreground));
+	--color-primary-foreground: var(--primary-foreground);
+	--color-muted-foreground: rgba(165, 165, 165, 1);
 
-  --foreground: 0 0% 98%;
-  --muted: rgba(40, 40, 40, 1);
-  --destructive: rgba(208, 4, 22, 1);
+	--foreground: 0 0% 98%;
+	--muted: rgba(40, 40, 40, 1);
+	--destructive: rgba(208, 4, 22, 1);
 }
 
 /*
@@ -32,165 +32,160 @@
 */
 
 @plugin "daisyui/theme" {
-  name: "byield-theme";
-  default: true;
-  prefersdark: true;
-  color-scheme: "dark";
-  --color-primary: oklch(0.6879 0.1613 53.85);
-  --color-base-100: oklch(12% 0.042 264.695);
-  --color-base-200: oklch(20% 0.042 265.755);
-  --color-base-300: oklch(27% 0.041 260.031);
-  --color-base-content: oklch(96% 0.007 247.896);
-  --color-primary-content: var(--primary-foreground);
-  --color-secondary: oklch(0% 0 0);
-  --color-secondary-content: oklch(100% 0 0);
-  --color-accent: rgba(39, 39, 42, 1);
-  --color-accent-content: oklch(97% 0.013 17.38);
-  --color-neutral: oklch(12% 0.042 264.695);
-  --color-neutral-content: oklch(98% 0.003 247.858);
-  --color-info: oklch(70% 0.165 254.624);
-  --color-info-content: oklch(28% 0.091 267.935);
-  --color-success: oklch(79% 0.209 151.711);
-  --color-success-content: oklch(26% 0.065 152.934);
-  --color-warning: oklch(82% 0.189 84.429);
-  --color-warning-content: oklch(27% 0.077 45.635);
-  --color-error: oklch(50% 0.213 27.518);
-  --color-error-content: oklch(97% 0.013 17.38);
-  --radius-selector: 1rem;
-  --radius-field: 0.5rem;
-  --radius-box: 1rem;
-  --size-selector: 0.25rem;
-  --size-field: 0.25rem;
-  --border: 1px;
-  --depth: 0;
-  --noise: 0;
+	name: 'byield-theme';
+	default: true;
+	prefersdark: true;
+	color-scheme: 'dark';
+	--color-primary: oklch(0.6879 0.1613 53.85);
+	--color-base-100: oklch(12% 0.042 264.695);
+	--color-base-200: oklch(20% 0.042 265.755);
+	--color-base-300: oklch(27% 0.041 260.031);
+	--color-base-content: oklch(96% 0.007 247.896);
+	--color-primary-content: var(--primary-foreground);
+	--color-secondary: oklch(0% 0 0);
+	--color-secondary-content: oklch(100% 0 0);
+	--color-accent: rgba(39, 39, 42, 1);
+	--color-accent-content: oklch(97% 0.013 17.38);
+	--color-neutral: oklch(12% 0.042 264.695);
+	--color-neutral-content: oklch(98% 0.003 247.858);
+	--color-info: oklch(70% 0.165 254.624);
+	--color-info-content: oklch(28% 0.091 267.935);
+	--color-success: oklch(79% 0.209 151.711);
+	--color-success-content: oklch(26% 0.065 152.934);
+	--color-warning: oklch(82% 0.189 84.429);
+	--color-warning-content: oklch(27% 0.077 45.635);
+	--color-error: oklch(50% 0.213 27.518);
+	--color-error-content: oklch(97% 0.013 17.38);
+	--radius-selector: 1rem;
+	--radius-field: 0.5rem;
+	--radius-box: 1rem;
+	--size-selector: 0.25rem;
+	--size-field: 0.25rem;
+	--border: 1px;
+	--depth: 0;
+	--noise: 0;
 }
 
 @layer components {
-  .card {
-    @apply bg-base-200;
-  }
+	.card {
+		@apply bg-base-200;
+	}
 }
 
 @layer utilities {
-  html,
-  body {
-    scrollbar-color: auto;
-  }
+	html,
+	body {
+		scrollbar-color: auto;
+	}
 }
 
 @layer base {
-  * {
-    @apply border-gray-800;
-  }
+	* {
+		@apply border-gray-800;
+	}
 }
 
 @keyframes scroll-rtl {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
+	0% {
+		transform: translateX(0);
+	}
+	100% {
+		transform: translateX(-50%);
+	}
 }
 
 .animate-scroll-rtl {
-  animation: scroll-rtl 40s linear infinite;
-  width: max-content;
+	animation: scroll-rtl 40s linear infinite;
+	width: max-content;
 }
 
 @keyframes pulse-glow {
-  0%,
-  100% {
-    box-shadow: 0 0 20px rgba(229, 122, 33, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 30px rgba(229, 122, 33, 0.6);
-  }
+	0%,
+	100% {
+		box-shadow: 0 0 20px rgba(229, 122, 33, 0.3);
+	}
+	50% {
+		box-shadow: 0 0 30px rgba(229, 122, 33, 0.6);
+	}
 }
 
 .animate-pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
+	animation: pulse-glow 2s ease-in-out infinite;
 }
 
 @keyframes float {
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
+	0%,
+	100% {
+		transform: translateY(0px);
+	}
+	50% {
+		transform: translateY(-10px);
+	}
 }
 
 .animate-float {
-  animation: float 3s ease-in-out infinite;
+	animation: float 3s ease-in-out infinite;
 }
 
 @keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
+	0% {
+		background-position: -200% 0;
+	}
+	100% {
+		background-position: 200% 0;
+	}
 }
 
 .animate-shimmer {
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(229, 122, 33, 0.4),
-    transparent
-  );
-  background-size: 200% 100%;
-  animation: shimmer 2s infinite;
+	background: linear-gradient(90deg, transparent, rgba(229, 122, 33, 0.4), transparent);
+	background-size: 200% 100%;
+	animation: shimmer 2s infinite;
 }
 
 @keyframes flash {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.7;
+	}
 }
 
 .animate-flash {
-  animation: flash 3s ease-in-out infinite;
+	animation: flash 3s ease-in-out infinite;
 }
 
 a,
 button {
-  cursor: pointer;
+	cursor: pointer;
 }
 
 a.link-raw {
-  @apply hover:underline;
+	@apply hover:underline;
 }
 
 /* Smooth scrolling for better UX */
 html {
-  scroll-behavior: smooth;
+	scroll-behavior: smooth;
 }
 
 /* Custom scrollbar styling */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+	width: 8px;
+	height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-azure-20);
-  border-radius: 4px;
+	background: var(--color-azure-20);
+	border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-primary);
-  border-radius: 4px;
+	background: var(--color-primary);
+	border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(238, 132, 44, 1);
+	background: rgba(238, 132, 44, 1);
 }

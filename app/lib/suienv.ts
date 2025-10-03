@@ -2,12 +2,12 @@ import type {
 	SuiClient,
 	SuiTransactionBlockResponse,
 	SuiTransactionBlockResponseOptions,
-} from "@mysten/sui/client";
-import type { Transaction } from "@mysten/sui/transactions";
-import type { ContractsCfg } from "~/config/sui/contracts-config";
+} from '@mysten/sui/client';
+import type { Transaction } from '@mysten/sui/transactions';
+import type { ContractsCfg } from '~/config/sui/contracts-config';
 
 // Std Sui object addresses
-export const SUI_RANDOM_OBJECT_ID = "0x8";
+export const SUI_RANDOM_OBJECT_ID = '0x8';
 
 export type TxSigner = ({ transaction }: { transaction: Transaction }) => Promise<{
 	bytes: string;
@@ -50,7 +50,7 @@ export function mkSuiVisionUrl(objectId: string, cfg: ContractsCfg): string {
  * Creates a Walrus image URL, handling both full URLs and blob IDs
  */
 export function mkWalrusImageUrl(imageUrl: string): string {
-	if (imageUrl.startsWith("http")) {
+	if (imageUrl.startsWith('http')) {
 		return imageUrl;
 	}
 	return `https://walrus.tusky.io/${imageUrl}`;

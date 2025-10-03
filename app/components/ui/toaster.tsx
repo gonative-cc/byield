@@ -1,30 +1,30 @@
-import { useToast } from "~/hooks/use-toast";
-import { CircleX, Info, TriangleAlert } from "lucide-react";
-import { cva } from "class-variance-authority";
+import { useToast } from '~/hooks/use-toast';
+import { CircleX, Info, TriangleAlert } from 'lucide-react';
+import { cva } from 'class-variance-authority';
 
-const toastVariants = cva("alert", {
+const toastVariants = cva('alert', {
 	variants: {
 		variant: {
-			default: "alert-success",
-			info: "alert-info",
-			destructive: "alert-error",
-			warning: "alert-warning",
+			default: 'alert-success',
+			info: 'alert-info',
+			destructive: 'alert-error',
+			warning: 'alert-warning',
 		},
 	},
 	defaultVariants: {
-		variant: "default",
+		variant: 'default',
 	},
 });
 
 interface ToastIconProps {
-	variant: "default" | "destructive" | "warning" | "info" | null | undefined;
+	variant: 'default' | 'destructive' | 'warning' | 'info' | null | undefined;
 }
 
 function ToastIcon({ variant }: ToastIconProps) {
 	switch (variant) {
-		case "destructive":
+		case 'destructive':
 			return <CircleX />;
-		case "warning":
+		case 'warning':
 			return <TriangleAlert />;
 		default:
 			return <Info />;

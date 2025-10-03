@@ -1,33 +1,37 @@
-import { useState, useEffect } from "react";
-import { ExternalLink } from "lucide-react";
-import { Transaction } from "@mysten/sui/transactions";
-import type { SuiClient } from "@mysten/sui/client";
-import { Network } from "@mysten/kiosk";
+import { useState, useEffect } from 'react';
+import { ExternalLink } from 'lucide-react';
+import { Transaction } from '@mysten/sui/transactions';
+import type { SuiClient } from '@mysten/sui/client';
+import { Network } from '@mysten/kiosk';
 import {
 	useSignAndExecuteTransaction,
 	useSuiClientContext,
 	useCurrentAccount,
 	useSignTransaction,
-} from "@mysten/dapp-kit";
-import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
+} from '@mysten/dapp-kit';
+import { SUI_CLOCK_OBJECT_ID } from '@mysten/sui/utils';
 
-import { Countdown } from "~/components/ui/countdown";
-import { classNames, primaryHeadingClasses } from "~/util/tailwind";
-import { toast } from "~/hooks/use-toast";
-import { useNetworkVariables } from "~/networkConfig";
-import { AuctionAccountType, type AuctionInfo, type User } from "~/server/BeelieversAuction/types";
-import { signAndExecTx, SUI_RANDOM_OBJECT_ID, mkSuiVisionUrl } from "~/lib/suienv";
-import { formatSUI } from "~/lib/denoms";
-import { parseTxError, formatSuiErr } from "~/lib/suierr";
-import type { BeelieversAuctionCfg, BeelieversMintCfg, ContractsCfg } from "~/config/sui/contracts-config";
-import { moveCallTarget } from "~/config/sui/contracts-config";
-import { delay } from "~/lib/batteries";
+import { Countdown } from '~/components/ui/countdown';
+import { classNames, primaryHeadingClasses } from '~/util/tailwind';
+import { toast } from '~/hooks/use-toast';
+import { useNetworkVariables } from '~/networkConfig';
+import { AuctionAccountType, type AuctionInfo, type User } from '~/server/BeelieversAuction/types';
+import { signAndExecTx, SUI_RANDOM_OBJECT_ID, mkSuiVisionUrl } from '~/lib/suienv';
+import { formatSUI } from '~/lib/denoms';
+import { parseTxError, formatSuiErr } from '~/lib/suierr';
+import type {
+	BeelieversAuctionCfg,
+	BeelieversMintCfg,
+	ContractsCfg,
+} from '~/config/sui/contracts-config';
+import { moveCallTarget } from '~/config/sui/contracts-config';
+import { delay } from '~/lib/batteries';
 
-import { NftDisplay, findExistingNft, findNftInTxResult, queryNftFromKiosk } from "./nft";
-import type { KioskInfo } from "./kiosk";
-import { initializeKioskInfo, createKiosk } from "./kiosk";
-import { LoadingSpinner } from "~/components/LoadingSpinner";
-import { cardShowcaseClasses, cn, primaryBadgeClasses } from "~/util/tailwind";
+import { NftDisplay, findExistingNft, findNftInTxResult, queryNftFromKiosk } from './nft';
+import type { KioskInfo } from './kiosk';
+import { initializeKioskInfo, createKiosk } from './kiosk';
+import { LoadingSpinner } from '~/components/LoadingSpinner';
+import { cardShowcaseClasses, cn, primaryBadgeClasses } from '~/util/tailwind';
 
 interface MintInfoItemProps {
 	title: string;
@@ -39,8 +43,8 @@ function MintInfoItem({ title, value, isLastItem = false }: MintInfoItemProps) {
 	return (
 		<div
 			className={classNames({
-				"border-primary/20 flex items-center justify-between py-2": true,
-				"border-b": !isLastItem,
+				'border-primary/20 flex items-center justify-between py-2': true,
+				'border-b': !isLastItem,
 			})}
 		>
 			<span className="text-muted-foreground text-base font-medium">{title}</span>
@@ -53,7 +57,7 @@ const createNftSuccessToast = (nftId: string, contractsConfig: ContractsCfg) => 
 	const suiVisionUrl = mkSuiVisionUrl(nftId, contractsConfig);
 
 	return {
-		title: "Minting Successful! 🎉",
+		title: 'Minting Successful! 🎉',
 		description: (
 			<div className="space-y-2">
 				<p>Successfully minted Beeliever NFT</p>
@@ -84,7 +88,8 @@ interface MintActionProps {
 function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }: MintActionProps) {
 	const contractsConfig = useNetworkVariables();
 	const { beelieversAuction, beelieversMint } = contractsConfig;
-	const { mutate: signAndExecTxAction, isPending: isRefundPending } = useSignAndExecuteTransaction();
+	const { mutate: signAndExecTxAction, isPending: isRefundPending } =
+		useSignAndExecuteTransaction();
 	const { mutateAsync: signTransaction } = useSignTransaction();
 	const { network, client } = useSuiClientContext();
 	const account = useCurrentAccount();
@@ -98,7 +103,12 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 		try {
 			setIsMinting(true);
 			if (!minterKiosk) {
-				minterKiosk = await createKiosk(account.address, client, network as Network, signTransaction);
+				minterKiosk = await createKiosk(
+					account.address,
+					client,
+					network as Network,
+					signTransaction,
+				);
 				setKiosk(minterKiosk);
 			}
 			kioskId = minterKiosk.kioskId;
@@ -106,12 +116,12 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 
 			const tx = createMintTx(kioskId, kioskCapId, beelieversMint, beelieversAuction.auctionId);
 
-			toast({ title: "Minting NFT", variant: "info" });
+			toast({ title: 'Minting NFT', variant: 'info' });
 
 			const result = await signAndExecTx(tx, client, signTransaction);
-			console.log(">>> Mint tx:", result.digest);
+			console.log('>>> Mint tx:', result.digest);
 			if (result.errors) {
-				console.error(">>> Mint FAILED", result.errors);
+				console.error('>>> Mint FAILED', result.errors);
 			}
 
 			const nftId = findNftInTxResult(result);
@@ -121,27 +131,27 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 				setNftId(nftId);
 				toast(createNftSuccessToast(nftId, contractsConfig));
 			} else {
-				console.log("nft not found in tx result, checking querying indexer with kiosk");
+				console.log('nft not found in tx result, checking querying indexer with kiosk');
 				const nftFromKiosk = await queryNftFromKiosk(kioskId, beelieversMint.pkgId, client);
 				if (nftFromKiosk) {
 					setNftId(nftFromKiosk);
 					toast(createNftSuccessToast(nftFromKiosk, contractsConfig));
 				} else {
 					toast({
-						title: "Minting Successful",
-						description: "Successfully minted Beeliever NFT. Check explorer to find your NFT",
+						title: 'Minting Successful',
+						description: 'Successfully minted Beeliever NFT. Check explorer to find your NFT',
 					});
 				}
 			}
 		} catch (error) {
-			console.error("Error minting:", error);
+			console.error('Error minting:', error);
 
 			const userMessage = handleMintError(error);
 
 			toast({
-				title: "Minting Error",
+				title: 'Minting Error',
 				description: userMessage,
-				variant: "destructive",
+				variant: 'destructive',
 			});
 		} finally {
 			setIsMinting(false);
@@ -150,7 +160,11 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 
 	const handleRefund = async () => {
 		if (!account?.address) {
-			toast({ title: "SUI wallet", description: "Please connect SUI wallet", variant: "destructive" });
+			toast({
+				title: 'SUI wallet',
+				description: 'Please connect SUI wallet',
+				variant: 'destructive',
+			});
 			return;
 		}
 		try {
@@ -164,38 +178,38 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 							options: { showEffects: true },
 						});
 
-						if (effects?.status.status === "success") {
+						if (effects?.status.status === 'success') {
 							toast({
-								title: "Refund successful",
+								title: 'Refund successful',
 								description: `SUI refunded`,
 							});
 						} else {
-							console.error("Claim tx error: ", effects?.status.error);
+							console.error('Claim tx error: ', effects?.status.error);
 							toast({
-								title: "Refund failed",
-								description: "Please try again later.",
-								variant: "destructive",
+								title: 'Refund failed',
+								description: 'Please try again later.',
+								variant: 'destructive',
 							});
 						}
 					},
 					onError: (error) => {
-						console.error("Claim tx error:", error);
+						console.error('Claim tx error:', error);
 
 						toast({
-							title: "Refund failed",
+							title: 'Refund failed',
 							description: handleRefundError(error),
-							variant: "destructive",
+							variant: 'destructive',
 						});
 					},
 				},
 			);
 		} catch (error) {
-			console.error("Claim tx error:", error);
+			console.error('Claim tx error:', error);
 
 			toast({
-				title: "Transaction error",
+				title: 'Transaction error',
 				description: handleRefundError(error),
-				variant: "destructive",
+				variant: 'destructive',
 			});
 		}
 	};
@@ -217,7 +231,7 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 				</button>
 			)}
 			{doRefund === DoRefund.NoBoosted &&
-				"You have nothing to withdraw because you are a winner and your bid is below (due to boost) or at the Mint Price"}
+				'You have nothing to withdraw because you are a winner and your bid is below (due to boost) or at the Mint Price'}
 			{doRefund === DoRefund.Yes && (
 				<button
 					disabled={isAnyActionPending}
@@ -237,13 +251,13 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 
 function handleMintError(error: unknown): string {
 	const errorMessage = (error as Error).message;
-	let userMessage = "An error occurred during minting";
+	let userMessage = 'An error occurred during minting';
 
 	if (errorMessage) {
 		const parsedError = parseTxError(errorMessage);
-		if (parsedError && typeof parsedError === "object") {
+		if (parsedError && typeof parsedError === 'object') {
 			userMessage = formatSuiMintErr(parsedError);
-		} else if (typeof parsedError === "string") {
+		} else if (typeof parsedError === 'string') {
 			userMessage = parsedError;
 		} else {
 			userMessage = formatSuiMintErr(error);
@@ -255,13 +269,13 @@ function handleMintError(error: unknown): string {
 
 function handleRefundError(error: unknown): string {
 	const errorMessage = (error as Error).message;
-	let userMessage = "An error occurred during refund";
+	let userMessage = 'An error occurred during refund';
 
 	if (errorMessage) {
 		const parsedError = parseTxError(errorMessage);
-		if (parsedError && typeof parsedError === "object") {
+		if (parsedError && typeof parsedError === 'object') {
 			userMessage = formatSuiRefundErr(parsedError);
-		} else if (typeof parsedError === "string") {
+		} else if (typeof parsedError === 'string') {
 			userMessage = parsedError;
 		} else {
 			userMessage = formatSuiRefundErr(error);
@@ -282,7 +296,10 @@ interface MintInfoProps {
 	user: User | null;
 }
 
-export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auctionSize } }: MintInfoProps) {
+export function MintInfo({
+	user,
+	auctionInfo: { clearingPrice, auctionSize: _auctionSize },
+}: MintInfoProps) {
 	const { beelieversMint } = useNetworkVariables();
 	const { client, network } = useSuiClientContext();
 	const account = useCurrentAccount();
@@ -306,7 +323,7 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 
 			const kiosk = await initializeKioskInfo(userAddr, client, network as Network);
 			setKiosk(kiosk);
-			console.log(">>> MintInfo: Loaded kiosk for address:", userAddr, kiosk);
+			console.log('>>> MintInfo: Loaded kiosk for address:', userAddr, kiosk);
 
 			if (hasMinted) {
 				const existingNftId = await findExistingNft(
@@ -317,7 +334,7 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 				);
 				if (existingNftId) {
 					setNftId(existingNftId);
-					console.log(">>> MintInfo: Found existing NFT for address:", userAddr, existingNftId);
+					console.log('>>> MintInfo: Found existing NFT for address:', userAddr, existingNftId);
 				}
 			}
 		};
@@ -340,12 +357,15 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 				: DoRefund.Yes;
 	}
 
-	const bidLabel = boosted ? "Your Bid (5% boosted)" : "Your Bid";
+	const bidLabel = boosted ? 'Your Bid (5% boosted)' : 'Your Bid';
 	const mintStarted = beelieversMint.mintStart <= +new Date();
 
 	return (
 		<div
-			className={cn(cardShowcaseClasses(), "card hover:shadow-primary/10 w-full lg:w-[85%] xl:w-[75%]")}
+			className={cn(
+				cardShowcaseClasses(),
+				'card hover:shadow-primary/10 w-full lg:w-[85%] xl:w-[75%]',
+			)}
 		>
 			<div className="card-body from-azure-25 via-azure-20 to-azure-15 flex flex-col gap-6 rounded-lg bg-gradient-to-br p-4 text-white sm:gap-8 lg:gap-12 lg:p-8 xl:flex-row">
 				<div className="flex w-full flex-shrink-0 justify-center xl:w-auto xl:justify-start">
@@ -376,16 +396,16 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 
 							<MintInfoItem
 								title="Mint Price:"
-								value={clearingPrice ? formatSUI(clearingPrice) + " SUI" : ""}
+								value={clearingPrice ? formatSUI(clearingPrice) + ' SUI' : ''}
 							/>
-							<MintInfoItem title={bidLabel} value={formatSUI(user.amount) + " SUI"} />
+							<MintInfoItem title={bidLabel} value={formatSUI(user.amount) + ' SUI'} />
 							<MintInfoItem
 								title="Auction Status:"
-								value={isWinner ? "🎉 Winner" : "❌ Not in top 5810"}
+								value={isWinner ? '🎉 Winner' : '❌ Not in top 5810'}
 							/>
 							<MintInfoItem
 								title="Mint Status:"
-								value={hasMinted ? "✅ Minted" : "⏳ Not Minted"}
+								value={hasMinted ? '✅ Minted' : '⏳ Not Minted'}
 								isLastItem
 							/>
 						</div>
@@ -408,11 +428,14 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 	);
 }
 
-const createWithdrawTxn = async (senderAddress: string, cfg: BeelieversAuctionCfg): Promise<Transaction> => {
+const createWithdrawTxn = async (
+	senderAddress: string,
+	cfg: BeelieversAuctionCfg,
+): Promise<Transaction> => {
 	const txn = new Transaction();
 	txn.setSender(senderAddress);
 	txn.moveCall({
-		target: moveCallTarget(cfg, "withdraw"),
+		target: moveCallTarget(cfg, 'withdraw'),
 		arguments: [txn.object(cfg.auctionId)],
 	});
 	return txn;
@@ -448,20 +471,20 @@ export function formatSuiMintErr(error: unknown): string {
 		(errCode: number) => {
 			switch (errCode) {
 				case 1:
-					return "all NFTs are alaready minted";
+					return 'all NFTs are alaready minted';
 				case 2:
-					return "minting not active";
+					return 'minting not active';
 				case 3:
 					return "unauthorized: user didn't win the auction";
 				case 4:
-					return "user already minted";
+					return 'user already minted';
 				case 10:
-					return "tx provided wrong auction contract for verification";
+					return 'tx provided wrong auction contract for verification';
 				default:
-					return "unknown";
+					return 'unknown';
 			}
 		},
-		"An error occurred during minting",
+		'An error occurred during minting',
 	);
 }
 
@@ -472,22 +495,26 @@ export function formatSuiRefundErr(error: unknown): string {
 		(errCode: number) => {
 			switch (errCode) {
 				case 4:
-					return "auction not finalized yet";
+					return 'auction not finalized yet';
 				case 6:
-					return "no bid found for this address";
+					return 'no bid found for this address';
 				case 14:
-					return "insufficient bid amount for winner";
+					return 'insufficient bid amount for winner';
 				case 15:
-					return "auction is paused";
+					return 'auction is paused';
 				default:
-					return "unknown";
+					return 'unknown';
 			}
 		},
-		"An error occurred during refund",
+		'An error occurred during refund',
 	);
 }
 
-async function queryHasMinted(addr: string, client: SuiClient, cfg: BeelieversMintCfg): Promise<boolean> {
+async function queryHasMinted(
+	addr: string,
+	client: SuiClient,
+	cfg: BeelieversMintCfg,
+): Promise<boolean> {
 	try {
 		const txb = new Transaction();
 		txb.moveCall({
@@ -502,7 +529,7 @@ async function queryHasMinted(addr: string, client: SuiClient, cfg: BeelieversMi
 
 		return result.results?.[0]?.returnValues?.[0]?.[0]?.[0] === 1;
 	} catch (error) {
-		console.error("Error checking mint status:", error);
+		console.error('Error checking mint status:', error);
 		return false;
 	}
 }

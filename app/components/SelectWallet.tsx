@@ -1,15 +1,15 @@
-import { useContext } from "react";
-import { useLocation } from "react-router";
-import { BitcoinIcon, Wallet } from "lucide-react";
-import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
-import { Skeleton } from "~/components/ui/skeleton";
-import { XverseWallet } from "./Wallet/XverseWallet/XverseWallet";
-import { SuiWallet } from "./Wallet/SuiWallet/SuiWallet";
-import { SuiModal } from "./Wallet/SuiWallet/SuiModal";
-import { WalletContext } from "~/providers/ByieldWalletProvider";
-import { Wallets } from "~/components/Wallet";
-import { useXverseConnect } from "./Wallet/XverseWallet/useWallet";
-import { routes } from "~/config/walletVisibility";
+import { useContext } from 'react';
+import { useLocation } from 'react-router';
+import { BitcoinIcon, Wallet } from 'lucide-react';
+import { Dialog, DialogContent, DialogTrigger } from '~/components/ui/dialog';
+import { Skeleton } from '~/components/ui/skeleton';
+import { XverseWallet } from './Wallet/XverseWallet/XverseWallet';
+import { SuiWallet } from './Wallet/SuiWallet/SuiWallet';
+import { SuiModal } from './Wallet/SuiWallet/SuiModal';
+import { WalletContext } from '~/providers/ByieldWalletProvider';
+import { Wallets } from '~/components/Wallet';
+import { useXverseConnect } from './Wallet/XverseWallet/useWallet';
+import { routes } from '~/config/walletVisibility';
 
 function LoadingSkeleton() {
 	return (

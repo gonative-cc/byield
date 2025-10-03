@@ -1,12 +1,12 @@
-import type { CellProps, Column } from "react-table";
-import { SUIIcon } from "~/components/icons";
-import { Table } from "~/components/ui/table";
-import { trimAddress } from "~/components/Wallet/walletHelper";
-import { toBadgeRecord, type BadgeRecord } from "~/lib/badgeSystem";
-import type { Bidder, User } from "~/server/BeelieversAuction/types";
-import { BadgesModal } from "~/components/BadgesModal";
-import { formatSUI } from "~/lib/denoms";
-import { avatarGradientClasses, primaryHeadingClasses } from "~/util/tailwind";
+import type { CellProps, Column } from 'react-table';
+import { SUIIcon } from '~/components/icons';
+import { Table } from '~/components/ui/table';
+import { trimAddress } from '~/components/Wallet/walletHelper';
+import { toBadgeRecord, type BadgeRecord } from '~/lib/badgeSystem';
+import type { Bidder, User } from '~/server/BeelieversAuction/types';
+import { BadgesModal } from '~/components/BadgesModal';
+import { formatSUI } from '~/lib/denoms';
+import { avatarGradientClasses, primaryHeadingClasses } from '~/util/tailwind';
 
 const MAX_LEADERBOARD_ROWS = 21;
 
@@ -18,15 +18,15 @@ interface AuctionTableProps {
 
 const createColumns = (): Column<Bidder>[] => [
 	{
-		Header: "🏆 Rank",
-		accessor: "rank",
+		Header: '🏆 Rank',
+		accessor: 'rank',
 		Cell: ({ value }: CellProps<Bidder>) => (
 			<div className="flex items-center gap-2 font-semibold">#{value}</div>
 		),
 	},
 	{
-		Header: "👤 Bidder",
-		accessor: "bidder",
+		Header: '👤 Bidder',
+		accessor: 'bidder',
 		Cell: ({ row }: CellProps<Bidder>) => (
 			<div className="flex items-center space-x-2">
 				<span className="font-mono text-sm">{trimAddress(row.original.bidder)}</span>
@@ -34,8 +34,8 @@ const createColumns = (): Column<Bidder>[] => [
 		),
 	},
 	{
-		Header: "💰 Bid Amount",
-		accessor: "amount",
+		Header: '💰 Bid Amount',
+		accessor: 'amount',
 		Cell: ({ row }: CellProps<Bidder>) => (
 			<div className="flex items-center space-x-2 font-semibold">
 				<SUIIcon prefix="" className="text-primary h-5 w-5" />
@@ -45,11 +45,11 @@ const createColumns = (): Column<Bidder>[] => [
 		),
 	},
 	{
-		Header: "📝 User Message",
-		accessor: "note",
+		Header: '📝 User Message',
+		accessor: 'note',
 		Cell: ({ row }: CellProps<Bidder>) => (
 			<span className="text-muted-foreground block max-w-32 truncate text-sm">
-				{row.original.note || "-"}
+				{row.original.note || '-'}
 			</span>
 		),
 	},
@@ -60,7 +60,7 @@ const createColumns = (): Column<Bidder>[] => [
 				<BadgesModal />
 			</div>
 		),
-		accessor: "badges",
+		accessor: 'badges',
 		Cell: ({ row }: CellProps<Bidder>) => {
 			const badgeNames = row.original.badges || [];
 			const badges = [] as BadgeRecord[];
@@ -111,8 +111,8 @@ export function AuctionTable({ data, user, suiAddr }: AuctionTableProps) {
 		const isUserRow = row.original.bidder === suiAddr;
 		return {
 			className: isUserRow
-				? "bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 border-l-4 border-primary shadow-lg scale-[1.02] relative z-10 animate-float"
-				: "hover:bg-primary/5",
+				? 'bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 border-l-4 border-primary shadow-lg scale-[1.02] relative z-10 animate-float'
+				: 'hover:bg-primary/5',
 		};
 	};
 
