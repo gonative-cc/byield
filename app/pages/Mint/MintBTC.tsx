@@ -217,6 +217,14 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 											return "Not enough balance";
 										}
 									},
+									mintBelowFee: (value: string) => {
+										if (walletBalance) {
+											if (parseBTC(value) > BigInt(cfg.nBTC.mintingFee)) {
+												return true;
+											}
+											return `Input should be greater than ${formatBTC(BigInt(cfg.nBTC.mintingFee))} BTC`;
+										}
+									},
 								},
 							}}
 						/>
