@@ -125,13 +125,13 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 
 	// Fetch UTXOs when wallet connects
 	useEffect(() => {
-		if (currentAddress && utxosRPC.state === "idle") {
-			makeReq(utxosRPC, {
-				method: "queryUTXOs",
-				params: [network, currentAddress.address],
-			});
-		}
-	}, [currentAddress, network, utxosRPC]);
+		if (!currentAddress) return;
+
+		makeReq(utxosRPC, {
+			method: "queryUTXOs",
+			params: [network, currentAddress.address],
+		});
+	}, [currentAddress?.address, network]);
 
 	// Event handler
 	const handlenBTCMintTx = async ({ numberOfBTC, suiAddress }: MintNBTCForm) => {
