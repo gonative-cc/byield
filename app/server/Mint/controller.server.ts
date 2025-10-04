@@ -30,7 +30,7 @@ export default class Controller {
 		};
 	}
 
-	private async getMintTxs(suiAddr: string): Promise<QueryMintTxResp | Response> {
+	private async getMintTxs(suiAddr: string): Promise<Response> {
 		if (!isValidSuiAddress(suiAddr)) {
 			return badRequest();
 		}
@@ -39,10 +39,10 @@ export default class Controller {
 			const indexerResponse = await fetch(url);
 			const data: IndexerTransaction[] = await indexerResponse.json();
 			const mintTxs: MintTransaction[] = data.map((tx) => this.convertIndexerTransaction(tx));
-			return mintTxs;
+			return Response.json(mintTxs);
 		} catch (error) {
 			console.error({ msg: "Failed to fetch the mint txs", error, url: this.indexerBaseUrl });
-			return serverError();
+			return Response.json([]);
 		}
 	}
 
