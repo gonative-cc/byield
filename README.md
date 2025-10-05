@@ -64,7 +64,6 @@ We are using [Tailwind CSS](https://tailwindcss.com/) and [DaisyUI](https://dais
 - Don't create new styles.
 - Try to reuse the styles or update the theme in tailwind.css file.
 - Avoid creating unnecessary wrappers or components. DaisyUI with a properly configure theme should be enough.
-- Use [React DaisyUI](https://react.daisyui.com/) for reactive components.
 
 See also the [Vite docs on css](https://vitejs.dev/guide/features.html#css).
 
