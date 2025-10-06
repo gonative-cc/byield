@@ -7,6 +7,7 @@ import { formatBTC } from "~/lib/denoms";
 import { useLocation } from "react-router";
 import { BitcoinNetworkType } from "sats-connect";
 import { CopyButton } from "~/components/ui/CopyButton";
+import { Tooltip } from "~/components/ui/tooltip";
 
 function NetWorkOptions() {
 	const { network, switchNetwork } = useXverseWallet();
@@ -74,13 +75,16 @@ function XverseWalletMobileView() {
 			<div className="flex w-full items-center justify-between gap-4">
 				{balance && (
 					<p>
-						Balance:{" "}
-						<NumericFormat
-							displayType="text"
-							value={formatBTC(BigInt(balance))}
-							suffix=" BTC"
-							className="text-primary shrink-0"
-						/>
+						<Tooltip tooltip={formatBTC(BigInt(balance))}>
+							Balance:{" "}
+							<NumericFormat
+								displayType="text"
+								value={formatBTC(BigInt(balance))}
+								suffix=" BTC"
+								className="text-primary shrink-0"
+								decimalScale={3}
+							/>
+						</Tooltip>
 					</p>
 				)}
 				<button onClick={disconnectWallet} className="btn btn-primary">
@@ -101,12 +105,15 @@ export function XverseWallet() {
 				<NetWorkOptions />
 				<Accounts />
 				{balance && (
-					<NumericFormat
-						displayType="text"
-						value={formatBTC(BigInt(balance))}
-						suffix=" BTC"
-						className="shrink-0"
-					/>
+					<Tooltip tooltip={formatBTC(BigInt(balance))}>
+						<NumericFormat
+							displayType="text"
+							value={formatBTC(BigInt(balance))}
+							suffix=" BTC"
+							className="shrink-0"
+							decimalScale={3}
+						/>
+					</Tooltip>
 				)}
 				<button onClick={disconnectWallet} className="btn btn-primary">
 					Disconnect Bitcoin Wallet
