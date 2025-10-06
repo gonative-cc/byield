@@ -24,7 +24,7 @@ export function logError(ctx: Context, error?: unknown) {
 			ctx.error = error;
 		}
 	}
-	console.log(ctx);
+	console.error(ctx);
 }
 
 // Logs the error and returns resp body as a text
@@ -35,6 +35,6 @@ export async function logHttpError(ctx: Context, resp: Response): Promise<string
 		body: body,
 		url: resp.url,
 	};
-	console.log(ctx);
+	console.error(ctx);
 	return body;
 }
