@@ -161,11 +161,7 @@ export default class Controller {
 
 			return resp || { oldRank: 0, newRank: 0 };
 		} catch (error) {
-			console.error(
-				"[Controller] An error occurred during postBidTx:",
-				error instanceof Error ? error.message : String(error),
-			);
-			return httpresp.serverError(String(error));
+			return httpresp.serverError("beelieversAuction:postBidTx", error);
 		}
 	}
 
