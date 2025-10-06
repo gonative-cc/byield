@@ -36,6 +36,7 @@ export default class Controller {
 		}
 		try {
 			const url = this.indexerBaseUrl + `/nbtc?sui_recipient=${suiAddr}`;
+			console.log("querying >> ", url);
 			const indexerResponse = await fetch(url);
 			const data: IndexerTransaction[] = await indexerResponse.json();
 			const mintTxs: MintTransaction[] = data.map((tx) => this.convertIndexerTransaction(tx));
