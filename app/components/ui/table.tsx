@@ -56,7 +56,7 @@ const TableRows = <T extends object>({
 			const { key, ...restRowProps } = rowProps;
 
 			return (
-				<React.Fragment key={row.id}>
+				<React.Fragment key={key}>
 					<tr
 						{...restRowProps}
 						className={twMerge(

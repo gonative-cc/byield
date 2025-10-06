@@ -125,13 +125,13 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 
 	// Fetch UTXOs when wallet connects
 	useEffect(() => {
-		if (currentAddress && utxosRPC.state === "idle") {
-			makeReq(utxosRPC, {
-				method: "queryUTXOs",
-				params: [network, currentAddress.address],
-			});
-		}
-	}, [currentAddress, network, utxosRPC]);
+		if (!currentAddress) return;
+
+		makeReq(utxosRPC, {
+			method: "queryUTXOs",
+			params: [network, currentAddress.address],
+		});
+	}, [currentAddress?.address, network]);
 
 	// Event handler
 	const handlenBTCMintTx = async ({ numberOfBTC, suiAddress }: MintNBTCForm) => {
@@ -166,12 +166,12 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 				const txid = response.result.txid;
 				setTxId(txid);
 				setShowConfirmationModal(true);
-				makeReq(postNBTCTxRPC, {
+				await makeReq(postNBTCTxRPC, {
 					method: "postNBTCTx",
 					params: [network, txid!],
 				});
 				fetchMintTxs();
-				makeReq(utxosRPC, {
+				await makeReq(utxosRPC, {
 					method: "queryUTXOs",
 					params: [network, currentAddress.address],
 				});
@@ -215,6 +215,14 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 												return true;
 											}
 											return "Not enough balance";
+										}
+									},
+									mintBelowFee: (value: string) => {
+										if (walletBalance) {
+											if (parseBTC(value) > BigInt(cfg.nBTC.mintingFee)) {
+												return true;
+											}
+											return `Input should be greater than ${formatBTC(BigInt(cfg.nBTC.mintingFee))} BTC`;
 										}
 									},
 								},
