@@ -39,7 +39,7 @@ const FAQS = [
 		id: "faq-5",
 		question: "Why do I need to get BTC from you? Is there a faucet?",
 		answer: (
-			<span className="text-muted-foreground">
+			<span>
 				To ensure a controlled testing environment, we are distributing devnet BTC manually. We do not
 				have a public faucet for this phase. Please request funds in our{" "}
 				<a
@@ -167,7 +167,7 @@ export default function Mint() {
 
 			<div className="flex justify-center">
 				<div className="w-full max-w-xl space-y-6">
-					<Collapse title="Regtest Configuration for Devnet Server" className="bg-base-200">
+					<Collapse title="Bitcoin Wallet configuration for our testnet" className="bg-base-200">
 						<RegtestInstructions />
 					</Collapse>
 					<div className="w-full">
