@@ -11,6 +11,7 @@ import { FormNumericInput } from "~/components/form/FormNumericInput";
 import { classNames } from "~/util/tailwind";
 import { PRICE_PER_NBTC_IN_SUI } from "~/lib/nbtc";
 import { LoadingSpinner } from "~/components/LoadingSpinner";
+import type { UseCoinBalanceResult } from "~/components/Wallet/SuiWallet/useBalance";
 
 interface NBTCRightAdornmentProps {
 	maxNBTCAmount: bigint;
@@ -46,7 +47,12 @@ interface SellNBTCForm {
 	nBTCAmount: string;
 }
 
-export function SellNBTCTabContent() {
+type SellNBTCTabContentProps = {
+	nbtcBalanceRes: UseCoinBalanceResult;
+	suiBalanceRes: UseCoinBalanceResult;
+};
+
+export function SellNBTCTabContent({ nbtcBalanceRes, suiBalanceRes }: SellNBTCTabContentProps) {
 	const {
 		handleTransaction,
 		resetMutation,
@@ -56,7 +62,11 @@ export function SellNBTCTabContent() {
 		nbtcBalance,
 		data,
 		isSuiWalletConnected,
-	} = useBuySellNBTC({ variant: "SELL" });
+	} = useBuySellNBTC({
+		variant: "SELL",
+		nbtcBalanceRes,
+		suiBalanceRes,
+	});
 
 	const sellNBTCForm = useForm<SellNBTCForm>({
 		mode: "all",
