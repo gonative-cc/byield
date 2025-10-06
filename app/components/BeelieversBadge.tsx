@@ -7,15 +7,18 @@ export function BeelieversBadge() {
 	const [ownsNft, setOwnsNft] = useState(false);
 	const account = useCurrentAccount();
 	const { network } = useSuiClientContext();
-	const fetcher = useFetcher<CheckNftOwnershipResp>({ key: "nft-check" });
-	const lastRequestRef = useRef<string | null>(null);
+	const ownershipFetcher = useFetcher<CheckNftOwnershipResp>({ key: "nft-check" });
+	const lastFetchKeyRef = useRef<string | null>(null);
 
-	const currentKey = account?.address ? `${account.address}-${network}` : null;
-	const shouldFetch = currentKey && currentKey !== lastRequestRef.current && fetcher.state === "idle";
+	const accountNetworkKey = account?.address ? `${account.address}-${network}` : null;
+	const needsOwnershipCheck =
+		accountNetworkKey &&
+		accountNetworkKey !== lastFetchKeyRef.current &&
+		ownershipFetcher.state === "idle";
 
-	if (shouldFetch && account?.address) {
-		lastRequestRef.current = currentKey;
-		fetcher.submit(
+	if (needsOwnershipCheck && account?.address) {
+		lastFetchKeyRef.current = accountNetworkKey;
+		ownershipFetcher.submit(
 			{ method: "checkNftOwnership", params: [account.address, network] },
 			{ method: "POST", encType: "application/json", action: "/beelievers-auction" },
 		);
@@ -23,9 +26,11 @@ export function BeelieversBadge() {
 
 	useEffect(() => {
 		setOwnsNft(
-			account?.address && fetcher.data ? (fetcher.data as CheckNftOwnershipResp).ownsNft : false,
+			account?.address && ownershipFetcher.data
+				? (ownershipFetcher.data as CheckNftOwnershipResp).ownsNft
+				: false,
 		);
-	}, [account?.address, fetcher.data]);
+	}, [account?.address, ownershipFetcher.data]);
 
 	return ownsNft ? (
 		<div className="badge badge-primary badge-sm gap-1">
