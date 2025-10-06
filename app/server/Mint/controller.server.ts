@@ -42,7 +42,7 @@ export default class Controller {
 			return Response.json(mintTxs);
 		} catch (error) {
 			console.error({ msg: "Failed to fetch the mint txs", error, url: this.indexerBaseUrl });
-			return Response.json([]);
+			return Response.json([], { status: 500 });
 		}
 	}
 
