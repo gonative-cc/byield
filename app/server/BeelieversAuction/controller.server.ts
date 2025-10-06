@@ -2,7 +2,7 @@ import { isValidSuiAddress } from "@mysten/sui/utils";
 import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
 
 import type { LoaderDataResp, AuctionInfo } from "./types";
-import type { QueryRaffleResp, Req, QueryUserResp } from "./jsonrpc";
+import type { QueryRaffleResp, Req, QueryUserResp, CheckNftOwnershipResp } from "./jsonrpc";
 import { defaultAuctionInfo, defaultUser, mainnetRaffleWinners } from "./defaults";
 import { checkTxOnChain, verifySignature } from "./auth.server";
 
@@ -111,6 +111,10 @@ export default class Controller {
 			case "queryRaffle": {
 				return this.getRaffle();
 			}
+			case "checkNftOwnership": {
+				const [userAddr, network] = reqData.params;
+				return this.checkNftOwnership(userAddr, network);
+			}
 			default:
 				return httpresp.notFound("Unknown method");
 		}
@@ -186,5 +190,71 @@ export default class Controller {
 			winners: mainnetRaffleWinners(),
 			totalAmount: 93650950,
 		};
+	}
+
+	async checkNftOwnership(userAddr: string, network: string): Promise<CheckNftOwnershipResp> {
+		if (!isValidSuiAddress(userAddr)) return { ownsNft: false };
+
+		const cacheKey = `nft_${userAddr}_${network}`;
+		if (await this.kv.get(cacheKey)) return { ownsNft: true, cached: true };
+
+		const nftPkgId = (this.isProduction && network === "mainnet" ? mainnetCfg : testnetCfg)
+			.beelieversMint.pkgId;
+		if (!nftPkgId) return { ownsNft: false };
+
+		const nftType = `${nftPkgId}::mint::BeelieverNFT`;
+
+		const kiosksRes = await fetch(this.fallbackIndexerUrl, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				jsonrpc: "2.0",
+				method: "suix_getOwnedObjects",
+				params: [
+					userAddr,
+					{
+						filter: { StructType: "0x2::kiosk::KioskOwnerCap" },
+						options: { showContent: true },
+					},
+				],
+			}),
+		}).catch(() => null);
+
+		if (!kiosksRes?.ok) return { ownsNft: false };
+
+		const kiosks =
+			((await kiosksRes.json()) as { result?: { data?: unknown[] } }).result?.data || [];
+
+		for (const kiosk of kiosks) {
+			const kioskId = (kiosk as { data?: { content?: { fields?: { for?: string } } } }).data
+				?.content?.fields?.for;
+			if (!kioskId) continue;
+
+			const itemsRes = await fetch(this.fallbackIndexerUrl, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					jsonrpc: "2.0",
+					method: "suix_getDynamicFields",
+					params: [kioskId],
+				}),
+			}).catch(() => null);
+
+			if (!itemsRes?.ok) continue;
+
+			const items =
+				((await itemsRes.json()) as { result?: { data?: unknown[] } }).result?.data || [];
+			if (
+				items.some((item: unknown) => {
+					const typedItem = item as { objectType?: string; type?: string };
+					return (typedItem.objectType || typedItem.type)?.includes(nftType);
+				})
+			) {
+				await this.kv.put(cacheKey, "true", { expirationTtl: 86400 });
+				return { ownsNft: true };
+			}
+		}
+
+		return { ownsNft: false };
 	}
 }
