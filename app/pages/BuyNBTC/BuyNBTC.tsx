@@ -14,10 +14,7 @@ import type { BalanceProps } from "~/types/balance";
 export function BuyNBTC() {
 	const { network } = useSuiClientContext();
 	const { mutate: disconnect } = useDisconnectWallet();
-	const { nbtc: nbtcCfg } = useNetworkVariables();
-
-	const nbtcCoin = nbtcCfg.pkgId + nbtcCfg.coinType;
-	const nbtcBalanceRes = useCoinBalance(nbtcCoin);
+	const nbtcBalanceRes = useCoinBalance("NBTC");
 	const suiBalanceRes = useCoinBalance();
 
 	const { isWalletConnected, suiAddr } = useContext(WalletContext);
@@ -39,15 +36,11 @@ export function BuyNBTC() {
 				Native enables <span className="text-primary text-2xl md:text-3xl">BTCFi</span> in the{" "}
 				<span className="text-primary text-2xl md:text-3xl">Web3 native</span> way!
 			</p>
-			<div className="card max-w-lg w-full">
-				<div className="card-body p-6 text-white flex flex-col gap-4">
+			<div className="card w-full max-w-lg">
+				<div className="card-body flex flex-col gap-4 p-6 text-white">
 					{isSuiWalletConnected && <NBTCBalance balance={nbtcBalanceRes.balance} />}
 					<Instructions />
-					<BuyNBTCTabs
-						nbtcBalanceRes={nbtcBalanceRes}
-						suiBalanceRes={suiBalanceRes}
-						nbtcCoin={nbtcCoin}
-					/>
+					<BuyNBTCTabs nbtcBalanceRes={nbtcBalanceRes} suiBalanceRes={suiBalanceRes} />
 					{isSuiWalletConnected && (
 						<a
 							href={transactionHistoryLink}
@@ -79,23 +72,15 @@ const renderTabHeader = (title: string, checked = false) => (
 
 type BuyNBTCTabsProps = BalanceProps;
 
-const BuyNBTCTabs = ({ nbtcBalanceRes, suiBalanceRes, nbtcCoin }: BuyNBTCTabsProps) => (
+const BuyNBTCTabs = ({ nbtcBalanceRes, suiBalanceRes }: BuyNBTCTabsProps) => (
 	<div className="tabs tabs-boxed rounded-full p-1">
 		{renderTabHeader("Buy", true)}
 		<div className="tab-content py-6">
-			<BuyNBTCTabContent
-				nbtcBalanceRes={nbtcBalanceRes}
-				suiBalanceRes={suiBalanceRes}
-				nbtcCoin={nbtcCoin}
-			/>
+			<BuyNBTCTabContent nbtcBalanceRes={nbtcBalanceRes} suiBalanceRes={suiBalanceRes} />
 		</div>
 		{renderTabHeader("Sell")}
 		<div className="tab-content py-6">
-			<SellNBTCTabContent
-				nbtcBalanceRes={nbtcBalanceRes}
-				suiBalanceRes={suiBalanceRes}
-				nbtcCoin={nbtcCoin}
-			/>
+			<SellNBTCTabContent nbtcBalanceRes={nbtcBalanceRes} suiBalanceRes={suiBalanceRes} />
 		</div>
 	</div>
 );

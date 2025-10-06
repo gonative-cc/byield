@@ -93,18 +93,13 @@ interface NBTCProps extends BalanceProps {
 	variant: "BUY" | "SELL";
 }
 
-export const useBuySellNBTC = ({
-	variant,
-	nbtcBalanceRes,
-	suiBalanceRes,
-	nbtcCoin,
-}: NBTCProps): UseNBTCReturn => {
+export const useBuySellNBTC = ({ variant, nbtcBalanceRes, suiBalanceRes }: NBTCProps): UseNBTCReturn => {
 	const shouldBuy = variant === "BUY";
 	const account = useCurrentAccount();
 	const client = useSuiClient();
 	const { isWalletConnected } = useContext(WalletContext);
 	const { trackEvent } = useGoogleAnalytics();
-	const { nbtcOTC } = useNetworkVariables();
+	const { nbtcOTC, nbtc } = useNetworkVariables();
 	const isSuiWalletConnected = isWalletConnected(Wallets.SuiWallet);
 
 	const {
@@ -139,6 +134,7 @@ export const useBuySellNBTC = ({
 				});
 				return;
 			}
+			const nbtcCoin = nbtc.pkgId + nbtc.coinType;
 			const transaction = await createNBTCTxn(
 				account.address,
 				amount,
@@ -186,7 +182,6 @@ export const useBuySellNBTC = ({
 			shouldBuy,
 			client,
 			nbtcBalanceRes,
-			nbtcCoin,
 			signAndExecuteTransaction,
 			trackEvent,
 			suiBalanceRes,

@@ -49,7 +49,7 @@ interface BuyNBTCForm {
 
 type BuyNBTCTabContentProps = BalanceProps;
 
-export function BuyNBTCTabContent({ nbtcBalanceRes, suiBalanceRes, nbtcCoin }: BuyNBTCTabContentProps) {
+export function BuyNBTCTabContent({ nbtcBalanceRes, suiBalanceRes }: BuyNBTCTabContentProps) {
 	const {
 		handleTransaction,
 		resetMutation,
@@ -63,7 +63,6 @@ export function BuyNBTCTabContent({ nbtcBalanceRes, suiBalanceRes, nbtcCoin }: B
 		variant: "BUY",
 		nbtcBalanceRes,
 		suiBalanceRes,
-		nbtcCoin,
 	});
 
 	const buyNBTCForm = useForm<BuyNBTCForm>({

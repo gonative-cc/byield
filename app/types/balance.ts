@@ -3,5 +3,4 @@ import type { UseCoinBalanceResult } from "~/components/Wallet/SuiWallet/useBala
 export interface BalanceProps {
 	nbtcBalanceRes: UseCoinBalanceResult;
 	suiBalanceRes: UseCoinBalanceResult;
-	nbtcCoin: string;
 }

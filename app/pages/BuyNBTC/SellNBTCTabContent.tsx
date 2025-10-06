@@ -49,7 +49,7 @@ interface SellNBTCForm {
 
 type SellNBTCTabContentProps = BalanceProps;
 
-export function SellNBTCTabContent({ nbtcBalanceRes, suiBalanceRes, nbtcCoin }: SellNBTCTabContentProps) {
+export function SellNBTCTabContent({ nbtcBalanceRes, suiBalanceRes }: SellNBTCTabContentProps) {
 	const {
 		handleTransaction,
 		resetMutation,
@@ -63,7 +63,6 @@ export function SellNBTCTabContent({ nbtcBalanceRes, suiBalanceRes, nbtcCoin }: 
 		variant: "SELL",
 		nbtcBalanceRes,
 		suiBalanceRes,
-		nbtcCoin,
 	});
 
 	const sellNBTCForm = useForm<SellNBTCForm>({
