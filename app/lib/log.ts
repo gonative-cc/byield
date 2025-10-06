@@ -19,6 +19,7 @@ export function logError(ctx: Context, error?: unknown) {
 				name: error.name,
 				message: error.message,
 				cause: error.cause,
+				stack: error.stack,
 			};
 		} else {
 			ctx.error = error;
