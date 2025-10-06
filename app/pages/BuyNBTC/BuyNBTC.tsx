@@ -8,8 +8,7 @@ import { BuyNBTCTabContent } from "./BuyNBTCTabContent";
 import { SellNBTCTabContent } from "./SellNBTCTabContent";
 import { ArrowUpRight } from "lucide-react";
 import { useDisconnectWallet, useSuiClientContext } from "@mysten/dapp-kit";
-import { useNetworkVariables } from "~/networkConfig";
-import type { BalanceProps } from "~/types/balance";
+import type { UseCoinBalanceResult } from "~/components/Wallet/SuiWallet/useBalance";
 
 export function BuyNBTC() {
 	const { network } = useSuiClientContext();
@@ -70,7 +69,10 @@ const renderTabHeader = (title: string, checked = false) => (
 	/>
 );
 
-type BuyNBTCTabsProps = BalanceProps;
+type BuyNBTCTabsProps = {
+	nbtcBalanceRes: UseCoinBalanceResult;
+	suiBalanceRes: UseCoinBalanceResult;
+};
 
 const BuyNBTCTabs = ({ nbtcBalanceRes, suiBalanceRes }: BuyNBTCTabsProps) => (
 	<div className="tabs tabs-boxed rounded-full p-1">

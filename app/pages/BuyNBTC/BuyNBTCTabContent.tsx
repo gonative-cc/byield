@@ -11,7 +11,7 @@ import { classNames } from "~/util/tailwind";
 import { SUIIcon } from "~/components/icons";
 import { useBuySellNBTC } from "./useNBTC";
 import { LoadingSpinner } from "~/components/LoadingSpinner";
-import type { BalanceProps } from "~/types/balance";
+import type { UseCoinBalanceResult } from "~/components/Wallet/SuiWallet/useBalance";
 
 const BUY_NBTC_GAS = parseSUI("0.01");
 
@@ -47,7 +47,10 @@ interface BuyNBTCForm {
 	suiAmount: string;
 }
 
-type BuyNBTCTabContentProps = BalanceProps;
+type BuyNBTCTabContentProps = {
+	nbtcBalanceRes: UseCoinBalanceResult;
+	suiBalanceRes: UseCoinBalanceResult;
+};
 
 export function BuyNBTCTabContent({ nbtcBalanceRes, suiBalanceRes }: BuyNBTCTabContentProps) {
 	const {

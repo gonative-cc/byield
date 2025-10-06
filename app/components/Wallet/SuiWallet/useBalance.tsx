@@ -23,7 +23,6 @@ async function fetchBalance(
 }
 
 // Coin address is a coin package ID followed by the type. Default to 0x2::sui::SUI.
-// Backward compatible: accepts either a full coin type string, "NBTC", or "SUI"/undefined for SUI.
 export function useCoinBalance(coinOrVariant?: string): UseCoinBalanceResult {
 	const suiClient = useSuiClient();
 	const account = useCurrentAccount();

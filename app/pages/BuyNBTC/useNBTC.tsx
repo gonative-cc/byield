@@ -10,7 +10,7 @@ import { GA_EVENT_NAME, GA_CATEGORY, useGoogleAnalytics } from "~/lib/googleAnal
 import { useNetworkVariables } from "~/networkConfig";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
-import type { BalanceProps } from "~/types/balance";
+import type { UseCoinBalanceResult } from "~/components/Wallet/SuiWallet/useBalance";
 
 import { moveCallTarget, type NbtcOtcCfg } from "~/config/sui/contracts-config";
 
@@ -89,8 +89,10 @@ interface UseNBTCReturn {
 	isSuiWalletConnected: boolean;
 }
 
-interface NBTCProps extends BalanceProps {
+interface NBTCProps {
 	variant: "BUY" | "SELL";
+	nbtcBalanceRes: UseCoinBalanceResult;
+	suiBalanceRes: UseCoinBalanceResult;
 }
 
 export const useBuySellNBTC = ({ variant, nbtcBalanceRes, suiBalanceRes }: NBTCProps): UseNBTCReturn => {
@@ -179,6 +181,7 @@ export const useBuySellNBTC = ({ variant, nbtcBalanceRes, suiBalanceRes }: NBTCP
 			variant,
 			account,
 			nbtcOTC,
+			nbtc,
 			shouldBuy,
 			client,
 			nbtcBalanceRes,
