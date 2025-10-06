@@ -127,7 +127,7 @@ export default class Controller {
 		switch (reqData.method) {
 			case "queryMintTx":
 				return this.getMintTxs(reqData.params[1]);
-			case "postNBTCTx":
+			case "postNbtcTx":
 				return this.postNbtcTx(reqData.params[1]);
 			case "queryUTXOs":
 				return this.queryUTXOs(reqData.params[1]);

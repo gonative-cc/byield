@@ -104,7 +104,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 	const cfg = useBitcoinConfig();
 
 	const utxosRPC = useFetcher<UTXO[]>();
-	const postNBTCTxRPC = useFetcher();
+	const postNbtcTxRPC = useFetcher();
 
 	const mintNBTCForm = useForm<MintNBTCForm>({
 		mode: "all",
@@ -166,8 +166,8 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 				const txid = response.result.txid;
 				setTxId(txid);
 				setShowConfirmationModal(true);
-				await makeReq(postNBTCTxRPC, {
-					method: "postNBTCTx",
+				await makeReq(postNbtcTxRPC, {
+					method: "postNbtcTx",
 					params: [network, txid!],
 				});
 				fetchMintTxs();
