@@ -1,7 +1,6 @@
-import { NumericFormat } from "react-number-format";
 import { formatNBTC } from "~/lib/denoms";
 import { NBTCIcon } from "./icons";
-import { Tooltip } from "./ui/tooltip";
+import { TrimmedNumber } from "./TrimmedNumber";
 
 interface NBTCBalanceProps {
 	balance: bigint;
@@ -13,16 +12,13 @@ export function NBTCBalance({ balance }: NBTCBalanceProps) {
 			<NBTCIcon prefix="" className="mr-0" />
 			<div className="flex flex-col gap-1">
 				<span>Your nBTC Balance</span>
-				<Tooltip tooltip={formatNBTC(balance)}>
-					<NumericFormat
-						displayType="text"
-						value={formatNBTC(balance)}
-						className="text-gray-400"
-						readOnly
-						suffix=" nBTC"
-						decimalScale={3}
-					/>
-				</Tooltip>
+				<TrimmedNumber
+					displayType="text"
+					value={formatNBTC(balance)}
+					className="text-gray-400"
+					readOnly
+					suffix=" nBTC"
+				/>
 			</div>
 		</div>
 	);

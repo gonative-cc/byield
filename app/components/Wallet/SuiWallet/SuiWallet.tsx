@@ -17,6 +17,7 @@ import { useLocation } from "react-router";
 import { isProductionMode } from "~/lib/appenv";
 import { CopyButton } from "~/components/ui/CopyButton";
 import { Tooltip } from "~/components/ui/tooltip";
+import { TrimmedNumber } from "~/components/TrimmedNumber";
 
 enum SuiNetwork {
 	LocalNet = "localnet",
@@ -122,16 +123,13 @@ function SuiWalletMobileView({ balance }: { balance: bigint }) {
 			</div>
 			<div className="flex w-full items-center justify-between gap-4">
 				<p>
-					<Tooltip tooltip={formatSUI(balance)}>
-						Balance:{" "}
-						<NumericFormat
-							displayType="text"
-							value={formatSUI(balance)}
-							suffix=" SUI"
-							className="text-primary shrink-0"
-							decimalScale={3}
-						/>
-					</Tooltip>
+					<TrimmedNumber
+						displayType="text"
+						value={formatSUI(balance)}
+						suffix=" SUI"
+						className="text-primary shrink-0"
+						prefix="Balance: "
+					/>
 				</p>
 				<button
 					onClick={() => {
@@ -158,15 +156,12 @@ export function SuiWallet() {
 			<div className="hidden items-center gap-2 md:flex">
 				<NetWorkOptions />
 				<Accounts />
-				<Tooltip tooltip={formatSUI(balance)} className="shrink-0">
-					<NumericFormat
-						displayType="text"
-						value={formatSUI(balance)}
-						suffix=" SUI"
-						className="shrink-0"
-						decimalScale={3}
-					/>
-				</Tooltip>
+				<TrimmedNumber
+					displayType="text"
+					value={formatSUI(balance)}
+					suffix=" SUI"
+					className="shrink-0"
+				/>
 				<button
 					onClick={() => {
 						disconnect();

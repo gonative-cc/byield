@@ -5,7 +5,7 @@ export function Tooltip({
 	children,
 	className,
 }: {
-	tooltip: string;
+	tooltip: string | number;
 	children: React.ReactNode;
 	className?: string;
 }) {
