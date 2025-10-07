@@ -86,12 +86,7 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 				</p>
 				<p className="text-muted-foreground mt-3 text-lg">
 					➡️{" "}
-					<a
-						className="link-raw"
-						href="https://www.gonative.cc/beelievers"
-						target="_blank"
-						rel="noreferrer"
-					>
+					<a href="https://www.gonative.cc/beelievers" target="_blank" rel="noreferrer">
 						Landing page and FAQ
 					</a>
 				</p>

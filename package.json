@@ -17,6 +17,7 @@
 		"preview:wrangler": "wrangler dev",
 		"dev": "react-router dev",
 		"lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
+		"lint:fix": "bun run lint --fix",
 		"format": "prettier --write .",
 		"start": "wrangler dev",
 		"typecheck": "react-router typegen && tsc -b",
