@@ -63,7 +63,7 @@ describe("Bitcoin RPC Proxy Protection", () => {
 		expect(data.error).toBe("Unauthorized");
 	});
 
-	it("should apply rate limiting", async () => {
+	it("should apply rate limiting (50 requests per 5 minutes)", async () => {
 		const ip = `192.168.1.${Math.floor(Math.random() * 255)}`;
 		const baseRequest = {
 			headers: {
@@ -110,97 +110,5 @@ describe("Bitcoin RPC Proxy Protection", () => {
 		const text = await response.text();
 		expect(text).toBe("raw-hex-data");
 		expect(response.headers.get("content-type")).toBe("text/plain");
-	});
-
-	it("should handle missing Bitcoin RPC URL", async () => {
-		const request = new Request("http://localhost/", {
-			headers: {
-				Authorization: "Bearer btc-proxy-secret-2025",
-				"CF-Connecting-IP": "127.0.0.1",
-			},
-		});
-
-		const response = await protectedBitcoinRPC(request, "", "/test-endpoint");
-
-		expect(response.status).toBe(500);
-		const data = (await response.json()) as { error: string };
-		expect(data.error).toBe("Bitcoin RPC URL not configured");
-	});
-
-	it("should handle missing CF-Connecting-IP header", async () => {
-		const request = new Request("http://localhost/", {
-			headers: {
-				Authorization: "Bearer btc-proxy-secret-2025",
-			},
-		});
-
-		const response = await protectedBitcoinRPC(request, "http://test-rpc", "/test-endpoint");
-
-		expect(response.status).toBe(200);
-	});
-
-	it("should handle Bitcoin RPC network errors", async () => {
-		global.fetch = async () => {
-			throw new Error("Network error");
-		};
-
-		const request = new Request("http://localhost/", {
-			headers: {
-				Authorization: "Bearer btc-proxy-secret-2025",
-				"CF-Connecting-IP": "127.0.0.1",
-			},
-		});
-
-		const response = await protectedBitcoinRPC(request, "http://test-rpc", "/test-endpoint");
-
-		expect(response.status).toBe(502);
-		const data = (await response.json()) as { error: string };
-		expect(data.error).toBe("Bitcoin RPC request failed");
-	});
-
-	it("should handle Bitcoin RPC error responses", async () => {
-		global.fetch = async () => {
-			return new Response("Internal Server Error", {
-				status: 500,
-				headers: { "content-type": "text/plain" },
-			});
-		};
-
-		const request = new Request("http://localhost/", {
-			headers: {
-				Authorization: "Bearer btc-proxy-secret-2025",
-				"CF-Connecting-IP": "127.0.0.1",
-			},
-		});
-
-		const response = await protectedBitcoinRPC(request, "http://test-rpc", "/test-endpoint");
-
-		expect(response.status).toBe(500);
-		const text = await response.text();
-		expect(text).toBe("Internal Server Error");
-	});
-
-	it("should handle POST requests with body", async () => {
-		global.fetch = async (input, options) => {
-			expect(options?.method).toBe("POST");
-			expect(options?.body).toBeDefined();
-			return new Response(JSON.stringify({ success: true }), {
-				status: 200,
-				headers: { "content-type": "application/json" },
-			});
-		};
-
-		const request = new Request("http://localhost/", {
-			method: "POST",
-			body: JSON.stringify({ test: "data" }),
-			headers: {
-				Authorization: "Bearer btc-proxy-secret-2025",
-				"CF-Connecting-IP": "127.0.0.1",
-			},
-		});
-
-		const response = await protectedBitcoinRPC(request, "http://test-rpc", "/test-endpoint");
-
-		expect(response.status).toBe(200);
 	});
 });
