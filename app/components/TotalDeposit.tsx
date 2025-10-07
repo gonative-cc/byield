@@ -6,6 +6,7 @@ import { Input } from "./ui/input";
 import { action } from "../config/market.json";
 import { formatNBTC } from "~/lib/denoms";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
+import { TrimmedNumber } from "./TrimmedNumber";
 
 enum MarketIntegration {
 	TURBOS = "TURBOS",
@@ -113,7 +114,7 @@ function DepositCard({ title, value }: DepositData) {
 		<div className="card card-border flex max-w-1/4 flex-1">
 			<div className="card-body flex w-full flex-col gap-2 rounded-lg p-6 text-white">
 				<span className="text-base font-medium">{title}</span>
-				<span className="text-base font-medium">{value}</span>
+				<TrimmedNumber displayType="text" value={value} />
 			</div>
 		</div>
 	);

@@ -11,11 +11,11 @@ import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
 import { trimAddress } from "../walletHelper";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
-import { NumericFormat } from "react-number-format";
 import { formatSUI } from "~/lib/denoms";
 import { useLocation } from "react-router";
 import { isProductionMode } from "~/lib/appenv";
 import { CopyButton } from "~/components/ui/CopyButton";
+import { TrimmedNumber } from "~/components/TrimmedNumber";
 
 enum SuiNetwork {
 	LocalNet = "localnet",
@@ -121,12 +121,12 @@ function SuiWalletMobileView({ balance }: { balance: bigint }) {
 			</div>
 			<div className="flex w-full items-center justify-between gap-4">
 				<p>
-					Balance:{" "}
-					<NumericFormat
+					<TrimmedNumber
 						displayType="text"
 						value={formatSUI(balance)}
 						suffix=" SUI"
 						className="text-primary shrink-0"
+						prefix="Balance: "
 					/>
 				</p>
 				<button
@@ -154,7 +154,7 @@ export function SuiWallet() {
 			<div className="hidden items-center gap-2 md:flex">
 				<NetWorkOptions />
 				<Accounts />
-				<NumericFormat
+				<TrimmedNumber
 					displayType="text"
 					value={formatSUI(balance)}
 					suffix=" SUI"
