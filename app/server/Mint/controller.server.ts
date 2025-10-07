@@ -9,7 +9,7 @@ import {
 	notFound,
 	handleNonSuccessResp as handleFailResp,
 } from "../http-resp";
-import { protectedBitcoinRPC } from "./btc-rpc-proxy";
+import { protectedBitcoinRPC } from "./btc-proxy.server";
 
 export default class Controller {
 	btcRPCUrl: string | null = null;

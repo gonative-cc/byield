@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { protectedBitcoinRPC } from "./btc-rpc-proxy";
+import { protectedBitcoinRPC } from "./btc-proxy.server";
 
 // Default mock for most tests
 const defaultFetch = async (input: RequestInfo | URL) => {
@@ -44,8 +44,8 @@ describe("Bitcoin RPC Proxy Protection", () => {
 		const response = await protectedBitcoinRPC(request, "http://test-rpc", "/test-endpoint");
 
 		expect(response.status).toBe(401);
-		const data = (await response.json()) as { error: string };
-		expect(data.error).toBe("Unauthorized");
+		const text = await response.text();
+		expect(text).toBe("Unauthorized");
 	});
 
 	it("should block requests with invalid auth token", async () => {
@@ -59,8 +59,8 @@ describe("Bitcoin RPC Proxy Protection", () => {
 		const response = await protectedBitcoinRPC(request, "http://test-rpc", "/test-endpoint");
 
 		expect(response.status).toBe(401);
-		const data = (await response.json()) as { error: string };
-		expect(data.error).toBe("Unauthorized");
+		const text = await response.text();
+		expect(text).toBe("Unauthorized");
 	});
 
 	it("should apply rate limiting (50 requests per 5 minutes)", async () => {
