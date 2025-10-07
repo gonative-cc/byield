@@ -6,7 +6,7 @@ export function TrimmedNumber(props: NumericFormatProps) {
 	if (!props.value) return null;
 
 	return (
-		<Tooltip tooltip={props.value}>
+		<Tooltip tooltip={props.value} className={props.className}>
 			<NumericFormat {...props} decimalScale={3} />
 		</Tooltip>
 	);

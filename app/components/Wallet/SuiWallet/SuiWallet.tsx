@@ -11,12 +11,10 @@ import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
 import { trimAddress } from "../walletHelper";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
-import { NumericFormat } from "react-number-format";
 import { formatSUI } from "~/lib/denoms";
 import { useLocation } from "react-router";
 import { isProductionMode } from "~/lib/appenv";
 import { CopyButton } from "~/components/ui/CopyButton";
-import { Tooltip } from "~/components/ui/tooltip";
 import { TrimmedNumber } from "~/components/TrimmedNumber";
 
 enum SuiNetwork {
