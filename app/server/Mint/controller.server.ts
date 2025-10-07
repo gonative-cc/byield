@@ -9,6 +9,7 @@ import {
 	notFound,
 	handleNonSuccessResp as handleFailResp,
 } from "../http-resp";
+import { protectedBitcoinRPC } from "./btc-rpc-proxy";
 
 export default class Controller {
 	btcRPCUrl: string | null = null;
@@ -54,18 +55,22 @@ export default class Controller {
 
 	private async queryUTXOs(address: string) {
 		const method = "nbtc:queryUTXOs";
-		const rpcUrl = `${this.btcRPCUrl}/address/${encodeURIComponent(address)}/utxo`;
-		console.trace({ msg: "Querying nBTCUTXOs", address, rpcUrl });
-		const rpcResponse = await fetch(rpcUrl);
+		const path = `/address/${encodeURIComponent(address)}/utxo`;
+		console.trace({ msg: "Querying nBTCUTXOs", address, btcRPCUrl: this.btcRPCUrl });
+
+		// URL is dummy
+		const request = new Request("https://internal-proxy-auth", {
+			headers: {
+				Authorization: "Bearer btc-proxy-secret-2025",
+				"CF-Connecting-IP": "127.0.0.1",
+			},
+		});
+
+		const rpcResponse = await protectedBitcoinRPC(request, this.btcRPCUrl!, path);
 		if (!rpcResponse.ok) {
 			return handleFailResp(method, "Can't query Bitcoin UTXOs", rpcResponse);
 		}
-		return new Response(rpcResponse.body, {
-			status: rpcResponse.status,
-			headers: {
-				"Content-Type": rpcResponse.headers.get("content-type") ?? "application/json",
-			},
-		});
+		return rpcResponse;
 	}
 
 	// TODO: should be removed
@@ -78,8 +83,17 @@ export default class Controller {
 	private async fetchTxHexByTxId(txId: string) {
 		const method = "nbtc:fetchTxHexByTxId";
 		try {
-			const url = this.btcRPCUrl + `/tx/${txId}/hex`;
-			const response = await fetch(url);
+			const path = `/tx/${encodeURIComponent(txId)}/hex`;
+
+			// URL is dummy
+			const request = new Request("https://internal-proxy-auth", {
+				headers: {
+					Authorization: "Bearer btc-proxy-secret-2025",
+					"CF-Connecting-IP": "127.0.0.1",
+				},
+			});
+
+			const response = await protectedBitcoinRPC(request, this.btcRPCUrl!, path);
 			if (!response.ok) {
 				return handleFailResp(method, "Can't query Bitcoin Tx data", response);
 			}
