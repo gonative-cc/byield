@@ -131,7 +131,8 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 			method: "queryUTXOs",
 			params: [network, currentAddress.address],
 		});
-	}, [currentAddress?.address, network]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [currentAddress, network]);
 
 	// Event handler
 	const handlenBTCMintTx = async ({ numberOfBTC, suiAddress }: MintNBTCForm) => {

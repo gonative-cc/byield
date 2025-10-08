@@ -23,7 +23,7 @@ export function FAQ() {
 	);
 
 	return (
-		<div className="animate-in slide-in-from-bottom-4 bg-card/50 border-primary/20 w-full max-w-5xl rounded-2xl border p-4 shadow-2xl backdrop-blur-sm delay-700 duration-1000 lg:p-8">
+		<div className="animate-in slide-in-from-bottom-4 border-primary/20 w-full max-w-5xl rounded-2xl border p-4 shadow-2xl backdrop-blur-sm delay-700 duration-1000 lg:p-8">
 			<div className="mb-6 text-center">
 				<h2 className="text-primary mb-3 text-3xl font-bold">🤔 Frequently Asked Questions</h2>
 				<p className="text-muted-foreground">Everything you need to know about Beelievers NFTs</p>

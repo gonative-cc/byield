@@ -66,7 +66,7 @@ function SelectInput<T = string>({
 						))
 					) : (
 						<li>
-							<span className="disabled">No options available</span>
+							<span>No options available</span>
 						</li>
 					)}
 				</ul>
