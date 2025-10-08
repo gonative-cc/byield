@@ -108,6 +108,7 @@ export const useXverseWallet = () => {
 				variant: "destructive",
 			});
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [network]);
 
 	useEffect(() => {

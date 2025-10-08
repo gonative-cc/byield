@@ -21,7 +21,7 @@ export function FAQ({ faqs, description = "" }: FAQProps) {
 	);
 
 	return (
-		<div className="bg-card/50 border-primary/20 w-full max-w-5xl rounded-2xl border p-4 shadow-2xl lg:p-8">
+		<div className="border-primary/20 w-full max-w-5xl rounded-2xl border p-4 shadow-2xl lg:p-8">
 			<div className="mb-6 text-center">
 				<h2 className="text-primary mb-3 text-3xl font-bold">🤔 Frequently Asked Questions</h2>
 				{description && <p className="text-muted-foreground">{description}</p>}

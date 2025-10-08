@@ -12,8 +12,8 @@ export function ErrorBoundary() {
 	const routerError = (err: ErrorResponse) => (
 		<>
 			<div className="text-center">
-				<div className="bg-destructive/10 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
-					<AlertTriangle className="text-destructive h-8 w-8" />
+				<div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+					<AlertTriangle className="text-error h-8 w-8" />
 				</div>
 				<h2 className="text-2xl font-bold">
 					{err.status} {err.statusText}
@@ -40,8 +40,8 @@ export function ErrorBoundary() {
 	const nonRouterError = () => (
 		<>
 			<div className="text-center">
-				<div className="bg-destructive/10 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
-					<AlertTriangle className="text-destructive h-8 w-8" />
+				<div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+					<AlertTriangle className="text-error h-8 w-8" />
 				</div>
 				<h2 className="text-2xl font-bold">Oops!</h2>
 			</div>

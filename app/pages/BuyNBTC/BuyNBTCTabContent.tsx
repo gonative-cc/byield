@@ -27,6 +27,7 @@ function SUIRightAdornment({ maxSUIAmount, onMaxClick }: SUIRightAdornmentProps)
 				<div className="flex items-center gap-2">
 					<p className="text-xs whitespace-nowrap">Balance: {maxSUIAmount.substring(0, 4)} SUI</p>
 					<button
+						type="button"
 						onClick={() => onMaxClick(maxSUIAmount)}
 						className="btn btn-primary btn-link h-fit w-fit p-0 pr-2 text-xs"
 					>

@@ -16,7 +16,7 @@ export default defineConfig({
 	},
 	server: {
 		warmup: {
-			clientFiles: ["./app/components/**/*", "./app/root.tsx"],
+			clientFiles: ["./app/**/!(*.server|*.test)*.tsx"],
 		},
 	},
 });
