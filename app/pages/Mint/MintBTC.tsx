@@ -51,6 +51,7 @@ function Percentage({ onChange }: { onChange: (value: number) => void }) {
 		<div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
 			{PERCENTAGES.map(({ id, value }) => (
 				<button
+					type="button"
 					key={id}
 					onClick={() => onChange(value)}
 					className="btn btn-primary btn-outline transition-all duration-200 hover:scale-105"
@@ -93,7 +94,7 @@ interface MintBTCProps {
 }
 
 export function MintBTC({ fetchMintTxs }: MintBTCProps) {
-	const { balance: nBTCBalance } = useCoinBalance();
+	const { balance: nBTCBalance } = useCoinBalance("NBTC");
 	const [txId, setTxId] = useState<string | undefined>(undefined);
 	const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 	const [isProcessing, setIsProcessing] = useState(false);
@@ -196,7 +197,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 			<form onSubmit={handleSubmit(handlenBTCMintTx)} className="w-full">
 				<div className="card w-full">
 					<div className="card-body flex flex-col space-y-4 rounded-lg p-4 sm:p-6">
-						<NBTCBalance balance={nBTCBalance} />
+						{suiAddr && <NBTCBalance balance={nBTCBalance} />}
 						<FormNumericInput
 							required
 							name="numberOfBTC"
