@@ -2,6 +2,8 @@ import { NumericFormat } from "react-number-format";
 import { Tooltip } from "./ui/tooltip";
 import { type NumericFormatProps } from "react-number-format";
 
+const FIXED_DECIMAL = 3;
+
 export function TrimmedNumber(props: NumericFormatProps) {
 	if (
 		props.value === null ||
@@ -14,7 +16,7 @@ export function TrimmedNumber(props: NumericFormatProps) {
 	}
 
 	const numValue = Number(props.value);
-	const decimalScale = numValue >= 1 ? 3 : undefined;
+	const decimalScale = numValue >= 1 ? FIXED_DECIMAL : undefined;
 
 	return (
 		<Tooltip tooltip={props.value} className={props.className}>
