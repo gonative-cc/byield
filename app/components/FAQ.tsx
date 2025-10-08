@@ -17,7 +17,7 @@ export function FAQ({ faqs, description = "" }: FAQProps) {
 		return (
 			<div key={faq.id} className={`${orangeInfoCardClasses} collapse-plus collapse border p-2`}>
 				<input type="checkbox" />
-				<div className="collapse-title text-primary text-xl">{faq.question}</div>
+				<div className="collapse-title text-primary text-xl font-medium">{faq.question}</div>
 				<div className="collapse-content">
 					{typeof faq.answer === "string" ? (
 						<p className="text-foreground">{faq.answer}</p>
