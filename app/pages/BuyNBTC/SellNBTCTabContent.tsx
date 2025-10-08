@@ -27,6 +27,7 @@ function NBTCRightAdornment({ maxNBTCAmount, onMaxClick }: NBTCRightAdornmentPro
 				<div className="flex items-center gap-2">
 					<p className="text-xs whitespace-nowrap">Balance: {totalNBTCBalance} nBTC</p>
 					<button
+						type="button"
 						onClick={() => onMaxClick(totalNBTCBalance)}
 						className="btn btn-primary btn-link h-fit w-fit p-0 pr-2 text-xs"
 					>

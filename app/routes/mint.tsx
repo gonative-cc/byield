@@ -169,17 +169,17 @@ export default function Mint() {
 				<div className="w-full max-w-xl space-y-6">
 					<Collapse title="Bitcoin Wallet configuration for our testnet" className="bg-base-200">
 						<RegtestInstructions />
+						<div className="mt-4">
+							<iframe
+								src="https://drive.google.com/file/d/1pZNX2RG5L97B0Vh8pPb0OJSaaGRCdLcr/preview"
+								width="100%"
+								height="315"
+								allow="autoplay"
+								className="rounded-lg"
+								title="TestnetV2Walkthrough"
+							/>
+						</div>
 					</Collapse>
-					<div className="w-full">
-						<iframe
-							src="https://drive.google.com/file/d/1pZNX2RG5L97B0Vh8pPb0OJSaaGRCdLcr/preview"
-							width="100%"
-							height="315"
-							allow="autoplay"
-							className="rounded-lg"
-							title="TestnetV2Walkthrough"
-						/>
-					</div>
 					<BlockInfoCard />
 					<MintBTC fetchMintTxs={fetchMintTxs} />
 				</div>
