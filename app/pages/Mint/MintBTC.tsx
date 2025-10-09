@@ -27,36 +27,19 @@ function formatSuiAddress(suiAddress: string) {
 	return suiAddress;
 }
 
-const PERCENTAGES = [
-	{
-		id: "percentage-1",
-		value: 25,
-	},
-	{
-		id: "percentage-2",
-		value: 50,
-	},
-	{
-		id: "percentage-3",
-		value: 75,
-	},
-	{
-		id: "percentage-4",
-		value: 100,
-	},
-];
+const PERCENTAGES = [25, 50, 75, 100];
 
 function Percentage({ onChange }: { onChange: (value: number) => void }) {
 	return (
 		<div className="grid grid-cols-4 gap-2">
-			{PERCENTAGES.map(({ id, value }) => (
+			{PERCENTAGES.map((v) => (
 				<button
 					type="button"
-					key={id}
-					onClick={() => onChange(value)}
+					key={v}
+					onClick={() => onChange(v)}
 					className="btn btn-sm btn-primary btn-outline"
 				>
-					{value}%
+					{v}%
 				</button>
 			))}
 		</div>
@@ -173,7 +156,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 
 	return (
 		<FormProvider {...mintNBTCForm}>
-			<form onSubmit={handleSubmit(handlenBTCMintTx)} className="mx-auto w-full max-w-lg">
+			<form onSubmit={handleSubmit(handlenBTCMintTx)} className="mx-auto max-w-lg">
 				<div className="card">
 					<div className="card-body flex flex-col space-y-4">
 						{suiAddr && <NBTCBalance balance={nBTCBalance} />}
