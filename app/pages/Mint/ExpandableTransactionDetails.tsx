@@ -13,7 +13,10 @@ interface FailedTransactionAlertProps {
 function PostConfirmationFailureAlert() {
 	const handleLearnMore = () => {
 		// TODO: Replace with actual Byield repo README URL
-		window.open("https://github.com/gonative-cc/byield#transaction-failures", "_blank");
+		window.open(
+			"https://github.com/gonative-cc/byield/tree/master?tab=readme-ov-file#transaction-failures",
+			"_blank",
+		);
 	};
 
 	const handleResolutionForm = () => {
