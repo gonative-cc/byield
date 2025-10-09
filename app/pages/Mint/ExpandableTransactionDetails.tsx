@@ -11,53 +11,36 @@ interface FailedTransactionAlertProps {
 }
 
 function PostConfirmationFailureAlert() {
+	const handleLearnMore = () => {
+		// TODO: Replace with actual Byield repo README URL
+		window.open("https://github.com/gonative-cc/byield#transaction-failures", "_blank");
+	};
+
 	const handleResolutionForm = () => {
 		// TODO: Replace with actual form URL
 		window.open("https://forms.example.com/nbtc-resolution", "_blank");
 	};
 
 	return (
-		<div className={`${infoBoxClasses()} space-y-3`}>
+		<div className={infoBoxClasses()}>
 			<div className="flex items-start gap-3">
 				<XCircle size={16} className="text-primary mt-0.5 flex-shrink-0" />
 				<div className="flex-1 space-y-3">
 					<div className="text-primary font-medium">
-						Transaction Failed - Manual Resolution Required
+						nBTC Minting Failed - Auto-retry in progress
 					</div>
 
 					<div className="text-sm">
-						Your Bitcoin transaction was successfully confirmed on the blockchain, but the nBTC
-						minting process failed on the Sui network. This typically occurs when the SPV Light
-						Client encounters an issue while verifying the transaction&#39;s inclusion in a block.
+						<strong>Your funds are safe.</strong> See detailed explanation and support options
+						below.
 					</div>
 
-					<div className="space-y-2">
-						<div className="text-sm font-medium">What happened:</div>
-						<ul className="list-inside list-disc space-y-1 text-sm">
-							<li>Your BTC was successfully broadcasted, mined and confirmed</li>
-							<li>The Sui network failed to mint your nBTC tokens</li>
-							<li>
-								Your BTC is currently held in our deposit address, consider your funds safe
-							</li>
-						</ul>
-					</div>
-
-					<div className="space-y-2">
-						<div className="text-sm font-medium">Why this happens:</div>
-						<div className="text-sm">
-							This failure occurs on the Sui, usually due to network congestion or SPV Light
-							client synchronization issues.
-						</div>
-					</div>
-
-					<div className="space-y-2">
-						<div className="text-sm font-medium">Next steps:</div>
-						<div className="text-sm">
-							The minting will be re-attempted shortly, if the problems persists after few hours
-							please fill out our resolution form. Our support team will process your request.
-						</div>
-						<button onClick={handleResolutionForm} className="btn btn-sm btn-primary mt-2">
-							Fill Resolution Form
+					<div className="flex flex-wrap gap-2">
+						<button onClick={handleLearnMore} className="btn btn-sm btn-primary">
+							Detailed Explanation
+						</button>
+						<button onClick={handleResolutionForm} className="btn btn-sm btn-primary">
+							Get Support
 						</button>
 					</div>
 				</div>
