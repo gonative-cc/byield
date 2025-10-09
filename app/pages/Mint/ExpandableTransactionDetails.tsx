@@ -4,29 +4,118 @@ import { AnimatedHourglass } from "~/components/ui/AnimatedHourglass";
 import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import { NumericFormat } from "react-number-format";
 import { formatBTC } from "~/lib/denoms";
+import { infoBoxClasses } from "~/util/tailwind";
 
 interface FailedTransactionAlertProps {
 	transaction: MintTransaction;
 }
 
 function FailedTransactionAlert({ transaction }: FailedTransactionAlertProps) {
-	return (
-		<div className="alert alert-error">
-			<XCircle size={16} className="flex-shrink-0" />
-			<div>
-				<div className="mb-1 font-medium">
-					Transaction {transaction.status === MintingStatus.Reorg ? "Reorganized" : "Failed"}
+	const isPostConfirmationFailure =
+		transaction.numberOfConfirmation >= 4 &&
+		transaction.status === MintingStatus.Failed &&
+		!transaction.suiTxId;
+
+	const isBroadcastFailure =
+		transaction.numberOfConfirmation === 0 && transaction.status === MintingStatus.Failed;
+
+	const isReorgFailure = transaction.status === MintingStatus.Reorg;
+
+	const handleResolutionForm = () => {
+		// TODO: Replace with actual form URL
+		window.open("https://forms.example.com/nbtc-resolution", "_blank");
+	};
+
+	if (isPostConfirmationFailure) {
+		return (
+			<div className={`${infoBoxClasses()} space-y-3`}>
+				<div className="flex items-start gap-3">
+					<XCircle size={16} className="text-primary mt-0.5 flex-shrink-0" />
+					<div className="flex-1 space-y-3">
+						<div className="text-primary font-medium">
+							Transaction Failed - Manual Resolution Required
+						</div>
+
+						<div className="text-sm">
+							Your Bitcoin transaction was successfully confirmed on the blockchain, but the
+							nBTC minting process failed on the Sui network. This typically occurs when our SPV
+							(Simplified Payment Verification) client encounters an issue while processing your
+							transaction.
+						</div>
+
+						<div className="space-y-2">
+							<div className="text-sm font-medium">What happened:</div>
+							<ul className="ml-4 space-y-1 text-sm">
+								<li>• Your BTC was successfully sent and confirmed (4+ confirmations)</li>
+								<li>• The Sui network failed to mint your nBTC tokens</li>
+								<li>
+									• Your BTC is currently held in our deposit address, consider your funds
+									safe
+								</li>
+							</ul>
+						</div>
+
+						<div className="space-y-2">
+							<div className="text-sm font-medium">Why this happens:</div>
+							<div className="text-sm">
+								This failure occurs on the Sui blockchain side, usually due to network
+								congestion, SPV client synchronization issues, or temporary connectivity
+								problems between Bitcoin and Sui networks.
+							</div>
+						</div>
+
+						<div className="space-y-2">
+							<div className="text-sm font-medium">Next steps:</div>
+							<div className="text-sm">
+								To resolve this issue and receive your nBTC tokens, please fill out our manual
+								resolution form. Our support team will process your request and mint your nBTC
+								tokens manually.
+							</div>
+							<button onClick={handleResolutionForm} className="btn btn-sm btn-primary mt-2">
+								Fill Resolution Form
+							</button>
+						</div>
+					</div>
 				</div>
-				<div className="text-sm opacity-80">
-					{transaction.errorMessage ||
-						(transaction.status === MintingStatus.Reorg
-							? "The transaction was reorganized due to a blockchain reorganization"
-							: "The transaction was not included in the block (the transaction didn't happen)")}
-				</div>
-				<button className="btn btn-sm btn-error mt-2">Retry Transaction</button>
 			</div>
-		</div>
-	);
+		);
+	}
+
+	if (isBroadcastFailure) {
+		return (
+			<div className={infoBoxClasses()}>
+				<div className="flex items-start gap-3">
+					<XCircle size={16} className="text-primary mt-0.5 flex-shrink-0" />
+					<div>
+						<div className="text-primary mb-1 font-medium">Transaction Broadcast Failed</div>
+						<div className="text-sm">
+							{transaction.errorMessage ||
+								"The Bitcoin transaction failed to broadcast to the network. Your BTC was not sent."}
+						</div>
+					</div>
+				</div>
+			</div>
+		);
+	}
+
+	if (isReorgFailure) {
+		return (
+			<div className={infoBoxClasses()}>
+				<div className="flex items-start gap-3">
+					<XCircle size={16} className="text-primary mt-0.5 flex-shrink-0" />
+					<div>
+						<div className="text-primary mb-1 font-medium">Transaction Reorganized</div>
+						<div className="text-sm">
+							{transaction.errorMessage ||
+								"The transaction was reorganized due to a blockchain reorganization"}
+						</div>
+					</div>
+				</div>
+			</div>
+		);
+	}
+
+	return null;
 }
 
 interface ExpandableTransactionDetailsProps {
@@ -88,7 +177,7 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 				<div className="divider my-2"></div>
 
 				<div className="flex items-center gap-2 text-sm">
-					{isFailed ? (
+					{isFailed && transaction.numberOfConfirmation === 0 ? (
 						<XCircle size={16} className="text-error flex-shrink-0" />
 					) : isBroadcasted ? (
 						<CheckCircle size={16} className="text-success flex-shrink-0" />
@@ -96,7 +185,7 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 						<AnimatedHourglass size="md" />
 					)}
 					<span>
-						{isFailed
+						{isFailed && transaction.numberOfConfirmation === 0
 							? "Bitcoin Tx Broadcast failed"
 							: isBroadcasted
 								? "Bitcoin Tx broadcasted"
@@ -115,15 +204,17 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 				</div>
 
 				<div className="flex items-center gap-2 text-sm">
-					{isFailed ? null : isConfirmed ? (
+					{isFailed && transaction.numberOfConfirmation === 0 ? null : isConfirmed ? (
 						<CheckCircle size={16} className="text-success flex-shrink-0" />
 					) : transaction.numberOfConfirmation > 0 ? (
 						<AnimatedHourglass size="md" />
 					) : null}
 					<span>
 						Bitcoin confirmations:{" "}
-						{isFailed ? 0 : Math.min(transaction.numberOfConfirmation, confirmationDepth)}/
-						{confirmationDepth}
+						{isFailed && transaction.numberOfConfirmation === 0
+							? 0
+							: Math.min(transaction.numberOfConfirmation, confirmationDepth)}
+						/{confirmationDepth}
 					</span>
 					{showTimeRemaining && (
 						<span className="text-base-content/60">
