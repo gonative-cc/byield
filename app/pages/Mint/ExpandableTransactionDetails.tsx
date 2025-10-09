@@ -10,6 +10,76 @@ interface FailedTransactionAlertProps {
 	transaction: MintTransaction;
 }
 
+function PostConfirmationFailureAlert() {
+	const handleResolutionForm = () => {
+		// TODO: Replace with actual form URL
+		window.open("https://forms.example.com/nbtc-resolution", "_blank");
+	};
+
+	return (
+		<div className={`${infoBoxClasses()} space-y-3`}>
+			<div className="flex items-start gap-3">
+				<XCircle size={16} className="text-primary mt-0.5 flex-shrink-0" />
+				<div className="flex-1 space-y-3">
+					<div className="text-primary font-medium">
+						Transaction Failed - Manual Resolution Required
+					</div>
+
+					<div className="text-sm">
+						Your Bitcoin transaction was successfully confirmed on the blockchain, but the nBTC
+						minting process failed on the Sui network. This typically occurs when the SPV Light
+						Client encounters an issue while verifying the transaction&#39;s inclusion in a block.
+					</div>
+
+					<div className="space-y-2">
+						<div className="text-sm font-medium">What happened:</div>
+						<ul className="list-inside list-disc space-y-1 text-sm">
+							<li>Your BTC was successfully broadcasted, mined and confirmed</li>
+							<li>The Sui network failed to mint your nBTC tokens</li>
+							<li>
+								Your BTC is currently held in our deposit address, consider your funds safe
+							</li>
+						</ul>
+					</div>
+
+					<div className="space-y-2">
+						<div className="text-sm font-medium">Why this happens:</div>
+						<div className="text-sm">
+							This failure occurs on the Sui, usually due to network congestion or SPV Light
+							client synchronization issues.
+						</div>
+					</div>
+
+					<div className="space-y-2">
+						<div className="text-sm font-medium">Next steps:</div>
+						<div className="text-sm">
+							The minting will be re-attempted shortly, if the problems persists after few hours
+							please fill out our resolution form. Our support team will process your request.
+						</div>
+						<button onClick={handleResolutionForm} className="btn btn-sm btn-primary mt-2">
+							Fill Resolution Form
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
+}
+
+function SimpleErrorAlert({ title, message }: { title: string; message: string }) {
+	return (
+		<div className={infoBoxClasses()}>
+			<div className="flex items-start gap-3">
+				<XCircle size={16} className="text-primary mt-0.5 flex-shrink-0" />
+				<div>
+					<div className="text-primary mb-1 font-medium">{title}</div>
+					<div className="text-sm">{message}</div>
+				</div>
+			</div>
+		</div>
+	);
+}
+
 function FailedTransactionAlert({ transaction }: FailedTransactionAlertProps) {
 	const isPostConfirmationFailure =
 		transaction.numberOfConfirmation >= 4 &&
@@ -21,97 +91,31 @@ function FailedTransactionAlert({ transaction }: FailedTransactionAlertProps) {
 
 	const isReorgFailure = transaction.status === MintingStatus.Reorg;
 
-	const handleResolutionForm = () => {
-		// TODO: Replace with actual form URL
-		window.open("https://forms.example.com/nbtc-resolution", "_blank");
-	};
-
 	if (isPostConfirmationFailure) {
-		return (
-			<div className={`${infoBoxClasses()} space-y-3`}>
-				<div className="flex items-start gap-3">
-					<XCircle size={16} className="text-primary mt-0.5 flex-shrink-0" />
-					<div className="flex-1 space-y-3">
-						<div className="text-primary font-medium">
-							Transaction Failed - Manual Resolution Required
-						</div>
-
-						<div className="text-sm">
-							Your Bitcoin transaction was successfully confirmed on the blockchain, but the
-							nBTC minting process failed on the Sui network. This typically occurs when our SPV
-							(Simplified Payment Verification) client encounters an issue while processing your
-							transaction.
-						</div>
-
-						<div className="space-y-2">
-							<div className="text-sm font-medium">What happened:</div>
-							<ul className="ml-4 space-y-1 text-sm">
-								<li>• Your BTC was successfully sent and confirmed (4+ confirmations)</li>
-								<li>• The Sui network failed to mint your nBTC tokens</li>
-								<li>
-									• Your BTC is currently held in our deposit address, consider your funds
-									safe
-								</li>
-							</ul>
-						</div>
-
-						<div className="space-y-2">
-							<div className="text-sm font-medium">Why this happens:</div>
-							<div className="text-sm">
-								This failure occurs on the Sui blockchain side, usually due to network
-								congestion, SPV client synchronization issues, or temporary connectivity
-								problems between Bitcoin and Sui networks.
-							</div>
-						</div>
-
-						<div className="space-y-2">
-							<div className="text-sm font-medium">Next steps:</div>
-							<div className="text-sm">
-								To resolve this issue and receive your nBTC tokens, please fill out our manual
-								resolution form. Our support team will process your request and mint your nBTC
-								tokens manually.
-							</div>
-							<button onClick={handleResolutionForm} className="btn btn-sm btn-primary mt-2">
-								Fill Resolution Form
-							</button>
-						</div>
-					</div>
-				</div>
-			</div>
-		);
+		return <PostConfirmationFailureAlert />;
 	}
 
 	if (isBroadcastFailure) {
 		return (
-			<div className={infoBoxClasses()}>
-				<div className="flex items-start gap-3">
-					<XCircle size={16} className="text-primary mt-0.5 flex-shrink-0" />
-					<div>
-						<div className="text-primary mb-1 font-medium">Transaction Broadcast Failed</div>
-						<div className="text-sm">
-							{transaction.errorMessage ||
-								"The Bitcoin transaction failed to broadcast to the network. Your BTC was not sent."}
-						</div>
-					</div>
-				</div>
-			</div>
+			<SimpleErrorAlert
+				title="Transaction Broadcast Failed"
+				message={
+					transaction.errorMessage ||
+					"The Bitcoin transaction failed to broadcast to the network. Your BTC was not sent."
+				}
+			/>
 		);
 	}
 
 	if (isReorgFailure) {
 		return (
-			<div className={infoBoxClasses()}>
-				<div className="flex items-start gap-3">
-					<XCircle size={16} className="text-primary mt-0.5 flex-shrink-0" />
-					<div>
-						<div className="text-primary mb-1 font-medium">Transaction Reorganized</div>
-						<div className="text-sm">
-							{transaction.errorMessage ||
-								"The transaction was reorganized due to a blockchain reorganization"}
-						</div>
-					</div>
-				</div>
-			</div>
+			<SimpleErrorAlert
+				title="Transaction Reorganized"
+				message={
+					transaction.errorMessage ||
+					"The block that your transaction was mined in is no longer part of the heaviest chain due to a Bitcoin reorg"
+				}
+			/>
 		);
 	}
 
