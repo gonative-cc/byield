@@ -172,7 +172,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 
 	return (
 		<FormProvider {...mintNBTCForm}>
-			<form onSubmit={handleSubmit(handlenBTCMintTx)} className="mx-auto w-full max-w-2xl">
+			<form onSubmit={handleSubmit(handlenBTCMintTx)} className="mx-auto w-full max-w-lg">
 				<div className="card">
 					<div className="card-body flex flex-col space-y-4">
 						<NBTCBalance balance={nBTCBalance} />
