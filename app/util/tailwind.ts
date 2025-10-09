@@ -51,7 +51,7 @@ export function alertPrimaryClasses() {
 }
 
 export const orangeInfoCardClasses =
-	"p-6 bg-gradient-to-r from-primary/5 to-primary/10 rounded-2xl border border-primary/20 hover:border-primary/40 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10";
+	"bg-gradient-to-r from-primary/5 to-primary/10 rounded-2xl border border-primary/20 hover:border-primary/40 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10";
 
 export function classNames(
 	...args: (string | { [key: string]: boolean } | undefined | null)[]
