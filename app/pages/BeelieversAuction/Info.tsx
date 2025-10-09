@@ -219,7 +219,7 @@ const FinalizedNotifier = ({
 
 	return (
 		<div className="p-2 text-lg">
-			<span className="text-xlg">🔨</span> Auction ended. Minting will be availabled in the next few
+			<span className="text-xl">🔨</span> Auction ended. Minting will be availabled in the next few
 			days.
 			<p className="mt-4">{msg}</p>
 		</div>

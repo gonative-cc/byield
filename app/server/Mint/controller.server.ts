@@ -3,7 +3,13 @@ import { type IndexerTransaction, type MintTransaction } from "./types";
 import type { QueryMintTxResp, Req } from "./jsonrpc";
 import type { BitcoinNetworkType } from "sats-connect";
 import { mustGetBitcoinConfig } from "~/hooks/useBitcoinConfig";
-import { badRequest, serverError, notFound } from "../http-resp";
+import {
+	badRequest,
+	serverError,
+	notFound,
+	handleNonSuccessResp as handleFailResp,
+} from "../http-resp";
+import { protectedBitcoinRPC } from "./btc-proxy.server";
 
 export default class Controller {
 	btcRPCUrl: string | null = null;
@@ -31,44 +37,43 @@ export default class Controller {
 	}
 
 	private async getMintTxs(suiAddr: string): Promise<QueryMintTxResp | Response> {
+		const method = "nbtc:getMintTxs";
 		if (!isValidSuiAddress(suiAddr)) {
 			return badRequest();
 		}
+		const url = this.indexerBaseUrl + `/nbtc?sui_recipient=${suiAddr}`;
 		try {
-			const url = this.indexerBaseUrl + `/nbtc?sui_recipient=${suiAddr}`;
-			const indexerResponse = await fetch(url);
-			const data: IndexerTransaction[] = await indexerResponse.json();
+			const r = await fetch(url);
+			if (!r.ok) return handleFailResp(method, "can't fetch mint txs by sui address", r);
+			const data: IndexerTransaction[] = await r.json();
 			const mintTxs: MintTransaction[] = data.map((tx) => this.convertIndexerTransaction(tx));
 			return mintTxs;
 		} catch (error) {
-			console.error({ msg: "Failed to fetch the mint txs", error, url: this.indexerBaseUrl });
-			return serverError();
+			return serverError(method, error);
 		}
 	}
 
 	private async queryUTXOs(address: string) {
-		const rpcUrl = `${this.btcRPCUrl}/address/${encodeURIComponent(address)}/utxo`;
-		console.trace({ msg: "Querying nBTCUTXOs", address });
-		const rpcResponse = await fetch(rpcUrl);
-		if (!rpcResponse.ok) {
-			const error = await rpcResponse.text();
-			console.error({
-				msg: "Bitcoin RPC responded with error",
-				status: rpcResponse.status,
-				error,
-				rpcUrl,
-				address,
-			});
-			return serverError(`Bitcoin RPC error: status: ${rpcResponse.status}, error: ${error}`);
-		}
-		return new Response(rpcResponse.body, {
-			status: rpcResponse.status,
+		const method = "nbtc:queryUTXOs";
+		const path = `/address/${encodeURIComponent(address)}/utxo`;
+		console.trace({ msg: "Querying nBTCUTXOs", address, btcRPCUrl: this.btcRPCUrl });
+
+		// URL is dummy
+		const request = new Request("https://internal-proxy-auth", {
 			headers: {
-				"Content-Type": rpcResponse.headers.get("content-type") ?? "application/json",
+				Authorization: "Bearer btc-proxy-secret-2025",
+				"CF-Connecting-IP": "127.0.0.1",
 			},
 		});
+
+		const rpcResponse = await protectedBitcoinRPC(request, this.btcRPCUrl!, path);
+		if (!rpcResponse.ok) {
+			return handleFailResp(method, "Can't query Bitcoin UTXOs", rpcResponse);
+		}
+		return rpcResponse;
 	}
 
+	// TODO: should be removed
 	private handleNetwork(network: BitcoinNetworkType) {
 		const networkConfig = mustGetBitcoinConfig(network);
 		this.indexerBaseUrl = networkConfig?.indexerUrl || null;
@@ -76,45 +81,49 @@ export default class Controller {
 	}
 
 	private async fetchTxHexByTxId(txId: string) {
+		const method = "nbtc:fetchTxHexByTxId";
 		try {
-			const url = this.btcRPCUrl + `/tx/${txId}/hex`;
-			const response = await fetch(url);
+			const path = `/tx/${encodeURIComponent(txId)}/hex`;
+
+			// URL is dummy
+			const request = new Request("https://internal-proxy-auth", {
+				headers: {
+					Authorization: "Bearer btc-proxy-secret-2025",
+					"CF-Connecting-IP": "127.0.0.1",
+				},
+			});
+
+			const response = await protectedBitcoinRPC(request, this.btcRPCUrl!, path);
 			if (!response.ok) {
-				if (response.status === 404) {
-					return notFound();
-				}
-				throw new Error(`HTTP error! status: ${response.status}`);
+				return handleFailResp(method, "Can't query Bitcoin Tx data", response);
 			}
 			return await response.text();
 		} catch (error) {
-			console.error({ msg: "Error fetching tx hex:", error });
-			return serverError();
+			return serverError(method, error, "can't process Tx data");
 		}
 	}
 
-	private async postNBTCTx(txId: string) {
+	private async postNbtcTx(txId: string) {
+		const method = "nbtc:postNbtcTx";
 		try {
+			// TODO: why do we need this?
 			const txHex = await this.fetchTxHexByTxId(txId);
 			if (!txHex) {
 				throw new Error(`Error fetching tx hex: ${txId}`);
 			}
 			const url = this.indexerBaseUrl + `/nbtc`;
-			const response = await fetch(url, {
+			const r = await fetch(url, {
 				method: "POST",
 				body: JSON.stringify({
 					txHex,
 				}),
 			});
-			if (!response.ok) {
-				if (response.status === 404) {
-					return notFound();
-				}
-				throw new Error(`HTTP error! status: ${response.status}`);
+			if (!r.ok) {
+				return handleFailResp(method, "Can't query Bitcoin Tx data", r);
 			}
-			return response;
+			return r;
 		} catch (error) {
-			console.error({ msg: "Error posting tx hex:", error });
-			return serverError();
+			return serverError(method, error);
 		}
 	}
 
@@ -132,8 +141,8 @@ export default class Controller {
 		switch (reqData.method) {
 			case "queryMintTx":
 				return this.getMintTxs(reqData.params[1]);
-			case "postNBTCTx":
-				return this.postNBTCTx(reqData.params[1]);
+			case "postNbtcTx":
+				return this.postNbtcTx(reqData.params[1]);
 			case "queryUTXOs":
 				return this.queryUTXOs(reqData.params[1]);
 			default:

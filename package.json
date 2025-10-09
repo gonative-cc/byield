@@ -9,14 +9,15 @@
 		"cf-typegen": "wrangler types",
 		"build": "react-router build",
 		"build:dev": "react-router build --mode dev",
-		"deploy": "bun run build --mode dev && wrangler deploy",
-		"deploy:prod:legacy": "bun run build && wrangler deploy -c ./wrangler-prod.jsonc",
+		"deploy": "rm -rf build && bun run build --mode dev && wrangler deploy",
+		"deploy:prod:legacy": "rm -rf build && bun run build && wrangler deploy -c ./wrangler-prod.jsonc",
 		"deploy:prod": "bun run build && wrangler deploy -e prod",
 		"deploy:prod:ver": "bun run build && wrangler versions upload -c ./wrangler-prod.jsonc",
 		"preview": "vite preview",
 		"preview:wrangler": "wrangler dev",
 		"dev": "react-router dev",
 		"lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
+		"lint:fix": "bun run lint --fix",
 		"format": "prettier --write .",
 		"start": "wrangler dev",
 		"typecheck": "react-router typegen && tsc -b",
@@ -73,6 +74,7 @@
 		"eslint-plugin-jsx-a11y": "^6.10.2",
 		"eslint-plugin-react": "^7.37.5",
 		"eslint-plugin-react-hooks": "^5.2.0",
+		"eslint-plugin-tailwindcss": "^4.0.0-beta.0",
 		"fast-check": "^4.3.0",
 		"globals": "^16.4.0",
 		"jiti": "^2.6.1",
@@ -87,7 +89,7 @@
 		"vite": "^6.3.6",
 		"vite-tsconfig-paths": "^5.1.4",
 		"vitest": "^3.2.4",
-		"wrangler": "^4.40.3"
+		"wrangler": "^4.42.0"
 	},
 	"lint-staged": {
 		"*.{js,cjs,mjs,jsx,ts,tsx}": [

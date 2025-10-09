@@ -9,7 +9,7 @@ export type Req =
 			params: [BitcoinNetworkType, string];
 	  }
 	| {
-			method: "postNBTCTx";
+			method: "postNbtcTx";
 			// network, tx id
 			params: [BitcoinNetworkType, string];
 	  }

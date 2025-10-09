@@ -11,6 +11,7 @@ import { classNames } from "~/util/tailwind";
 import { SUIIcon } from "~/components/icons";
 import { useBuySellNBTC } from "./useNBTC";
 import { LoadingSpinner } from "~/components/LoadingSpinner";
+import type { UseCoinBalanceResult } from "~/components/Wallet/SuiWallet/useBalance";
 
 const BUY_NBTC_GAS = parseSUI("0.01");
 
@@ -26,6 +27,7 @@ function SUIRightAdornment({ maxSUIAmount, onMaxClick }: SUIRightAdornmentProps)
 				<div className="flex items-center gap-2">
 					<p className="text-xs whitespace-nowrap">Balance: {maxSUIAmount.substring(0, 4)} SUI</p>
 					<button
+						type="button"
 						onClick={() => onMaxClick(maxSUIAmount)}
 						className="btn btn-primary btn-link h-fit w-fit p-0 pr-2 text-xs"
 					>
@@ -46,7 +48,12 @@ interface BuyNBTCForm {
 	suiAmount: string;
 }
 
-export function BuyNBTCTabContent() {
+type BuyNBTCTabContentProps = {
+	nbtcBalanceRes: UseCoinBalanceResult;
+	suiBalanceRes: UseCoinBalanceResult;
+};
+
+export function BuyNBTCTabContent({ nbtcBalanceRes, suiBalanceRes }: BuyNBTCTabContentProps) {
 	const {
 		handleTransaction,
 		resetMutation,
@@ -56,7 +63,11 @@ export function BuyNBTCTabContent() {
 		data,
 		suiBalance,
 		isSuiWalletConnected,
-	} = useBuySellNBTC({ variant: "BUY" });
+	} = useBuySellNBTC({
+		variant: "BUY",
+		nbtcBalanceRes,
+		suiBalanceRes,
+	});
 
 	const buyNBTCForm = useForm<BuyNBTCForm>({
 		mode: "all",

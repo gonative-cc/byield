@@ -51,8 +51,8 @@ function Percentage({ onChange }: { onChange: (value: number) => void }) {
 		<div className="grid grid-cols-4 gap-2">
 			{PERCENTAGES.map(({ id, value }) => (
 				<button
-					key={id}
 					type="button"
+					key={id}
 					onClick={() => onChange(value)}
 					className="btn btn-sm btn-primary btn-outline"
 				>
@@ -73,7 +73,7 @@ interface MintBTCProps {
 }
 
 export function MintBTC({ fetchMintTxs }: MintBTCProps) {
-	const { balance: nBTCBalance } = useCoinBalance();
+	const { balance: nBTCBalance } = useCoinBalance("NBTC");
 	const [txId, setTxId] = useState<string | undefined>(undefined);
 	const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 	const [isProcessing, setIsProcessing] = useState(false);
@@ -84,7 +84,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 	const cfg = useBitcoinConfig();
 
 	const utxosRPC = useFetcher<UTXO[]>();
-	const postNBTCTxRPC = useFetcher();
+	const postNbtcTxRPC = useFetcher();
 
 	const mintNBTCForm = useForm<MintNBTCForm>({
 		mode: "all",
@@ -111,7 +111,8 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 			method: "queryUTXOs",
 			params: [network, currentAddress.address],
 		});
-	}, [currentAddress?.address, network]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [currentAddress, network]);
 
 	// Event handler
 	const handlenBTCMintTx = async ({ numberOfBTC, suiAddress }: MintNBTCForm) => {
@@ -146,8 +147,8 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 				const txid = response.result.txid;
 				setTxId(txid);
 				setShowConfirmationModal(true);
-				await makeReq(postNBTCTxRPC, {
-					method: "postNBTCTx",
+				await makeReq(postNbtcTxRPC, {
+					method: "postNbtcTx",
 					params: [network, txid!],
 				});
 				fetchMintTxs();
@@ -175,7 +176,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 			<form onSubmit={handleSubmit(handlenBTCMintTx)} className="mx-auto w-full max-w-lg">
 				<div className="card">
 					<div className="card-body flex flex-col space-y-4">
-						<NBTCBalance balance={nBTCBalance} />
+						{suiAddr && <NBTCBalance balance={nBTCBalance} />}
 						<FormNumericInput
 							required
 							name="numberOfBTC"

@@ -1,6 +1,7 @@
 import { useSuiClient, useCurrentAccount } from "@mysten/dapp-kit";
 import { useState, useEffect, useCallback } from "react";
 import { SuiClient, type CoinBalance } from "@mysten/sui/client";
+import { useNetworkVariables } from "~/networkConfig";
 
 export interface UseCoinBalanceResult {
 	balance: bigint;
@@ -22,10 +23,18 @@ async function fetchBalance(
 }
 
 // Coin address is a coin package ID followed by the type. Default to 0x2::sui::SUI.
-export function useCoinBalance(coinAddr?: string): UseCoinBalanceResult {
+export function useCoinBalance(coinOrVariant?: string): UseCoinBalanceResult {
 	const suiClient = useSuiClient();
 	const account = useCurrentAccount();
 	const userAddr = account?.address || null;
+	const { nbtc } = useNetworkVariables();
+
+	const resolvedCoinAddr =
+		coinOrVariant === undefined || coinOrVariant === "SUI"
+			? undefined
+			: coinOrVariant === "NBTC"
+				? nbtc.pkgId + nbtc.coinType
+				: coinOrVariant;
 
 	const [balance, setBalance] = useState<CoinBalance | null>(null);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -41,11 +50,11 @@ export function useCoinBalance(coinAddr?: string): UseCoinBalanceResult {
 
 		let cancelled = false;
 
-		console.log(`Fetching coin (${coinAddr}) balance for`, userAddr);
+		console.log(`Fetching coin (${resolvedCoinAddr ?? "SUI"}) balance for`, userAddr);
 		setIsLoading(true);
 		setError(null);
 
-		fetchBalance(suiClient, userAddr, coinAddr).then((resOrErr) => {
+		fetchBalance(suiClient, userAddr, resolvedCoinAddr).then((resOrErr) => {
 			if (cancelled) {
 				return;
 			}
@@ -58,7 +67,7 @@ export function useCoinBalance(coinAddr?: string): UseCoinBalanceResult {
 		return () => {
 			cancelled = true;
 		};
-	}, [suiClient, coinAddr, userAddr]);
+	}, [suiClient, resolvedCoinAddr, userAddr]);
 
 	useEffect(refetch, [refetch]);
 
