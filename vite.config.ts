@@ -14,4 +14,9 @@ export default defineConfig({
 	build: {
 		minify: true,
 	},
+	server: {
+		warmup: {
+			clientFiles: ["./app/**/!(*.server|*.test)*.tsx"],
+		},
+	},
 });

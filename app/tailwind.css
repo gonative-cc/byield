@@ -168,10 +168,6 @@ button {
   cursor: pointer;
 }
 
-a.link-raw {
-  @apply hover:underline;
-}
-
 /* Smooth scrolling for better UX */
 html {
   scroll-behavior: smooth;

@@ -170,11 +170,7 @@ export function SideBar() {
 
 			{/* Overlay for mobile */}
 			{isMobileOpen && (
-				<button
-					type="button"
-					className="bg-opacity-50 fixed inset-0 md:hidden"
-					onClick={toggleMobileMenu}
-				/>
+				<button type="button" className="fixed inset-0 md:hidden" onClick={toggleMobileMenu} />
 			)}
 		</div>
 	);
@@ -191,7 +187,7 @@ function ParentItem(item: MenuItem, currentPath: string, collapsed: boolean) {
 				"cursor-default": item.link === "",
 			})}
 		>
-			<img src={item.icon} alt="" className="object-fit flex h-8 w-8" />
+			<img src={item.icon} alt="" className="flex h-8 w-8" />
 			{!collapsed && (
 				<div className="flex w-full justify-between">
 					<span className="text-sm">{item.title}</span>

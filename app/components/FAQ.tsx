@@ -13,22 +13,29 @@ interface FAQProps {
 }
 
 export function FAQ({ faqs, description = "" }: FAQProps) {
-	const renderQuestion = (key: string, question: string, answer: FAQ["answer"]) => (
-		<div key={key} className={orangeInfoCardClasses}>
-			<h3 className="text-primary mb-3 flex items-center gap-2 text-xl font-semibold">{question}</h3>
-			{typeof answer === "string" ? <p className="text-foreground">{answer}</p> : answer}
-		</div>
-	);
+	const renderQuestion = (faq: FAQ) => {
+		return (
+			<div key={faq.id} className={`${orangeInfoCardClasses} collapse-plus collapse border p-2`}>
+				<input type="checkbox" />
+				<div className="collapse-title text-primary text-xl font-medium">{faq.question}</div>
+				<div className="collapse-content">
+					{typeof faq.answer === "string" ? (
+						<p className="text-foreground">{faq.answer}</p>
+					) : (
+						faq.answer
+					)}
+				</div>
+			</div>
+		);
+	};
 
 	return (
-		<div className="bg-card/50 border-primary/20 w-full max-w-5xl rounded-2xl border p-4 shadow-2xl lg:p-8">
+		<div className="border-primary/20 w-full max-w-5xl rounded-2xl border p-4 shadow-2xl lg:p-8">
 			<div className="mb-6 text-center">
 				<h2 className="text-primary mb-3 text-3xl font-bold">🤔 Frequently Asked Questions</h2>
 				{description && <p className="text-muted-foreground">{description}</p>}
 			</div>
-			<div className="space-y-6">
-				{faqs.map(({ id, question, answer }) => renderQuestion(id, question, answer))}
-			</div>
+			<div className="space-y-4">{faqs.map(renderQuestion)}</div>
 		</div>
 	);
 }

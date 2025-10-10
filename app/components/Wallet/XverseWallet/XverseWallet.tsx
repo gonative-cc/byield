@@ -2,11 +2,11 @@ import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
 import { type Option, SelectInput } from "../../ui/select";
 import { useMemo } from "react";
 import { trimAddress } from "../walletHelper";
-import { NumericFormat } from "react-number-format";
 import { formatBTC } from "~/lib/denoms";
 import { useLocation } from "react-router";
 import { BitcoinNetworkType } from "sats-connect";
 import { CopyButton } from "~/components/ui/CopyButton";
+import { TrimmedNumber } from "~/components/TrimmedNumber";
 
 function NetWorkOptions() {
 	const { network, switchNetwork } = useXverseWallet();
@@ -74,12 +74,12 @@ function XverseWalletMobileView() {
 			<div className="flex w-full items-center justify-between gap-4">
 				{balance && (
 					<p>
-						Balance:{" "}
-						<NumericFormat
+						<TrimmedNumber
 							displayType="text"
 							value={formatBTC(BigInt(balance))}
 							suffix=" BTC"
 							className="text-primary shrink-0"
+							prefix="Balance: "
 						/>
 					</p>
 				)}
@@ -101,7 +101,7 @@ export function XverseWallet() {
 				<NetWorkOptions />
 				<Accounts />
 				{balance && (
-					<NumericFormat
+					<TrimmedNumber
 						displayType="text"
 						value={formatBTC(BigInt(balance))}
 						suffix=" BTC"
