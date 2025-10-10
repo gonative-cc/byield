@@ -31,7 +31,7 @@ const PERCENTAGES = [25, 50, 75, 100];
 
 function Percentage({ onChange }: { onChange: (value: number) => void }) {
 	return (
-		<div className="grid grid-cols-4 gap-2">
+		<div className="grid grid-cols-4 gap-2 mb-4">
 			{PERCENTAGES.map((v) => (
 				<button
 					type="button"
@@ -158,7 +158,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 		<FormProvider {...mintNBTCForm}>
 			<form onSubmit={handleSubmit(handlenBTCMintTx)} className="mx-auto max-w-lg">
 				<div className="card">
-					<div className="card-body flex flex-col space-y-4">
+					<div className="card-body flex flex-col">
 						{suiAddr && <NBTCBalance balance={nBTCBalance} />}
 						<FormNumericInput
 							required
@@ -218,7 +218,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 							}}
 						/>
 
-						<p>
+						<p className="mb-2 flex items-center">
 							Minting Fee: &nbsp; {cfg.nBTC.mintingFee} nSats &nbsp;
 							<span className="tooltip cursor-help" data-tip="1 nSats = 0.00000001 nBTC">
 								<Info size={18} />
@@ -241,7 +241,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 							<button
 								type="button"
 								onClick={connectWallet}
-								className="btn btn-primary btn-block"
+								className="btn btn-primary btn-wide"
 							>
 								<BitcoinIcon className="h-5 w-5" />
 								Connect Bitcoin Wallet
