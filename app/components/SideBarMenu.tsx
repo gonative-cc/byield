@@ -37,7 +37,7 @@ function navMenuItems(): MenuItem[] {
 					},
 					{
 						id: "navigation-2-2",
-						link: "/mint",
+						link: "/nbtc/mint",
 						icon: "",
 						subNavItems: [],
 						title: "Mint nBTC",

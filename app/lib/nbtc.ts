@@ -1,6 +1,6 @@
 import Wallet, { BitcoinNetworkType } from "sats-connect";
 import { type Address, type RpcResult } from "sats-connect";
-import { type UTXO } from "~/server/Mint/types";
+import { type UTXO } from "~/server/nbtc/types";
 import {
 	getBitcoinNetworkConfig,
 	createPsbt,

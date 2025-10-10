@@ -1,12 +1,12 @@
-import { RegtestInstructions } from "~/pages/Mint/RegtestInstructions";
-import { MintBTC } from "~/pages/Mint/MintBTC";
-import { MintBTCTable } from "~/pages/Mint/MintBTCTable";
+import { RegtestInstructions } from "~/pages/nbtc-mint/RegtestInstructions";
+import { MintBTC } from "~/pages/nbtc-mint/MintBTC";
+import { MintBTCTable } from "~/pages/nbtc-mint/MintBTCTable";
 import { Collapse } from "~/components/ui/collapse";
 import { RefreshCw } from "lucide-react";
-import type { Route } from "./+types/mint";
-import Controller from "~/server/Mint/controller.server";
+import type { Route } from "../+types/mint";
+import Controller from "~/server/nbtc/controller.server";
 import { useFetcher } from "react-router";
-import { makeReq, type QueryMintTxResp } from "~/server/Mint/jsonrpc";
+import { makeReq, type QueryMintTxResp } from "~/server/nbtc/jsonrpc";
 import { useContext, useEffect, useRef, useCallback, useMemo } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { BlockInfoCard } from "~/components/ui/BlockInfoCard";
