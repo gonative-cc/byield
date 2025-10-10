@@ -11,38 +11,53 @@ interface FailedTransactionAlertProps {
 }
 
 function PostConfirmationFailureAlert() {
-	const handleLearnMore = () => {
-		window.open(
-			"https://github.com/gonative-cc/byield/tree/master?tab=readme-ov-file#transaction-failures",
-			"_blank",
-		);
-	};
-
-	const handleResolutionForm = () => {
-		// GitHub issues for support until dedicated form is ready
-		window.open("https://github.com/gonative-cc/byield/issues/new", "_blank");
+	const handleDiscordSupport = () => {
+		window.open("https://discord.com/channels/1262723650424016946/1388137313527267371", "_blank");
 	};
 
 	return (
-		<div className={infoBoxClasses()}>
+		<div className={`${infoBoxClasses()} space-y-3`}>
 			<div className="flex items-start gap-3">
 				<XCircle size={16} className="text-primary mt-0.5 flex-shrink-0" />
 				<div className="flex-1 space-y-3">
 					<div className="text-primary font-medium">
-						nBTC Minting Failed - Auto-retry in progress
+						Transaction Failed - Manual Resolution Required
 					</div>
 
 					<div className="text-sm">
-						<strong>Your funds are safe.</strong> See detailed explanation and support options
-						below.
+						Your Bitcoin transaction was successfully confirmed on the blockchain, but the nBTC
+						minting process failed on the Sui network. This typically occurs when the SPV Light
+						Client encounters an issue while verifying the transaction&#39;s inclusion in a block.
 					</div>
 
-					<div className="flex flex-wrap gap-2">
-						<button onClick={handleLearnMore} className="btn btn-sm btn-primary">
-							Detailed Explanation
-						</button>
-						<button onClick={handleResolutionForm} className="btn btn-sm btn-primary">
-							Get Support
+					<div className="space-y-2">
+						<div className="text-sm font-medium">What happened:</div>
+						<ul className="list-inside list-disc space-y-1 text-sm">
+							<li>Your BTC was successfully broadcasted, mined and confirmed</li>
+							<li>The Sui network failed to mint your nBTC tokens</li>
+							<li>
+								Your BTC is currently held in our deposit address, consider your funds safe
+							</li>
+						</ul>
+					</div>
+
+					<div className="space-y-2">
+						<div className="text-sm font-medium">Why this happens:</div>
+						<div className="text-sm">
+							This failure occurs on the Sui, usually due to network congestion or SPV Light
+							client synchronization issues.
+						</div>
+					</div>
+
+					<div className="space-y-2">
+						<div className="text-sm font-medium">Next steps:</div>
+						<div className="text-sm">
+							The minting will be re-attempted shortly, if the problem persists after a few
+							hours, please create a Post on &#34;general-feedback&#34; channel, with the tag
+							&#34;Testnet Support/Bug&#34;. Our support team will process your request ASAP.
+						</div>
+						<button onClick={handleDiscordSupport} className="btn btn-sm btn-primary mt-2">
+							Contact Support on Discord
 						</button>
 					</div>
 				</div>
@@ -52,13 +67,22 @@ function PostConfirmationFailureAlert() {
 }
 
 function SimpleErrorAlert({ title, message }: { title: string; message: string }) {
+	const handleDiscordSupport = () => {
+		window.open("https://discord.com/channels/1262723650424016946/1388137313527267371", "_blank");
+	};
+
 	return (
 		<div className={infoBoxClasses()}>
 			<div className="flex items-start gap-3">
 				<XCircle size={16} className="text-primary mt-0.5 flex-shrink-0" />
-				<div>
-					<div className="text-primary mb-1 font-medium">{title}</div>
-					<div className="text-sm">{message}</div>
+				<div className="space-y-3">
+					<div>
+						<div className="text-primary mb-1 font-medium">{title}</div>
+						<div className="text-sm">{message}</div>
+					</div>
+					<button onClick={handleDiscordSupport} className="btn btn-sm btn-primary">
+						Contact Mods on Discord
+					</button>
 				</div>
 			</div>
 		</div>
