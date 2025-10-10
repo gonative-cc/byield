@@ -11,10 +11,6 @@ interface FailedTransactionAlertProps {
 }
 
 function PostConfirmationFailureAlert() {
-	const handleDiscordSupport = () => {
-		window.open("https://discord.com/channels/1262723650424016946/1388137313527267371", "_blank");
-	};
-
 	return (
 		<div className={`${infoBoxClasses()} space-y-3`}>
 			<div className="flex items-start gap-3">
@@ -56,9 +52,14 @@ function PostConfirmationFailureAlert() {
 							hours, please create a Post on &#34;general-feedback&#34; channel, with the tag
 							&#34;Testnet Support/Bug&#34;. Our support team will process your request ASAP.
 						</div>
-						<button onClick={handleDiscordSupport} className="btn btn-sm btn-primary mt-2">
+						<a
+							href="https://discord.com/channels/1262723650424016946/1388137313527267371"
+							target="_blank"
+							rel="noopener noreferrer"
+							className="btn btn-sm btn-primary mt-2"
+						>
 							Contact Support on Discord
-						</button>
+						</a>
 					</div>
 				</div>
 			</div>
@@ -67,10 +68,6 @@ function PostConfirmationFailureAlert() {
 }
 
 function SimpleErrorAlert({ title, message }: { title: string; message: string }) {
-	const handleDiscordSupport = () => {
-		window.open("https://discord.com/channels/1262723650424016946/1388137313527267371", "_blank");
-	};
-
 	return (
 		<div className={infoBoxClasses()}>
 			<div className="flex items-start gap-3">
@@ -80,9 +77,14 @@ function SimpleErrorAlert({ title, message }: { title: string; message: string }
 						<div className="text-primary mb-1 font-medium">{title}</div>
 						<div className="text-sm">{message}</div>
 					</div>
-					<button onClick={handleDiscordSupport} className="btn btn-sm btn-primary">
+					<a
+						href="https://discord.com/channels/1262723650424016946/1388137313527267371"
+						target="_blank"
+						rel="noopener noreferrer"
+						className="btn btn-sm btn-primary"
+					>
 						Contact Mods on Discord
-					</button>
+					</a>
 				</div>
 			</div>
 		</div>
