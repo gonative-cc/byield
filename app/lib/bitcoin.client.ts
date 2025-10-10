@@ -1,4 +1,4 @@
-import type { Network } from "bitcoinjs-lib";
+import type { Network, Stack } from "bitcoinjs-lib";
 import { BitcoinNetworkType } from "sats-connect";
 
 /**
@@ -42,7 +42,7 @@ export async function createPsbt(network: Network) {
 	return new bitcoinjs.Psbt({ network });
 }
 
-export async function compileScript(asm: (number | Buffer)[]) {
+export async function compileScript(asm: Uint8Array | Stack) {
 	const bitcoinjs = await getBitcoinLib();
 	return bitcoinjs.script.compile(asm);
 }
