@@ -76,7 +76,20 @@ const FAQS = [
 	{
 		id: "faq-10",
 		question: "How do I report bugs?",
-		answer: "Open a ticket in #testnet-v2-feedback using the template; include addresses, txid, steps to reproduce, timestamps, and screenshots.",
+		answer: (
+			<span>
+				Open a ticket or create a post on{" "}
+				<a
+					href="https://discord.com/channels/1262723650424016946/1388137313527267371"
+					target="_blank"
+					rel="noopener noreferrer"
+					className="link link-primary"
+				>
+					#general-feedback
+				</a>{" "}
+				on our discord. Include all relevant details for the bug.
+			</span>
+		),
 	},
 	{
 		id: "faq-11",
