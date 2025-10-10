@@ -3,6 +3,7 @@ import { SelectWallet } from "./SelectWallet";
 import { Menu } from "lucide-react";
 import { useContext } from "react";
 import { SideBarContext } from "~/providers/SiderBarProvider";
+import { BeelieversBadge } from "./BeelieversBadge";
 
 export function NavBar() {
 	const isProd = isProductionMode();
@@ -17,6 +18,7 @@ export function NavBar() {
 				<img src="/assets/app-logos/logo-mobile.svg" alt="Remix" className="md:hidden" />
 			</div>
 			<div className="flex items-center gap-4">
+				<BeelieversBadge />
 				<SelectWallet isProductionMode={isProd} />
 			</div>
 		</header>
