@@ -7,7 +7,7 @@ import type { Route } from "./+types/mint";
 import Controller from "~/server/Mint/controller.server";
 import { useFetcher } from "react-router";
 import { makeReq, type QueryMintTxResp } from "~/server/Mint/jsonrpc";
-import { useContext, useEffect, useRef, useCallback, useMemo } from "react";
+import { useContext, useEffect, useRef, useCallback, useMemo, useState } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { BlockInfoCard } from "~/components/ui/BlockInfoCard";
 import { FAQ } from "~/components/FAQ";
@@ -115,9 +115,10 @@ export default function Mint() {
 	const mintTxFetcher = useFetcher<QueryMintTxResp>({ key: suiAddr || undefined });
 	const prevSuiAddrRef = useRef<string | null>(null);
 	const intervalRef = useRef<NodeJS.Timeout | null>(null);
+	const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
 	const mintTxs = useMemo(() => mintTxFetcher.data || [], [mintTxFetcher.data]);
-	const isLoading = mintTxFetcher.state !== "idle";
+	const isLoading = !hasLoadedOnce && mintTxFetcher.state !== "idle";
 	const hasError = mintTxFetcher.state === "idle" && mintTxFetcher.data === undefined && suiAddr;
 	const error = hasError ? "Failed to load transactions" : null;
 
@@ -127,6 +128,12 @@ export default function Mint() {
 			makeReq<QueryMintTxResp>(mintTxFetcher, { method: "queryMintTx", params: [network, suiAddr] });
 		}
 	}, [suiAddr, mintTxFetcher, network]);
+
+	useEffect(() => {
+		if (mintTxFetcher.data && !hasLoadedOnce) {
+			setHasLoadedOnce(true);
+		}
+	}, [mintTxFetcher.data, hasLoadedOnce]);
 
 	// Handle address changes, interval setup, and initial fetch
 	useEffect(() => {
@@ -140,8 +147,11 @@ export default function Mint() {
 			fetchMintTxs();
 		}
 
-		// Set up interval for automatic refetching
-		intervalRef.current = setInterval(fetchMintTxs, 120000);
+		const hasActiveTxs = mintTxs.some((tx) =>
+			["broadcasting", "confirming", "finalized", "minting"].includes(tx.status),
+		);
+		const refreshInterval = hasActiveTxs ? 15000 : 120000; // 15s vs 2min
+		intervalRef.current = setInterval(fetchMintTxs, refreshInterval);
 
 		return () => {
 			if (intervalRef.current) {
