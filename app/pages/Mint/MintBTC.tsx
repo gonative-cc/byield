@@ -31,7 +31,7 @@ const PERCENTAGES = [25, 50, 75, 100];
 
 function Percentage({ onChange }: { onChange: (value: number) => void }) {
 	return (
-		<div className="grid grid-cols-4 gap-2 mb-4">
+		<div className="mb-4 grid grid-cols-4 gap-2">
 			{PERCENTAGES.map((v) => (
 				<button
 					type="button"
