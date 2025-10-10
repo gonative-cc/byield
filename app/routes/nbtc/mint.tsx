@@ -3,7 +3,7 @@ import { MintBTC } from "~/pages/nbtc-mint/MintBTC";
 import { MintBTCTable } from "~/pages/nbtc-mint/MintBTCTable";
 import { Collapse } from "~/components/ui/collapse";
 import { RefreshCw } from "lucide-react";
-import type { Route } from "../+types/mint";
+import type { Route } from "./+types/mint";
 import Controller from "~/server/nbtc/controller.server";
 import { useFetcher } from "react-router";
 import { makeReq, type QueryMintTxResp } from "~/server/nbtc/jsonrpc";
