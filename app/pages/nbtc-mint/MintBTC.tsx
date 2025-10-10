@@ -14,11 +14,11 @@ import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import { toast } from "~/hooks/use-toast";
 import { setupBufferPolyfill } from "~/lib/buffer-polyfill";
 import { TxConfirmationModal } from "~/components/ui/TransactionConfirmationModal";
-import { makeReq } from "~/server/Mint/jsonrpc";
+import { makeReq } from "~/server/nbtc/jsonrpc";
 import { useFetcher } from "react-router";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { NBTCBalance } from "~/components/NBTCBalance";
-import type { UTXO } from "~/server/Mint/types";
+import type { UTXO } from "~/server/nbtc/types";
 
 function formatSuiAddress(suiAddress: string) {
 	if (!suiAddress.toLowerCase().startsWith("0x")) {
