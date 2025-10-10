@@ -4,29 +4,133 @@ import { AnimatedHourglass } from "~/components/ui/AnimatedHourglass";
 import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import { NumericFormat } from "react-number-format";
 import { formatBTC } from "~/lib/denoms";
+import { infoBoxClasses } from "~/util/tailwind";
 
 interface FailedTransactionAlertProps {
 	transaction: MintTransaction;
 }
 
-function FailedTransactionAlert({ transaction }: FailedTransactionAlertProps) {
+function PostConfirmationFailureAlert() {
 	return (
-		<div className="alert alert-error">
-			<XCircle size={16} className="flex-shrink-0" />
-			<div>
-				<div className="mb-1 font-medium">
-					Transaction {transaction.status === MintingStatus.Reorg ? "Reorganized" : "Failed"}
+		<div className={`${infoBoxClasses()} space-y-3`}>
+			<div className="flex items-start gap-3">
+				<XCircle size={16} className="text-primary mt-0.5 flex-shrink-0" />
+				<div className="flex-1 space-y-3">
+					<div className="text-primary font-medium">
+						Transaction Failed - Manual Resolution Required
+					</div>
+
+					<div className="text-sm">
+						Your Bitcoin transaction was successfully confirmed on the blockchain, but the nBTC
+						minting process failed on the Sui network. This typically occurs when the SPV Light
+						Client encounters an issue while verifying the transaction&#39;s inclusion in a block.
+					</div>
+
+					<div className="space-y-2">
+						<div className="text-sm font-medium">What happened:</div>
+						<ul className="list-inside list-disc space-y-1 text-sm">
+							<li>Your BTC was successfully broadcasted, mined and confirmed</li>
+							<li>The Sui network failed to mint your nBTC tokens</li>
+							<li>
+								Your BTC is currently held in our deposit address, consider your funds safe
+							</li>
+						</ul>
+					</div>
+
+					<div className="space-y-2">
+						<div className="text-sm font-medium">Why this happens:</div>
+						<div className="text-sm">
+							This failure occurs on the Sui, usually due to network congestion or SPV Light
+							client synchronization issues.
+						</div>
+					</div>
+
+					<div className="space-y-2">
+						<div className="text-sm font-medium">Next steps:</div>
+						<div className="text-sm">
+							The minting will be re-attempted shortly, if the problem persists after a few
+							hours, please create a Post on &#34;general-feedback&#34; channel, with the tag
+							&#34;Testnet Support/Bug&#34;. Our support team will process your request ASAP.
+						</div>
+						<a
+							href="https://discord.com/channels/1262723650424016946/1388137313527267371"
+							target="_blank"
+							rel="noopener noreferrer"
+							className="btn btn-sm btn-primary mt-2"
+						>
+							Contact Support on Discord
+						</a>
+					</div>
 				</div>
-				<div className="text-sm opacity-80">
-					{transaction.errorMessage ||
-						(transaction.status === MintingStatus.Reorg
-							? "The transaction was reorganized due to a blockchain reorganization"
-							: "The transaction was not included in the block (the transaction didn't happen)")}
-				</div>
-				<button className="btn btn-sm btn-error mt-2">Retry Transaction</button>
 			</div>
 		</div>
 	);
+}
+
+function SimpleErrorAlert({ title, message }: { title: string; message: string }) {
+	return (
+		<div className={infoBoxClasses()}>
+			<div className="flex items-start gap-3">
+				<XCircle size={16} className="text-primary mt-0.5 flex-shrink-0" />
+				<div className="space-y-3">
+					<div>
+						<div className="text-primary mb-1 font-medium">{title}</div>
+						<div className="text-sm">{message}</div>
+					</div>
+					<a
+						href="https://discord.com/channels/1262723650424016946/1388137313527267371"
+						target="_blank"
+						rel="noopener noreferrer"
+						className="btn btn-sm btn-primary"
+					>
+						Contact Mods on Discord
+					</a>
+				</div>
+			</div>
+		</div>
+	);
+}
+
+function FailedTransactionAlert({ transaction }: FailedTransactionAlertProps) {
+	const isPostConfirmationFailure =
+		transaction.numberOfConfirmation >= 4 &&
+		transaction.status === MintingStatus.Failed &&
+		!transaction.suiTxId;
+
+	const isBroadcastFailure =
+		transaction.numberOfConfirmation === 0 && transaction.status === MintingStatus.Failed;
+
+	const isReorgFailure = transaction.status === MintingStatus.Reorg;
+
+	if (isPostConfirmationFailure) {
+		return <PostConfirmationFailureAlert />;
+	}
+
+	if (isBroadcastFailure) {
+		return (
+			<SimpleErrorAlert
+				title="Transaction Broadcast Failed"
+				message={
+					transaction.errorMessage ||
+					"The Bitcoin transaction failed to broadcast to the network. Your BTC was not sent."
+				}
+			/>
+		);
+	}
+
+	if (isReorgFailure) {
+		return (
+			<SimpleErrorAlert
+				title="Transaction Reorganized"
+				message={
+					transaction.errorMessage ||
+					"The block that your transaction was mined in is no longer part of the heaviest chain due to a Bitcoin reorg"
+				}
+			/>
+		);
+	}
+
+	return null;
 }
 
 interface ExpandableTransactionDetailsProps {
@@ -88,7 +192,7 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 				<div className="divider my-2"></div>
 
 				<div className="flex items-center gap-2 text-sm">
-					{isFailed ? (
+					{isFailed && transaction.numberOfConfirmation === 0 ? (
 						<XCircle size={16} className="text-error flex-shrink-0" />
 					) : isBroadcasted ? (
 						<CheckCircle size={16} className="text-success flex-shrink-0" />
@@ -96,7 +200,7 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 						<AnimatedHourglass size="md" />
 					)}
 					<span>
-						{isFailed
+						{isFailed && transaction.numberOfConfirmation === 0
 							? "Bitcoin Tx Broadcast failed"
 							: isBroadcasted
 								? "Bitcoin Tx broadcasted"
@@ -115,15 +219,17 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 				</div>
 
 				<div className="flex items-center gap-2 text-sm">
-					{isFailed ? null : isConfirmed ? (
+					{isFailed && transaction.numberOfConfirmation === 0 ? null : isConfirmed ? (
 						<CheckCircle size={16} className="text-success flex-shrink-0" />
 					) : transaction.numberOfConfirmation > 0 ? (
 						<AnimatedHourglass size="md" />
 					) : null}
 					<span>
 						Bitcoin confirmations:{" "}
-						{isFailed ? 0 : Math.min(transaction.numberOfConfirmation, confirmationDepth)}/
-						{confirmationDepth}
+						{isFailed && transaction.numberOfConfirmation === 0
+							? 0
+							: Math.min(transaction.numberOfConfirmation, confirmationDepth)}
+						/{confirmationDepth}
 					</span>
 					{showTimeRemaining && (
 						<span className="text-base-content/60">

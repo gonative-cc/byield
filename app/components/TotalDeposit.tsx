@@ -7,6 +7,8 @@ import { action } from "../config/market.json";
 import { formatNBTC } from "~/lib/denoms";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { TrimmedNumber } from "./TrimmedNumber";
+import { useContext } from "react";
+import { WalletContext } from "~/providers/ByieldWalletProvider";
 
 enum MarketIntegration {
 	TURBOS = "TURBOS",
@@ -121,13 +123,16 @@ function DepositCard({ title, value }: DepositData) {
 }
 
 export function TotalDeposit() {
-	const { balance: nbtcBalance } = useCoinBalance();
+	const { balance: nbtcBalance } = useCoinBalance("NBTC");
+	const { suiAddr } = useContext(WalletContext);
 
 	return (
 		<div className="flex w-full flex-col gap-10">
-			<div className="flex w-full justify-between gap-4">
-				<DepositCard id="nbtc-balance" title="nBTC Balance" value={formatNBTC(nbtcBalance)} />
-			</div>
+			{suiAddr && (
+				<div className="flex w-full justify-between gap-4">
+					<DepositCard id="nbtc-balance" title="nBTC Balance" value={formatNBTC(nbtcBalance)} />
+				</div>
+			)}
 			<div className="flex flex-col gap-4">
 				<div className="flex w-full items-center justify-between">
 					<h1 className="mr-4 text-2xl font-bold text-orange-500">Markets</h1>
