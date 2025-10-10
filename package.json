@@ -54,21 +54,21 @@
 		"tailwindcss-animate": "^1.0.7"
 	},
 	"devDependencies": {
-		"@cloudflare/vite-plugin": "^1.13.11",
-		"@cloudflare/vitest-pool-workers": "^0.9.11",
+		"@cloudflare/vite-plugin": "^1.13.12",
+		"@cloudflare/vitest-pool-workers": "^0.9.12",
 		"@eslint/compat": "^1.4.0",
 		"@eslint/js": "^9.37.0",
 		"@mysten/utils": "^0.2.0",
-		"@react-router/dev": "^7.9.3",
+		"@react-router/dev": "^7.9.4",
 		"@tailwindcss/postcss": "^4.1.13",
 		"@tailwindcss/vite": "^4.1.13",
 		"@testing-library/jest-dom": "^6.9.0",
 		"@testing-library/react": "^16.3.0",
-		"@types/node": "^24.7.0",
+		"@types/node": "^24.7.1",
 		"@types/react": "^19.2.2",
 		"@types/react-dom": "^19.2.1",
 		"@types/react-router": "^5.1.20",
-		"daisyui": "^5.1.29",
+		"daisyui": "^5.1.31",
 		"eslint": "^9.37.0",
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-jsx-a11y": "^6.10.2",
@@ -80,7 +80,7 @@
 		"jiti": "^2.6.1",
 		"jsdom": "^27.0.0",
 		"lint-staged": "^16.2.3",
-		"miniflare": "^4.20251004.0",
+		"miniflare": "^4.20251008.0",
 		"postcss": "^8.5.6",
 		"prettier-plugin-tailwindcss": "^0.6.14",
 		"tailwindcss": "^4.1.13",
@@ -89,7 +89,7 @@
 		"vite": "^6.3.6",
 		"vite-tsconfig-paths": "^5.1.4",
 		"vitest": "^3.2.4",
-		"wrangler": "^4.42.1"
+		"wrangler": "^4.42.2"
 	},
 	"lint-staged": {
 		"*.{js,cjs,mjs,jsx,ts,tsx}": [
