@@ -5,20 +5,20 @@ import { useContext, useEffect, useState } from "react";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
 import { FormNumericInput } from "../../components/form/FormNumericInput";
-import { BTC, formatBTC, parseBTC, formatNBTC } from "~/lib/denoms";
+import { BTC, formatBTC, parseBTC } from "~/lib/denoms";
 import { nBTCMintTx } from "~/lib/nbtc";
-import { BitcoinIcon } from "lucide-react";
+import { BitcoinIcon, Info } from "lucide-react";
 import { buttonEffectClasses, classNames } from "~/util/tailwind";
 import { isValidSuiAddress } from "@mysten/sui/utils";
 import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import { toast } from "~/hooks/use-toast";
 import { setupBufferPolyfill } from "~/lib/buffer-polyfill";
 import { TxConfirmationModal } from "~/components/ui/TransactionConfirmationModal";
-import { makeReq } from "~/server/Mint/jsonrpc";
+import { makeReq } from "~/server/nbtc/jsonrpc";
 import { useFetcher } from "react-router";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { NBTCBalance } from "~/components/NBTCBalance";
-import type { UTXO } from "~/server/Mint/types";
+import type { UTXO } from "~/server/nbtc/types";
 
 function formatSuiAddress(suiAddress: string) {
 	if (!suiAddress.toLowerCase().startsWith("0x")) {
@@ -27,59 +27,21 @@ function formatSuiAddress(suiAddress: string) {
 	return suiAddress;
 }
 
-const PERCENTAGES = [
-	{
-		id: "percentage-1",
-		value: 25,
-	},
-	{
-		id: "percentage-2",
-		value: 50,
-	},
-	{
-		id: "percentage-3",
-		value: 75,
-	},
-	{
-		id: "percentage-4",
-		value: 100,
-	},
-];
+const PERCENTAGES = [25, 50, 75, 100];
 
 function Percentage({ onChange }: { onChange: (value: number) => void }) {
 	return (
-		<div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-			{PERCENTAGES.map(({ id, value }) => (
+		<div className="grid grid-cols-4 gap-2">
+			{PERCENTAGES.map((v) => (
 				<button
 					type="button"
-					key={id}
-					onClick={() => onChange(value)}
-					className="btn btn-primary btn-outline transition-all duration-200 hover:scale-105"
+					key={v}
+					onClick={() => onChange(v)}
+					className="btn btn-sm btn-primary btn-outline"
 				>
-					{value}%
+					{v}%
 				</button>
 			))}
-		</div>
-	);
-}
-
-interface FeeProps {
-	mintingFee: bigint;
-}
-
-function Fee({ mintingFee }: FeeProps) {
-	return (
-		<div className="card card-border bg-base-300">
-			<div className="card-body">
-				<div className="flex justify-between text-sm">
-					<span>Minting Fee</span>
-					<div className="tooltip" data-tip="1 nSats = 0.00000001 nBTC">
-						<span className="cursor-help">
-							{mintingFee} nSats ({formatNBTC(mintingFee)} nBTC)
-						</span>
-					</div>
-				</div>
-			</div>
 		</div>
 	);
 }
@@ -194,15 +156,15 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 
 	return (
 		<FormProvider {...mintNBTCForm}>
-			<form onSubmit={handleSubmit(handlenBTCMintTx)} className="w-full">
-				<div className="card w-full">
-					<div className="card-body flex flex-col space-y-4 rounded-lg p-4 sm:p-6">
+			<form onSubmit={handleSubmit(handlenBTCMintTx)} className="mx-auto max-w-lg">
+				<div className="card">
+					<div className="card-body flex flex-col space-y-4">
 						{suiAddr && <NBTCBalance balance={nBTCBalance} />}
 						<FormNumericInput
 							required
 							name="numberOfBTC"
 							placeholder="Enter number of BTC"
-							className="h-12 sm:h-16"
+							className="h-10 sm:h-14"
 							inputMode="decimal"
 							decimalScale={BTC}
 							allowNegative={false}
@@ -242,7 +204,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 							required
 							name="suiAddress"
 							placeholder="Enter destination Sui Address..."
-							className="h-12 sm:h-16"
+							className="h-10 sm:h-14"
 							createEmptySpace
 							rules={{
 								validate: {
@@ -255,13 +217,20 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 								},
 							}}
 						/>
-						<Fee mintingFee={BigInt(cfg.nBTC.mintingFee)} />
+
+						<p>
+							Minting Fee: &nbsp; {cfg.nBTC.mintingFee} nSats &nbsp;
+							<span className="tooltip cursor-help" data-tip="1 nSats = 0.00000001 nBTC">
+								<Info size={18} />
+							</span>
+						</p>
+
 						{isBitCoinWalletConnected ? (
 							<button
 								type="submit"
 								disabled={isProcessing}
 								className={classNames(
-									"btn btn-primary",
+									"btn btn-primary btn-block",
 									buttonEffectClasses(),
 									isProcessing ? "loading" : "",
 								)}
@@ -269,7 +238,11 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 								{isProcessing ? "Processing..." : "Deposit BTC and mint nBTC"}
 							</button>
 						) : (
-							<button onClick={connectWallet} className="btn btn-primary">
+							<button
+								type="button"
+								onClick={connectWallet}
+								className="btn btn-primary btn-block"
+							>
 								<BitcoinIcon className="h-5 w-5" />
 								Connect Bitcoin Wallet
 							</button>

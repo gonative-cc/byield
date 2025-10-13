@@ -5,9 +5,6 @@ about: Create a proposal to request a feature
 
 <!-- markdownlint-disable -->
 
-## Summary
-
-
 ## Context
 
 #### Why do we need this feature? What problems may be addressed by introducing this feature?

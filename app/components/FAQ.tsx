@@ -15,9 +15,9 @@ interface FAQProps {
 export function FAQ({ faqs, description = "" }: FAQProps) {
 	const renderQuestion = (faq: FAQ) => {
 		return (
-			<div key={faq.id} className={`${orangeInfoCardClasses} collapse-plus collapse border p-2`}>
+			<div key={faq.id} className={`${orangeInfoCardClasses} collapse-plus collapse border`}>
 				<input type="checkbox" />
-				<div className="collapse-title text-primary text-xl font-medium">{faq.question}</div>
+				<div className="collapse-title text-primary text-lg font-medium">{faq.question}</div>
 				<div className="collapse-content">
 					{typeof faq.answer === "string" ? (
 						<p className="text-foreground">{faq.answer}</p>

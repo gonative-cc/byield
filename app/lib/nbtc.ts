@@ -1,6 +1,6 @@
 import Wallet, { BitcoinNetworkType } from "sats-connect";
 import { type Address, type RpcResult } from "sats-connect";
-import { type UTXO } from "~/server/Mint/types";
+import { type UTXO } from "~/server/nbtc/types";
 import {
 	getBitcoinNetworkConfig,
 	createPsbt,
@@ -95,7 +95,7 @@ export async function nBTCMintTx(
 			validateAddress = {
 				isValid: true,
 				address: bitcoinAddress.address,
-				scriptPubKey: outputScript.toString("hex"),
+				scriptPubKey: Buffer.from(outputScript).toString("hex"),
 				isScript: false,
 				isWitness:
 					bitcoinAddress.address.startsWith("bc1") ||
@@ -138,13 +138,13 @@ export async function nBTCMintTx(
 			index: utxos[0].vout,
 			witnessUtxo: {
 				script: Buffer.from(validateAddress.scriptPubKey, "hex"),
-				value: utxos[0].value,
+				value: BigInt(utxos[0].value),
 			},
 		});
 
 		psbt.addOutput({
 			address: cfg.nBTC.depositAddress,
-			value: mintAmountInSatoshi,
+			value: BigInt(mintAmountInSatoshi),
 		});
 
 		let opReturnData: Buffer;
@@ -174,7 +174,7 @@ export async function nBTCMintTx(
 
 		psbt.addOutput({
 			script: opReturnScript,
-			value: 0,
+			value: 0n,
 		});
 
 		const changeAmount = totalAvailable - mintAmountInSatoshi - estimatedFee;
@@ -184,7 +184,7 @@ export async function nBTCMintTx(
 		if (changeAmount > dustThreshold) {
 			psbt.addOutput({
 				address: bitcoinAddress.address,
-				value: changeAmount,
+				value: BigInt(changeAmount),
 			});
 		}
 

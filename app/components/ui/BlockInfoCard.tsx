@@ -1,7 +1,6 @@
-import { Timer, CheckCircle2, Info } from "lucide-react";
+import { Timer, CheckCircle2, Clock } from "lucide-react";
 import { toast } from "~/hooks/use-toast";
 import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
-import { gradientCardClasses } from "~/util/tailwind";
 
 export function BlockInfoCard() {
 	const bitcoinConfig = useBitcoinConfig();
@@ -20,40 +19,36 @@ export function BlockInfoCard() {
 	const estimatedTime = Math.ceil((blockTime * confirmationDepth) / 60);
 
 	return (
-		<div className={gradientCardClasses()}>
-			<div className="card-body">
-				<div className="card-title flex items-center gap-2">
-					<Info size={20} className="text-primary" />
-					<span>Transaction Timeline</span>
-				</div>
-				<p className="text-sm opacity-70">
-					Your Bitcoin transactions need time to be securely confirmed
-				</p>
+		<div className="card">
+			<div className="card-body p-4">
+				<h3 className="card-title text-base">Transaction Info</h3>
 
-				<div className="stats stats-horizontal bg-transparent shadow-none">
-					<div className="stat">
-						<div className="stat-figure text-orange-500">
-							<Timer size={18} />
+				<div className="space-y-3 text-sm">
+					<div className="flex items-center justify-between">
+						<div className="flex items-center gap-2">
+							<Timer size={16} className="text-primary" />
+							Block Time
 						</div>
-						<div className="stat-title text-xs">Block Time</div>
-						<div className="stat-value text-lg">{blockTime / 60} min</div>
-						<div className="stat-desc text-xs">Time between blocks</div>
+						<span className="badge badge-accent">{blockTime / 60} min</span>
 					</div>
 
-					<div className="stat">
-						<div className="stat-figure text-success">
-							<CheckCircle2 size={18} />
+					<div className="flex items-center justify-between">
+						<div className="flex items-center gap-2">
+							<CheckCircle2 size={16} className="text-primary" />
+							Confirmations
 						</div>
-						<div className="stat-title text-xs">Confirmations</div>
-						<div className="stat-value text-lg">{confirmationDepth}</div>
-						<div className="stat-desc text-xs">Required for security</div>
+						<span className="badge badge-accent">{confirmationDepth}</span>
 					</div>
-				</div>
 
-				<div className="alert alert-info bg-primary border-primary">
-					<span className="text-white">
-						Expected confirmation time: <strong>~{estimatedTime} minutes</strong>
-					</span>
+					<div className="divider my-0"></div>
+
+					<div className="flex items-center justify-between">
+						<div className="flex items-center gap-2">
+							<Clock size={16} className="text-primary" />
+							Est. Time
+						</div>
+						<span className="badge badge-accent">~{estimatedTime} min</span>
+					</div>
 				</div>
 			</div>
 		</div>

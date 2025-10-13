@@ -79,7 +79,7 @@ export const testnetCfg: ContractsCfg = {
 	},
 	nbtc: {
 		coinType: "::nbtc::NBTC",
-		pkgId: "0x5419f6e223f18a9141e91a42286f2783eee27bf2667422c2100afc7b2296731b",
+		pkgId: "0x50be08b805766cc1a2901b925d3fb80b6362fcb25f269cb78067429237e222ec",
 	},
 };
 
