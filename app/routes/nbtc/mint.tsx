@@ -219,6 +219,7 @@ export default function Mint() {
 				<div className="space-y-4">
 					<BlockInfoCard />
 
+					{/*
 					<div className="card">
 						<div className="card-body">
 							<h2 className="card-title text-lg">Tutorial Video</h2>
@@ -238,6 +239,7 @@ export default function Mint() {
 					<Collapse title="Wallet Setup Instructions">
 						<RegtestInstructions />
 					</Collapse>
+					*/}
 				</div>
 			</div>
 		</div>
