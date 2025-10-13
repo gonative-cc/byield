@@ -1,14 +1,11 @@
 import { useState, useEffect } from "react";
 import { useCurrentAccount, useSuiClientContext } from "@mysten/dapp-kit";
-import type { SuiClient } from "@mysten/sui/client";
 import { useNetworkVariables } from "~/networkConfig";
-import { KioskClient, Network } from "@mysten/kiosk";
-import { queryNftFromKiosk, queryNftByModule } from "~/pages/BeelieversAuction/nft";
 
 export function BeelieversBadge() {
 	const [ownsNft, setOwnsNft] = useState(false);
 	const account = useCurrentAccount();
-	const { network, client } = useSuiClientContext();
+	const { network } = useSuiClientContext();
 	const { beelieversMint } = useNetworkVariables();
 
 	useEffect(() => {
@@ -31,49 +28,130 @@ export function BeelieversBadge() {
 			}
 
 			try {
-				const directNft = await queryNftByModule(
-					account.address,
-					client as unknown as SuiClient,
-					beelieversMint.pkgId,
-				);
-				if (directNft) {
+				const nftType = `${beelieversMint.pkgId}::mint::BeelieverNFT`;
+				const graphqlUrl =
+					network === "mainnet"
+						? "https://graphql.mainnet.sui.io/graphql"
+						: "https://graphql.testnet.sui.io/graphql";
+
+				const query = `
+					query ($userAddress: String!, $nftType: String!) {
+						address(address: $userAddress) {
+							objects(filter: { type: $nftType }) {
+								nodes { 
+									address 
+								}
+							}
+							kioskCaps: objects(filter: { type: "0x2::kiosk::KioskOwnerCap" }) {
+								nodes {
+									... on MoveObject {
+										contents {
+											json
+										}
+									}
+								}
+							}
+						}
+					}
+				`;
+
+				const response = await fetch(graphqlUrl, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({
+						query,
+						variables: { userAddress: account.address, nftType },
+					}),
+				});
+
+				if (!response.ok) return;
+
+				const result = await response.json();
+				if ((result as { errors?: unknown[] }).errors) return;
+
+				const { data } = result as {
+					data?: {
+						address?: { objects?: { nodes?: unknown[] }; kioskCaps?: { nodes?: unknown[] } };
+					};
+				};
+				const { objects: directNfts, kioskCaps } = data?.address || {};
+
+				if (directNfts?.nodes && directNfts.nodes.length > 0) {
 					localStorage.setItem(cacheKey, JSON.stringify({ ownsNft: true, timestamp: Date.now() }));
 					setOwnsNft(true);
 					return;
 				}
-				const kioskClient = new KioskClient({
-					client: client as unknown as SuiClient,
-					network: network as Network,
-				});
-				const { kioskOwnerCaps } = await kioskClient.getOwnedKiosks({ address: account.address });
 
-				if (kioskOwnerCaps && kioskOwnerCaps.length > 0) {
-					for (const kiosk of kioskOwnerCaps) {
-						const nftInKiosk = await queryNftFromKiosk(
-							kiosk.kioskId,
-							beelieversMint.pkgId,
-							client as unknown as SuiClient,
-						);
-						if (nftInKiosk) {
-							localStorage.setItem(
-								cacheKey,
-								JSON.stringify({ ownsNft: true, timestamp: Date.now() }),
-							);
-							setOwnsNft(true);
-							return;
+				for (const kioskCap of (kioskCaps?.nodes as { contents?: { json?: { for?: string } } }[]) ||
+					[]) {
+					const kioskCapContent = kioskCap.contents?.json;
+					const kioskId = kioskCapContent?.for;
+					if (!kioskId) continue;
+
+					const kioskQuery = `
+						query ($kioskId: String!) {
+							object(address: $kioskId) {
+								dynamicFields {
+									nodes {
+										value {
+											... on MoveObject {
+												contents {
+													type { repr }
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					`;
+
+					const kioskResponse = await fetch(graphqlUrl, {
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify({
+							query: kioskQuery,
+							variables: { kioskId },
+						}),
+					});
+
+					if (kioskResponse.ok) {
+						const kioskResult = await kioskResponse.json();
+						if ((kioskResult as { errors?: unknown[] }).errors) continue;
+
+						const kioskData = kioskResult as {
+							data?: {
+								object?: {
+									dynamicFields?: {
+										nodes?: { value?: { contents?: { type?: { repr?: string } } } }[];
+									};
+								};
+							};
+						};
+						if (kioskData.data?.object?.dynamicFields?.nodes) {
+							for (const field of kioskData.data.object.dynamicFields.nodes) {
+								const itemType = field.value?.contents?.type?.repr;
+								if (itemType?.includes(nftType)) {
+									localStorage.setItem(
+										cacheKey,
+										JSON.stringify({ ownsNft: true, timestamp: Date.now() }),
+									);
+									setOwnsNft(true);
+									return;
+								}
+							}
 						}
 					}
 				}
 
 				setOwnsNft(false);
 			} catch (error) {
-				console.error("Error checking NFT ownership:", error);
 				setOwnsNft(false);
 			}
 		};
 
 		checkNftOwnership();
-	}, [account?.address, network, client, beelieversMint.pkgId]);
+	}, [account?.address, network, beelieversMint.pkgId]);
 
 	return ownsNft ? (
 		<div className="badge badge-primary badge-sm gap-1">
