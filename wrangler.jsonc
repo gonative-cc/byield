@@ -5,7 +5,7 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "byield",
-	"compatibility_date": "2025-07-25",
+	"compatibility_date": "2025-08-12",
 	"main": "./workers/app.ts",
 	"observability": {
 		"enabled": true,
@@ -64,6 +64,11 @@
 	 */
 	// "services": [{ "binding": "MY_SERVICE", "service": "my-service" }]
 
+	// NOTE: build is done by vite, not wrangler, so we need to use vite cloudflare plugin to manage
+	// this configuration. This means, instead of setting `-e prod` wrangler deploy, we have to
+	// use CLOUDFLARE_ENV=prod in build:
+	// CLOUDFLARE_ENV=prod bun run build && wrangler deploy
+	// details: https://developers.cloudflare.com/workers/vite-plugin/reference/cloudflare-environments/
 	"env": {
 		"prod": {
 			"route": "byield.gonative.cc",

@@ -11,7 +11,7 @@
 		"build:dev": "react-router build --mode dev",
 		"deploy": "rm -rf build && bun run build --mode dev && wrangler deploy",
 		"deploy:prod:legacy": "rm -rf build && bun run build && wrangler deploy -c ./wrangler-prod.jsonc",
-		"deploy:prod": "bun run build && wrangler deploy -e prod",
+		"deploy:prod": "CLOUDFLARE_ENV=prod bun run build && wrangler deploy",
 		"deploy:prod:ver": "bun run build && wrangler versions upload -c ./wrangler-prod.jsonc",
 		"preview": "vite preview",
 		"preview:wrangler": "wrangler dev",
