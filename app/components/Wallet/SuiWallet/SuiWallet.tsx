@@ -46,11 +46,11 @@ function NetWorkOptions() {
 	const isDevMode = !isProductionMode();
 
 	const networks = useMemo(() => {
-		// Include both testnet and mainnet on all pages
-		const baseNetworks = [
-			{ label: SuiNetworkLabel[SuiNetwork.TestNet], value: SuiNetwork.TestNet },
-			{ label: SuiNetworkLabel[SuiNetwork.MainNet], value: SuiNetwork.MainNet },
-		];
+		if (isAuctionPathname) {
+			return [{ label: SuiNetworkLabel[SuiNetwork.MainNet], value: SuiNetwork.MainNet }];
+		}
+
+		const baseNetworks = [{ label: SuiNetworkLabel[SuiNetwork.TestNet], value: SuiNetwork.TestNet }];
 
 		// Add localnet option in dev mode
 		if (isDevMode) {
@@ -58,7 +58,7 @@ function NetWorkOptions() {
 		}
 
 		return baseNetworks;
-	}, [isDevMode]);
+	}, [isAuctionPathname, isDevMode]);
 
 	const suiWalletNetworks: Option<SuiNetwork>[] = useMemo(() => networks, [networks]);
 
