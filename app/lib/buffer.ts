@@ -3,7 +3,8 @@ function numToHex(n: number): string {
 }
 
 /**
- * Converts a hex string to a Uint8Array.
+ * Converts a hex string to a Uint8Array. It doesn't trim whitespaces, but it remoeves optional
+ * `0x` prefix.
  *
  * @throws {TypeError} If the input is not a string or has an odd length.
  * @throws {Error} If the string contains non-hex characters.

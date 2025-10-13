@@ -11,6 +11,7 @@ import {
 import { uint8ArrayToHex, hexToUint8Array } from "./buffer";
 import { toast } from "~/hooks/use-toast";
 import type { BitcoinConfig } from "~/config/bitcoin/contracts-config";
+import { logError } from "./log";
 
 export const PRICE_PER_NBTC_IN_SUI = 25000n;
 const DUST_THRESHOLD_SATOSHI = 546;
@@ -159,7 +160,7 @@ export async function nBTCMintTx(
 			const addressBytes = hexToUint8Array(cleanHex);
 			opReturnData = new Uint8Array([OpReturnFlag.MINT, ...addressBytes]);
 		} catch (error) {
-			console.error("Invalid OP_RETURN data:", error);
+			logError({ msg: "Invalid OP_RETURN data", method: "ui:lib/nBTCMintTx" }, error);
 			toast({
 				title: "Invalid Data",
 				description:
