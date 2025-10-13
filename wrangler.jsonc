@@ -8,7 +8,7 @@
 	"compatibility_date": "2025-07-25",
 	"main": "./workers/app.ts",
 	"observability": {
-		"enabled": true
+		"enabled": true,
 	},
 	"compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
 	"upload_source_maps": true,
@@ -16,7 +16,7 @@
 	// Static Assets
 	// https://developers.cloudflare.com/workers/static-assets/binding/
 	"assets": {
-		"directory": "./public"
+		"directory": "./public",
 	},
 
 	/**
@@ -35,8 +35,8 @@
 	"kv_namespaces": [
 		{
 			"binding": "BeelieversNFT",
-			"id": "181c1046829d47d2a3791087dba7e0bf"
-		}
+			"id": "181c1046829d47d2a3791087dba7e0bf",
+		},
 	],
 	"d1_databases": [
 		{
@@ -44,8 +44,8 @@
 			"database_name": "beelievers-dev",
 			"database_id": "edd65a3a-e21a-41a3-a3b1-43adbd00a8c3",
 			"migrations_table": "migrations",
-			"migrations_dir": "./db/migrations/"
-		}
+			"migrations_dir": "./db/migrations/",
+		},
 	],
 
 	/**
@@ -72,8 +72,8 @@
 			"kv_namespaces": [
 				{
 					"binding": "BeelieversNFT",
-					"id": "fbf4b21d53784b3881d4b7e1503df23e"
-				}
+					"id": "fbf4b21d53784b3881d4b7e1503df23e",
+				},
 			],
 			"d1_databases": [
 				{
@@ -81,9 +81,9 @@
 					"database_name": "beelievers-prod",
 					"database_id": "f75ec68a-1df1-4a42-aeba-1d27875bf4e5",
 					"migrations_table": "migrations",
-					"migrations_dir": "./db/migrations/"
-				}
-			]
-		}
-	}
+					"migrations_dir": "./db/migrations/",
+				},
+			],
+		},
+	},
 }
