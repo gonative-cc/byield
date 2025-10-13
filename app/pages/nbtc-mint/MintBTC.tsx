@@ -31,7 +31,7 @@ const PERCENTAGES = [25, 50, 75, 100];
 
 function Percentage({ onChange }: { onChange: (value: number) => void }) {
 	return (
-		<div className="mb-4 grid grid-cols-4 gap-2">
+		<div className="grid grid-cols-4 gap-2">
 			{PERCENTAGES.map((v) => (
 				<button
 					type="button"
@@ -158,7 +158,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 		<FormProvider {...mintNBTCForm}>
 			<form onSubmit={handleSubmit(handlenBTCMintTx)} className="mx-auto max-w-lg">
 				<div className="card">
-					<div className="card-body flex flex-col">
+					<div className="card-body flex flex-col space-y-4">
 						{suiAddr && <NBTCBalance balance={nBTCBalance} />}
 						<FormNumericInput
 							required
@@ -168,7 +168,6 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 							inputMode="decimal"
 							decimalScale={BTC}
 							allowNegative={false}
-							createEmptySpace
 							rules={{
 								validate: {
 									isWalletConnected: () =>
@@ -205,7 +204,6 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 							name="suiAddress"
 							placeholder="Enter destination Sui Address..."
 							className="h-10 sm:h-14"
-							createEmptySpace
 							rules={{
 								validate: {
 									validateSuiAddress: (value: string) => {
@@ -218,7 +216,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 							}}
 						/>
 
-						<p className="mb-2 flex items-center">
+						<p className="flex items-center">
 							Minting Fee: &nbsp; {cfg.nBTC.mintingFee} nSats &nbsp;
 							<span className="tooltip cursor-help" data-tip="1 nSats = 0.00000001 nBTC">
 								<Info size={18} />
