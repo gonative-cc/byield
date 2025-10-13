@@ -12,7 +12,6 @@ import { buttonEffectClasses, classNames } from "~/util/tailwind";
 import { isValidSuiAddress } from "@mysten/sui/utils";
 import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import { toast } from "~/hooks/use-toast";
-import { setupBufferPolyfill } from "~/lib/buffer-polyfill";
 import { TxConfirmationModal } from "~/components/ui/TransactionConfirmationModal";
 import { makeReq } from "~/server/nbtc/jsonrpc";
 import { useFetcher } from "react-router";
@@ -81,10 +80,6 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 	const { handleSubmit, setValue } = mintNBTCForm;
 
 	useEffect(() => setValue("suiAddress", suiAddr || ""), [setValue, suiAddr]);
-
-	useEffect(() => {
-		setupBufferPolyfill();
-	}, []);
 
 	// Fetch UTXOs when wallet connects
 	useEffect(() => {
