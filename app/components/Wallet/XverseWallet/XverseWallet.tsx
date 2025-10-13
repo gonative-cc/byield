@@ -13,7 +13,7 @@ function NetWorkOptions() {
 
 	const location = useLocation();
 	const pathname = location.pathname;
-	const isUserOnMintNBTCPage = pathname === "/mint";
+	const isUserOnMintNBTCPage = pathname === "/nbtc/mint";
 
 	const bitcoinSupportedNetwork: Option[] = useMemo(
 		() =>

@@ -12,7 +12,7 @@ export const routes: Record<string, WalletVisibility> = {
 		bitcoin: true,
 		sui: true,
 	},
-	"/mint": {
+	"/nbtc/mint": {
 		bitcoin: true,
 		sui: true,
 	},
