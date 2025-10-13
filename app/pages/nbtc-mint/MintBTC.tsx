@@ -168,7 +168,6 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 							inputMode="decimal"
 							decimalScale={BTC}
 							allowNegative={false}
-							createEmptySpace
 							rules={{
 								validate: {
 									isWalletConnected: () =>
@@ -205,7 +204,6 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 							name="suiAddress"
 							placeholder="Enter destination Sui Address..."
 							className="h-10 sm:h-14"
-							createEmptySpace
 							rules={{
 								validate: {
 									validateSuiAddress: (value: string) => {
@@ -218,7 +216,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 							}}
 						/>
 
-						<p>
+						<p className="flex items-center">
 							Minting Fee: &nbsp; {cfg.nBTC.mintingFee} nSats &nbsp;
 							<span className="tooltip cursor-help" data-tip="1 nSats = 0.00000001 nBTC">
 								<Info size={18} />
@@ -241,7 +239,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 							<button
 								type="button"
 								onClick={connectWallet}
-								className="btn btn-primary btn-block"
+								className="btn btn-primary btn-wide"
 							>
 								<BitcoinIcon className="h-5 w-5" />
 								Connect Bitcoin Wallet

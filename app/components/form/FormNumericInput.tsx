@@ -2,24 +2,16 @@ import { Controller, useFormContext } from "react-hook-form";
 import type { FieldValues, RegisterOptions } from "react-hook-form";
 import { NumericInput } from "../ui/NumericInput";
 import type { NumericInputProps } from "../ui/NumericInput";
-import { classNames } from "~/util/tailwind";
 
 interface FormInputProps extends NumericInputProps {
 	name: string;
-	createEmptySpace?: boolean;
 	rules?: Omit<
 		RegisterOptions<FieldValues, string>,
 		"disabled" | "valueAsNumber" | "valueAsDate" | "setValueAs"
 	>;
 }
 
-export const FormNumericInput = ({
-	name,
-	required,
-	rules,
-	createEmptySpace = false,
-	...rest
-}: FormInputProps) => {
+export const FormNumericInput = ({ name, required, rules, ...rest }: FormInputProps) => {
 	const { control } = useFormContext();
 
 	return (
@@ -33,9 +25,7 @@ export const FormNumericInput = ({
 			render={({ field: { onChange, value }, fieldState: { error } }) => (
 				<div>
 					<NumericInput value={value} onChange={onChange} {...rest} />
-					<div className={classNames({ "mt-0.5 min-h-[1.3rem]": createEmptySpace })}>
-						{error && <p className="text-sm text-red-500">{error.message}</p>}
-					</div>
+					{error && <p className="text-sm text-red-500">{error.message}</p>}
 				</div>
 			)}
 		/>

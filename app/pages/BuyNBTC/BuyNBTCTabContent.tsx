@@ -126,7 +126,6 @@ export function BuyNBTCTabContent({ nbtcBalanceRes, suiBalanceRes }: BuyNBTCTabC
 					inputMode="decimal"
 					decimalScale={SUI}
 					allowNegative={false}
-					createEmptySpace
 					rightAdornments={
 						<SUIRightAdornment
 							onMaxClick={(val: string) => setValue("suiAmount", val)}

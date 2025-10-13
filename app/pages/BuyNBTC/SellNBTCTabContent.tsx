@@ -126,7 +126,6 @@ export function SellNBTCTabContent({ nbtcBalanceRes, suiBalanceRes }: SellNBTCTa
 						/>
 					}
 					rules={nBTCAmountInputRules}
-					createEmptySpace
 					decimalScale={NBTC}
 					allowNegative={false}
 				/>

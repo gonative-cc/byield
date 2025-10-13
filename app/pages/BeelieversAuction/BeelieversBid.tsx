@@ -199,7 +199,6 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 										inputMode="decimal"
 										decimalScale={SUI}
 										allowNegative={false}
-										createEmptySpace
 										rightAdornments={
 											<SUIIcon
 												prefix={"SUI"}
@@ -229,7 +228,6 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 										name="note"
 										placeholder="Add a personal note (max 30 characters)..."
 										className="border-primary/30 focus:border-primary hover:border-primary/50 h-14 transition-colors lg:h-16"
-										createEmptySpace
 										maxLength={30}
 									/>
 								</div>
