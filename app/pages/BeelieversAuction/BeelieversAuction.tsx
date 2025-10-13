@@ -52,11 +52,9 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 
 	console.log(">>>> user", user);
 
-	for (const l of leaderboard) {
-		if (sortAndCheckDuplicate(l.badges)) {
-			l.badges = removeDuplicates(l.badges);
-		}
-	}
+	const processedLeaderboard = leaderboard.map((l) =>
+		sortAndCheckDuplicate(l.badges) ? { ...l, badges: removeDuplicates(l.badges) } : l,
+	);
 
 	useEffect(() => {
 		// query the user
@@ -123,7 +121,7 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 					</div>
 					<div className="animate-in slide-in-from-bottom-4 w-full delay-600 duration-1000">
 						<div className="flex w-full flex-col-reverse gap-6 lg:flex-row">
-							<AuctionTable data={leaderboard} user={user} suiAddr={suiAddr} />
+							<AuctionTable data={processedLeaderboard} user={user} suiAddr={suiAddr} />
 						</div>
 					</div>
 				</>
