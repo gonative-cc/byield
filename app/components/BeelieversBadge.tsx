@@ -9,12 +9,12 @@ export function BeelieversBadge() {
 	const { beelieversMint } = useNetworkVariables();
 
 	useEffect(() => {
-		if (!account?.address) {
-			setOwnsNft(false);
-			return;
-		}
-
 		const checkNftOwnership = async () => {
+			if (!account?.address) {
+				setOwnsNft(false);
+				return;
+			}
+
 			const cacheKey = `beelievers_nft_${account.address}_${network}`;
 
 			const cached = localStorage.getItem(cacheKey);
@@ -145,7 +145,7 @@ export function BeelieversBadge() {
 				}
 
 				setOwnsNft(false);
-			} catch (error) {
+			} catch (_error) {
 				setOwnsNft(false);
 			}
 		};
