@@ -1,5 +1,5 @@
 import { useFetcher } from "react-router";
-import { useContext, useEffect, useRef, type ReactNode } from "react";
+import { useContext, useEffect, useMemo, useRef, type ReactNode } from "react";
 import { AuctionTable } from "./AuctionTable";
 import { AuctionTotals } from "./AuctionTotals";
 import { AuctionState } from "./types";
@@ -52,8 +52,12 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 
 	console.log(">>>> user", user);
 
-	const processedLeaderboard = leaderboard.map((l) =>
-		sortAndCheckDuplicate(l.badges) ? { ...l, badges: removeDuplicates(l.badges) } : l,
+	const processedLeaderboard = useMemo(
+		() =>
+			leaderboard.map((l) =>
+				sortAndCheckDuplicate(l.badges) ? { ...l, badges: removeDuplicates(l.badges) } : l,
+			),
+		[leaderboard],
 	);
 
 	useEffect(() => {
