@@ -11,15 +11,6 @@ import { Wallets } from "~/components/Wallet";
 import { useXverseConnect } from "./Wallet/XverseWallet/useWallet";
 import { routes } from "~/config/walletVisibility";
 
-function LoadingSkeleton() {
-	return (
-		<div className="flex w-full gap-2">
-			<Skeleton className="h-10 flex-1" />
-			<Skeleton className="h-10 flex-1" />
-		</div>
-	);
-}
-
 interface SelectWalletProps {
 	isProductionMode: boolean;
 }
@@ -55,7 +46,7 @@ function DesktopWallets({ children }: { children: React.ReactNode }) {
 }
 
 export function SelectWallet({ isProductionMode }: SelectWalletProps) {
-	const { isLoading, isWalletConnected } = useContext(WalletContext);
+	const { isWalletConnected } = useContext(WalletContext);
 	const { connectWallet } = useXverseConnect();
 	const { pathname } = useLocation();
 
@@ -63,8 +54,6 @@ export function SelectWallet({ isProductionMode }: SelectWalletProps) {
 	const shouldShowSUIWallet = routes[pathname]?.sui ?? true;
 	const isBitcoinConnected = isWalletConnected(Wallets.Xverse);
 	const isSuiConnected = isWalletConnected(Wallets.SuiWallet);
-
-	if (isLoading) return <LoadingSkeleton />;
 
 	const bitcoinWallet =
 		shouldShowBitcoinWallet &&

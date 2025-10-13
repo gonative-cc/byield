@@ -1,4 +1,4 @@
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { useFetcher } from "react-router";
 import { LoaderCircle } from "lucide-react";
 import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
@@ -90,6 +90,7 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 			note: "",
 		},
 	});
+	const bidInputInSUI = useWatch({ control: bidForm.control, name: "bid" });
 
 	if (account === null) return <SuiModal />;
 
@@ -148,7 +149,6 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 	});
 
 	const hasUserBidBefore = (user && user.amount !== 0) || false;
-	const bidInputInSUI = bidForm.watch("bid");
 
 	return (
 		<FormProvider {...bidForm}>
