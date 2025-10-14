@@ -8,7 +8,7 @@ import { formatSUI, parseSUI, SUI } from "~/lib/denoms";
 import { delay } from "~/lib/batteries";
 import { FormNumericInput } from "~/components/form/FormNumericInput";
 import { FormInput } from "~/components/form/FormInput";
-import { SuiModal } from "~/components/Wallet/SuiWallet/SuiModal";
+import { SuiConnectModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import type { User } from "~/server/BeelieversAuction/types";
 import { makeReq } from "~/server/BeelieversAuction/jsonrpc";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
@@ -92,7 +92,7 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 	});
 	const bidInputInSUI = useWatch({ control: bidForm.control, name: "bid" });
 
-	if (account === null) return <SuiModal />;
+	if (account === null) return <SuiConnectModal />;
 
 	const onSubmit = bidForm.handleSubmit(async ({ bid, note }) => {
 		const mistAmount = parseSUI(bid);

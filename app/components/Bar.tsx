@@ -17,12 +17,7 @@ import { formatSUI } from "~/lib/denoms";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { TrimmedNumber } from "~/components/TrimmedNumber";
 
-interface WalletOverviewModalProps {
-	open: boolean;
-	onClose: () => void;
-}
-
-function WalletOverviewModal({ children }: { children: React.ReactNode }) {
+function WalletOverviewModal() {
 	const { addressInfo, currentAddress, balance, network, disconnectWallet, setCurrentAddress } =
 		useXverseWallet();
 	const { mutate: suiDisconnect } = useDisconnectWallet();
@@ -36,7 +31,6 @@ function WalletOverviewModal({ children }: { children: React.ReactNode }) {
 		suiDisconnect();
 	};
 
-	// Handle SUI account switching
 	const handleSuiAccountChange = (address: string) => {
 		const newAccount = allSuiAccounts?.find((acc) => acc.address === address);
 		if (newAccount) {
@@ -44,7 +38,6 @@ function WalletOverviewModal({ children }: { children: React.ReactNode }) {
 		}
 	};
 
-	// Handle Bitcoin address switching
 	const handleBitcoinAddressChange = (address: string) => {
 		const newAddress = addressInfo.find((addr) => addr.address === address);
 		if (newAddress) {
@@ -54,19 +47,27 @@ function WalletOverviewModal({ children }: { children: React.ReactNode }) {
 
 	return (
 		<Dialog>
-			<DialogTrigger asChild>{children}</DialogTrigger>
-			<DialogContent className="top-0 translate-y-0 md:top-[20%]" onClick={(e) => e.stopPropagation()}>
+			<DialogTrigger>
+				<button className="btn btn-ghost btn-sm" aria-label="Wallet Overview">
+					<Wallet size={18} />
+					<span className="ml-1 hidden md:inline">Overview</span>
+				</button>
+			</DialogTrigger>
+			<DialogContent
+				className="bg-base-100 border-base-300 max-w-sm rounded-lg border p-6 shadow-xl"
+				onClick={(e) => e.stopPropagation()}
+			>
 				<h3 className="text-base-content text-lg font-bold">Wallet Overview</h3>
 
 				{/* Bitcoin Wallet Section */}
 				{addressInfo.length > 0 && (
-					<div className="mb-6">
+					<div className="mb-2">
 						<div className="mb-3 flex items-center gap-2">
 							<Bitcoin className="text-amber-500" size={20} />
 							<h4 className="text-base font-semibold">Bitcoin Wallet</h4>
 						</div>
 
-						<div className="bg-base-200 space-y-3 rounded-lg p-4">
+						<div className="bg-base-200 space-y-2 rounded-lg p-2">
 							<div className="flex justify-between">
 								<span className="text-base-content/70 text-sm">Network:</span>
 								<span className="text-sm font-medium">{network}</span>
@@ -111,7 +112,10 @@ function WalletOverviewModal({ children }: { children: React.ReactNode }) {
 								</div>
 							)}
 
-							<button onClick={disconnectWallet} className="btn btn-error btn-sm mt-2 w-full">
+							<button
+								onClick={disconnectWallet}
+								className="btn btn-accent btn-sm text-foreground mt-2 w-auto"
+							>
 								Disconnect BTC Wallet
 							</button>
 						</div>
@@ -138,7 +142,7 @@ function WalletOverviewModal({ children }: { children: React.ReactNode }) {
 									<select
 										value={currentSuiAccount.address}
 										onChange={(e) => handleSuiAccountChange(e.target.value)}
-										className="select select-sm select-bordered max-w-[100px] flex-shrink"
+										className="select select-sm select-bordered max-w-[100px]"
 									>
 										{allSuiAccounts.map((account) => (
 											<option key={account.address} value={account.address}>
@@ -163,6 +167,7 @@ function WalletOverviewModal({ children }: { children: React.ReactNode }) {
 								<span className="text-sm font-medium">
 									<TrimmedNumber
 										displayType="text"
+										decimalScale={0}
 										value={formatSUI(suiBalance)}
 										suffix=" SUI"
 									/>
@@ -171,7 +176,7 @@ function WalletOverviewModal({ children }: { children: React.ReactNode }) {
 
 							<button
 								onClick={handleSuiDisconnect}
-								className="btn btn-error btn-sm mt-2 w-full"
+								className="btn btn-accent btn-sm text-foreground mt-2 w-auto"
 							>
 								Disconnect Sui Wallet
 							</button>
@@ -213,13 +218,7 @@ export function WalletBar() {
 			<div className="flex items-center gap-3">
 				<SelectWallet />
 
-				{/* Wallet Overview Button */}
-				<WalletOverviewModal>
-					<button className="btn btn-ghost btn-sm" aria-label="Wallet Overview">
-						<Wallet size={18} />
-						<span className="ml-1 hidden md:inline">Overview</span>
-					</button>
-				</WalletOverviewModal>
+				<WalletOverviewModal></WalletOverviewModal>
 			</div>
 		</header>
 	);
