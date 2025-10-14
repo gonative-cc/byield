@@ -120,15 +120,13 @@ function SuiWalletMobileView({ balance }: { balance: bigint }) {
 				<Accounts />
 			</div>
 			<div className="flex w-full items-center justify-between gap-4">
-				<p>
-					<TrimmedNumber
-						displayType="text"
-						value={formatSUI(balance)}
-						suffix=" SUI"
-						className="text-primary shrink-0"
-						prefix="Balance: "
-					/>
-				</p>
+				<TrimmedNumber
+					displayType="text"
+					value={formatSUI(balance)}
+					suffix=" SUI"
+					className="text-primary shrink-0"
+					prefix="Balance: "
+				/>
 				<button
 					onClick={() => {
 						disconnect();
