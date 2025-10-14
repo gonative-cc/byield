@@ -73,15 +73,13 @@ function XverseWalletMobileView() {
 			</div>
 			<div className="flex w-full items-center justify-between gap-4">
 				{balance && (
-					<p>
-						<TrimmedNumber
-							displayType="text"
-							value={formatBTC(BigInt(balance))}
-							suffix=" BTC"
-							className="text-primary shrink-0"
-							prefix="Balance: "
-						/>
-					</p>
+					<TrimmedNumber
+						displayType="text"
+						value={formatBTC(BigInt(balance))}
+						suffix=" BTC"
+						className="text-primary shrink-0"
+						prefix="Balance: "
+					/>
 				)}
 				<button onClick={disconnectWallet} className="btn btn-primary">
 					Disconnect Bitcoin Wallet
