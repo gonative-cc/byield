@@ -18,24 +18,23 @@ interface WalletContextI {
 	connectedWallets: ConnectedWallets;
 	network: Network;
 	suiAddr: string | null;
-	xverse: ReturnType<typeof useXverseWallet>;
+	xverse: ReturnType<typeof useXverseWallet> | null;
 	handleNetwork: (newNetwork: Network) => void;
 	handleWalletConnect: (walletType: Wallets, isConnected: boolean) => void;
 	toggleBitcoinModal: (show: boolean) => void;
 	isWalletConnected: (walletType: Wallets) => boolean;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const WalletContext = createContext<WalletContextI>({
+export const WalletContext: React.Context<WalletContextI> = createContext<WalletContextI>({
 	connectedWallets: { [Wallets.Xverse]: false, [Wallets.SuiWallet]: false },
 	network: Network.TESTNET,
 	suiAddr: null,
-	xverse: {},
+	xverse: null,
 	handleNetwork: () => {},
 	handleWalletConnect: () => {},
 	toggleBitcoinModal: () => {},
 	isWalletConnected: () => false,
-} as any as WalletContextI);
+});
 
 export const ByieldWalletProvider = ({ children }: { children: ReactNode }) => {
 	// TODO: default network is testnet. Change it to mainnet when app goes in prod

@@ -5,13 +5,19 @@ import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 
-import { useCurrentAccount, useAccounts, useDisconnectWallet, useSwitchAccount, useSuiClientContext } from "@mysten/dapp-kit";
+import {
+	useCurrentAccount,
+	useAccounts,
+	useDisconnectWallet,
+	useSwitchAccount,
+	useSuiClientContext,
+} from "@mysten/dapp-kit";
 import { trimAddress } from "./Wallet/walletHelper";
 import { SelectInput, type Option } from "./ui/select";
 import { formatBTC, formatSUI } from "~/lib/denoms";
 import { TrimmedNumber } from "./TrimmedNumber";
 import { CopyButton } from "./ui/CopyButton";
-import { BitcoinNetworkType } from "sats-connect";
+import { BitcoinNetworkType, type Address } from "sats-connect";
 import { useLocation } from "react-router";
 import { isProductionMode } from "~/lib/appenv";
 
@@ -35,12 +41,21 @@ export function WalletBar() {
 	const { isWalletConnected, xverse } = useContext(WalletContext);
 	const currentSuiAccount = useCurrentAccount();
 
-
 	const isBitcoinConnected = isWalletConnected(Wallets.Xverse);
 	const isSuiConnected = isWalletConnected(Wallets.SuiWallet);
 
 	// BTC components
-	const { network, switchNetwork, addressInfo, setCurrentAddress, balance, disconnectWallet } = xverse;
+	const xverseData = xverse!;
+	const {
+		network,
+		switchNetwork,
+		addressInfo,
+		setCurrentAddress,
+		balance,
+		disconnectWallet,
+		connectWallet,
+		currentAddress,
+	} = xverseData;
 	const { pathname } = useLocation();
 	const isUserOnMintNBTCPage = pathname === "/nbtc/mint";
 	const bitcoinSupportedNetwork: Option[] = useMemo(
@@ -63,7 +78,7 @@ export function WalletBar() {
 		/>
 	);
 	const btcAccountsOptions = useMemo(
-		() => addressInfo.map((a) => ({ label: trimAddress(a.address), value: a.address })),
+		() => addressInfo.map((a: Address) => ({ label: trimAddress(a.address), value: a.address })),
 		[addressInfo],
 	);
 	const btcAccounts = (
@@ -73,7 +88,7 @@ export function WalletBar() {
 				const account = addressInfo.find((a) => a.address === address);
 				if (account) setCurrentAddress(account);
 			}}
-			value={xverse.currentAddress?.address}
+			value={currentAddress?.address}
 			className="w-40"
 			optionItemRenderer={(val, handleOptionClick) => (
 				<div>
@@ -92,11 +107,11 @@ export function WalletBar() {
 		/>
 	) : null;
 	const btcAction = isBitcoinConnected ? (
-		<button onClick={xverse.disconnectWallet} className="btn btn-primary btn-sm">
+		<button onClick={disconnectWallet} className="btn btn-primary btn-sm">
 			Disconnect
 		</button>
 	) : (
-		<button onClick={xverse.connectWallet} className="btn btn-primary btn-sm">
+		<button onClick={connectWallet} className="btn btn-primary btn-sm">
 			Connect BTC
 		</button>
 	);
@@ -122,7 +137,8 @@ export function WalletBar() {
 		return baseNetworks;
 	}, [isAuctionPathname, isDevMode]);
 	const suiWalletNetworks: Option<SuiNetwork>[] = useMemo(() => suiNetworks, [suiNetworks]);
-	const currentSuiNetwork = (suiNetwork as SuiNetwork) || (isDevMode ? SuiNetwork.LocalNet : SuiNetwork.TestNet);
+	const currentSuiNetwork =
+		(suiNetwork as SuiNetwork) || (isDevMode ? SuiNetwork.LocalNet : SuiNetwork.TestNet);
 	const suiNetworkOptions = (
 		<SelectInput
 			options={suiWalletNetworks}
@@ -164,12 +180,7 @@ export function WalletBar() {
 	);
 	const { balance: suiBalance } = useCoinBalance();
 	const suiBalanceDisplay = (
-		<TrimmedNumber
-			displayType="text"
-			value={formatSUI(suiBalance)}
-			suffix=" SUI"
-			className="shrink-0"
-		/>
+		<TrimmedNumber displayType="text" value={formatSUI(suiBalance)} suffix=" SUI" className="shrink-0" />
 	);
 	const { mutate: disconnectSui } = useDisconnectWallet();
 	const { handleWalletConnect } = useContext(WalletContext);
@@ -198,13 +209,13 @@ export function WalletBar() {
 			<div className="flex items-center gap-4">
 				{/* Compact wallet indicators */}
 				<div className="flex items-center gap-2">
-					<div className={`badge ${isBitcoinConnected ? 'badge-success' : 'badge-neutral'} gap-1`}>
+					<div className={`badge ${isBitcoinConnected ? "badge-success" : "badge-neutral"} gap-1`}>
 						<BitcoinIcon className="h-4 w-4" />
-						{isBitcoinConnected ? trimAddress(xverse.currentAddress?.address || '') : 'BTC'}
+						{isBitcoinConnected ? trimAddress(currentAddress?.address || "") : "BTC"}
 					</div>
-					<div className={`badge ${isSuiConnected ? 'badge-success' : 'badge-neutral'} gap-1`}>
+					<div className={`badge ${isSuiConnected ? "badge-success" : "badge-neutral"} gap-1`}>
 						<Wallet className="h-4 w-4" />
-						{isSuiConnected ? trimAddress(currentSuiAccount?.address || '') : 'SUI'}
+						{isSuiConnected ? trimAddress(currentSuiAccount?.address || "") : "SUI"}
 					</div>
 				</div>
 				{/* Wallet modal */}
@@ -215,36 +226,36 @@ export function WalletBar() {
 							Wallets
 						</button>
 					</DialogTrigger>
-					<DialogContent className="sm:max-w-4xl max-h-[80vh] overflow-y-auto">
-							<div className="space-y-6">
-								<h3 className="text-lg font-semibold text-center">Wallet Overview</h3>
-								<div className="space-y-4">
-									{/* Header */}
-									<div className="grid grid-cols-5 gap-4 items-center font-medium text-sm">
-										<div>Wallet</div>
-										<div>Network</div>
-										<div>Account</div>
-										<div>Balance</div>
-										<div>Action</div>
-									</div>
-									{/* BTC row */}
-									<div className="grid grid-cols-5 gap-4 items-center">
-										<div className="text-sm font-medium">Bitcoin</div>
-										<div>{btcNetworkOptions}</div>
-										<div>{btcAccounts}</div>
-										<div>{btcBalance}</div>
-										<div>{btcAction}</div>
-									</div>
-									{/* Sui row */}
-									<div className="grid grid-cols-5 gap-4 items-center">
-										<div className="text-sm font-medium">Sui</div>
-										<div>{suiNetworkOptions}</div>
-										<div>{suiAccounts}</div>
-										<div>{suiBalanceDisplay}</div>
-										<div>{suiAction}</div>
-									</div>
+					<DialogContent className="max-h-[80vh] overflow-y-auto sm:max-w-4xl">
+						<div className="space-y-6">
+							<h3 className="text-center text-lg font-semibold">Wallet Overview</h3>
+							<div className="space-y-4">
+								{/* Header */}
+								<div className="grid grid-cols-5 items-center gap-4 text-sm font-medium">
+									<div>Wallet</div>
+									<div>Network</div>
+									<div>Account</div>
+									<div>Balance</div>
+									<div>Action</div>
+								</div>
+								{/* BTC row */}
+								<div className="grid grid-cols-5 items-center gap-4">
+									<div className="text-sm font-medium">Bitcoin</div>
+									<div>{btcNetworkOptions}</div>
+									<div>{btcAccounts}</div>
+									<div>{btcBalance}</div>
+									<div>{btcAction}</div>
+								</div>
+								{/* Sui row */}
+								<div className="grid grid-cols-5 items-center gap-4">
+									<div className="text-sm font-medium">Sui</div>
+									<div>{suiNetworkOptions}</div>
+									<div>{suiAccounts}</div>
+									<div>{suiBalanceDisplay}</div>
+									<div>{suiAction}</div>
 								</div>
 							</div>
+						</div>
 					</DialogContent>
 				</Dialog>
 			</div>
