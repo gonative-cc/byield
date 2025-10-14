@@ -176,7 +176,7 @@ export function SideBar() {
 	);
 }
 
-const itemCls = "flex items-center px-2 py-1 rounded mb-2";
+const itemCls = "flex items-center px-2 py-1 rounded mb-2 gap-1";
 
 function ParentItem(item: MenuItem, currentPath: string, collapsed: boolean) {
 	const component = (
