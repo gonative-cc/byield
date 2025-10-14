@@ -190,7 +190,7 @@ function ParentItem(item: MenuItem, currentPath: string, collapsed: boolean) {
 			<img src={item.icon} alt="" className="flex h-8 w-8" />
 			{!collapsed && (
 				<div className="flex w-full justify-between">
-					<span className="text-sm">{item.title}</span>
+					<span className="pl-1 text-sm">{item.title}</span>
 				</div>
 			)}
 		</div>

@@ -184,8 +184,8 @@ export function MintBTCTable({ data, isLoading = false }: MintBTCTableProps) {
 		<div className="w-full space-y-4">
 			<Table
 				header={{
-					icon: "₿",
-					title: "nBTC Mint Transactions",
+					iconPath: "/assets/navigation/nBTC.svg",
+					title: "Your nBTC Mint Transactions",
 				}}
 				columns={columns}
 				data={data}

@@ -104,6 +104,7 @@ const TableRows = <T extends object>({
 interface TableProps<T extends object> {
 	header?: {
 		icon?: string;
+		iconPath?: string;
 		title?: string;
 	};
 	columns: Column<T>[];
@@ -175,6 +176,11 @@ export const Table = <T extends object>({
 						{header.icon && (
 							<div className={avatarGradientClasses()}>
 								<span className="text-xl">{header.icon}</span>
+							</div>
+						)}
+						{header.iconPath && (
+							<div className={avatarGradientClasses()}>
+								<img src={header.iconPath} alt="" className="h-8 w-8 pl-1" />
 							</div>
 						)}
 						{header.title && (
