@@ -176,7 +176,7 @@ export function SideBar() {
 	);
 }
 
-const itemCls = "flex items-center px-2 py-1 rounded mb-2";
+const itemCls = "flex items-center px-2 py-1 rounded mb-2 gap-1";
 
 function ParentItem(item: MenuItem, currentPath: string, collapsed: boolean) {
 	const component = (
@@ -190,7 +190,7 @@ function ParentItem(item: MenuItem, currentPath: string, collapsed: boolean) {
 			<img src={item.icon} alt="" className="flex h-8 w-8" />
 			{!collapsed && (
 				<div className="flex w-full justify-between">
-					<span className="pl-1 text-sm">{item.title}</span>
+					<span className="text-sm">{item.title}</span>
 				</div>
 			)}
 		</div>
