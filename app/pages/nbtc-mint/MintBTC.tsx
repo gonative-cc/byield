@@ -15,8 +15,6 @@ import { toast } from "~/hooks/use-toast";
 import { TxConfirmationModal } from "~/components/ui/TransactionConfirmationModal";
 import { makeReq } from "~/server/nbtc/jsonrpc";
 import { useFetcher } from "react-router";
-import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
-import { NBTCBalance } from "~/components/NBTCBalance";
 import type { UTXO } from "~/server/nbtc/types";
 
 function formatSuiAddress(suiAddress: string) {
@@ -55,7 +53,6 @@ interface MintBTCProps {
 }
 
 export function MintBTC({ fetchMintTxs }: MintBTCProps) {
-	const { balance: nBTCBalance } = useCoinBalance("NBTC");
 	const [txId, setTxId] = useState<string | undefined>(undefined);
 	const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 	const [isProcessing, setIsProcessing] = useState(false);
@@ -154,7 +151,6 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 			<form onSubmit={handleSubmit(handlenBTCMintTx)} className="mx-auto max-w-lg">
 				<div className="card">
 					<div className="card-body flex flex-col space-y-4">
-						{suiAddr && <NBTCBalance balance={nBTCBalance} />}
 						<FormNumericInput
 							required
 							name="numberOfBTC"
