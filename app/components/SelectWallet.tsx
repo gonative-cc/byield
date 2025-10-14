@@ -2,7 +2,6 @@ import { useContext } from "react";
 import { useLocation } from "react-router";
 import { BitcoinIcon, Wallet } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
-import { Skeleton } from "~/components/ui/skeleton";
 import { XverseWallet } from "./Wallet/XverseWallet/XverseWallet";
 import { SuiWallet } from "./Wallet/SuiWallet/SuiWallet";
 import { SuiModal } from "./Wallet/SuiWallet/SuiModal";
@@ -10,10 +9,6 @@ import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
 import { useXverseConnect } from "./Wallet/XverseWallet/useWallet";
 import { routes } from "~/config/walletVisibility";
-
-interface SelectWalletProps {
-	isProductionMode: boolean;
-}
 
 function WalletSection({ title, children }: { title: string; children: React.ReactNode }) {
 	return (
@@ -45,7 +40,7 @@ function DesktopWallets({ children }: { children: React.ReactNode }) {
 	return <div className="hidden md:flex md:items-center md:gap-4">{children}</div>;
 }
 
-export function SelectWallet({ isProductionMode }: SelectWalletProps) {
+export function SelectWallet() {
 	const { isWalletConnected } = useContext(WalletContext);
 	const { connectWallet } = useXverseConnect();
 	const { pathname } = useLocation();
@@ -57,7 +52,6 @@ export function SelectWallet({ isProductionMode }: SelectWalletProps) {
 
 	const bitcoinWallet =
 		shouldShowBitcoinWallet &&
-		!isProductionMode &&
 		(isBitcoinConnected ? (
 			<XverseWallet />
 		) : (
@@ -77,7 +71,7 @@ export function SelectWallet({ isProductionMode }: SelectWalletProps) {
 			</DesktopWallets>
 
 			<MobileWalletModal>
-				{shouldShowBitcoinWallet && !isProductionMode && (
+				{shouldShowBitcoinWallet && (
 					<WalletSection title="Bitcoin Wallet">{bitcoinWallet}</WalletSection>
 				)}
 				{shouldShowSUIWallet && <WalletSection title="Sui Wallet">{suiWallet}</WalletSection>}
