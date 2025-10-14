@@ -130,7 +130,10 @@ export async function checkTxOnChain(
 		});
 		return processTransactionData(tx, suiTxId, bidderAddr, "Primary", trustedPackageId);
 	} catch (error) {
-		logError({ msg: `[Primary] Error querying Sui RPC for tx ${suiTxId}:`, method: "" }, error);
+		logError(
+			{ msg: `[Primary] Error querying Sui RPC for tx ${suiTxId}:`, method: "postBidTx" },
+			error,
+		);
 		await delay(650);
 		return queryIndexerFallback(suiTxId, bidderAddr, trustedPackageId, indexerURL);
 	}
