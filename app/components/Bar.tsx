@@ -226,33 +226,29 @@ export function WalletBar() {
 							Wallets
 						</button>
 					</DialogTrigger>
-					<DialogContent className="max-h-[80vh] overflow-y-auto sm:max-w-4xl">
+					<DialogContent className="top-0 translate-y-0 overflow-y-auto sm:max-w-4xl md:top-[20%]">
 						<div className="space-y-6">
 							<h3 className="text-center text-lg font-semibold">Wallet Overview</h3>
-							<div className="space-y-4">
-								{/* Header */}
-								<div className="grid grid-cols-5 items-center gap-4 text-sm font-medium">
-									<div>Wallet</div>
-									<div>Network</div>
-									<div>Account</div>
-									<div>Balance</div>
-									<div>Action</div>
+							<div className="max-h-[80vh] space-y-6 overflow-y-auto">
+								{/* Bitcoin Wallet Section */}
+								<div className="space-y-4">
+									<h4 className="text-lg font-semibold">Bitcoin Wallet</h4>
+									<div className="flex flex-col gap-4 md:grid md:grid-cols-4 md:items-center md:gap-4">
+										<div>{btcNetworkOptions}</div>
+										<div>{btcAccounts}</div>
+										<div>{btcBalance}</div>
+										<div>{btcAction}</div>
+									</div>
 								</div>
-								{/* BTC row */}
-								<div className="grid grid-cols-5 items-center gap-4">
-									<div className="text-sm font-medium">Bitcoin</div>
-									<div>{btcNetworkOptions}</div>
-									<div>{btcAccounts}</div>
-									<div>{btcBalance}</div>
-									<div>{btcAction}</div>
-								</div>
-								{/* Sui row */}
-								<div className="grid grid-cols-5 items-center gap-4">
-									<div className="text-sm font-medium">Sui</div>
-									<div>{suiNetworkOptions}</div>
-									<div>{suiAccounts}</div>
-									<div>{suiBalanceDisplay}</div>
-									<div>{suiAction}</div>
+								{/* Sui Wallet Section */}
+								<div className="space-y-4">
+									<h4 className="text-lg font-semibold">Sui Wallet</h4>
+									<div className="flex flex-col gap-4 md:grid md:grid-cols-4 md:items-center md:gap-4">
+										<div>{suiNetworkOptions}</div>
+										<div>{suiAccounts}</div>
+										<div>{suiBalanceDisplay}</div>
+										<div>{suiAction}</div>
+									</div>
 								</div>
 							</div>
 						</div>
