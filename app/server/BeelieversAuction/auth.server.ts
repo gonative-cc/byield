@@ -3,6 +3,7 @@ import { verifyTransactionSignature } from "@mysten/sui/verify";
 import { TransactionDataBuilder } from "@mysten/sui/transactions";
 
 import { delay } from "~/lib/batteries";
+import { logError } from "~/lib/log";
 
 export type BidTxEvent = {
 	sender: string;
@@ -129,8 +130,7 @@ export async function checkTxOnChain(
 		});
 		return processTransactionData(tx, suiTxId, bidderAddr, "Primary", trustedPackageId);
 	} catch (error) {
-		console.error(`[Primary] Error querying Sui RPC for tx ${suiTxId}:`, error);
-		console.log("[Primary] RPC failed. Attempting to use fallback indexer...");
+		logError({ msg: `[Primary] Error querying Sui RPC for tx ${suiTxId}:`, method: "" }, error);
 		await delay(650);
 		return queryIndexerFallback(suiTxId, bidderAddr, trustedPackageId, indexerURL);
 	}
