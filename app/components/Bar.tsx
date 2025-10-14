@@ -3,7 +3,7 @@ import { Menu } from "lucide-react";
 import { useContext } from "react";
 import { SideBarContext } from "~/providers/SiderBarProvider";
 
-export function NavBar() {
+export function WalletBar() {
 	const { toggleMobileMenu } = useContext(SideBarContext);
 
 	return (
