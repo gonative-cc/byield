@@ -76,6 +76,16 @@ const createColumns = (
 		),
 	},
 	{
+		Header: () => <MintTableTooltip label="Fees" tooltip="The nBTC minting fees in BTC" />,
+		accessor: "fees",
+		Cell: ({ row }: CellProps<MintTransaction>) => (
+			<div className="flex items-center gap-2 font-semibold">
+				<span className="text-primary">{formatBTC(BigInt(row.original.fees || 0))}</span>
+				<span className="text-base-content/60 text-sm">BTC</span>
+			</div>
+		),
+	},
+	{
 		Header: () => (
 			<MintTableTooltip
 				label="Recipient"

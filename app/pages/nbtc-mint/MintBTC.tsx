@@ -231,14 +231,16 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 								{isProcessing ? "Processing..." : "Deposit BTC and mint nBTC"}
 							</button>
 						) : (
-							<button
-								type="button"
-								onClick={connectWallet}
-								className="btn btn-primary btn-wide"
-							>
-								<BitcoinIcon className="h-5 w-5" />
-								Connect Bitcoin Wallet
-							</button>
+							<div className="flex justify-center">
+								<button
+									type="button"
+									onClick={connectWallet}
+									className="btn btn-primary btn-wide"
+								>
+									<BitcoinIcon className="h-5 w-5" />
+									Connect Bitcoin Wallet
+								</button>
+							</div>
 						)}
 					</div>
 				</div>
