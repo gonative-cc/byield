@@ -149,24 +149,28 @@ export function SuiWallet() {
 	return (
 		<>
 			{/* handles md screen sizes */}
-			<div className="hidden items-center gap-2 md:flex">
-				<NetWorkOptions />
-				<Accounts />
-				<TrimmedNumber
-					displayType="text"
-					value={formatSUI(balance)}
-					suffix=" SUI"
-					className="shrink-0"
-				/>
-				<button
-					onClick={() => {
-						disconnect();
-						handleWalletConnect(Wallets.SuiWallet, false);
-					}}
-					className="btn btn-primary"
-				>
-					Disconnect Sui Wallet
-				</button>
+			<div className="hidden md:grid md:grid-cols-2 md:gap-4 md:items-start">
+				<div className="space-y-2">
+					<NetWorkOptions />
+					<Accounts />
+				</div>
+				<div className="space-y-2">
+					<TrimmedNumber
+						displayType="text"
+						value={formatSUI(balance)}
+						suffix=" SUI"
+						className="shrink-0"
+					/>
+					<button
+						onClick={() => {
+							disconnect();
+							handleWalletConnect(Wallets.SuiWallet, false);
+						}}
+						className="btn btn-primary btn-sm"
+					>
+						Disconnect
+					</button>
+				</div>
 			</div>
 			{/* handles below md screen sizes */}
 			<SuiWalletMobileView balance={balance} />

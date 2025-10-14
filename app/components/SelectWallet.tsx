@@ -36,11 +36,11 @@ function MobileWalletModal({ children }: { children: React.ReactNode }) {
 	);
 }
 
-function DesktopWallets({ children }: { children: React.ReactNode }) {
-	return <div className="hidden md:flex md:items-center md:gap-4">{children}</div>;
+function DesktopWallets({ children, overview = false }: { children: React.ReactNode; overview?: boolean }) {
+  return <div className={`${overview ? 'flex flex-col gap-4' : 'hidden md:flex md:items-center md:gap-4'}`}>{children}</div>;
 }
 
-export function SelectWallet() {
+export function SelectWallet({ overview = false }: { overview?: boolean }) {
 	const { isWalletConnected } = useContext(WalletContext);
 	const { connectWallet } = useXverseConnect();
 	const { pathname } = useLocation();
@@ -65,17 +65,19 @@ export function SelectWallet() {
 
 	return (
 		<>
-			<DesktopWallets>
+			<DesktopWallets overview={overview}>
 				{bitcoinWallet}
 				{suiWallet}
 			</DesktopWallets>
 
-			<MobileWalletModal>
-				{shouldShowBitcoinWallet && (
-					<WalletSection title="Bitcoin Wallet">{bitcoinWallet}</WalletSection>
-				)}
-				{shouldShowSUIWallet && <WalletSection title="Sui Wallet">{suiWallet}</WalletSection>}
-			</MobileWalletModal>
+			{!overview && (
+				<MobileWalletModal>
+					{shouldShowBitcoinWallet && (
+						<WalletSection title="Bitcoin Wallet">{bitcoinWallet}</WalletSection>
+					)}
+					{shouldShowSUIWallet && <WalletSection title="Sui Wallet">{suiWallet}</WalletSection>}
+				</MobileWalletModal>
+			)}
 		</>
 	);
 }
