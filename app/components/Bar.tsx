@@ -109,7 +109,6 @@ function SuiNetWorkOptions() {
 		[selectNetwork],
 	);
 
-	// TODO: remove this after auction. enforce network change
 	const isAuctionPathname = pathname === "/beelievers-auction" && isProductionMode();
 	const isDevMode = !isProductionMode();
 
