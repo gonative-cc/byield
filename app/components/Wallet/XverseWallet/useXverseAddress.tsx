@@ -1,25 +1,19 @@
-import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import Wallet, { getAddressesMethodName, AddressPurpose } from "sats-connect";
 import type { Address } from "sats-connect";
 
-export const useXverseAddress = () => {
-	const [currentAddress, setCurrentAddress] = useState<Address | null>(null);
+const fetchXverseAddress = async (): Promise<Address | null> => {
+	const response = await Wallet.request(getAddressesMethodName, {
+		purposes: [AddressPurpose.Payment],
+	});
+	return response.status === "success" ? response.result.addresses?.[0] || null : null;
+};
 
-	useEffect(() => {
-		const connectWallet = async () => {
-			try {
-				const response = await Wallet.request(getAddressesMethodName, {
-					purposes: [AddressPurpose.Payment],
-				});
-				if (response.status === "success") {
-					setCurrentAddress(response.result.addresses?.[0]);
-				}
-			} catch (error) {
-				console.error("Failed to get address:", error);
-			}
-		};
-		connectWallet();
-	}, []);
+export const useXverseAddress = () => {
+	const { data: currentAddress } = useQuery({
+		queryKey: ["xverse-address"],
+		queryFn: fetchXverseAddress,
+	});
 
 	return { currentAddress };
 };
