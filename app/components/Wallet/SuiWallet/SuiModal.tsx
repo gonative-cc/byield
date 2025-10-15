@@ -124,8 +124,8 @@ export function SuiConnectModal() {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<button className="btn btn-primary w-full md:w-auto">
-					<SUIIcon prefix="" className="h-5 w-5" /> Connect Sui Wallet
+				<button className="btn btn-primary btn-sm">
+					<SUIIcon prefix="" className="h-4 w-4" /> Connect Sui
 				</button>
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-[425px]">

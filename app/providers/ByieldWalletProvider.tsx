@@ -44,13 +44,13 @@ export const ByieldWalletProvider = ({ children }: { children: ReactNode }) => {
 	const currentAccount = useCurrentAccount();
 	const { currentAddress } = useXverseAddress();
 	const isSuiWalletActive = !!currentAccount;
-	const isBitcoinWalletActive = !!currentAddress;
+	const [isBitcoinWalletActive, setIsActive] = useState<boolean>(false);
 	const observerRef = useRef<MutationObserver | null>(null);
 	// current sui address
 	const suiAddr = isSuiWalletActive ? currentAccount.address : null;
 
 	const connectedWallets: ConnectedWallets = {
-		[Wallets.Xverse]: isBitcoinWalletActive,
+		[Wallets.Xverse]: isBitcoinWalletActive || !!currentAddress,
 		[Wallets.SuiWallet]: isSuiWalletActive,
 	};
 
@@ -78,6 +78,7 @@ export const ByieldWalletProvider = ({ children }: { children: ReactNode }) => {
 	}, [isModalHidden]);
 
 	const handleWalletConnect = async (walletType: Wallets, isConnected: boolean): Promise<void> => {
+		if (walletType === Wallets.Xverse) setIsActive(isConnected);
 		// Show bitcoin wallet modal when connecting Xverse
 		if (walletType === Wallets.Xverse && isConnected) {
 			setIsModalHidden(false);

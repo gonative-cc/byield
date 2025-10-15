@@ -1,9 +1,6 @@
-import { useContext, useState, useEffect } from "react";
+import { useContext } from "react";
 import { useLocation } from "react-router";
 import { BitcoinIcon, Wallet, Bitcoin } from "lucide-react";
-import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
-import { XverseWallet } from "./Wallet/XverseWallet/XverseWallet";
-import { SuiWallet } from "./Wallet/SuiWallet/SuiWallet";
 import { SuiConnectModal } from "./Wallet/SuiWallet/SuiModal";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
@@ -12,53 +9,20 @@ import { routes } from "~/config/walletVisibility";
 import { trimAddress } from "~/components/Wallet/walletHelper";
 import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
 import { SUIIcon } from "~/components/icons";
-
 import { useCurrentAccount, useAccounts, useSwitchAccount } from "@mysten/dapp-kit";
-
-function WalletSection({ title, children }: { title: string; children: React.ReactNode }) {
-	return (
-		<div className="space-y-2">
-			<h4 className="text-sm font-medium">{title}</h4>
-			{children}
-		</div>
-	);
-}
-
-function MobileWalletModal({ children }: { children: React.ReactNode }) {
-	return (
-		<div className="md:hidden">
-			<Dialog>
-				<DialogTrigger asChild>
-					<button className="btn btn-primary btn-outline btn-sm">
-						<Wallet size={16} /> Wallet
-					</button>
-				</DialogTrigger>
-				<DialogContent className="sm:max-w-md">
-					<div className="space-y-4">{children}</div>
-				</DialogContent>
-			</Dialog>
-		</div>
-	);
-}
-
-function DesktopWallets({ children }: { children: React.ReactNode }) {
-	return <div className="hidden md:flex md:items-center md:gap-4">{children}</div>;
-}
 
 export function SelectWallet() {
 	const { isWalletConnected } = useContext(WalletContext);
 	const { connectWallet } = useXverseConnect();
 	const { pathname } = useLocation();
 
-	const {
-		currentAddress,
-		network: bitcoinNetwork,
-		setCurrentAddress,
-		addressInfo: bitcoinAddresses,
-	} = useXverseWallet();
+	const { currentAddress, setCurrentAddress, addressInfo: bitcoinAddresses } = useXverseWallet();
 	const currentSuiAccount = useCurrentAccount();
 	const allSuiAccounts = useAccounts();
 	const { mutate: switchSuiAccount } = useSwitchAccount();
+
+	const shouldShowBitcoinWallet = routes[pathname]?.bitcoin ?? true;
+	const shouldShowSUIWallet = routes[pathname]?.sui ?? true;
 
 	const isBitcoinConnected = isWalletConnected(Wallets.Xverse);
 	const isSuiConnected = isWalletConnected(Wallets.SuiWallet);
@@ -104,22 +68,25 @@ export function SelectWallet() {
 		}
 	};
 
-	const bitcoinWalletStatus = isBitcoinConnected ? (
-		walletBadge(
-			<Bitcoin size={20} className="text-amber-500" />,
-			bitcoinAddresses,
-			currentAddress?.address || "",
-			handleBitcoinAddressChange,
-		)
-	) : (
-		<button onClick={connectWallet} className="btn btn-primary btn-sm">
-			<BitcoinIcon className="h-4 w-4" />
-			Connect Bitcoin
-		</button>
-	);
+	const bitcoinWalletStatus =
+		shouldShowBitcoinWallet &&
+		(isBitcoinConnected ? (
+			walletBadge(
+				<Bitcoin size={20} className="text-amber-500" />,
+				bitcoinAddresses,
+				currentAddress?.address || "",
+				handleBitcoinAddressChange,
+			)
+		) : (
+			<button onClick={connectWallet} className="btn btn-primary btn-sm">
+				<BitcoinIcon className="h-4 w-4" />
+				Connect Bitcoin
+			</button>
+		));
 
 	const suiWalletStatus =
-		isSuiConnected && currentSuiAccount ? (
+		shouldShowSUIWallet &&
+		(isSuiConnected && currentSuiAccount ? (
 			walletBadge(
 				<SUIIcon prefix="" className="h-5 w-5" />,
 				allSuiAccounts,
@@ -128,7 +95,7 @@ export function SelectWallet() {
 			)
 		) : (
 			<SuiConnectModal />
-		);
+		));
 
 	return (
 		<div className="flex items-center gap-2">
