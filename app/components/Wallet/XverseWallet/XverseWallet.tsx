@@ -95,20 +95,24 @@ export function XverseWallet() {
 
 	return (
 		<>
-			<div className="hidden items-center gap-2 md:flex">
-				<NetWorkOptions />
-				<Accounts />
-				{balance && (
-					<TrimmedNumber
-						displayType="text"
-						value={formatBTC(BigInt(balance))}
-						suffix=" BTC"
-						className="shrink-0"
-					/>
-				)}
-				<button onClick={disconnectWallet} className="btn btn-primary">
-					Disconnect Bitcoin Wallet
-				</button>
+			<div className="hidden md:grid md:grid-cols-2 md:gap-4 md:items-start">
+				<div className="space-y-2">
+					<NetWorkOptions />
+					<Accounts />
+				</div>
+				<div className="space-y-2">
+					{balance && (
+						<TrimmedNumber
+							displayType="text"
+							value={formatBTC(BigInt(balance))}
+							suffix=" BTC"
+							className="shrink-0"
+						/>
+					)}
+					<button onClick={disconnectWallet} className="btn btn-primary btn-sm">
+						Disconnect
+					</button>
+				</div>
 			</div>
 			{/* Mobile view */}
 			<XverseWalletMobileView />

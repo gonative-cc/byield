@@ -114,7 +114,6 @@ Use `bun` rather than `npm` and `bunx` rather than `npx`.
 - Strongly prefer to use Daisy UI classes over granular tailwindcss styling.
 - Daisy UI instructions: @daisy-ui-llms.txt
 
-
 ### Code Quality
 - Use Prettier for code formatting
 - Follow ESLint rules for code quality

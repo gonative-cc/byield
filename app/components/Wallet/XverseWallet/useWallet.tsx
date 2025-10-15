@@ -56,10 +56,10 @@ export const useXverseConnect = () => {
 };
 
 export const useXverseWallet = () => {
-	const { handleWalletConnect, isWalletConnected } = useContext(WalletContext);
-	const isBitCoinWalletConnected = isWalletConnected(Wallets.Xverse);
+	const { handleWalletConnect } = useContext(WalletContext);
 	const [addressInfo, setAddressInfo] = useState<Address[]>([]);
 	const [currentAddress, setCurrentAddress] = useState<Address | null>(null);
+	const isBitCoinWalletConnected = !!currentAddress;
 	const [balance, setBalance] = useState<string>();
 	// TODO: Default bitcoin network on connection is Regtest
 	const [network, setNetwork] = useState<BitcoinNetworkType>(BitcoinNetworkType.Regtest);
@@ -144,6 +144,41 @@ export const useXverseWallet = () => {
 		}
 	}, [handleWalletConnect]);
 
+	const connectWallet = useCallback(async () => {
+		try {
+			const response = await Wallet.request(connectMethodName, {
+				permissions: [
+					{
+						type: "wallet",
+						resourceId: "",
+						actions: {
+							readNetwork: true,
+						},
+					},
+					{
+						type: "account",
+						resourceId: "",
+						actions: {
+							read: true,
+						},
+					},
+				],
+			});
+			if (response.status === "success") {
+				setCurrentAddress(response.result.addresses?.[0]);
+				handleWalletConnect(Wallets.Xverse, true);
+			} else {
+				toast({
+					title: "Wallet",
+					description: "Failed to connect wallet",
+					variant: "destructive",
+				});
+			}
+		} catch (err) {
+			console.error(err);
+		}
+	}, [handleWalletConnect]);
+
 	const switchNetwork = useCallback(async (newNetwork: BitcoinNetworkType) => {
 		// Handle other networks normally
 		const response = await Wallet.request(changeNetworkMethodName, {
@@ -170,5 +205,6 @@ export const useXverseWallet = () => {
 		refreshBalance: getBalance,
 		disconnectWallet,
 		switchNetwork,
+		connectWallet,
 	};
 };

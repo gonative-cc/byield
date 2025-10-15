@@ -1,7 +1,7 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { createContext, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
-import { useXverseAddress } from "~/components/Wallet/XverseWallet/useXverseAddress";
+import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
 import { Wallets } from "~/components/Wallet";
 
 export enum Network {
@@ -18,19 +18,18 @@ interface WalletContextI {
 	connectedWallets: ConnectedWallets;
 	network: Network;
 	suiAddr: string | null;
+	xverse: ReturnType<typeof useXverseWallet> | null;
 	handleNetwork: (newNetwork: Network) => void;
 	handleWalletConnect: (walletType: Wallets, isConnected: boolean) => void;
 	toggleBitcoinModal: (show: boolean) => void;
 	isWalletConnected: (walletType: Wallets) => boolean;
 }
 
-export const WalletContext = createContext<WalletContextI>({
-	connectedWallets: {
-		[Wallets.Xverse]: false,
-		[Wallets.SuiWallet]: false,
-	},
+export const WalletContext: React.Context<WalletContextI> = createContext<WalletContextI>({
+	connectedWallets: { [Wallets.Xverse]: false, [Wallets.SuiWallet]: false },
 	network: Network.TESTNET,
 	suiAddr: null,
+	xverse: null,
 	handleNetwork: () => {},
 	handleWalletConnect: () => {},
 	toggleBitcoinModal: () => {},
@@ -42,10 +41,12 @@ export const ByieldWalletProvider = ({ children }: { children: ReactNode }) => {
 	const [network, setNetwork] = useState<Network>(Network.TESTNET);
 	const [isModalHidden, setIsModalHidden] = useState<boolean>(true); // State to control modal visibility
 	const currentAccount = useCurrentAccount();
-	const { currentAddress } = useXverseAddress();
+	const xverse = useXverseWallet();
+	const { currentAddress } = xverse;
 	const isSuiWalletActive = !!currentAccount;
-	const [isBitcoinWalletActive, setIsActive] = useState<boolean>(() => !!currentAddress);
+	const isBitcoinWalletActive = !!currentAddress;
 	const observerRef = useRef<MutationObserver | null>(null);
+
 	// current sui address
 	const suiAddr = isSuiWalletActive ? currentAccount.address : null;
 
@@ -78,7 +79,6 @@ export const ByieldWalletProvider = ({ children }: { children: ReactNode }) => {
 	}, [isModalHidden]);
 
 	const handleWalletConnect = async (walletType: Wallets, isConnected: boolean): Promise<void> => {
-		if (walletType === Wallets.Xverse) setIsActive(isConnected);
 		// Show bitcoin wallet modal when connecting Xverse
 		if (walletType === Wallets.Xverse && isConnected) {
 			setIsModalHidden(false);
@@ -104,6 +104,7 @@ export const ByieldWalletProvider = ({ children }: { children: ReactNode }) => {
 				suiAddr,
 				connectedWallets,
 				network,
+				xverse,
 				handleNetwork,
 				handleWalletConnect,
 				toggleBitcoinModal,
