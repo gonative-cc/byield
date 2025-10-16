@@ -16,7 +16,8 @@ import { toast } from "~/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 
 export const useXverseConnect = () => {
-	const { handleWalletConnect, toggleBitcoinModal } = useContext(WalletContext);
+	const queryClient = useQueryClient();
+	const { toggleBitcoinModal } = useContext(WalletContext);
 
 	const connectWallet = useCallback(async () => {
 		try {
@@ -40,7 +41,7 @@ export const useXverseConnect = () => {
 				],
 			});
 			if (response.status === "success") {
-				handleWalletConnect(Wallets.Xverse, true);
+				queryClient.invalidateQueries({ queryKey: ["xverse-address"] });
 			} else {
 				toast({
 					title: "Wallet",
@@ -51,13 +52,13 @@ export const useXverseConnect = () => {
 		} catch (err) {
 			console.error(err);
 		}
-	}, [handleWalletConnect, toggleBitcoinModal]);
+	}, [queryClient, toggleBitcoinModal]);
 
 	return { connectWallet };
 };
 
 export const useXverseWallet = () => {
-	const { handleWalletConnect, isWalletConnected } = useContext(WalletContext);
+	const { isWalletConnected } = useContext(WalletContext);
 	const isBitCoinWalletConnected = isWalletConnected(Wallets.Xverse);
 	const [addressInfo, setAddressInfo] = useState<Address[]>([]);
 	const [currentAddress, setCurrentAddress] = useState<Address | null>(null);
@@ -133,7 +134,6 @@ export const useXverseWallet = () => {
 			const response = await Wallet.request(disconnectMethodName, null);
 			if (response.status === "success") {
 				setAddressInfo([]);
-				handleWalletConnect(Wallets.Xverse, false);
 				setCurrentAddress(null);
 				queryClient.invalidateQueries({ queryKey: ["xverse-address"] });
 			} else
@@ -145,7 +145,7 @@ export const useXverseWallet = () => {
 		} catch (err) {
 			console.log(err);
 		}
-	}, [handleWalletConnect, queryClient]);
+	}, [queryClient]);
 
 	const switchNetwork = useCallback(async (newNetwork: BitcoinNetworkType) => {
 		// Handle other networks normally
