@@ -33,7 +33,7 @@ export function Info({ user, auctionInfo, auctionState }: InfoProps) {
 Securing my spot in the top 5810 at https://byield.gonative.cc/beelievers-auction`;
 
 	return (
-		<div className="card card-border w-full border shadow-2xl transition-all duration-300 lg:w-[85%] xl:w-[75%]">
+		<div className="card card-border w-full border shadow-2xl transition-all duration-300 md:w-3/4">
 			<div className="card-body from-azure-25 via-azure-20 to-azure-15 flex flex-col gap-6 rounded-lg bg-gradient-to-br p-4 text-white lg:flex-row lg:gap-8 lg:p-8">
 				<div className="flex flex-shrink-0 justify-center lg:justify-start">
 					<div className="animate-float">
