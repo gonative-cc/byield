@@ -4,7 +4,6 @@ import { type NumericFormatProps } from "react-number-format";
 
 const FIXED_DECIMAL = 3;
 
-// use decimalScale=0 to set default (0)
 export function TrimmedNumber(props: NumericFormatProps) {
 	if (
 		props.value === null ||
