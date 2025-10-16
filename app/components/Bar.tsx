@@ -25,7 +25,7 @@ import { routes } from "~/config/walletVisibility";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "./Wallet";
 
-function NetWorkOptions() {
+function NetworkOptions() {
 	const { network, switchNetwork } = useXverseWallet();
 
 	const location = useLocation();
@@ -97,7 +97,7 @@ const SuiNetworkLabel: Record<SuiNetwork, string> = {
 	[SuiNetwork.MainNet]: "Mainnet",
 };
 
-function SuiNetWorkOptions() {
+function SuiNetworkOptions() {
 	const location = useLocation();
 	const pathname = location.pathname;
 
@@ -217,7 +217,7 @@ function WalletOverviewModal() {
 						<div className="bg-base-200 space-y-2 rounded-lg p-2">
 							<div className="flex items-center justify-between">
 								<span className="text-base-content/70 text-sm">Network:</span>
-								<NetWorkOptions />
+								<NetworkOptions />
 							</div>
 
 							<div className="flex items-center justify-between">
@@ -259,7 +259,7 @@ function WalletOverviewModal() {
 						<div className="bg-base-200 space-y-3 rounded-lg p-4">
 							<div className="flex items-center justify-between">
 								<span className="text-base-content/70 text-sm">Network:</span>
-								<SuiNetWorkOptions />
+								<SuiNetworkOptions />
 							</div>
 
 							<div className="flex place-items-center justify-between">
