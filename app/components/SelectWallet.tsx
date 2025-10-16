@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { useLocation } from "react-router";
-import { BitcoinIcon, Wallet, Bitcoin } from "lucide-react";
+import { BitcoinIcon, Bitcoin } from "lucide-react";
 import { SuiConnectModal } from "./Wallet/SuiWallet/SuiModal";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
@@ -26,30 +26,6 @@ export function SelectWallet() {
 
 	const isBitcoinConnected = isWalletConnected(Wallets.Xverse);
 	const isSuiConnected = isWalletConnected(Wallets.SuiWallet);
-
-	const bitcoinLoading = isBitcoinConnected && !currentAddress;
-	const suiLoading = isSuiConnected && !currentSuiAccount;
-
-	// If still loading for connected wallets, show loading indicators
-	// TODO: this have to be finished
-	if (bitcoinLoading || suiLoading) {
-		return (
-			<div className="flex items-center gap-2">
-				{bitcoinLoading && (
-					<div className="bg-base-200 text-base-content/60 flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm">
-						<Bitcoin size={16} className="text-base-content/60" />
-						<span className="text-xs md:text-sm">Loading...</span>
-					</div>
-				)}
-				{suiLoading && (
-					<div className="bg-base-200 text-base-content/60 flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm">
-						<Wallet size={16} className="text-base-content/60" />
-						<span className="text-xs md:text-sm">Loading...</span>
-					</div>
-				)}
-			</div>
-		);
-	}
 
 	// Handle Bitcoin address switching via select
 	const handleBitcoinAddressChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
