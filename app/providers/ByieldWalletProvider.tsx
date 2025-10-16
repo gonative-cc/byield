@@ -18,7 +18,6 @@ interface WalletContextI {
 	connectedWallets: ConnectedWallets;
 	network: Network;
 	suiAddr: string | null;
-	isBitcoinLoading: boolean;
 	handleNetwork: (newNetwork: Network) => void;
 	handleWalletConnect: (walletType: Wallets, isConnected: boolean) => void;
 	toggleBitcoinModal: (show: boolean) => void;
@@ -31,7 +30,6 @@ export const WalletContext = createContext<WalletContextI>({
 		[Wallets.SuiWallet]: false,
 	},
 	network: Network.TESTNET,
-	isBitcoinLoading: false,
 	suiAddr: null,
 	handleNetwork: () => {},
 	handleWalletConnect: () => {},
@@ -44,7 +42,7 @@ export const ByieldWalletProvider = ({ children }: { children: ReactNode }) => {
 	const [network, setNetwork] = useState<Network>(Network.TESTNET);
 	const [isModalHidden, setIsModalHidden] = useState<boolean>(true); // State to control modal visibility
 	const currentAccount = useCurrentAccount();
-	const { currentAddress, isFetching: isBitcoinLoading } = useXverseAddress();
+	const { currentAddress } = useXverseAddress();
 	const isSuiWalletActive = !!currentAccount;
 	const isBitcoinWalletActive = !!currentAddress;
 	const observerRef = useRef<MutationObserver | null>(null);
@@ -103,7 +101,6 @@ export const ByieldWalletProvider = ({ children }: { children: ReactNode }) => {
 		<WalletContext.Provider
 			value={{
 				suiAddr,
-				isBitcoinLoading,
 				connectedWallets,
 				network,
 				handleNetwork,
