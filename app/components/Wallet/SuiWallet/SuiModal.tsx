@@ -120,16 +120,12 @@ function AvailableWallets() {
 	);
 }
 
-interface SuiModalProps {
-	label?: string;
-}
-
-export function SuiModal({ label = "Connect Sui Wallet" }: SuiModalProps) {
+export function SuiConnectModal() {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<button className="btn btn-primary w-full md:w-auto">
-					<SUIIcon prefix="" className="h-5 w-5" /> {label}
+				<button className="btn btn-primary btn-sm">
+					<SUIIcon prefix="" className="h-4 w-4" /> Connect Sui
 				</button>
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-[425px]">

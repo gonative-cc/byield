@@ -1,7 +1,7 @@
 import { Links, Meta, Outlet, Scripts, ScrollRestoration, useLocation } from "react-router";
 import type { LinksFunction } from "react-router";
 import tailwindStyle from "./tailwind.css?url";
-import { NavBar } from "~/components/NavBar";
+import { WalletBar } from "~/components/Bar";
 import { networkConfig } from "./networkConfig";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SuiClientProvider, WalletProvider as SuiWalletProvider } from "@mysten/dapp-kit";
@@ -60,7 +60,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 						<SideBar />
 						<div className="flex w-full flex-col gap-2">
 							<NativeApp>
-								<NavBar />
+								<WalletBar />
 								{children}
 							</NativeApp>
 						</div>
@@ -72,7 +72,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 function NativeApp({ children }: { children: React.ReactNode }) {
-	// TODO: remove this after auction. enforce network change
 	// TODO: use wallet API to switch the network
 
 	const location = useLocation();

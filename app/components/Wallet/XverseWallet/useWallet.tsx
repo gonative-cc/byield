@@ -13,6 +13,7 @@ import type { Address } from "sats-connect";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
 import { toast } from "~/hooks/use-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const useXverseConnect = () => {
 	const { handleWalletConnect, toggleBitcoinModal } = useContext(WalletContext);
@@ -61,6 +62,7 @@ export const useXverseWallet = () => {
 	const [addressInfo, setAddressInfo] = useState<Address[]>([]);
 	const [currentAddress, setCurrentAddress] = useState<Address | null>(null);
 	const [balance, setBalance] = useState<string>();
+	const queryClient = useQueryClient();
 	// TODO: Default bitcoin network on connection is Regtest
 	const [network, setNetwork] = useState<BitcoinNetworkType>(BitcoinNetworkType.Regtest);
 
@@ -133,6 +135,7 @@ export const useXverseWallet = () => {
 				setAddressInfo([]);
 				handleWalletConnect(Wallets.Xverse, false);
 				setCurrentAddress(null);
+				queryClient.invalidateQueries({ queryKey: ["xverse-address"] });
 			} else
 				toast({
 					title: "Wallet",
@@ -142,7 +145,7 @@ export const useXverseWallet = () => {
 		} catch (err) {
 			console.log(err);
 		}
-	}, [handleWalletConnect]);
+	}, [handleWalletConnect, queryClient]);
 
 	const switchNetwork = useCallback(async (newNetwork: BitcoinNetworkType) => {
 		// Handle other networks normally
