@@ -108,7 +108,7 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 			</div>
 
 			<Collapse
-				className="lg:w-[85%] xl:w-[75%]"
+				className="w-full md:w-3/4"
 				title={<span className="text-primary text-xl md:text-2xl">Raffle Results</span>}
 			>
 				<RaffleResults raffle={raffle} />
