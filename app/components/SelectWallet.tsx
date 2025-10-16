@@ -29,8 +29,6 @@ export function SelectWallet() {
 
 	const suiLoading = isSuiConnected && !currentSuiAccount;
 
-	// If still loading for connected wallets, show loading indicators
-	// TODO: this have to be finished
 	if (isBitcoinLoading || suiLoading) {
 		return (
 			<div className="flex items-center gap-2">
