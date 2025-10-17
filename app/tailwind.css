@@ -15,7 +15,7 @@
   --color-azure-20: rgba(12, 17, 29, 1);
   --color-azure-25: rgba(18, 25, 42, 1);
 
-  /* TODO: --bacground is not defiend, but it's used in other classes (eg: .from-background).
+  /* TODO: --background is not defiend, but it's used in other classes (eg: .from-background).
      Let's define it here */
   --color-background: hsl(var(--background));
   --color-foreground: oklch(0.982 0 0);
