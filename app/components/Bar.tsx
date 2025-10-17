@@ -22,8 +22,7 @@ import { BitcoinNetworkType } from "sats-connect";
 import { CopyButton } from "./ui/CopyButton";
 import { isProductionMode } from "~/lib/appenv";
 import { routes } from "~/config/walletVisibility";
-import { WalletContext } from "~/providers/ByieldWalletProvider";
-import { Wallets } from "./Wallet";
+import { useXverseAddress } from "./Wallet/XverseWallet/useXverseAddress";
 
 function NetworkOptions() {
 	const { network, switchNetwork } = useXverseWallet();
@@ -308,11 +307,11 @@ function WalletOverviewModal() {
 
 export function WalletBar() {
 	const { toggleMobileMenu } = useContext(SideBarContext);
-	const { isWalletConnected } = useContext(WalletContext);
-	const isBitcoinConnected = isWalletConnected(Wallets.Xverse);
-	const isSuiConnected = isWalletConnected(Wallets.SuiWallet);
-
-	const shouldShowOverView = isBitcoinConnected || isSuiConnected;
+	const { currentAddress } = useXverseAddress();
+	const isBitCoinWalletConnected = !!currentAddress;
+	const currentAccount = useCurrentAccount();
+	const isSuiConnected = !!currentAccount;
+	const shouldShowOverView = isBitCoinWalletConnected || isSuiConnected;
 
 	return (
 		<header className="bg-base-100/90 supports-backdrop-filter:bg-base-100/70 sticky top-0 z-50 flex h-16 w-full items-center justify-between border-b pr-2 backdrop-blur-sm">

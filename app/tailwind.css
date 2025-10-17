@@ -192,3 +192,8 @@ html {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(238, 132, 44, 1);
 }
+
+/* By default xverse wallet will open on app launch. It should open only on connect bitcoin button click. */
+#sats-connect-wallet-provider-selector {
+  display: none;
+}

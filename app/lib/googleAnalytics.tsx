@@ -1,6 +1,5 @@
-import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { isProductionMode } from "./appenv";
-import { useContext } from "react";
+import { useCurrentAccount } from "@mysten/dapp-kit";
 
 export type eventParam = {
 	label: string;
@@ -18,13 +17,14 @@ export enum GA_CATEGORY {
 }
 
 export function useGoogleAnalytics() {
-	const { network, suiAddr } = useContext(WalletContext);
+	const currentAccount = useCurrentAccount();
+	const suiAddr = currentAccount?.address || null;
 
 	function trackEvent(eventName: GA_EVENT_NAME, params: eventParam) {
 		if (typeof window !== "undefined" && window.gtag) {
 			window.gtag("event", eventName, {
 				...params,
-				network,
+				network: "testnet",
 				suiAddr: suiAddr || undefined,
 				prod: isProductionMode(),
 			});

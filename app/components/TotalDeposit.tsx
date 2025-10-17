@@ -7,8 +7,7 @@ import { action } from "../config/market.json";
 import { formatNBTC } from "~/lib/denoms";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { TrimmedNumber } from "./TrimmedNumber";
-import { useContext } from "react";
-import { WalletContext } from "~/providers/ByieldWalletProvider";
+import { useCurrentAccount } from "@mysten/dapp-kit";
 
 enum MarketIntegration {
 	TURBOS = "TURBOS",
@@ -124,7 +123,8 @@ function DepositCard({ title, value }: DepositData) {
 
 export function TotalDeposit() {
 	const { balance: nbtcBalance } = useCoinBalance("NBTC");
-	const { suiAddr } = useContext(WalletContext);
+	const currentAccount = useCurrentAccount();
+	const suiAddr = currentAccount?.address || null;
 
 	return (
 		<div className="flex w-full flex-col gap-10">
