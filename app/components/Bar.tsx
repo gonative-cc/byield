@@ -24,6 +24,7 @@ import { isProductionMode } from "~/lib/appenv";
 import { routes } from "~/config/walletVisibility";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "./Wallet";
+import { BeelieversBadge } from "./BeelieversBadge";
 
 function NetworkOptions() {
 	const { network, switchNetwork } = useXverseWallet();
@@ -334,6 +335,7 @@ export function WalletBar() {
 
 			{/* Right side: Wallets and overview button */}
 			<div className="flex items-center gap-3">
+				{shouldShowOverView && <BeelieversBadge />}
 				<SelectWallet />
 				{shouldShowOverView && <WalletOverviewModal />}
 			</div>
