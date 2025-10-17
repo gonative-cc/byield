@@ -12,7 +12,7 @@ import {
 	useSwitchAccount,
 } from "@mysten/dapp-kit";
 import { trimAddress } from "~/components/Wallet/walletHelper";
-import { formatBTC } from "~/lib/denoms";
+import { formatBTC, formatNBTC } from "~/lib/denoms";
 import { formatSUI } from "~/lib/denoms";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { TrimmedNumber } from "~/components/TrimmedNumber";
@@ -183,6 +183,7 @@ function WalletOverviewModal() {
 	const { mutate: suiDisconnect } = useDisconnectWallet();
 	const currentSuiAccount = useCurrentAccount();
 	const { balance: suiBalance } = useCoinBalance();
+	const nbtcBalanceRes = useCoinBalance("NBTC");
 
 	const { pathname } = useLocation();
 	const shouldShowBitcoinWallet = routes[pathname]?.bitcoin ?? true;
@@ -272,12 +273,24 @@ function WalletOverviewModal() {
 								<span className="text-sm font-medium">
 									<TrimmedNumber
 										displayType="text"
-										decimalScale={0}
 										value={formatSUI(suiBalance)}
 										suffix=" SUI"
 									/>
 								</span>
 							</div>
+
+							{nbtcBalanceRes && (
+								<div className="flex justify-between">
+									<span className="text-base-content/70 text-sm">nBTC Balance:</span>
+									<span className="text-sm font-medium">
+										<TrimmedNumber
+											displayType="text"
+											value={formatNBTC(nbtcBalanceRes.balance)}
+											suffix=" nBTC"
+										/>
+									</span>
+								</div>
+							)}
 
 							<button
 								onClick={handleSuiDisconnect}
