@@ -19,12 +19,13 @@ export enum GA_CATEGORY {
 export function useGoogleAnalytics() {
 	const currentAccount = useCurrentAccount();
 	const suiAddr = currentAccount?.address || null;
+	const network = isProductionMode() ? "mainnet" : "testnet";
 
 	function trackEvent(eventName: GA_EVENT_NAME, params: eventParam) {
 		if (typeof window !== "undefined" && window.gtag) {
 			window.gtag("event", eventName, {
 				...params,
-				network: "testnet",
+				network,
 				suiAddr: suiAddr || undefined,
 				prod: isProductionMode(),
 			});

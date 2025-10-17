@@ -10,10 +10,10 @@ const fetchXverseAddress = async (): Promise<Address | null> => {
 };
 
 export const useXverseAddress = () => {
-	const { data: currentAddress } = useQuery({
+	const { data: bitcoinAddress } = useQuery({
 		queryKey: ["xverse-address"],
 		queryFn: fetchXverseAddress,
 	});
 
-	return { currentAddress };
+	return { bitcoinAddress };
 };

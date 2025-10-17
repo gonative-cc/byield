@@ -13,7 +13,7 @@ export function SelectWallet() {
 	const { pathname } = useLocation();
 
 	const { currentAddress, setCurrentAddress, addressInfo: bitcoinAddresses } = useXverseWallet();
-	const isBitCoinWalletConnected = !!currentAddress;
+	const isBitcoinConnected = !!currentAddress;
 	const currentSuiAccount = useCurrentAccount();
 	const allSuiAccounts = useAccounts();
 	const { mutate: switchSuiAccount } = useSwitchAccount();
@@ -41,7 +41,7 @@ export function SelectWallet() {
 
 	const bitcoinWalletStatus =
 		shouldShowBitcoinWallet &&
-		(isBitCoinWalletConnected ? (
+		(isBitcoinConnected ? (
 			walletBadge(
 				<Bitcoin size={20} className="text-amber-500" />,
 				bitcoinAddresses,

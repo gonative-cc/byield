@@ -17,7 +17,6 @@ import { useXverseAddress } from "./useXverseAddress";
 function openXverseWalletModal() {
 	const walletProviderSelector = document.getElementById("sats-connect-wallet-provider-selector");
 	if (walletProviderSelector) {
-		console.log(walletProviderSelector);
 		walletProviderSelector.style.display = "block";
 	}
 }
@@ -64,10 +63,10 @@ export const useXverseConnect = () => {
 };
 
 export const useXverseWallet = () => {
-	const { currentAddress: currentBitcoinAddress } = useXverseAddress();
+	const { bitcoinAddress } = useXverseAddress();
 	const [addressInfo, setAddressInfo] = useState<Address[]>([]);
 	const [currentAddress, setCurrentAddress] = useState<Address | null>(null);
-	const isBitCoinWalletConnected = !!currentBitcoinAddress;
+	const isBitcoinConnected = !!bitcoinAddress;
 	const [balance, setBalance] = useState<string>();
 	const queryClient = useQueryClient();
 	// TODO: Default bitcoin network on connection is Regtest
@@ -122,7 +121,7 @@ export const useXverseWallet = () => {
 
 	useEffect(() => {
 		async function getWalletStatus() {
-			if (isBitCoinWalletConnected) {
+			if (isBitcoinConnected) {
 				await getAddresses();
 				await getBalance();
 				await getNetworkStatus();
@@ -133,7 +132,7 @@ export const useXverseWallet = () => {
 			}
 		}
 		getWalletStatus();
-	}, [getAddresses, getBalance, getNetworkStatus, isBitCoinWalletConnected, network]);
+	}, [getAddresses, getBalance, getNetworkStatus, isBitcoinConnected, network]);
 
 	const disconnectWallet = useCallback(async () => {
 		try {

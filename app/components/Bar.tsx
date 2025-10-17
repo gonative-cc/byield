@@ -307,11 +307,11 @@ function WalletOverviewModal() {
 
 export function WalletBar() {
 	const { toggleMobileMenu } = useContext(SideBarContext);
-	const { currentAddress } = useXverseAddress();
-	const isBitCoinWalletConnected = !!currentAddress;
-	const currentAccount = useCurrentAccount();
-	const isSuiConnected = !!currentAccount;
-	const shouldShowOverView = isBitCoinWalletConnected || isSuiConnected;
+	const { bitcoinAddress } = useXverseAddress();
+	const isBitcoinConnected = !!bitcoinAddress;
+	const suiAccount = useCurrentAccount();
+	const isSuiConnected = !!suiAccount;
+	const shouldShowOverView = isBitcoinConnected || isSuiConnected;
 
 	return (
 		<header className="bg-base-100/90 supports-backdrop-filter:bg-base-100/70 sticky top-0 z-50 flex h-16 w-full items-center justify-between border-b pr-2 backdrop-blur-sm">

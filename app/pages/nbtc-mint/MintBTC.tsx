@@ -57,7 +57,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 	const [isProcessing, setIsProcessing] = useState(false);
 	const { connectWallet } = useXverseConnect();
 	const { balance: walletBalance, currentAddress, network } = useXverseWallet();
-	const isBitCoinWalletConnected = !!currentAddress;
+	const isBitcoinConnected = !!currentAddress;
 	const currentAccount = useCurrentAccount();
 	const suiAddr = currentAccount?.address || null;
 	const cfg = useBitcoinConfig();
@@ -162,7 +162,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 							rules={{
 								validate: {
 									isWalletConnected: () =>
-										isBitCoinWalletConnected || "Please connect Bitcoin wallet",
+										isBitcoinConnected || "Please connect Bitcoin wallet",
 									enoughBalance: (value: string) => {
 										if (walletBalance) {
 											if (parseBTC(value) <= BigInt(walletBalance)) {
@@ -214,7 +214,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 							</span>
 						</p>
 
-						{isBitCoinWalletConnected ? (
+						{isBitcoinConnected ? (
 							<button
 								type="submit"
 								disabled={isProcessing}
