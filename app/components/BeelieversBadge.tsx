@@ -21,6 +21,7 @@ export function BeelieversBadge() {
 			if (cached) {
 				const { ownsNft: cachedResult, timestamp } = JSON.parse(cached);
 				if (Date.now() - timestamp < 24 * 60 * 60 * 1000) {
+					// 1 day cache
 					setOwnsNft(cachedResult);
 					return;
 				}
