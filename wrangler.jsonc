@@ -10,44 +10,42 @@
 	"observability": {
 		"enabled": true,
 	},
-	"compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+	"compatibility_flags": [
+		"nodejs_compat",
+		"global_fetch_strictly_public"
+	],
 	"upload_source_maps": true,
-
 	// Static Assets
 	// https://developers.cloudflare.com/workers/static-assets/binding/
 	"assets": {
 		"directory": "./public",
 	},
-
 	/**
 	 * Smart Placement
 	 * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
 	 */
 	// "placement": { "mode": "smart" },
-
 	/**
 	 * Bindings
 	 * Bindings allow your Worker to interact with resources on the Cloudflare Developer Platform, including
 	 * databases, object storage, AI inference, real-time communication and more.
 	 * https://developers.cloudflare.com/workers/runtime-apis/bindings/
 	 */
-
 	"kv_namespaces": [
 		{
 			"binding": "BeelieversNFT",
-			"id": "181c1046829d47d2a3791087dba7e0bf",
+			"id": "98f818ce12034fefa96f584b55af695b",
 		},
 	],
 	"d1_databases": [
 		{
 			"binding": "BeelieversD1",
 			"database_name": "beelievers-dev",
-			"database_id": "edd65a3a-e21a-41a3-a3b1-43adbd00a8c3",
+			"database_id": "bb290a72-5284-4dd3-980a-43cd8121850d",
 			"migrations_table": "migrations",
 			"migrations_dir": "./db/migrations/",
 		},
 	],
-
 	/**
 	 * Environment Variables
 	 * https://developers.cloudflare.com/workers/wrangler/configuration/#environment-variables
@@ -57,13 +55,11 @@
 	 * Note: Use secrets to store sensitive data.
 	 * https://developers.cloudflare.com/workers/configuration/secrets/
 	 */
-
 	/**
 	 * Service Bindings (communicate between multiple Workers)
 	 * https://developers.cloudflare.com/workers/wrangler/configuration/#service-bindings
 	 */
 	// "services": [{ "binding": "MY_SERVICE", "service": "my-service" }]
-
 	// NOTE: build is done by vite, not wrangler, so we need to use vite cloudflare plugin to manage
 	// this configuration. This means, instead of setting `-e prod` wrangler deploy, we have to
 	// use CLOUDFLARE_ENV=prod in build:

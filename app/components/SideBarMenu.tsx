@@ -91,6 +91,13 @@ function navMenuItems(): MenuItem[] {
 			link: "/beelievers-auction",
 			subNavItems: [],
 		},
+		{
+			icon: "/assets/navigation/byield.svg",
+			id: "navigation-5",
+			title: "GraphQL Tester",
+			link: "/gql-test",
+			subNavItems: [],
+		},
 	];
 }
 
