@@ -7,12 +7,12 @@ import type { Route } from "./+types/mint";
 import Controller from "~/server/nbtc/controller.server";
 import { useFetcher } from "react-router";
 import { makeReq, type QueryMintTxResp } from "~/server/nbtc/jsonrpc";
-import { useContext, useEffect, useRef, useCallback, useMemo } from "react";
-import { WalletContext } from "~/providers/ByieldWalletProvider";
+import { useEffect, useRef, useCallback, useMemo } from "react";
 import { BlockInfoCard } from "~/components/ui/BlockInfoCard";
 import { FAQ } from "~/components/FAQ";
 import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
 import { BitcoinNetworkType } from "sats-connect";
+import { useCurrentAccount } from "@mysten/dapp-kit";
 
 const FAQS = [
 	{
@@ -124,7 +124,8 @@ export async function action({ request }: Route.ActionArgs) {
 
 export default function Mint() {
 	const { network } = useXverseWallet();
-	const { suiAddr } = useContext(WalletContext);
+	const currentAccount = useCurrentAccount();
+	const suiAddr = currentAccount?.address || null;
 	const mintTxFetcher = useFetcher<QueryMintTxResp>({ key: suiAddr || undefined });
 	const prevSuiAddrRef = useRef<string | null>(null);
 	const intervalRef = useRef<NodeJS.Timeout | null>(null);

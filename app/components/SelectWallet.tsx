@@ -1,9 +1,6 @@
-import { useContext } from "react";
 import { useLocation } from "react-router";
 import { BitcoinIcon, Bitcoin } from "lucide-react";
 import { SuiConnectModal } from "./Wallet/SuiWallet/SuiModal";
-import { WalletContext } from "~/providers/ByieldWalletProvider";
-import { Wallets } from "~/components/Wallet";
 import { useXverseConnect } from "./Wallet/XverseWallet/useWallet";
 import { routes } from "~/config/walletVisibility";
 import { trimAddress } from "~/components/Wallet/walletHelper";
@@ -12,20 +9,18 @@ import { SUIIcon } from "~/components/icons";
 import { useCurrentAccount, useAccounts, useSwitchAccount } from "@mysten/dapp-kit";
 
 export function SelectWallet() {
-	const { isWalletConnected } = useContext(WalletContext);
 	const { connectWallet } = useXverseConnect();
 	const { pathname } = useLocation();
 
 	const { currentAddress, setCurrentAddress, addressInfo: bitcoinAddresses } = useXverseWallet();
+	const isBitcoinConnected = !!currentAddress;
 	const currentSuiAccount = useCurrentAccount();
 	const allSuiAccounts = useAccounts();
 	const { mutate: switchSuiAccount } = useSwitchAccount();
 
 	const shouldShowBitcoinWallet = routes[pathname]?.bitcoin ?? true;
 	const shouldShowSUIWallet = routes[pathname]?.sui ?? true;
-
-	const isBitcoinConnected = isWalletConnected(Wallets.Xverse);
-	const isSuiConnected = isWalletConnected(Wallets.SuiWallet);
+	const isSuiConnected = !!currentSuiAccount;
 
 	// Handle Bitcoin address switching via select
 	const handleBitcoinAddressChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
