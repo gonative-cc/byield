@@ -15,13 +15,14 @@
   --color-azure-20: rgba(12, 17, 29, 1);
   --color-azure-25: rgba(18, 25, 42, 1);
 
+  /* TODO: --bacground is not defiend, but it's used in other classes (eg: .from-background).
+     Let's define it here */
   --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
-  --color-primary-foreground: var(--primary-foreground);
-  --color-muted-foreground: rgba(165, 165, 165, 1);
+  --color-foreground: oklch(0.982 0 0);
+  --color-primary-foreground: oklch(0.722 0.1613 53.85);
+  --color-muted-foreground: oklch(0.722 0 0);
 
-  --foreground: 0 0% 98%;
-  --muted: rgba(40, 40, 40, 1);
+  /* TODO: check where this is used */
   --destructive: rgba(208, 4, 22, 1);
 }
 
@@ -38,12 +39,12 @@
   default: true;
   prefersdark: true;
   color-scheme: "dark";
-  --color-primary: oklch(0.6879 0.1613 53.85);
   --color-base-100: oklch(12% 0.042 264.695);
   --color-base-200: oklch(20% 0.042 265.755);
   --color-base-300: oklch(27% 0.041 260.031);
   --color-base-content: oklch(96% 0.007 247.896);
-  --color-primary-content: var(--primary-foreground);
+  --color-primary: oklch(0.6879 0.1613 53.85);
+  --color-primary-content: var(--color-base-content);
   --color-secondary: oklch(0% 0 0);
   --color-secondary-content: oklch(100% 0 0);
   --color-accent: rgba(39, 39, 42, 1);
