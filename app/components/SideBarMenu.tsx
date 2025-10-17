@@ -91,6 +91,13 @@ function navMenuItems(): MenuItem[] {
 			link: "/beelievers-auction",
 			subNavItems: [],
 		},
+		{
+			icon: "/assets/navigation/bee-with-bitcoin.svg",
+			id: "navigation-5",
+			title: "Mint Events (testnet)",
+			link: "/nbtc/mint-events",
+			subNavItems: [],
+		},
 	];
 }
 
