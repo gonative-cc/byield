@@ -7,9 +7,6 @@ import {
 	DialogTitle,
 	DialogDescription,
 } from "../../ui/dialog";
-import { useContext } from "react";
-import { WalletContext } from "~/providers/ByieldWalletProvider";
-import { Wallets } from "~/components/Wallet";
 import { toast } from "~/hooks/use-toast";
 import { SUIIcon } from "~/components/icons";
 
@@ -27,18 +24,14 @@ function InstallWallet({ link, name }: InstallWalletProps) {
 }
 
 function AvailableWallets() {
-	const { handleWalletConnect } = useContext(WalletContext);
 	const wallets = useWallets();
 	const { mutate: connect } = useConnectWallet();
 
-	// WalletWithRequiredFeatures export is not available from @mysten/dapp-kit
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const walletConnectClick = (installedWallet: any) => {
 		connect(
 			{ wallet: installedWallet },
 			{
-				// TODO: onSuccess is not getting triggered. Have to check with SUI community.
-				onSuccess: () => handleWalletConnect(Wallets.SuiWallet, true),
 				onError: () =>
 					toast({
 						title: "Sui Wallet Connect",
@@ -47,8 +40,6 @@ function AvailableWallets() {
 					}),
 			},
 		);
-		// TODO: onSuccess is not getting triggered. Have to check with SUI community.
-		handleWalletConnect(Wallets.SuiWallet, true);
 	};
 
 	// Find Slush and Phantom wallets
@@ -120,16 +111,12 @@ function AvailableWallets() {
 	);
 }
 
-interface SuiModalProps {
-	label?: string;
-}
-
-export function SuiModal({ label = "Connect Sui Wallet" }: SuiModalProps) {
+export function SuiConnectModal() {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>
-				<button className="btn btn-primary w-full md:w-auto">
-					<SUIIcon prefix="" className="h-5 w-5" /> {label}
+				<button className="btn btn-primary btn-sm">
+					<SUIIcon prefix="" className="h-4 w-4" /> Connect Sui
 				</button>
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-[425px]">

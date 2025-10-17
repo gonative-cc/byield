@@ -24,7 +24,7 @@ jobs:
         id: changed-files
         uses: tj-actions/changed-files@24d32ffd492484c1d75e0c0b894501ddb9d30d62 # v47
 
-      - uses: oven-sh/setup-bun@22457c87c1b161cf7dde222c3e82b2b5f8d2bed2 # @v2
+      - uses: oven-sh/setup-bun@635640504f6d7197d3bb29876a652f671028dc97 # @v2
         if: steps.changed-files.outputs.any_changed == 'true'
 
       - run: bun ci

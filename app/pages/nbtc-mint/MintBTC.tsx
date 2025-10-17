@@ -12,12 +12,9 @@ import { buttonEffectClasses, classNames } from "~/util/tailwind";
 import { isValidSuiAddress } from "@mysten/sui/utils";
 import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import { toast } from "~/hooks/use-toast";
-import { setupBufferPolyfill } from "~/lib/buffer-polyfill";
 import { TxConfirmationModal } from "~/components/ui/TransactionConfirmationModal";
 import { makeReq } from "~/server/nbtc/jsonrpc";
 import { useFetcher } from "react-router";
-import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
-import { NBTCBalance } from "~/components/NBTCBalance";
 import type { UTXO } from "~/server/nbtc/types";
 
 function formatSuiAddress(suiAddress: string) {
@@ -56,7 +53,6 @@ interface MintBTCProps {
 }
 
 export function MintBTC({ fetchMintTxs }: MintBTCProps) {
-	const { balance: nBTCBalance } = useCoinBalance("NBTC");
 	const [txId, setTxId] = useState<string | undefined>(undefined);
 	const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 	const [isProcessing, setIsProcessing] = useState(false);
@@ -81,10 +77,6 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 	const { handleSubmit, setValue } = mintNBTCForm;
 
 	useEffect(() => setValue("suiAddress", suiAddr || ""), [setValue, suiAddr]);
-
-	useEffect(() => {
-		setupBufferPolyfill();
-	}, []);
 
 	// Fetch UTXOs when wallet connects
 	useEffect(() => {
@@ -159,7 +151,6 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 			<form onSubmit={handleSubmit(handlenBTCMintTx)} className="mx-auto max-w-lg">
 				<div className="card">
 					<div className="card-body flex flex-col space-y-4">
-						{suiAddr && <NBTCBalance balance={nBTCBalance} />}
 						<FormNumericInput
 							required
 							name="numberOfBTC"
@@ -168,7 +159,6 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 							inputMode="decimal"
 							decimalScale={BTC}
 							allowNegative={false}
-							createEmptySpace
 							rules={{
 								validate: {
 									isWalletConnected: () =>
@@ -205,7 +195,6 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 							name="suiAddress"
 							placeholder="Enter destination Sui Address..."
 							className="h-10 sm:h-14"
-							createEmptySpace
 							rules={{
 								validate: {
 									validateSuiAddress: (value: string) => {
@@ -218,7 +207,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 							}}
 						/>
 
-						<p>
+						<p className="flex items-center">
 							Minting Fee: &nbsp; {cfg.nBTC.mintingFee} nSats &nbsp;
 							<span className="tooltip cursor-help" data-tip="1 nSats = 0.00000001 nBTC">
 								<Info size={18} />
@@ -241,7 +230,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 							<button
 								type="button"
 								onClick={connectWallet}
-								className="btn btn-primary btn-block"
+								className="btn btn-primary btn-wide"
 							>
 								<BitcoinIcon className="h-5 w-5" />
 								Connect Bitcoin Wallet

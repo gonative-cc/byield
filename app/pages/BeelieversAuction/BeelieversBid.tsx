@@ -1,4 +1,4 @@
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { useFetcher } from "react-router";
 import { LoaderCircle } from "lucide-react";
 import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
@@ -8,7 +8,7 @@ import { formatSUI, parseSUI, SUI } from "~/lib/denoms";
 import { delay } from "~/lib/batteries";
 import { FormNumericInput } from "~/components/form/FormNumericInput";
 import { FormInput } from "~/components/form/FormInput";
-import { SuiModal } from "~/components/Wallet/SuiWallet/SuiModal";
+import { SuiConnectModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import type { User } from "~/server/BeelieversAuction/types";
 import { makeReq } from "~/server/BeelieversAuction/jsonrpc";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
@@ -90,8 +90,9 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 			note: "",
 		},
 	});
+	const bidInputInSUI = useWatch({ control: bidForm.control, name: "bid" });
 
-	if (account === null) return <SuiModal />;
+	if (account === null) return <SuiConnectModal />;
 
 	const onSubmit = bidForm.handleSubmit(async ({ bid, note }) => {
 		const mistAmount = parseSUI(bid);
@@ -148,7 +149,6 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 	});
 
 	const hasUserBidBefore = (user && user.amount !== 0) || false;
-	const bidInputInSUI = bidForm.watch("bid");
 
 	return (
 		<FormProvider {...bidForm}>
@@ -199,7 +199,6 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 										inputMode="decimal"
 										decimalScale={SUI}
 										allowNegative={false}
-										createEmptySpace
 										rightAdornments={
 											<SUIIcon
 												prefix={"SUI"}
@@ -229,7 +228,6 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 										name="note"
 										placeholder="Add a personal note (max 30 characters)..."
 										className="border-primary/30 focus:border-primary hover:border-primary/50 h-14 transition-colors lg:h-16"
-										createEmptySpace
 										maxLength={30}
 									/>
 								</div>

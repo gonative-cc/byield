@@ -12,6 +12,7 @@ import { Auction, type BidResult } from "./auction.server";
 
 import { mainnetCfg, testnetCfg } from "~/config/sui/contracts-config";
 import * as httpresp from "../http-resp";
+import { logError } from "~/lib/log";
 
 const maxTxIdSize = 44;
 
@@ -91,7 +92,7 @@ export default class Controller {
 		try {
 			reqData = await r.json<Req>();
 		} catch (_err) {
-			console.log(">>>>> Expected JSON content type:", _err);
+			logError({ msg: "handle RPC", method: r.method }, _err);
 			return new Response("Expecting JSON Content-Type and JSON body", {
 				status: 400,
 			});

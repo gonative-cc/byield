@@ -1,5 +1,5 @@
 import { useFetcher } from "react-router";
-import { useContext, useEffect, useRef, type ReactNode } from "react";
+import { useContext, useEffect, useMemo, useRef, type ReactNode } from "react";
 import { AuctionTable } from "./AuctionTable";
 import { AuctionTotals } from "./AuctionTotals";
 import { AuctionState } from "./types";
@@ -52,11 +52,13 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 
 	console.log(">>>> user", user);
 
-	for (const l of leaderboard) {
-		if (sortAndCheckDuplicate(l.badges)) {
-			l.badges = removeDuplicates(l.badges);
-		}
-	}
+	const processedLeaderboard = useMemo(
+		() =>
+			leaderboard.map((l) =>
+				sortAndCheckDuplicate(l.badges) ? { ...l, badges: removeDuplicates(l.badges) } : l,
+			),
+		[leaderboard],
+	);
 
 	useEffect(() => {
 		// query the user
@@ -106,7 +108,7 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 			</div>
 
 			<Collapse
-				className="lg:w-[85%] xl:w-[75%]"
+				className="w-full md:w-3/4"
 				title={<span className="text-primary text-xl md:text-2xl">Raffle Results</span>}
 			>
 				<RaffleResults raffle={raffle} />
@@ -123,7 +125,7 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 					</div>
 					<div className="animate-in slide-in-from-bottom-4 w-full delay-600 duration-1000">
 						<div className="flex w-full flex-col-reverse gap-6 lg:flex-row">
-							<AuctionTable data={leaderboard} user={user} suiAddr={suiAddr} />
+							<AuctionTable data={processedLeaderboard} user={user} suiAddr={suiAddr} />
 						</div>
 					</div>
 				</>

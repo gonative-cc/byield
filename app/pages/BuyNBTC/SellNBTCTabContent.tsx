@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { ArrowDown, ChevronRight } from "lucide-react";
-import { SuiModal } from "~/components/Wallet/SuiWallet/SuiModal";
+import { SuiConnectModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import { Modal } from "~/components/ui/dialog";
 import { TransactionStatus } from "./TransactionStatus";
 import { NBTCIcon, SUIIcon } from "~/components/icons";
@@ -126,7 +126,6 @@ export function SellNBTCTabContent({ nbtcBalanceRes, suiBalanceRes }: SellNBTCTa
 						/>
 					}
 					rules={nBTCAmountInputRules}
-					createEmptySpace
 					decimalScale={NBTC}
 					allowNegative={false}
 				/>
@@ -154,7 +153,7 @@ export function SellNBTCTabContent({ nbtcBalanceRes, suiBalanceRes }: SellNBTCTa
 						<ChevronRight />
 					</button>
 				) : (
-					<SuiModal />
+					<SuiConnectModal />
 				)}
 				{(isSuccess || isError) && (
 					<Modal title={"Sell nBTC Transaction Status"} open handleClose={resetForm}>

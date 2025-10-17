@@ -1,98 +1,108 @@
 import { useContext } from "react";
 import { useLocation } from "react-router";
-import { BitcoinIcon, Wallet } from "lucide-react";
-import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
-import { Skeleton } from "~/components/ui/skeleton";
-import { XverseWallet } from "./Wallet/XverseWallet/XverseWallet";
-import { SuiWallet } from "./Wallet/SuiWallet/SuiWallet";
-import { SuiModal } from "./Wallet/SuiWallet/SuiModal";
+import { BitcoinIcon, Bitcoin } from "lucide-react";
+import { SuiConnectModal } from "./Wallet/SuiWallet/SuiModal";
 import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { Wallets } from "~/components/Wallet";
 import { useXverseConnect } from "./Wallet/XverseWallet/useWallet";
 import { routes } from "~/config/walletVisibility";
+import { trimAddress } from "~/components/Wallet/walletHelper";
+import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
+import { SUIIcon } from "~/components/icons";
+import { useCurrentAccount, useAccounts, useSwitchAccount } from "@mysten/dapp-kit";
 
-function LoadingSkeleton() {
-	return (
-		<div className="flex w-full gap-2">
-			<Skeleton className="h-10 flex-1" />
-			<Skeleton className="h-10 flex-1" />
-		</div>
-	);
-}
-
-interface SelectWalletProps {
-	isProductionMode: boolean;
-}
-
-function WalletSection({ title, children }: { title: string; children: React.ReactNode }) {
-	return (
-		<div className="space-y-2">
-			<h4 className="text-sm font-medium">{title}</h4>
-			{children}
-		</div>
-	);
-}
-
-function MobileWalletModal({ children }: { children: React.ReactNode }) {
-	return (
-		<div className="md:hidden">
-			<Dialog>
-				<DialogTrigger asChild>
-					<button className="btn btn-primary btn-outline btn-sm">
-						<Wallet size={16} /> Wallet
-					</button>
-				</DialogTrigger>
-				<DialogContent className="sm:max-w-md">
-					<div className="space-y-4">{children}</div>
-				</DialogContent>
-			</Dialog>
-		</div>
-	);
-}
-
-function DesktopWallets({ children }: { children: React.ReactNode }) {
-	return <div className="hidden md:flex md:items-center md:gap-4">{children}</div>;
-}
-
-export function SelectWallet({ isProductionMode }: SelectWalletProps) {
-	const { isLoading, isWalletConnected } = useContext(WalletContext);
+export function SelectWallet() {
+	const { isWalletConnected } = useContext(WalletContext);
 	const { connectWallet } = useXverseConnect();
 	const { pathname } = useLocation();
 
+	const { currentAddress, setCurrentAddress, addressInfo: bitcoinAddresses } = useXverseWallet();
+	const currentSuiAccount = useCurrentAccount();
+	const allSuiAccounts = useAccounts();
+	const { mutate: switchSuiAccount } = useSwitchAccount();
+
 	const shouldShowBitcoinWallet = routes[pathname]?.bitcoin ?? true;
 	const shouldShowSUIWallet = routes[pathname]?.sui ?? true;
+
 	const isBitcoinConnected = isWalletConnected(Wallets.Xverse);
 	const isSuiConnected = isWalletConnected(Wallets.SuiWallet);
 
-	if (isLoading) return <LoadingSkeleton />;
+	// Handle Bitcoin address switching via select
+	const handleBitcoinAddressChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+		const newAddress = bitcoinAddresses.find((addr) => addr.address === e.target.value);
+		if (newAddress) {
+			setCurrentAddress(newAddress);
+		}
+	};
 
-	const bitcoinWallet =
+	const handleSuiAccountChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+		if (allSuiAccounts) {
+			const newAccount = allSuiAccounts.find((acc) => acc.address === e.target.value);
+			if (newAccount) {
+				switchSuiAccount({ account: newAccount });
+			}
+		}
+	};
+
+	const bitcoinWalletStatus =
 		shouldShowBitcoinWallet &&
-		!isProductionMode &&
 		(isBitcoinConnected ? (
-			<XverseWallet />
+			walletBadge(
+				<Bitcoin size={20} className="text-amber-500" />,
+				bitcoinAddresses,
+				currentAddress?.address || "",
+				handleBitcoinAddressChange,
+			)
 		) : (
-			<button onClick={connectWallet} className="btn btn-primary w-full md:w-auto">
-				<BitcoinIcon className="h-5 w-5" />
-				Connect Bitcoin Wallet
+			<button onClick={connectWallet} className="btn btn-primary btn-sm">
+				<BitcoinIcon className="h-4 w-4" />
+				Connect Bitcoin
 			</button>
 		));
 
-	const suiWallet = shouldShowSUIWallet && (isSuiConnected ? <SuiWallet /> : <SuiModal />);
+	const suiWalletStatus =
+		shouldShowSUIWallet &&
+		(isSuiConnected && currentSuiAccount ? (
+			walletBadge(
+				<SUIIcon prefix="" className="h-5 w-5" />,
+				allSuiAccounts,
+				currentSuiAccount.address,
+				handleSuiAccountChange,
+			)
+		) : (
+			<SuiConnectModal />
+		));
 
 	return (
-		<>
-			<DesktopWallets>
-				{bitcoinWallet}
-				{suiWallet}
-			</DesktopWallets>
-
-			<MobileWalletModal>
-				{shouldShowBitcoinWallet && !isProductionMode && (
-					<WalletSection title="Bitcoin Wallet">{bitcoinWallet}</WalletSection>
-				)}
-				{shouldShowSUIWallet && <WalletSection title="Sui Wallet">{suiWallet}</WalletSection>}
-			</MobileWalletModal>
-		</>
+		<div className="flex items-center gap-2">
+			{bitcoinWalletStatus}
+			{suiWalletStatus}
+		</div>
 	);
 }
+
+const walletBadgeStyle =
+	"flex items-center gap-1.5 rounded-full border border-blue-800 bg-blue-800 px-3 py-1.5 text-sm text-blue-200";
+const selectAccountClass = "border-none bg-blue-800 text-xs font-medium focus:outline-none md:text-sm";
+
+const walletBadge = (
+	badge: React.ReactNode,
+	accounts: readonly { address: string }[],
+	currentAccount: string,
+	onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void,
+) => (
+	<div className={walletBadgeStyle}>
+		{badge}
+		{accounts && accounts.length > 1 ? (
+			<select value={currentAccount} onChange={onChange} className={selectAccountClass}>
+				{accounts.map((account) => (
+					<option key={account.address} value={account.address}>
+						{trimAddress(account.address)}
+					</option>
+				))}
+			</select>
+		) : (
+			<span className="text-xs md:text-sm">{trimAddress(currentAccount)}</span>
+		)}
+	</div>
+);

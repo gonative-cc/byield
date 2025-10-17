@@ -131,8 +131,8 @@ export default function Mint() {
 
 	const mintTxs = useMemo(() => mintTxFetcher.data || [], [mintTxFetcher.data]);
 	const isLoading = mintTxFetcher.state !== "idle";
-	const hasError = mintTxFetcher.state === "idle" && mintTxFetcher.data === undefined && suiAddr;
-	const error = hasError ? "Failed to load transactions" : null;
+	const hasTxFetcherError = mintTxFetcher.state === "idle" && mintTxFetcher.data === undefined && suiAddr;
+	const txFetcherError = hasTxFetcherError ? "Failed to load transactions" : null;
 
 	// Function to fetch mint transactions
 	const fetchMintTxs = useCallback(() => {
@@ -183,9 +183,19 @@ export default function Mint() {
 
 					{/* Transaction Table Section */}
 					{suiAddr && (
-						<div className="space-y-4">
-							<div className="flex items-center justify-between">
-								<h2 className="text-2xl font-bold">Your Mint Transactions</h2>
+						<>
+							{txFetcherError && (
+								<div className="alert alert-error">
+									<div>
+										<div className="font-medium">Failed to load transactions</div>
+										<div className="text-sm opacity-80">{txFetcherError}</div>
+										<button onClick={fetchMintTxs} className="btn btn-sm mt-2">
+											Retry
+										</button>
+									</div>
+								</div>
+							)}
+							{!txFetcherError && (
 								<button
 									onClick={fetchMintTxs}
 									disabled={isLoading}
@@ -195,21 +205,10 @@ export default function Mint() {
 									<RefreshCw size={16} className={isLoading ? "animate-spin" : ""} />
 									Refresh
 								</button>
-							</div>
-
-							{error && (
-								<div className="alert alert-error">
-									<div>
-										<div className="font-medium">Failed to load transactions</div>
-										<div className="text-sm opacity-80">{error}</div>
-										<button onClick={fetchMintTxs} className="btn btn-sm mt-2">
-											Retry
-										</button>
-									</div>
-								</div>
 							)}
+
 							<MintBTCTable data={mintTxs || []} isLoading={isLoading} />
-						</div>
+						</>
 					)}
 
 					<FAQ faqs={FAQS} />

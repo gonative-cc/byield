@@ -8,8 +8,10 @@ import {
 	getOpReturnOpcode,
 	getBitcoinLib,
 } from "./bitcoin.client";
+import { uint8ArrayToHex, hexToUint8Array } from "./buffer";
 import { toast } from "~/hooks/use-toast";
 import type { BitcoinConfig } from "~/config/bitcoin/contracts-config";
+import { logError } from "./log";
 
 export const PRICE_PER_NBTC_IN_SUI = 25000n;
 const DUST_THRESHOLD_SATOSHI = 546;
@@ -95,7 +97,7 @@ export async function nBTCMintTx(
 			validateAddress = {
 				isValid: true,
 				address: bitcoinAddress.address,
-				scriptPubKey: Buffer.from(outputScript).toString("hex"),
+				scriptPubKey: uint8ArrayToHex(outputScript),
 				isScript: false,
 				isWitness:
 					bitcoinAddress.address.startsWith("bc1") ||
@@ -137,7 +139,7 @@ export async function nBTCMintTx(
 			hash: utxos[0].txid,
 			index: utxos[0].vout,
 			witnessUtxo: {
-				script: Buffer.from(validateAddress.scriptPubKey, "hex"),
+				script: hexToUint8Array(validateAddress.scriptPubKey),
 				value: BigInt(utxos[0].value),
 			},
 		});
@@ -147,7 +149,7 @@ export async function nBTCMintTx(
 			value: BigInt(mintAmountInSatoshi),
 		});
 
-		let opReturnData: Buffer;
+		let opReturnData: Uint8Array;
 		try {
 			if (!opReturn.startsWith("0x") || opReturn.length !== 66) {
 				throw new Error(
@@ -155,11 +157,10 @@ export async function nBTCMintTx(
 				);
 			}
 			const cleanHex = opReturn.replace(/^0x/, "").toLowerCase();
-			const flagByte = Buffer.from([OpReturnFlag.MINT]);
-			const addressBytes = Buffer.from(cleanHex, "hex");
-			opReturnData = Buffer.concat([flagByte, addressBytes]);
+			const addressBytes = hexToUint8Array(cleanHex);
+			opReturnData = new Uint8Array([OpReturnFlag.MINT, ...addressBytes]);
 		} catch (error) {
-			console.error("Invalid OP_RETURN data:", error);
+			logError({ msg: "Invalid OP_RETURN data", method: "ui:lib/nBTCMintTx" }, error);
 			toast({
 				title: "Invalid Data",
 				description:

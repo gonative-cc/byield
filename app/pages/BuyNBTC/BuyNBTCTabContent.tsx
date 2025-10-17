@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from "react";
 import { ArrowDown } from "lucide-react";
 import { FormProvider, useForm } from "react-hook-form";
-import { SuiModal } from "~/components/Wallet/SuiWallet/SuiModal";
+import { SuiConnectModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import { formatSUI, parseSUI, SUI } from "~/lib/denoms";
 import { FormNumericInput } from "~/components/form/FormNumericInput";
 import { Modal } from "~/components/ui/dialog";
@@ -126,7 +126,6 @@ export function BuyNBTCTabContent({ nbtcBalanceRes, suiBalanceRes }: BuyNBTCTabC
 					inputMode="decimal"
 					decimalScale={SUI}
 					allowNegative={false}
-					createEmptySpace
 					rightAdornments={
 						<SUIRightAdornment
 							onMaxClick={(val: string) => setValue("suiAmount", val)}
@@ -143,7 +142,7 @@ export function BuyNBTCTabContent({ nbtcBalanceRes, suiBalanceRes }: BuyNBTCTabC
 						Buy
 					</button>
 				) : (
-					<SuiModal />
+					<SuiConnectModal />
 				)}
 			</form>
 			{(isSuccess || isError) && (

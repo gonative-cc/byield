@@ -14,7 +14,6 @@ export function TrimmedNumber(props: NumericFormatProps) {
 	) {
 		return null;
 	}
-
 	const numValue = Number(props.value);
 	const decimalScale = numValue >= 1 ? FIXED_DECIMAL : undefined;
 
