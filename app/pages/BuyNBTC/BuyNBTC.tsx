@@ -1,23 +1,22 @@
-import { useContext, useEffect } from "react";
-import { WalletContext } from "~/providers/ByieldWalletProvider";
-import { Wallets } from "~/components/Wallet";
+import { useEffect } from "react";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { NBTCBalance } from "~/components/NBTCBalance";
 import { Instructions } from "./Instructions";
 import { BuyNBTCTabContent } from "./BuyNBTCTabContent";
 import { SellNBTCTabContent } from "./SellNBTCTabContent";
 import { ArrowUpRight } from "lucide-react";
-import { useDisconnectWallet, useSuiClientContext } from "@mysten/dapp-kit";
+import { useCurrentAccount, useDisconnectWallet, useSuiClientContext } from "@mysten/dapp-kit";
 import type { UseCoinBalanceResult } from "~/components/Wallet/SuiWallet/useBalance";
 
 export function BuyNBTC() {
 	const { network } = useSuiClientContext();
 	const { mutate: disconnect } = useDisconnectWallet();
+	const currentSuiAccount = useCurrentAccount();
 	const nbtcBalanceRes = useCoinBalance("NBTC");
 	const suiBalanceRes = useCoinBalance();
 
-	const { isWalletConnected, suiAddr } = useContext(WalletContext);
-	const isSuiWalletConnected = isWalletConnected(Wallets.SuiWallet);
+	const suiAddr = currentSuiAccount?.address || null;
+	const isSuiWalletConnected = !!currentSuiAccount;
 	const transactionHistoryLink = `https://suiscan.xyz/testnet/account/${suiAddr}/tx-blocks`;
 
 	// TODO: remove this after auction. enforce network change

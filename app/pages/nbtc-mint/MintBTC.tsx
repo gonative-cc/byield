@@ -1,9 +1,7 @@
 import { FormProvider, useForm } from "react-hook-form";
 import { FormInput } from "../../components/form/FormInput";
 import { useXverseConnect, useXverseWallet } from "../../components/Wallet/XverseWallet/useWallet";
-import { useContext, useEffect, useState } from "react";
-import { WalletContext } from "~/providers/ByieldWalletProvider";
-import { Wallets } from "~/components/Wallet";
+import { useEffect, useState } from "react";
 import { FormNumericInput } from "../../components/form/FormNumericInput";
 import { BTC, formatBTC, parseBTC } from "~/lib/denoms";
 import { nBTCMintTx } from "~/lib/nbtc";
@@ -16,6 +14,7 @@ import { TxConfirmationModal } from "~/components/ui/TransactionConfirmationModa
 import { makeReq } from "~/server/nbtc/jsonrpc";
 import { useFetcher } from "react-router";
 import type { UTXO } from "~/server/nbtc/types";
+import { useCurrentAccount } from "@mysten/dapp-kit";
 
 function formatSuiAddress(suiAddress: string) {
 	if (!suiAddress.toLowerCase().startsWith("0x")) {
@@ -58,8 +57,9 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 	const [isProcessing, setIsProcessing] = useState(false);
 	const { connectWallet } = useXverseConnect();
 	const { balance: walletBalance, currentAddress, network } = useXverseWallet();
-	const { isWalletConnected, suiAddr } = useContext(WalletContext);
-	const isBitCoinWalletConnected = isWalletConnected(Wallets.Xverse);
+	const isBitcoinConnected = !!currentAddress;
+	const currentAccount = useCurrentAccount();
+	const suiAddr = currentAccount?.address || null;
 	const cfg = useBitcoinConfig();
 
 	const utxosRPC = useFetcher<UTXO[]>();
@@ -151,6 +151,8 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 			<form onSubmit={handleSubmit(handlenBTCMintTx)} className="mx-auto max-w-lg">
 				<div className="card">
 					<div className="card-body flex flex-col space-y-4">
+						<h2 className="text-center text-lg">Deposit BTC and mint nBTC on Sui</h2>
+
 						<FormNumericInput
 							required
 							name="numberOfBTC"
@@ -162,7 +164,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 							rules={{
 								validate: {
 									isWalletConnected: () =>
-										isBitCoinWalletConnected || "Please connect Bitcoin wallet",
+										isBitcoinConnected || "Please connect Bitcoin wallet",
 									enoughBalance: (value: string) => {
 										if (walletBalance) {
 											if (parseBTC(value) <= BigInt(walletBalance)) {
@@ -214,7 +216,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 							</span>
 						</p>
 
-						{isBitCoinWalletConnected ? (
+						{isBitcoinConnected ? (
 							<button
 								type="submit"
 								disabled={isProcessing}
@@ -224,7 +226,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 									isProcessing ? "loading" : "",
 								)}
 							>
-								{isProcessing ? "Processing..." : "Deposit BTC and mint nBTC"}
+								{isProcessing ? "Processing..." : "Deposit BTC"}
 							</button>
 						) : (
 							<button

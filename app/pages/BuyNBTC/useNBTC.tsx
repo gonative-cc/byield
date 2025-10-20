@@ -1,17 +1,13 @@
-import { useCallback, useContext } from "react";
+import { useCallback } from "react";
 import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
 import type { SuiClient, PaginatedCoins } from "@mysten/sui/client";
 import { coinWithBalance, Transaction } from "@mysten/sui/transactions";
 import type { TransactionResult } from "@mysten/sui/transactions";
-
 import { toast } from "~/hooks/use-toast";
 import { formatSUI } from "~/lib/denoms";
 import { GA_EVENT_NAME, GA_CATEGORY, useGoogleAnalytics } from "~/lib/googleAnalytics";
 import { useNetworkVariables } from "~/networkConfig";
-import { WalletContext } from "~/providers/ByieldWalletProvider";
-import { Wallets } from "~/components/Wallet";
 import type { UseCoinBalanceResult } from "~/components/Wallet/SuiWallet/useBalance";
-
 import { moveCallTarget, type NbtcOtcCfg } from "~/config/sui/contracts-config";
 
 const buyNBTCFunction = "buy_nbtc";
@@ -99,10 +95,9 @@ export const useBuySellNBTC = ({ variant, nbtcBalanceRes, suiBalanceRes }: NBTCP
 	const shouldBuy = variant === "BUY";
 	const account = useCurrentAccount();
 	const client = useSuiClient();
-	const { isWalletConnected } = useContext(WalletContext);
 	const { trackEvent } = useGoogleAnalytics();
 	const { nbtcOTC, nbtc } = useNetworkVariables();
-	const isSuiWalletConnected = isWalletConnected(Wallets.SuiWallet);
+	const isSuiWalletConnected = !!account;
 
 	const {
 		mutate: signAndExecuteTransaction,

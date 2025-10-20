@@ -1,11 +1,10 @@
 import { useFetcher } from "react-router";
-import { useContext, useEffect, useMemo, useRef, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, type ReactNode } from "react";
 import { AuctionTable } from "./AuctionTable";
 import { AuctionTotals } from "./AuctionTotals";
 import { AuctionState } from "./types";
 import type { AuctionInfo, Bidder } from "~/server/BeelieversAuction/types";
 import { makeReq, type QueryRaffleResp, type QueryUserResp } from "~/server/BeelieversAuction/jsonrpc";
-import { WalletContext } from "~/providers/ByieldWalletProvider";
 import { removeDuplicates, sortAndCheckDuplicate } from "~/lib/batteries";
 import { RaffleTable } from "./RaffleTable";
 import { MintInfo } from "./MintInfo";
@@ -14,6 +13,7 @@ import { Collapse } from "~/components/ui/collapse";
 import { NBTCRaw } from "~/components/icons";
 import { formatSUI } from "~/lib/denoms";
 import { FAQ } from "~/components/FAQ";
+import { useCurrentAccount } from "@mysten/dapp-kit";
 
 const FAQS = [
 	{
@@ -42,7 +42,8 @@ interface BeelieversAuctionProps {
 }
 
 export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps) {
-	const { suiAddr } = useContext(WalletContext);
+	const currentAccount = useCurrentAccount();
+	const suiAddr = currentAccount?.address || null;
 	const lastCheckedAddress = useRef<string | null>(null);
 	const userFetcher = useFetcher<QueryUserResp>();
 	const raffleFetcher = useFetcher<QueryRaffleResp>();
