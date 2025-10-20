@@ -166,15 +166,9 @@ export default function Mint() {
 
 	return (
 		<div className="mx-auto max-w-7xl space-y-6 px-4 py-4">
-			{/* Header */}
-			<div className="space-y-2 text-center">
-				<h1 className="text-4xl font-bold">
-					Mint<span className="text-primary"> nBTC</span>
-				</h1>
-				<p className="text-base-content/70 text-lg">
-					Deposit Bitcoin and mint Native Bitcoin tokens on Sui network
-				</p>
-			</div>
+			<h1 className="text-center text-4xl font-bold">
+				Mint<span className="text-primary"> nBTC</span>
+			</h1>
 
 			{/* Main Content Grid */}
 			<div className="grid gap-4 lg:grid-cols-[1fr_400px]">

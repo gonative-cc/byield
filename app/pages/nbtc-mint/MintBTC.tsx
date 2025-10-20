@@ -151,6 +151,8 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 			<form onSubmit={handleSubmit(handlenBTCMintTx)} className="mx-auto max-w-lg">
 				<div className="card">
 					<div className="card-body flex flex-col space-y-4">
+						<h2 className="text-center text-lg">Deposit BTC and mint nBTC on Sui</h2>
+
 						<FormNumericInput
 							required
 							name="numberOfBTC"
@@ -224,7 +226,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 									isProcessing ? "loading" : "",
 								)}
 							>
-								{isProcessing ? "Processing..." : "Deposit BTC and mint nBTC"}
+								{isProcessing ? "Processing..." : "Deposit BTC"}
 							</button>
 						) : (
 							<button
