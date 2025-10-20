@@ -15,137 +15,21 @@ export function BeelieversBadge() {
 				return;
 			}
 
-			const cacheKey = `beelievers_nft_${account.address}_${network}`;
-
-			const cached = localStorage.getItem(cacheKey);
-			if (cached) {
-				const { ownsNft: cachedResult, timestamp } = JSON.parse(cached);
-				if (Date.now() - timestamp < 24 * 60 * 60 * 1000) {
-					// 1 day cache
-					setOwnsNft(cachedResult);
-					return;
-				}
-				localStorage.removeItem(cacheKey);
+			const cacheKey = getCacheKey(account.address, network);
+			const cachedResult = getCachedOwnership(cacheKey);
+			if (cachedResult !== null) {
+				setOwnsNft(cachedResult);
+				return;
 			}
 
 			try {
 				const nftType = `${beelieversMint.pkgId}::mint::BeelieverNFT`;
-				const graphqlUrl =
-					network === "mainnet"
-						? "https://graphql.mainnet.sui.io/graphql"
-						: "https://graphql.testnet.sui.io/graphql";
+				const graphqlUrl = getGraphqlUrl(network);
 
-				const query = `
-					query ($userAddress: String!, $nftType: String!) {
-						address(address: $userAddress) {
-							objects(filter: { type: $nftType }) {
-								nodes { 
-									address 
-								}
-							}
-							kioskCaps: objects(filter: { type: "0x2::kiosk::KioskOwnerCap" }) {
-								nodes {
-									... on MoveObject {
-										contents {
-											json
-										}
-									}
-								}
-							}
-						}
-					}
-				`;
+				const ownsNftResult = await queryNFTOwnership(graphqlUrl, account.address, nftType);
 
-				const response = await fetch(graphqlUrl, {
-					method: "POST",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({
-						query,
-						variables: { userAddress: account.address, nftType },
-					}),
-				});
-
-				if (!response.ok) return;
-
-				const result = await response.json();
-				if ((result as { errors?: unknown[] }).errors) return;
-
-				const { data } = result as {
-					data?: {
-						address?: { objects?: { nodes?: unknown[] }; kioskCaps?: { nodes?: unknown[] } };
-					};
-				};
-				const { objects: directNfts, kioskCaps } = data?.address || {};
-
-				if (directNfts?.nodes && directNfts.nodes.length > 0) {
-					localStorage.setItem(cacheKey, JSON.stringify({ ownsNft: true, timestamp: Date.now() }));
-					setOwnsNft(true);
-					return;
-				}
-
-				for (const kioskCap of (kioskCaps?.nodes as { contents?: { json?: { for?: string } } }[]) ||
-					[]) {
-					const kioskCapContent = kioskCap.contents?.json;
-					const kioskId = kioskCapContent?.for;
-					if (!kioskId) continue;
-
-					const kioskQuery = `
-						query ($kioskId: String!) {
-							object(address: $kioskId) {
-								dynamicFields {
-									nodes {
-										value {
-											... on MoveObject {
-												contents {
-													type { repr }
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-					`;
-
-					const kioskResponse = await fetch(graphqlUrl, {
-						method: "POST",
-						headers: { "Content-Type": "application/json" },
-						body: JSON.stringify({
-							query: kioskQuery,
-							variables: { kioskId },
-						}),
-					});
-
-					if (kioskResponse.ok) {
-						const kioskResult = await kioskResponse.json();
-						if ((kioskResult as { errors?: unknown[] }).errors) continue;
-
-						const kioskData = kioskResult as {
-							data?: {
-								object?: {
-									dynamicFields?: {
-										nodes?: { value?: { contents?: { type?: { repr?: string } } } }[];
-									};
-								};
-							};
-						};
-						if (kioskData.data?.object?.dynamicFields?.nodes) {
-							for (const field of kioskData.data.object.dynamicFields.nodes) {
-								const itemType = field.value?.contents?.type?.repr;
-								if (itemType?.includes(nftType)) {
-									localStorage.setItem(
-										cacheKey,
-										JSON.stringify({ ownsNft: true, timestamp: Date.now() }),
-									);
-									setOwnsNft(true);
-									return;
-								}
-							}
-						}
-					}
-				}
-
-				setOwnsNft(false);
+				setCachedOwnership(cacheKey, ownsNftResult);
+				setOwnsNft(ownsNftResult);
 			} catch (_error) {
 				setOwnsNft(false);
 			}
@@ -160,4 +44,148 @@ export function BeelieversBadge() {
 			Beeliever
 		</div>
 	) : null;
+}
+
+function getCacheKey(address: string, network: string): string {
+	return `beelievers_nft_${address}_${network}`;
+}
+
+function getCachedOwnership(cacheKey: string): boolean | null {
+	const cached = localStorage.getItem(cacheKey);
+	if (!cached) return null;
+
+	const { ownsNft, timestamp } = JSON.parse(cached);
+	if (Date.now() - timestamp < 24 * 60 * 60 * 1000) {
+		return ownsNft;
+	}
+
+	localStorage.removeItem(cacheKey);
+	return null;
+}
+
+function setCachedOwnership(cacheKey: string, ownsNft: boolean): void {
+	localStorage.setItem(cacheKey, JSON.stringify({ ownsNft, timestamp: Date.now() }));
+}
+
+function getGraphqlUrl(network: string): string {
+	return network === "mainnet"
+		? "https://graphql.mainnet.sui.io/graphql"
+		: "https://graphql.testnet.sui.io/graphql";
+}
+
+async function queryNFTOwnership(graphqlUrl: string, userAddress: string, nftType: string): Promise<boolean> {
+	const query = `
+		query ($userAddress: String!, $nftType: String!) {
+			address(address: $userAddress) {
+				objects(filter: { type: $nftType }) {
+					nodes { 
+						address 
+					}
+				}
+				kioskCaps: objects(filter: { type: "0x2::kiosk::KioskOwnerCap" }) {
+					nodes {
+						... on MoveObject {
+							contents {
+								json
+							}
+						}
+					}
+				}
+			}
+		}
+	`;
+
+	const response = await fetch(graphqlUrl, {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify({
+			query,
+			variables: { userAddress, nftType },
+		}),
+	});
+
+	if (!response.ok) return false;
+
+	const result = await response.json();
+	if ((result as { errors?: unknown[] }).errors) return false;
+
+	const { data } = result as {
+		data?: {
+			address?: { objects?: { nodes?: unknown[] }; kioskCaps?: { nodes?: unknown[] } };
+		};
+	};
+	const { objects: directNfts, kioskCaps } = data?.address || {};
+
+	if (directNfts?.nodes?.length) {
+		return true;
+	}
+
+	const kioskCapsNodes = kioskCaps?.nodes as { contents?: { json?: { for?: string } } }[] | undefined;
+	if (!kioskCapsNodes) return false;
+
+	for (const kioskCap of kioskCapsNodes) {
+		const kioskId = kioskCap.contents?.json?.for;
+		if (!kioskId) continue;
+
+		const hasNftInKiosk = await queryKioskForNft(graphqlUrl, kioskId, nftType);
+		if (hasNftInKiosk) return true;
+	}
+
+	return false;
+}
+
+async function queryKioskForNft(graphqlUrl: string, kioskId: string, nftType: string): Promise<boolean> {
+	const kioskQuery = `
+		query ($kioskId: String!) {
+			object(address: $kioskId) {
+				dynamicFields {
+					nodes {
+						value {
+							... on MoveObject {
+								contents {
+									type { repr }
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	`;
+
+	const kioskResponse = await fetch(graphqlUrl, {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify({
+			query: kioskQuery,
+			variables: { kioskId },
+		}),
+	});
+
+	if (!kioskResponse.ok) return false;
+
+	const kioskResult = await kioskResponse.json();
+	if ((kioskResult as { errors?: unknown[] }).errors) return false;
+
+	const kioskData = kioskResult as {
+		data?: {
+			object?: {
+				dynamicFields?: {
+					nodes?: { value?: { contents?: { type?: { repr?: string } } } }[];
+				};
+			};
+		};
+	};
+
+	const nodes = kioskData.data?.object?.dynamicFields?.nodes;
+	if (!nodes) return false;
+
+	for (const field of nodes) {
+		const itemType = field.value?.contents?.type?.repr;
+		if (itemType?.includes(nftType)) {
+			return true;
+		}
+	}
+
+	return false;
 }
