@@ -23,7 +23,7 @@ export const FormInput = ({ name, required, rules, ...rest }: FormInputProps) =>
 				...rules,
 			}}
 			render={({ field: { onChange, value }, fieldState: { error } }) => (
-				<div>
+				<div className="space-y-1">
 					<Input value={value} onChange={onChange} {...rest} />
 					{error && <p className="text-sm text-red-500">{error.message}</p>}
 				</div>

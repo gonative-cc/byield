@@ -16,6 +16,8 @@ import { useFetcher } from "react-router";
 import type { UTXO } from "~/server/nbtc/types";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 
+const MIN_MINT_BTC = "0.00001";
+
 function formatSuiAddress(suiAddress: string) {
 	if (!suiAddress.toLowerCase().startsWith("0x")) {
 		return "0x" + suiAddress;
@@ -23,9 +25,8 @@ function formatSuiAddress(suiAddress: string) {
 	return suiAddress;
 }
 
-const PERCENTAGES = [25, 50, 75, 100];
-
 function Percentage({ onChange }: { onChange: (value: number) => void }) {
+	const PERCENTAGES = [25, 50, 75, 100];
 	return (
 		<div className="grid grid-cols-4 gap-2">
 			{PERCENTAGES.map((v) => (
@@ -165,6 +166,12 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 								validate: {
 									isWalletConnected: () =>
 										isBitcoinConnected || "Please connect Bitcoin wallet",
+									minimumAmount: (value: string) => {
+										if (parseBTC(value) >= parseBTC(MIN_MINT_BTC)) {
+											return true;
+										}
+										return `Minimum amount is ${MIN_MINT_BTC} BTC`;
+									},
 									enoughBalance: (value: string) => {
 										if (walletBalance) {
 											if (parseBTC(value) <= BigInt(walletBalance)) {
