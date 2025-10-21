@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useCurrentAccount, useSuiClientContext } from "@mysten/dapp-kit";
 import { useNetworkVariables } from "~/networkConfig";
+import { logError, logHttpError } from "~/lib/log";
 
 export function BeelieversBadge() {
 	const [ownsNft, setOwnsNft] = useState(false);
@@ -30,7 +31,10 @@ export function BeelieversBadge() {
 				setCachedOwnership(cacheKey, ownsNftResult);
 				setOwnsNft(ownsNftResult);
 			} catch (error) {
-				console.error("BeelieversBadge: Failed to check NFT ownership", error);
+				logError(
+					{ msg: "BeelieversBadge: Failed to check NFT ownership", method: "checkNftOwnership" },
+					error,
+				);
 				setOwnsNft(false);
 			}
 		};
@@ -105,13 +109,20 @@ async function queryNFTOwnership(graphqlUrl: string, userAddress: string, nftTyp
 	});
 
 	if (!response.ok) {
-		console.error("BeelieversBadge: GraphQL request failed", response.status, response.statusText);
+		await logHttpError(
+			{ msg: "BeelieversBadge: GraphQL request failed", method: "queryNFTOwnership" },
+			response,
+		);
 		return false;
 	}
 
 	const result = await response.json();
 	if ((result as { errors?: unknown[] }).errors) {
-		console.error("BeelieversBadge: GraphQL errors", (result as { errors?: unknown[] }).errors);
+		logError({
+			msg: "BeelieversBadge: GraphQL errors",
+			method: "queryNFTOwnership",
+			error: (result as { errors?: unknown[] }).errors,
+		});
 		return false;
 	}
 
@@ -168,11 +179,9 @@ async function queryKiosksForNft(graphqlUrl: string, kioskIds: string[], nftType
 			});
 
 			if (!response.ok) {
-				console.error(
-					"BeelieversBadge: Kiosk query failed",
-					kioskId,
-					response.status,
-					response.statusText,
+				await logHttpError(
+					{ msg: "BeelieversBadge: Kiosk query failed", method: "queryKiosksForNft" },
+					response,
 				);
 				continue;
 			}
@@ -180,8 +189,11 @@ async function queryKiosksForNft(graphqlUrl: string, kioskIds: string[], nftType
 			const result = await response.json();
 			if ((result as { errors?: { message: string }[] }).errors) {
 				const errors = (result as { errors?: { message: string }[] }).errors;
-				console.error("BeelieversBadge: GraphQL errors for kiosk", kioskId);
-				console.error("  Error messages:", errors?.map((e) => e.message).join(", "));
+				logError({
+					msg: `BeelieversBadge: GraphQL errors for kiosk ${kioskId}`,
+					method: "queryKiosksForNft",
+					error: errors?.map((e) => e.message).join(", "),
+				});
 				continue;
 			}
 
@@ -205,7 +217,10 @@ async function queryKiosksForNft(graphqlUrl: string, kioskIds: string[], nftType
 				}
 			}
 		} catch (error) {
-			console.error("BeelieversBadge: Failed to query kiosk", kioskId, error);
+			logError(
+				{ msg: `BeelieversBadge: Failed to query kiosk ${kioskId}`, method: "queryKiosksForNft" },
+				error,
+			);
 			continue;
 		}
 	}
