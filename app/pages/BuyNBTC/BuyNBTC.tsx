@@ -31,9 +31,9 @@ export function BuyNBTC() {
 
 	return (
 		<div className="flex flex-col items-center gap-8 px-2 pt-2">
-			<p className={heroTitle + " text-secondary-content max-w-96"}>
-				Native enables <span className="text-secondary">BTCFi</span> in the{" "}
-				<span className="text-secondary">Web3 native</span> way!
+			<p className={heroTitle + " text-base-content max-w-96"}>
+				Native enables <span className="text-base-content">BTCFi</span> in the{" "}
+				<span className="text-base-content">Web3 native</span> way!
 			</p>
 			<div className="card w-full max-w-lg">
 				<div className="card-body flex flex-col gap-4 p-6 text-white">
