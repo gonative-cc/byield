@@ -32,7 +32,10 @@ export function BeelieversBadge() {
 				setOwnsNft(ownsNftResult);
 			} catch (error) {
 				logError(
-					{ msg: "BeelieversBadge: Failed to check NFT ownership", method: "checkNftOwnership" },
+					{
+						msg: "BeelieversBadge: Failed to check NFT ownership",
+						method: "graphql:checkNftOwnership",
+					},
 					error,
 				);
 				setOwnsNft(false);
@@ -110,7 +113,7 @@ async function queryNFTOwnership(graphqlUrl: string, userAddress: string, nftTyp
 
 	if (!response.ok) {
 		await logHttpError(
-			{ msg: "BeelieversBadge: GraphQL request failed", method: "queryNFTOwnership" },
+			{ msg: "BeelieversBadge: GraphQL request failed", method: "graphql:queryNFTOwnership" },
 			response,
 		);
 		return false;
@@ -120,7 +123,7 @@ async function queryNFTOwnership(graphqlUrl: string, userAddress: string, nftTyp
 	if ((result as { errors?: unknown[] }).errors) {
 		logError({
 			msg: "BeelieversBadge: GraphQL errors",
-			method: "queryNFTOwnership",
+			method: "graphql:queryNFTOwnership",
 			error: (result as { errors?: unknown[] }).errors,
 		});
 		return false;
@@ -180,7 +183,7 @@ async function queryKiosksForNft(graphqlUrl: string, kioskIds: string[], nftType
 
 			if (!response.ok) {
 				await logHttpError(
-					{ msg: "BeelieversBadge: Kiosk query failed", method: "queryKiosksForNft" },
+					{ msg: "BeelieversBadge: Kiosk query failed", method: "graphql:queryKiosksForNft" },
 					response,
 				);
 				continue;
@@ -191,7 +194,7 @@ async function queryKiosksForNft(graphqlUrl: string, kioskIds: string[], nftType
 				const errors = (result as { errors?: { message: string }[] }).errors;
 				logError({
 					msg: `BeelieversBadge: GraphQL errors for kiosk ${kioskId}`,
-					method: "queryKiosksForNft",
+					method: "graphql:queryKiosksForNft",
 					error: errors?.map((e) => e.message).join(", "),
 				});
 				continue;
@@ -218,7 +221,10 @@ async function queryKiosksForNft(graphqlUrl: string, kioskIds: string[], nftType
 			}
 		} catch (error) {
 			logError(
-				{ msg: `BeelieversBadge: Failed to query kiosk ${kioskId}`, method: "queryKiosksForNft" },
+				{
+					msg: `BeelieversBadge: Failed to query kiosk ${kioskId}`,
+					method: "graphql:queryKiosksForNft",
+				},
 				error,
 			);
 			continue;
