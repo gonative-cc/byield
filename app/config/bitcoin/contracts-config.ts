@@ -40,7 +40,7 @@ export const devnetCfg: BitcoinConfig = {
 	minerFeeSats: 1000,
 	nBTC: {
 		depositAddress: "bcrt1q90xm34jqm0kcpfclkdmn868rw6vcv9fzvfg6p6",
-		mintingFee: 10,
+		mintingFee: 1000,
 	},
 	indexerUrl: "https://btcindexer.gonative-cc.workers.dev:443",
 	btcRPCUrl: "http://bitcoin-devnet.gonative.cc:3002",
