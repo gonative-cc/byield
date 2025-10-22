@@ -1,7 +1,11 @@
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "~/components/ui/dialog";
-import { primaryHeadingClasses } from "~/util/tailwind";
+import {
+	primaryForegroundHalfOpacity,
+	primaryForegroundSixtyOpacity,
+	primaryHeadingClasses,
+} from "~/util/tailwind";
 
 interface BadgeInfo {
 	name: string;
@@ -184,11 +188,11 @@ export function BadgesModal({ msg = "View All Badges" }: { msg?: string }) {
 								<button
 									key={badge.filename}
 									onClick={() => setSelectedBadge(badge)}
-									className={`group bg-primary-foreground/50 flex flex-col items-center rounded-lg border p-2 text-white transition-all duration-200 ${
+									className={`group flex flex-col items-center rounded-lg border p-2 text-white transition-all duration-200 ${
 										selectedBadge?.filename === badge.filename
 											? "border-primary bg-primary-foreground/70"
-											: "border-primary/20 hover:border-primary/50 hover:bg-primary-foreground/60"
-									}`}
+											: `border-primary/20 hover:border-primary/50 hover:${primaryForegroundSixtyOpacity}`
+									} ${primaryForegroundHalfOpacity}`}
 								>
 									<img
 										src={badge.src}
@@ -210,7 +214,7 @@ export function BadgesModal({ msg = "View All Badges" }: { msg?: string }) {
 								<img
 									src={selectedBadge.src}
 									alt={selectedBadge.name}
-									className="bg-primary-foreground/50 h-60 w-60 rounded-lg object-contain text-white"
+									className={`h-60 w-60 rounded-lg object-contain text-white ${primaryForegroundHalfOpacity}`}
 								/>
 								<h3 className="text-primary text-center text-lg font-bold sm:text-xl">
 									{selectedBadge.name}
