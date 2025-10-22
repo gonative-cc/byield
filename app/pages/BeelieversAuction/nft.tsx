@@ -103,7 +103,7 @@ export function NftDisplay({ nftId }: NftDisplayProps) {
 						/>
 					</a>
 				) : (
-					<div className="from-primary/20 border-primary/20 flex h-48 w-48 items-center justify-center rounded-2xl border-2 bg-gradient-to-br to-primary-foreground/20 text-6xl">
+					<div className="from-primary/20 border-primary/20 to-primary-foreground/20 flex h-48 w-48 items-center justify-center rounded-2xl border-2 bg-gradient-to-br text-6xl">
 						🐝
 					</div>
 				)}

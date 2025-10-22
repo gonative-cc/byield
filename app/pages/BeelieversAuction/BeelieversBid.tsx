@@ -163,7 +163,7 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 						<div className="card-body from-azure-10 via-azure-15 to-azure-20 flex w-full flex-col gap-6 rounded-lg bg-gradient-to-br p-6 text-white lg:p-8">
 							<div className="flex items-center justify-between">
 								<div className="flex items-center gap-3">
-									<div className="from-primary animate-pulse-glow flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-r to-primary-foreground">
+									<div className="from-primary animate-pulse-glow to-primary-foreground flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-r">
 										<span className="text-2xl">🐝</span>
 									</div>
 									<div>

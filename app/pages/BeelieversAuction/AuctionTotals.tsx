@@ -33,7 +33,10 @@ export function AuctionTotals({ info }: AuctionTotalsProps) {
 				<Tooltip tooltip={tooltip}>
 					<div className="text-muted-foreground group-hover:text-foreground/80 flex items-center justify-center gap-1 transition-colors">
 						{priceTitle}
-						<Info size="16" className="text-primary transition-colors hover:text-primary-foreground" />
+						<Info
+							size="16"
+							className="text-primary hover:text-primary-foreground transition-colors"
+						/>
 					</div>
 				</Tooltip>
 			</StatsCard>

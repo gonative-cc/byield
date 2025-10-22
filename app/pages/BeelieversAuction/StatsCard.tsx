@@ -11,7 +11,7 @@ export function StatsCard({ title, children }: StatsCardProps) {
 		<div className={`card group flex-1 hover:scale-105`}>
 			<div className="card-body from-azure-15 to-azure-25 border bg-gradient-to-br p-4 text-center transition-colors sm:p-6">
 				<div
-					className={`${primaryHeadingClasses()} mb-2 transition-colors duration-300 group-hover:text-primary-foreground`}
+					className={`${primaryHeadingClasses()} group-hover:text-primary-foreground mb-2 transition-colors duration-300`}
 				>
 					{title}
 				</div>
