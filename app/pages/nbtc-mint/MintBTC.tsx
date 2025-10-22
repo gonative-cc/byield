@@ -221,7 +221,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 								type="submit"
 								disabled={isProcessing}
 								className={classNames(
-									"btn btn-primary btn-block",
+									"btn btn-primary btn-wide",
 									buttonEffectClasses(),
 									isProcessing ? "loading" : "",
 								)}
