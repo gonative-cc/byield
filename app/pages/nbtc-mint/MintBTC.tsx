@@ -153,7 +153,6 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 				<div className="card">
 					<div className="card-body flex flex-col space-y-4">
 						<h2 className="text-center text-lg">Deposit BTC and mint nBTC on Sui</h2>
-
 						<FormNumericInput
 							required
 							name="numberOfBTC"
@@ -167,10 +166,10 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 									isWalletConnected: () =>
 										isBitcoinConnected || "Please connect Bitcoin wallet",
 									minimumAmount: (value: string) => {
-										if (parseBTC(value) >= parseBTC(MIN_MINT_BTC)) {
+										if (parseBTC(value) >= BigInt(cfg.minMintInSats)) {
 											return true;
 										}
-										return `Minimum amount is ${MIN_MINT_BTC} BTC`;
+										return `Minimum amount is ${formatBTC(cfg.minMintInSats)} BTC`;
 									},
 									enoughBalance: (value: string) => {
 										if (walletBalance) {
