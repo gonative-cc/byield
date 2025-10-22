@@ -8,6 +8,7 @@ import { formatNBTC } from "~/lib/denoms";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { TrimmedNumber } from "./TrimmedNumber";
 import { useCurrentAccount } from "@mysten/dapp-kit";
+import { heroTitle } from "~/util/tailwind";
 
 enum MarketIntegration {
 	TURBOS = "TURBOS",
@@ -135,7 +136,7 @@ export function TotalDeposit() {
 			)}
 			<div className="flex flex-col gap-4">
 				<div className="flex w-full items-center justify-between">
-					<h1 className="mr-4 text-2xl font-bold text-orange-500">Markets</h1>
+					<h1 className={heroTitle}>Markets</h1>
 					<div className="flex w-full justify-end gap-4">
 						<SelectInput
 							options={[{ label: "Filter by Top APY", value: "filterbytop" }]}

@@ -16,7 +16,7 @@ function MintTableTooltip({ tooltip, label }: { tooltip: string; label: string }
 		<Tooltip tooltip={tooltip}>
 			<div className="flex items-center gap-2">
 				{label}
-				<Info size="16" className="text-primary transition-colors hover:text-orange-400" />
+				<Info size="16" className="text-primary transition-colors hover:text-primary-foreground" />
 			</div>
 		</Tooltip>
 	);
@@ -119,7 +119,7 @@ const createColumns = (
 							href={explorerUrl}
 							target="_blank"
 							rel="noopener noreferrer"
-							className="link text-sm text-white !no-underline hover:text-orange-400"
+							className="link text-sm text-white !no-underline hover:text-primary-foreground"
 						>
 							{trimAddress(suiTxId)}
 						</a>
