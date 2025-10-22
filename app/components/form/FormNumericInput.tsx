@@ -23,7 +23,7 @@ export const FormNumericInput = ({ name, required, rules, ...rest }: FormInputPr
 				...rules,
 			}}
 			render={({ field: { onChange, value }, fieldState: { error } }) => (
-				<div>
+				<div className="space-y-1">
 					<NumericInput value={value} onChange={onChange} {...rest} />
 					{error && <p className="text-sm text-red-500">{error.message}</p>}
 				</div>

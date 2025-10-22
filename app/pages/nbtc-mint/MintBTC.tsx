@@ -23,9 +23,8 @@ function formatSuiAddress(suiAddress: string) {
 	return suiAddress;
 }
 
-const PERCENTAGES = [25, 50, 75, 100];
-
 function Percentage({ onChange }: { onChange: (value: number) => void }) {
+	const PERCENTAGES = [25, 50, 75, 100];
 	return (
 		<div className="grid grid-cols-4 gap-2">
 			{PERCENTAGES.map((v) => (
@@ -152,7 +151,6 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 				<div className="card">
 					<div className="card-body flex flex-col space-y-4">
 						<h2 className="text-center text-lg">Deposit BTC and mint nBTC on Sui</h2>
-
 						<FormNumericInput
 							required
 							name="numberOfBTC"
@@ -165,6 +163,12 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 								validate: {
 									isWalletConnected: () =>
 										isBitcoinConnected || "Please connect Bitcoin wallet",
+									minimumAmount: (value: string) => {
+										if (parseBTC(value) >= BigInt(cfg.minMintInSats)) {
+											return true;
+										}
+										return `Minimum amount is ${formatBTC(cfg.minMintInSats)} BTC`;
+									},
 									enoughBalance: (value: string) => {
 										if (walletBalance) {
 											if (parseBTC(value) <= BigInt(walletBalance)) {
