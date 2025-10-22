@@ -16,8 +16,6 @@ import { useFetcher } from "react-router";
 import type { UTXO } from "~/server/nbtc/types";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 
-const MIN_MINT_BTC = "0.00001";
-
 function formatSuiAddress(suiAddress: string) {
 	if (!suiAddress.toLowerCase().startsWith("0x")) {
 		return "0x" + suiAddress;
