@@ -188,11 +188,11 @@ export function BadgesModal({ msg = "View All Badges" }: { msg?: string }) {
 								<button
 									key={badge.filename}
 									onClick={() => setSelectedBadge(badge)}
-									className={`group flex flex-col items-center rounded-lg border p-2 text-white transition-all duration-200 ${
+									className={`group bg-primary flex flex-col items-center rounded-lg border p-2 text-white transition-all duration-200 ${
 										selectedBadge?.filename === badge.filename
-											? "border-primary bg-primary-foreground/70"
+											? "border-primary text-primary-foreground/70"
 											: `border-primary/20 hover:border-primary/50 hover:${primaryForegroundSixtyOpacity}`
-									} ${primaryForegroundHalfOpacity}`}
+									} ${primaryForegroundHalfOpacity} `}
 								>
 									<img
 										src={badge.src}
@@ -214,7 +214,7 @@ export function BadgesModal({ msg = "View All Badges" }: { msg?: string }) {
 								<img
 									src={selectedBadge.src}
 									alt={selectedBadge.name}
-									className={`h-60 w-60 rounded-lg object-contain text-white ${primaryForegroundHalfOpacity}`}
+									className={`bg-primary h-60 w-60 rounded-lg object-contain text-white ${primaryForegroundHalfOpacity}`}
 								/>
 								<h3 className="text-primary text-center text-lg font-bold sm:text-xl">
 									{selectedBadge.name}
