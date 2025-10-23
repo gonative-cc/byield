@@ -22,6 +22,7 @@ import { BitcoinNetworkType } from "sats-connect";
 import { CopyButton } from "./ui/CopyButton";
 import { isProductionMode } from "~/lib/appenv";
 import { routes } from "~/config/walletVisibility";
+import { BeelieversBadge } from "./BeelieversBadge";
 import { useXverseAddress } from "./Wallet/XverseWallet/useXverseAddress";
 
 function NetworkOptions() {
@@ -333,6 +334,7 @@ export function WalletBar() {
 
 			{/* Right side: Wallets and overview button */}
 			<div className="flex items-center gap-3">
+				{shouldShowOverView && <BeelieversBadge />}
 				<SelectWallet />
 				{shouldShowOverView && <WalletOverviewModal />}
 			</div>
