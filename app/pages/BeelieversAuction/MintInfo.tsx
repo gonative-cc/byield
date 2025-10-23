@@ -12,7 +12,7 @@ import {
 import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
 
 import { Countdown } from "~/components/ui/countdown";
-import { classNames, primaryHeadingClasses } from "~/util/tailwind";
+import { classNames, primaryHeadingClasses, GRADIENTS } from "~/util/tailwind";
 import { toast } from "~/hooks/use-toast";
 import { useNetworkVariables } from "~/networkConfig";
 import { AuctionAccountType, type AuctionInfo, type User } from "~/server/BeelieversAuction/types";
@@ -345,7 +345,9 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 
 	return (
 		<div className={cn(cardShowcaseClasses(), "card hover:shadow-primary/10 w-full md:w-3/4")}>
-			<div className="card-body from-azure-25 via-azure-20 to-azure-15 flex flex-col gap-6 rounded-lg bg-gradient-to-br p-4 text-white sm:gap-8 lg:gap-12 lg:p-8 xl:flex-row">
+			<div
+				className={`card-body ${GRADIENTS.azureCard} flex flex-col gap-6 rounded-lg p-4 text-white sm:gap-8 lg:gap-12 lg:p-8 xl:flex-row`}
+			>
 				<div className="flex w-full flex-shrink-0 justify-center xl:w-auto xl:justify-start">
 					{nftId ? (
 						<NftDisplay nftId={nftId} />

@@ -6,7 +6,7 @@ import { toBadgeRecord, type BadgeRecord } from "~/lib/badgeSystem";
 import type { Bidder, User } from "~/server/BeelieversAuction/types";
 import { BadgesModal } from "~/components/BadgesModal";
 import { formatSUI } from "~/lib/denoms";
-import { avatarGradientClasses, primaryHeadingClasses } from "~/util/tailwind";
+import { avatarGradientClasses, primaryHeadingClasses, selectedRowGradientClasses } from "~/util/tailwind";
 
 const MAX_LEADERBOARD_ROWS = 21;
 
@@ -110,9 +110,7 @@ export function AuctionTable({ data, user, suiAddr }: AuctionTableProps) {
 	const getRowProps = (row: { original: Bidder }) => {
 		const isUserRow = row.original.bidder === suiAddr;
 		return {
-			className: isUserRow
-				? "bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 border-l-4 border-primary shadow-lg scale-[1.02] relative z-10 animate-float"
-				: "hover:bg-primary/5",
+			className: isUserRow ? selectedRowGradientClasses : "hover:bg-primary/5",
 		};
 	};
 

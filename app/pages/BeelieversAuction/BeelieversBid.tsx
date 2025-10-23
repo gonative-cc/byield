@@ -16,7 +16,14 @@ import { toast } from "~/hooks/use-toast";
 import { useNetworkVariables } from "~/networkConfig";
 import { SUIIcon } from "~/components/icons";
 import { moveCallTarget, type BeelieversAuctionCfg } from "~/config/sui/contracts-config";
-import { buttonEffectClasses, classNames, cardShowcaseClasses, cn, infoBoxClasses } from "~/util/tailwind";
+import {
+	buttonEffectClasses,
+	classNames,
+	cardShowcaseClasses,
+	cn,
+	infoBoxClasses,
+	GRADIENTS,
+} from "~/util/tailwind";
 
 const MINIMUM_FIRST_BID_MIST = 1e9;
 interface NewTotalBidAmountProps {
@@ -160,10 +167,14 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 							"card animate-in slide-in-from-bottom-2 duration-700",
 						)}
 					>
-						<div className="card-body from-azure-10 via-azure-15 to-azure-20 flex w-full flex-col gap-6 rounded-lg bg-gradient-to-br p-6 text-white lg:p-8">
+						<div
+							className={`card-body ${GRADIENTS.azureCardReverse} flex w-full flex-col gap-6 rounded-lg p-6 text-white lg:p-8`}
+						>
 							<div className="flex items-center justify-between">
 								<div className="flex items-center gap-3">
-									<div className="from-primary animate-pulse-glow to-primary-foreground flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-r">
+									<div
+										className={`${GRADIENTS.primaryAvatar} animate-pulse-glow flex h-12 w-12 items-center justify-center rounded-full`}
+									>
 										<span className="text-2xl">🐝</span>
 									</div>
 									<div>

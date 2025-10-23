@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { primaryHeadingClasses } from "~/util/tailwind";
+import { primaryHeadingClasses, GRADIENTS } from "~/util/tailwind";
 
 interface StatsCardProps {
 	title: string | ReactNode;
@@ -9,7 +9,9 @@ interface StatsCardProps {
 export function StatsCard({ title, children }: StatsCardProps) {
 	return (
 		<div className={`card group flex-1 hover:scale-105`}>
-			<div className="card-body from-azure-15 to-azure-25 border bg-gradient-to-br p-4 text-center transition-colors sm:p-6">
+			<div
+				className={`card-body ${GRADIENTS.azureCard} border p-4 text-center transition-colors sm:p-6`}
+			>
 				<div
 					className={`${primaryHeadingClasses()} group-hover:text-primary mb-2 transition-colors duration-300`}
 				>

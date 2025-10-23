@@ -2,7 +2,7 @@ import React from "react";
 import { useTable } from "react-table";
 import type { Column, HeaderGroup, Row } from "react-table";
 import { twMerge } from "tailwind-merge";
-import { primaryHeadingClasses, avatarGradientClasses } from "~/util/tailwind";
+import { primaryHeadingClasses, avatarGradientClasses, GRADIENTS } from "~/util/tailwind";
 
 const TableHead = <T extends object>({ headerGroups }: { headerGroups: HeaderGroup<T>[] }) => (
 	<thead className="sticky top-0">
@@ -10,7 +10,7 @@ const TableHead = <T extends object>({ headerGroups }: { headerGroups: HeaderGro
 			<tr
 				{...headerGroup.getHeaderGroupProps()}
 				key={headerGroup.getHeaderGroupProps().key}
-				className="text-foreground/80 from-azure-15 to-azure-20 bg-gradient-to-r text-sm font-semibold backdrop-blur-sm"
+				className={`text-foreground/80 ${GRADIENTS.azureTableHeader} text-sm font-semibold backdrop-blur-sm`}
 			>
 				{headerGroup.headers.map((column, index) => (
 					<th
@@ -200,7 +200,7 @@ export const Table = <T extends object>({
 				<div className="overflow-x-auto">
 					<table
 						{...getTableProps()}
-						className="from-azure-10 via-azure-15 to-azure-20 w-full min-w-[600px] bg-gradient-to-br text-left"
+						className={`${GRADIENTS.azureTable} w-full min-w-[600px] text-left`}
 					>
 						<TableHead headerGroups={headerGroups} />
 						<tbody {...getTableBodyProps()}>

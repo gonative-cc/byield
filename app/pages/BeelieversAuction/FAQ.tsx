@@ -1,3 +1,5 @@
+import { GRADIENTS } from "~/util/tailwind";
+
 const FAQS = [
 	{
 		id: "faq-1",
@@ -15,7 +17,7 @@ export function FAQ() {
 	const renderQuestion = (key: string, question: string, answer: string) => (
 		<div
 			key={key}
-			className="from-primary/5 to-primary/10 border-primary/20 hover:border-primary/40 hover:shadow-primary/10 rounded-2xl border bg-gradient-to-r p-6 transition-all duration-300 hover:shadow-lg"
+			className={`${GRADIENTS.primaryInfoCard} border-primary/20 hover:border-primary/40 hover:shadow-primary/10 rounded-2xl border p-6 transition-all duration-300 hover:shadow-lg`}
 		>
 			<h3 className="text-primary mb-3 flex items-center gap-2 text-xl font-semibold">{question}</h3>
 			<p className="text-muted-foreground">{answer}</p>

@@ -3,6 +3,7 @@ import { useSuiClientContext } from "@mysten/dapp-kit";
 import type { SuiClient, SuiTransactionBlockResponse } from "@mysten/sui/client";
 import { ExternalLink } from "lucide-react";
 import { trimAddress } from "~/components/Wallet/walletHelper";
+import { GRADIENTS } from "~/util/tailwind";
 import { mkSuiVisionUrl, mkWalrusImageUrl } from "~/lib/suienv";
 import { useNetworkVariables } from "~/networkConfig";
 
@@ -79,7 +80,7 @@ export function NftDisplay({ nftId }: NftDisplayProps) {
 	const nameCls = "font-bold my-2 text-base " + (nftType === "Mythic" ? "text-warning" : "text-primary");
 
 	return (
-		<div className="from-primary/5 w-full rounded-2xl bg-gradient-to-br to-yellow-400/5 p-6 md:max-w-xs md:min-w-xs">
+		<div className={`${GRADIENTS.primaryNftBg} w-full rounded-2xl p-6 md:max-w-xs md:min-w-xs`}>
 			<div className="flex flex-col items-center gap-3">
 				<p className="text-primary text-xl font-bold">Your BTCFi Beeliever</p>
 				{imageUrl ? (
@@ -103,7 +104,9 @@ export function NftDisplay({ nftId }: NftDisplayProps) {
 						/>
 					</a>
 				) : (
-					<div className="from-primary/20 border-primary/20 to-primary-foreground/20 flex h-48 w-48 items-center justify-center rounded-2xl border-2 bg-gradient-to-br text-6xl">
+					<div
+						className={`${GRADIENTS.primaryNft} border-primary/20 flex h-48 w-48 items-center justify-center rounded-2xl border-2 text-6xl`}
+					>
 						🐝
 					</div>
 				)}
