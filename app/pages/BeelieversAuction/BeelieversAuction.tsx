@@ -145,7 +145,7 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 }
 
 function Header({ children }: { children: ReactNode }) {
-	return <h1 className={heroTitle}>{children}</h1>;
+	return <h1 className={heroTitle + " text-primary-foreground"}>{children}</h1>;
 }
 
 function RaffleResults({ raffle }: { raffle: QueryRaffleResp }) {

@@ -168,7 +168,7 @@ export default function Mint() {
 	return (
 		<div className="mx-auto max-w-7xl space-y-6 px-4 py-4">
 			<h1 className={heroTitle + " text-center"}>
-				Mint<span className="text-base-content"> nBTC</span>
+				Mint<span className="text-primary-foreground"> nBTC</span>
 			</h1>
 
 			{/* Main Content Grid */}

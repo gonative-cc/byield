@@ -49,7 +49,7 @@ export function alertPrimaryClasses() {
 export const orangeInfoCardClasses =
 	"bg-gradient-to-r from-primary/5 to-primary/10 rounded-2xl border border-primary/20 hover:border-primary/40 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10";
 
-export const heroTitle = "text-center text-primary-foreground text-2xl font-semibold md:text-3xl";
+export const heroTitle = "text-center text-2xl font-semibold md:text-3xl";
 
 export const primaryForegroundHalfOpacity = "text-primary-foreground/50";
 export const primaryForegroundSixtyOpacity = "text-primary-foreground/60";
