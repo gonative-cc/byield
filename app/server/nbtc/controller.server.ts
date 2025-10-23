@@ -1,5 +1,5 @@
 import { isValidSuiAddress } from "@mysten/sui/utils";
-import { type IndexerTransaction, type MintTransaction } from "./types";
+import type { MintTransaction, MintingTxStatus } from "./types";
 import type { QueryMintTxResp, Req } from "./jsonrpc";
 import type { BitcoinNetworkType } from "sats-connect";
 import { mustGetBitcoinConfig } from "~/hooks/useBitcoinConfig";
@@ -10,29 +10,31 @@ import {
 	handleNonSuccessResp as handleFailResp,
 } from "../http-resp";
 import { protectedBitcoinRPC } from "./btc-proxy.server";
+import type { TxStatusResp, BtcIndexerRpc } from "./btc-indexer-rpc.types";
 
 export default class Controller {
 	btcRPCUrl: string | null = null;
-	indexerBaseUrl: string | null = null;
+	indexerRpc: BtcIndexerRpc | null = null;
 
-	constructor(network: BitcoinNetworkType) {
+	constructor(network: BitcoinNetworkType, indexerRpc?: BtcIndexerRpc) {
 		this.handleNetwork(network);
+		this.indexerRpc = indexerRpc || null;
 	}
 
-	private convertIndexerTransaction(tx: IndexerTransaction): MintTransaction {
+	private convertTxStatusToMintTx(tx: TxStatusResp): MintTransaction {
 		return {
 			bitcoinTxId: tx.btc_tx_id,
 			amountInSatoshi: tx.amount_sats,
-			status: tx.status,
+			status: tx.status as MintingTxStatus,
 			suiAddress: tx.sui_recipient,
-			suiTxId: tx.sui_tx_id,
-			timestamp: tx.created_at,
+			suiTxId: tx.sui_tx_id || undefined,
+			timestamp: new Date(tx.created_at).getTime(),
 			numberOfConfirmation: tx.confirmations,
-			operationStartDate: tx.created_at,
+			operationStartDate: new Date(tx.created_at).getTime(),
 			bitcoinExplorerUrl: tx.bitcoin_explorer_url,
-			suiExplorerUrl: tx.sui_explorer_url,
+			suiExplorerUrl: tx.sui_explorer_url || undefined,
 			fees: tx.fees || 1000,
-			errorMessage: tx.error_message,
+			errorMessage: tx.error_message || undefined,
 		};
 	}
 
@@ -41,12 +43,14 @@ export default class Controller {
 		if (!isValidSuiAddress(suiAddr)) {
 			return badRequest();
 		}
-		const url = this.indexerBaseUrl + `/nbtc?sui_recipient=${suiAddr}`;
+		if (!this.indexerRpc) {
+			return serverError(method, new Error("Indexer RPC not configured"));
+		}
 		try {
-			const r = await fetch(url);
-			if (!r.ok) return handleFailResp(method, "can't fetch mint txs by sui address", r);
-			const data: IndexerTransaction[] = await r.json();
-			const mintTxs: MintTransaction[] = data.map((tx) => this.convertIndexerTransaction(tx));
+			const txStatuses = await this.indexerRpc.statusBySuiAddress(suiAddr);
+			const mintTxs: MintTransaction[] = txStatuses.map((tx) =>
+				this.convertTxStatusToMintTx(tx),
+			);
 			return mintTxs;
 		} catch (error) {
 			return serverError(method, error);
@@ -73,10 +77,8 @@ export default class Controller {
 		return rpcResponse;
 	}
 
-	// TODO: should be removed
 	private handleNetwork(network: BitcoinNetworkType) {
 		const networkConfig = mustGetBitcoinConfig(network);
-		this.indexerBaseUrl = networkConfig?.indexerUrl || null;
 		this.btcRPCUrl = networkConfig?.btcRPCUrl || null;
 	}
 
@@ -105,23 +107,22 @@ export default class Controller {
 
 	private async postNbtcTx(txId: string) {
 		const method = "nbtc:postNbtcTx";
+		if (!this.indexerRpc) {
+			return serverError(method, new Error("Indexer RPC not configured"));
+		}
 		try {
-			// TODO: why do we need this?
 			const txHex = await this.fetchTxHexByTxId(txId);
+			if (txHex instanceof Response) {
+				return txHex;
+			}
 			if (!txHex) {
 				throw new Error(`Error fetching tx hex: ${txId}`);
 			}
-			const url = this.indexerBaseUrl + `/nbtc`;
-			const r = await fetch(url, {
-				method: "POST",
-				body: JSON.stringify({
-					txHex,
-				}),
+			const result = await this.indexerRpc.putNbtcTx(txHex);
+			return new Response(JSON.stringify(result), {
+				status: 200,
+				headers: { "Content-Type": "application/json" },
 			});
-			if (!r.ok) {
-				return handleFailResp(method, "Can't query Bitcoin Tx data", r);
-			}
-			return r;
 		} catch (error) {
 			return serverError(method, error);
 		}
@@ -130,7 +131,7 @@ export default class Controller {
 	async handleJsonRPC(r: Request) {
 		let reqData: Req;
 		try {
-			reqData = await r.json<Req>();
+			reqData = (await r.json()) as Req;
 		} catch (_err) {
 			console.error({ msg: "Expecting JSON Content-Type and JSON body", error: _err });
 			return new Response("Expecting JSON Content-Type and JSON body", {

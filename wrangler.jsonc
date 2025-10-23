@@ -62,8 +62,13 @@
 	 * Service Bindings (communicate between multiple Workers)
 	 * https://developers.cloudflare.com/workers/wrangler/configuration/#service-bindings
 	 */
-	// "services": [{ "binding": "MY_SERVICE", "service": "my-service" }]
-
+	"services": [
+		{
+			"binding": "BTCINDEXER",
+			"service": "btcindexer",
+			"entrypoint": "BtcIndexerRpc",
+		},
+	],
 	// NOTE: build is done by vite, not wrangler, so we need to use vite cloudflare plugin to manage
 	// this configuration. This means, instead of setting `-e prod` wrangler deploy, we have to
 	// use CLOUDFLARE_ENV=prod in build:
@@ -87,6 +92,13 @@
 					"database_id": "f75ec68a-1df1-4a42-aeba-1d27875bf4e5",
 					"migrations_table": "migrations",
 					"migrations_dir": "./db/migrations/",
+				},
+			],
+			"services": [
+				{
+					"binding": "BTCINDEXER",
+					"service": "btcindexer-prod",
+					"entrypoint": "BtcIndexerRpc",
 				},
 			],
 		},
