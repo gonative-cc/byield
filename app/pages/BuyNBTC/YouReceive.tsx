@@ -27,7 +27,7 @@ export function YouReceive({ mistAmount, isSuiWalletConnected }: YouReceiveProps
 				readOnly
 				rightAdornments={<NBTCIcon className="mr-5" />}
 			/>
-			<span className="text-sm tracking-tighter text-gray-500 dark:text-gray-400">
+			<span className="text-muted-foreground text-sm tracking-tighter">
 				This is a fixed price buy. The price is 25,000 SUI / nBTC.
 			</span>
 		</div>

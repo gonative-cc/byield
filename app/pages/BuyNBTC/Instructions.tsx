@@ -5,8 +5,8 @@ export function Instructions() {
 	return (
 		<div className="card card-border bg-base-300 bg-[length:min(150px,100%)] bg-right-bottom bg-no-repeat md:bg-[url('/assets/bee/bee-with-question-mark.webp')]">
 			<div className="card-body flex flex-col justify-between p-4">
-				<h2 className="mb-2 font-semibold text-gray-900 dark:text-white">Instructions:</h2>
-				<ul className="list-inside list-disc space-y-2 dark:text-gray-400">
+				<h2 className="text-muted-foreground mb-2 font-semibold">Instructions:</h2>
+				<ul className="list-inside list-disc space-y-2">
 					<li>Click on Connect Sui Wallet button, if not already connected.</li>
 					<li>Connect your wallet. Slush recommended.</li>
 					<li>

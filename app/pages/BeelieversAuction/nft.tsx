@@ -76,7 +76,7 @@ export function NftDisplay({ nftId }: NftDisplayProps) {
 	const background = getAttributeValue(metadata.attributes, "Background");
 
 	const name = (nftType === "Mythic" ? "✨ " : "🐝 ") + nftType + ": " + (mythicName || metadata.name);
-	const nameCls = "font-bold my-2 text-base " + (nftType === "Mythic" ? "text-yellow-400" : "text-primary");
+	const nameCls = "font-bold my-2 text-base " + (nftType === "Mythic" ? "text-warning" : "text-primary");
 
 	return (
 		<div className="from-primary/5 w-full rounded-2xl bg-gradient-to-br to-yellow-400/5 p-6 md:max-w-xs md:min-w-xs">
@@ -119,10 +119,7 @@ export function NftDisplay({ nftId }: NftDisplayProps) {
 							<p> Badges: </p>
 							<div className="my-2 flex flex-wrap justify-center gap-2">
 								{metadata.badges.map((badge, index) => (
-									<span
-										key={index}
-										className="rounded-full border border-blue-400/30 bg-blue-500/20 px-2 py-1 text-blue-400"
-									>
+									<span key={index} className="badge badge-secondary badge-outline">
 										{badge}
 									</span>
 								))}
