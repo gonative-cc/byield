@@ -1,7 +1,7 @@
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "~/components/ui/dialog";
-import { primaryForegroundHalfOpacity, primaryHeadingClasses } from "~/util/tailwind";
+import { primaryHeadingClasses } from "~/util/tailwind";
 
 interface BadgeInfo {
 	name: string;
@@ -206,7 +206,7 @@ export function BadgesModal({ msg = "View All Badges" }: { msg?: string }) {
 								<img
 									src={selectedBadge.src}
 									alt={selectedBadge.name}
-									className={`bg-primary h-60 w-60 rounded-lg object-contain text-white ${primaryForegroundHalfOpacity}`}
+									className={`bg-primary h-60 w-60 rounded-lg object-contain text-white`}
 								/>
 								<h3 className="text-primary text-center text-lg font-bold sm:text-xl">
 									{selectedBadge.name}

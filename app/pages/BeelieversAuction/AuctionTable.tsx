@@ -6,7 +6,7 @@ import { toBadgeRecord, type BadgeRecord } from "~/lib/badgeSystem";
 import type { Bidder, User } from "~/server/BeelieversAuction/types";
 import { BadgesModal } from "~/components/BadgesModal";
 import { formatSUI } from "~/lib/denoms";
-import { avatarGradientClasses, primaryForegroundSixtyOpacity, primaryHeadingClasses } from "~/util/tailwind";
+import { avatarGradientClasses, primaryHeadingClasses } from "~/util/tailwind";
 
 const MAX_LEADERBOARD_ROWS = 21;
 
@@ -77,7 +77,7 @@ const createColumns = (): Column<Bidder>[] => [
 								key={index}
 								src={badge.src}
 								alt={String(badge!.name)}
-								className={`bg-primary text-primary-content ${primaryForegroundSixtyOpacity} h-8 w-8 rounded transition-transform hover:scale-110`}
+								className={`bg-primary text-primary-content h-8 w-8 rounded transition-transform hover:scale-110`}
 							/>
 						))
 					) : (

@@ -51,9 +51,6 @@ export const orangeInfoCardClasses =
 
 export const heroTitle = "text-center text-2xl font-semibold md:text-3xl";
 
-export const primaryForegroundHalfOpacity = "text-primary-foreground/50";
-export const primaryForegroundSixtyOpacity = "text-primary-foreground/60";
-
 export function classNames(
 	...args: (string | { [key: string]: boolean } | undefined | null)[]
 ): string {
