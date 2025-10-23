@@ -1,11 +1,7 @@
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "~/components/ui/dialog";
-import {
-	primaryForegroundHalfOpacity,
-	primaryForegroundSixtyOpacity,
-	primaryHeadingClasses,
-} from "~/util/tailwind";
+import { primaryForegroundHalfOpacity, primaryHeadingClasses } from "~/util/tailwind";
 
 interface BadgeInfo {
 	name: string;
@@ -188,11 +184,7 @@ export function BadgesModal({ msg = "View All Badges" }: { msg?: string }) {
 								<button
 									key={badge.filename}
 									onClick={() => setSelectedBadge(badge)}
-									className={`group bg-primary flex flex-col items-center rounded-lg border p-2 text-white transition-all duration-200 ${
-										selectedBadge?.filename === badge.filename
-											? "border-primary text-primary-foreground/70"
-											: `border-primary/20 hover:border-primary/50 hover:${primaryForegroundSixtyOpacity}`
-									} ${primaryForegroundHalfOpacity} `}
+									className={`group bg-primary border-primary flex flex-col items-center rounded-lg border p-2 text-white transition-all duration-200`}
 								>
 									<img
 										src={badge.src}

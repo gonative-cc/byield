@@ -35,7 +35,7 @@ export function AuctionTotals({ info }: AuctionTotalsProps) {
 						{priceTitle}
 						<Info
 							size="16"
-							className="text-primary hover:text-primary-foreground transition-colors"
+							className="text-primary-foreground hover:text-primary transition-colors"
 						/>
 					</div>
 				</Tooltip>
