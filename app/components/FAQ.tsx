@@ -17,7 +17,7 @@ export function FAQ({ faqs, description = "" }: FAQProps) {
 		return (
 			<div key={faq.id} className={`${orangeInfoCardClasses} collapse-plus collapse`}>
 				<input type="checkbox" />
-				<div className="collapse-title text-base-content text-lg font-medium">{faq.question}</div>
+				<div className="collapse-title text-lg font-medium">{faq.question}</div>
 				<div className="collapse-content">
 					{typeof faq.answer === "string" ? <p>{faq.answer}</p> : faq.answer}
 				</div>
@@ -33,7 +33,7 @@ export function FAQ({ faqs, description = "" }: FAQProps) {
 				</h2>
 				{description && <p className="text-muted-foreground">{description}</p>}
 			</div>
-			<div className="space-y-4">{faqs.map(renderQuestion)}</div>
+			<div className="text-base-content space-y-4">{faqs.map(renderQuestion)}</div>
 		</div>
 	);
 }
