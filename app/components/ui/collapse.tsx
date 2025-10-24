@@ -20,7 +20,7 @@ export function Collapse({ title, className = "", children }: CollapseProps) {
 		>
 			<button
 				onClick={() => setShowInfo((prevState) => !prevState)}
-				className="from-primary/10 to-primary/5 hover:from-primary/20 hover:to-primary/10 text-primary-foreground hover:text-primary flex w-full items-center justify-between bg-gradient-to-r p-4 text-left text-lg lg:p-6 lg:text-xl"
+				className="from-primary/10 to-primary/5 hover:from-primary/20 hover:to-primary/10 text-primary hover:text-primary-foreground flex w-full items-center justify-between bg-gradient-to-r p-4 text-left text-lg lg:p-6 lg:text-xl"
 			>
 				{typeof title === "string" ? <span className="font-bold">{title}</span> : title}
 				<div className={`transform transition-transform duration-300 group-hover:scale-110`}>

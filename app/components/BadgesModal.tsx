@@ -184,7 +184,7 @@ export function BadgesModal({ msg = "View All Badges" }: { msg?: string }) {
 								<button
 									key={badge.filename}
 									onClick={() => setSelectedBadge(badge)}
-									className={`group bg-primary border-primary flex flex-col items-center rounded-lg border p-2 text-white transition-all duration-200`}
+									className={`group bg-primary text-primary-content border-primary flex flex-col items-center rounded-lg border p-2 transition-all duration-200`}
 								>
 									<img
 										src={badge.src}
