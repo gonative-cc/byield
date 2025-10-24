@@ -122,7 +122,7 @@ export function NftDisplay({ nftId }: NftDisplayProps) {
 							<p> Badges: </p>
 							<div className="my-2 flex flex-wrap justify-center gap-2">
 								{metadata.badges.map((badge, index) => (
-									<span key={index} className="badge badge-secondary badge-outline">
+									<span key={index} className="badge badge-info badge-outline">
 										{badge}
 									</span>
 								))}

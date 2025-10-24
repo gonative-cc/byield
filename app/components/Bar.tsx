@@ -252,7 +252,7 @@ function WalletOverviewModal() {
 				{currentSuiAccount && shouldShowSUIWallet && (
 					<div>
 						<div className="mb-3 flex items-center gap-2">
-							<Wallet className="text-accent" size={20} />
+							<Wallet className="text-blue-500" size={20} />
 							<h4 className="text-base font-semibold">Sui Wallet</h4>
 						</div>
 
