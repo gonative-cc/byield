@@ -208,7 +208,7 @@ export function BadgesModal({ msg = "View All Badges" }: { msg?: string }) {
 									alt={selectedBadge.name}
 									className={`bg-primary h-60 w-60 rounded-lg object-contain text-white`}
 								/>
-								<h3 className="text-primary text-center text-lg font-bold sm:text-xl">
+								<h3 className="text-primary-foreground text-center text-lg font-bold sm:text-xl">
 									{selectedBadge.name}
 								</h3>
 								<p className="text-muted-foreground text-center text-sm sm:text-base">
