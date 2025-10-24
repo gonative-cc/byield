@@ -19,7 +19,7 @@ export function avatarGradientClasses() {
 }
 
 export function primaryHeadingClasses() {
-	return "text-2xl font-bold text-primary";
+	return "text-2xl font-bold text-primary-foreground";
 }
 
 export function cardShowcaseClasses() {

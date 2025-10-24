@@ -154,7 +154,7 @@ function RaffleResults({ raffle }: { raffle: QueryRaffleResp }) {
 	return (
 		<>
 			<section className="mb-6 w-full">
-				<div className="text-primary group-hover:text-primary-foreground mb-2 text-xl font-bold transition-colors duration-300">
+				<div className="text-primary-foreground group-hover:text-primary mb-2 text-xl font-bold transition-colors duration-300">
 					<NBTCRaw className="mr-2 inline h-[1.1em] w-auto align-middle" /> Total winnings:{" "}
 					{formatSUI(raffle.totalAmount)} nBTC
 				</div>

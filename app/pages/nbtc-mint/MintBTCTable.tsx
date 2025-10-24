@@ -16,7 +16,7 @@ function MintTableTooltip({ tooltip, label }: { tooltip: string; label: string }
 		<Tooltip tooltip={tooltip}>
 			<div className="flex items-center gap-2">
 				{label}
-				<Info size="16" className="text-primary hover:text-primary-foreground transition-colors" />
+				<Info size="16" className="text-primary-foreground hover:text-primary transition-colors" />
 			</div>
 		</Tooltip>
 	);
