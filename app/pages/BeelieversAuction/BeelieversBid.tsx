@@ -50,12 +50,12 @@ function NewTotalBidAmount({ currentBidInMist, additionalBidInSUI, entryBidMist 
 	return (
 		<div className={infoBoxClasses()}>
 			<div className="mb-2 flex items-center justify-between">
-				<span className="text-muted-foreground text-sm">New total bid amount:</span>
+				<span className="text-base-content/75 text-sm">New total bid amount:</span>
 				<div className="text-primary text-lg font-semibold">{formatSUI(newTotal)} SUI</div>
 			</div>
 			{moreBidNeeded > 0 && (
 				<div className="flex items-center justify-between">
-					<span className="text-muted-foreground text-sm">
+					<span className="text-base-content/75 text-sm">
 						You need to add at least
 						<span className="text-primary font-semibold">
 							&nbsp; {formatSUI(moreBidNeeded)} SUI &nbsp;
@@ -181,7 +181,7 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 										<h2 className="text-primary text-2xl font-bold lg:text-3xl">
 											Place Your Bid
 										</h2>
-										<p className="text-muted-foreground text-sm">
+										<p className="text-base-content/75 text-sm">
 											{hasUserBidBefore
 												? "Increase your bid to improve your rank"
 												: "Join the auction and secure your NFT"}

@@ -17,7 +17,7 @@ export function StatsCard({ title, children }: StatsCardProps) {
 				>
 					{title}
 				</div>
-				<div className="text-muted-foreground group-hover:text-foreground/80 transition-colors">
+				<div className="text-base-content/75 group-hover:text-foreground/80 transition-colors">
 					{children}
 				</div>
 			</div>

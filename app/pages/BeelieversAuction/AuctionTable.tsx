@@ -40,7 +40,7 @@ const createColumns = (): Column<Bidder>[] => [
 			<div className="flex items-center space-x-2 font-semibold">
 				<SUIIcon prefix="" className="text-primary h-5 w-5" />
 				<span className="text-primary">{formatSUI(row.original.amount)}</span>
-				<span className="text-muted-foreground text-sm">SUI</span>
+				<span className="text-base-content/75 text-sm">SUI</span>
 			</div>
 		),
 	},
@@ -48,7 +48,7 @@ const createColumns = (): Column<Bidder>[] => [
 		Header: "📝 User Message",
 		accessor: "note",
 		Cell: ({ row }: CellProps<Bidder>) => (
-			<span className="text-muted-foreground block max-w-32 truncate text-sm">
+			<span className="text-base-content/75 block max-w-32 truncate text-sm">
 				{row.original.note || "-"}
 			</span>
 		),
@@ -81,7 +81,7 @@ const createColumns = (): Column<Bidder>[] => [
 							/>
 						))
 					) : (
-						<span className="text-muted-foreground text-sm">-</span>
+						<span className="text-base-content/75 text-sm">-</span>
 					)}
 				</div>
 			);
@@ -123,7 +123,7 @@ export function AuctionTable({ data, user, suiAddr }: AuctionTableProps) {
 					</div>
 					<div>
 						<h2 className={primaryHeadingClasses()}>Leaderboard</h2>
-						<p className="text-muted-foreground text-sm">Top {MAX_LEADERBOARD_ROWS} bidders</p>
+						<p className="text-base-content/75 text-sm">Top {MAX_LEADERBOARD_ROWS} bidders</p>
 					</div>
 				</div>
 			</div>

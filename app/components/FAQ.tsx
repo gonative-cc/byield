@@ -31,7 +31,7 @@ export function FAQ({ faqs, description = "" }: FAQProps) {
 				<h2 className="text-primary-foreground mb-3 text-3xl font-bold">
 					🤔 Frequently Asked Questions
 				</h2>
-				{description && <p className="text-muted-foreground">{description}</p>}
+				{description && <p className="text-base-content/75">{description}</p>}
 			</div>
 			<div className="text-base-content space-y-4">{faqs.map(renderQuestion)}</div>
 		</div>

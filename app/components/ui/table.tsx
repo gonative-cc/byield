@@ -144,7 +144,7 @@ export const Table = <T extends object>({
 	const isTableEmpty = !data.length;
 	const renderNoDataMessage = (
 		<tr className="animate-in fade-in-0 duration-500">
-			<td colSpan={columns.length} className="text-muted-foreground p-8 text-center text-base">
+			<td colSpan={columns.length} className="text-base-content/75 p-8 text-center text-base">
 				<div className="flex flex-col items-center gap-3">
 					<div className="bg-primary/10 flex h-12 w-12 items-center justify-center rounded-full">
 						<span className="text-2xl">📊</span>
@@ -157,7 +157,7 @@ export const Table = <T extends object>({
 
 	const renderLoadingMessage = (
 		<tr className="animate-in fade-in-0 duration-500">
-			<td colSpan={columns.length} className="text-muted-foreground p-8 text-center text-base">
+			<td colSpan={columns.length} className="text-base-content/75 p-8 text-center text-base">
 				<div className="flex flex-col items-center gap-3">
 					<div className="bg-primary/10 flex h-12 w-12 items-center justify-center rounded-full">
 						<div className="border-primary h-6 w-6 animate-spin rounded-full border-b-2"></div>

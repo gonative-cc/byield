@@ -43,7 +43,7 @@ function MintInfoItem({ title, value, isLastItem = false }: MintInfoItemProps) {
 				"border-b": !isLastItem,
 			})}
 		>
-			<span className="text-muted-foreground text-base font-medium">{title}</span>
+			<span className="text-base-content/75 text-base font-medium">{title}</span>
 			<div className="text-primary text-xl font-bold">{value}</div>
 		</div>
 	);
@@ -226,7 +226,7 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 				>
 					<LoadingSpinner isLoading={isRefundPending} />
 					💰 Refund
-					<div className="text-muted-foreground text-sm">
+					<div className="text-base-content/75 text-sm">
 						NOTE: if you already claimed refund, subsequent claim will fail
 					</div>
 				</button>

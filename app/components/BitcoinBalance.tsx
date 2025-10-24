@@ -20,7 +20,7 @@ export const BitcoinBalance = ({ availableBalance }: BitcoinBalanceProps) => {
 						<NumericFormat
 							displayType="text"
 							value={balanceInBTC}
-							className="text-muted-foreground"
+							className="text-base-content/75"
 							readOnly
 							suffix=" BTC"
 						/>

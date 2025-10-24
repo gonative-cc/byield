@@ -111,7 +111,7 @@ export function NftDisplay({ nftId }: NftDisplayProps) {
 					</div>
 				)}
 
-				<div className="text-muted-foreground w-full text-sm">
+				<div className="text-base-content/75 w-full text-sm">
 					<p className={nameCls}>{name}</p>
 					<p>Beeliever #{metadata.token_id}</p>
 					<p>Object ID: {trimAddress(nftId)}</p>
