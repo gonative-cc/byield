@@ -1,6 +1,6 @@
 import React from "react";
 import { Countdown } from "~/components/ui/countdown";
-import { primaryBadgeClasses } from "~/util/tailwind";
+import { primaryBadgeClasses, GRADIENTS } from "~/util/tailwind";
 import { BadgesModal } from "~/components/BadgesModal";
 import { AuctionAccountType } from "~/server/BeelieversAuction/types";
 import { TwitterShareButton } from "~/components/TwitterShareButton";
@@ -34,7 +34,9 @@ Securing my spot in the top 5810 at https://byield.gonative.cc/beelievers-auctio
 
 	return (
 		<div className="card card-border w-full border shadow-2xl transition-all duration-300 md:w-3/4">
-			<div className="card-body from-azure-25 via-azure-20 to-azure-15 flex flex-col gap-6 rounded-lg bg-gradient-to-br p-4 text-white lg:flex-row lg:gap-8 lg:p-8">
+			<div
+				className={`card-body ${GRADIENTS.azureCard} flex flex-col gap-6 rounded-lg p-4 text-white lg:flex-row lg:gap-8 lg:p-8`}
+			>
 				<div className="flex flex-shrink-0 justify-center lg:justify-start">
 					<div className="animate-float">
 						<img
@@ -184,7 +186,7 @@ const EligibleStatusBadge = ({ userAccountType }: { userAccountType?: AuctionAcc
 	if (!msg) return null;
 
 	return (
-		<div className="rounded-lg border border-purple-400/40 bg-gradient-to-r from-purple-500/20 to-pink-500/20 p-2">
+		<div className={`rounded-lg border border-purple-400/40 ${GRADIENTS.purpleStatus} p-2`}>
 			<span className="text-lg">🤝 </span>
 			<span className="text-sm font-semibold">{msg}</span>
 			<span className="animate-bounce text-lg">✨</span>
@@ -230,7 +232,7 @@ const NotAWinnerNotifier = ({ user, auctionSize }: { user?: User; auctionSize: n
 	if (!user || user.amount === 0 || user.rank === null || user.rank < auctionSize) return null;
 
 	return (
-		<div className="border-primary-foreground/70 from-primary-foreground/50 to-primary-foreground/40 rounded-lg border bg-gradient-to-r p-2">
+		<div className={`rounded-lg border border-orange-500/70 ${GRADIENTS.orangeWarning} p-2`}>
 			<span className="text-lg">🔨</span> You slipped from the auction winning list (top 5810 spots).
 			Bid more to save your spot!
 		</div>

@@ -2,7 +2,7 @@ import React from "react";
 import { useTable } from "react-table";
 import type { Column, HeaderGroup, Row } from "react-table";
 import { twMerge } from "tailwind-merge";
-import { primaryHeadingClasses, avatarGradientClasses } from "~/util/tailwind";
+import { primaryHeadingClasses, avatarGradientClasses, GRADIENTS } from "~/util/tailwind";
 
 const TableHead = <T extends object>({ headerGroups }: { headerGroups: HeaderGroup<T>[] }) => (
 	<thead className="sticky top-0">
@@ -10,7 +10,7 @@ const TableHead = <T extends object>({ headerGroups }: { headerGroups: HeaderGro
 			<tr
 				{...headerGroup.getHeaderGroupProps()}
 				key={headerGroup.getHeaderGroupProps().key}
-				className="text-foreground/80 from-azure-15 to-azure-20 bg-gradient-to-r text-sm font-semibold backdrop-blur-sm"
+				className={`text-foreground/80 ${GRADIENTS.azureTableHeader} text-sm font-semibold backdrop-blur-sm`}
 			>
 				{headerGroup.headers.map((column, index) => (
 					<th
@@ -144,7 +144,7 @@ export const Table = <T extends object>({
 	const isTableEmpty = !data.length;
 	const renderNoDataMessage = (
 		<tr className="animate-in fade-in-0 duration-500">
-			<td colSpan={columns.length} className="text-muted-foreground p-8 text-center text-base">
+			<td colSpan={columns.length} className="text-base-content/75 p-8 text-center text-base">
 				<div className="flex flex-col items-center gap-3">
 					<div className="bg-primary/10 flex h-12 w-12 items-center justify-center rounded-full">
 						<span className="text-2xl">📊</span>
@@ -157,7 +157,7 @@ export const Table = <T extends object>({
 
 	const renderLoadingMessage = (
 		<tr className="animate-in fade-in-0 duration-500">
-			<td colSpan={columns.length} className="text-muted-foreground p-8 text-center text-base">
+			<td colSpan={columns.length} className="text-base-content/75 p-8 text-center text-base">
 				<div className="flex flex-col items-center gap-3">
 					<div className="bg-primary/10 flex h-12 w-12 items-center justify-center rounded-full">
 						<div className="border-primary h-6 w-6 animate-spin rounded-full border-b-2"></div>
@@ -200,7 +200,7 @@ export const Table = <T extends object>({
 				<div className="overflow-x-auto">
 					<table
 						{...getTableProps()}
-						className="from-azure-10 via-azure-15 to-azure-20 w-full min-w-[600px] bg-gradient-to-br text-left"
+						className={`${GRADIENTS.azureTable} w-full min-w-[600px] text-left`}
 					>
 						<TableHead headerGroups={headerGroups} />
 						<tbody {...getTableBodyProps()}>

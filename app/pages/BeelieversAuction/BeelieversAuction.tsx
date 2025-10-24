@@ -88,7 +88,7 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 					🐝 BTCFi Beelievers
 					<span className="text-foreground"> Mint</span>
 				</p>
-				<p className="text-muted-foreground mt-3 text-lg">
+				<p className="text-base-content/75 mt-3 text-lg">
 					➡️{" "}
 					<a
 						href="https://www.gonative.cc/beelievers"

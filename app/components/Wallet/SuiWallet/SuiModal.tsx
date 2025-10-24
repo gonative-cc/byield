@@ -50,7 +50,7 @@ function AvailableWallets() {
 	if (!slushWallet && !phantomWallet) {
 		return (
 			<>
-				<DialogDescription className="text-red-500">
+				<DialogDescription className="text-error">
 					No Sui-compatible wallets detected
 				</DialogDescription>
 				<div className="flex flex-col gap-1">

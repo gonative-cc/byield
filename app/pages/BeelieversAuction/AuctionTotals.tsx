@@ -31,7 +31,7 @@ export function AuctionTotals({ info }: AuctionTotalsProps) {
 			<StatsCard title={info.totalBids.toLocaleString()}>Total Bids</StatsCard>
 			<StatsCard title={formatSUI(price) + " SUI"}>
 				<Tooltip tooltip={tooltip}>
-					<div className="text-muted-foreground group-hover:text-foreground/80 flex items-center justify-center gap-1 transition-colors">
+					<div className="text-base-content/75 group-hover:text-foreground/80 flex items-center justify-center gap-1 transition-colors">
 						{priceTitle}
 						<Info
 							size="16"

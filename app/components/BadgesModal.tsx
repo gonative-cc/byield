@@ -211,7 +211,7 @@ export function BadgesModal({ msg = "View All Badges" }: { msg?: string }) {
 								<h3 className="text-primary-foreground text-center text-lg font-bold sm:text-xl">
 									{selectedBadge.name}
 								</h3>
-								<p className="text-muted-foreground text-center text-sm sm:text-base">
+								<p className="text-base-content/75 text-center text-sm sm:text-base">
 									{selectedBadge.description}
 								</p>
 							</div>

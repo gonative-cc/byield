@@ -16,7 +16,14 @@ import { toast } from "~/hooks/use-toast";
 import { useNetworkVariables } from "~/networkConfig";
 import { SUIIcon } from "~/components/icons";
 import { moveCallTarget, type BeelieversAuctionCfg } from "~/config/sui/contracts-config";
-import { buttonEffectClasses, classNames, cardShowcaseClasses, cn, infoBoxClasses } from "~/util/tailwind";
+import {
+	buttonEffectClasses,
+	classNames,
+	cardShowcaseClasses,
+	cn,
+	infoBoxClasses,
+	GRADIENTS,
+} from "~/util/tailwind";
 
 const MINIMUM_FIRST_BID_MIST = 1e9;
 interface NewTotalBidAmountProps {
@@ -43,12 +50,12 @@ function NewTotalBidAmount({ currentBidInMist, additionalBidInSUI, entryBidMist 
 	return (
 		<div className={infoBoxClasses()}>
 			<div className="mb-2 flex items-center justify-between">
-				<span className="text-muted-foreground text-sm">New total bid amount:</span>
+				<span className="text-base-content/75 text-sm">New total bid amount:</span>
 				<div className="text-primary text-lg font-semibold">{formatSUI(newTotal)} SUI</div>
 			</div>
 			{moreBidNeeded > 0 && (
 				<div className="flex items-center justify-between">
-					<span className="text-muted-foreground text-sm">
+					<span className="text-base-content/75 text-sm">
 						You need to add at least
 						<span className="text-primary font-semibold">
 							&nbsp; {formatSUI(moreBidNeeded)} SUI &nbsp;
@@ -160,17 +167,21 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 							"card animate-in slide-in-from-bottom-2 duration-700",
 						)}
 					>
-						<div className="card-body from-azure-10 via-azure-15 to-azure-20 flex w-full flex-col gap-6 rounded-lg bg-gradient-to-br p-6 text-white lg:p-8">
+						<div
+							className={`card-body ${GRADIENTS.azureCardReverse} flex w-full flex-col gap-6 rounded-lg p-6 text-white lg:p-8`}
+						>
 							<div className="flex items-center justify-between">
 								<div className="flex items-center gap-3">
-									<div className="from-primary animate-pulse-glow to-primary-foreground flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-r">
+									<div
+										className={`${GRADIENTS.primaryAvatar} animate-pulse-glow flex h-12 w-12 items-center justify-center rounded-full`}
+									>
 										<span className="text-2xl">🐝</span>
 									</div>
 									<div>
 										<h2 className="text-primary text-2xl font-bold lg:text-3xl">
 											Place Your Bid
 										</h2>
-										<p className="text-muted-foreground text-sm">
+										<p className="text-base-content/75 text-sm">
 											{hasUserBidBefore
 												? "Increase your bid to improve your rank"
 												: "Join the auction and secure your NFT"}

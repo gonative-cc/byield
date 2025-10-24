@@ -14,8 +14,32 @@ export function primaryBadgeClasses() {
 	return "px-4 py-2 bg-primary/10 rounded-lg border border-primary/20 font-semibold text-primary";
 }
 
+// Gradient constants
+export const GRADIENTS = {
+	// Background gradients
+	pageBg: "bg-gradient-to-br from-background via-azure-20 to-azure-25",
+	azureCard: "bg-gradient-to-br from-azure-25 via-azure-20 to-azure-15",
+	azureCardReverse: "bg-gradient-to-br from-azure-10 via-azure-15 to-azure-20",
+	azureTable: "bg-gradient-to-br from-azure-10 via-azure-15 to-azure-20",
+	azureTableHeader: "bg-gradient-to-r from-azure-15 to-azure-20",
+
+	// Primary gradients
+	primaryCard: "bg-gradient-to-r from-primary/10 to-secondary/10",
+	primaryAvatar: "bg-gradient-to-r from-primary to-orange-400",
+	primaryNft: "bg-gradient-to-br from-primary/20 to-orange-400/20",
+	primaryNftBg: "bg-gradient-to-br from-primary/5 to-yellow-400/5",
+	primaryCollapse:
+		"bg-gradient-to-r from-primary/10 to-primary/5 hover:from-primary/20 hover:to-primary/10",
+	primarySelectedRow: "bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20",
+	primaryInfoCard: "bg-gradient-to-r from-primary/5 to-primary/10",
+
+	// Status gradients
+	purpleStatus: "bg-gradient-to-r from-purple-500/20 to-pink-500/20",
+	orangeWarning: "bg-gradient-to-r from-orange-700/50 to-orange-700/40",
+} as const;
+
 export function avatarGradientClasses() {
-	return "w-10 h-10 rounded-full bg-gradient-to-r from-primary to-primary-foreground flex items-center justify-center";
+	return `w-10 h-10 rounded-full ${GRADIENTS.primaryAvatar} flex items-center justify-center`;
 }
 
 export function primaryHeadingClasses() {
@@ -31,11 +55,11 @@ export function infoBoxClasses() {
 }
 
 export function gradientCardClasses() {
-	return "card bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20";
+	return `card ${GRADIENTS.primaryCard} border border-primary/20`;
 }
 
 export function azureCardClasses() {
-	return "bg-gradient-to-br from-azure-25 via-azure-20 to-azure-15";
+	return GRADIENTS.azureCard;
 }
 
 export function defaultCardClasses() {
@@ -46,8 +70,11 @@ export function alertPrimaryClasses() {
 	return "alert bg-primary border-primary";
 }
 
-export const orangeInfoCardClasses =
-	"bg-gradient-to-r from-primary/5 to-primary/10 rounded-2xl border border-primary/20 hover:border-primary/40 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10";
+export const collapseGradientClasses = `${GRADIENTS.primaryCollapse} text-primary flex w-full items-center justify-between p-4 text-left text-lg hover:text-orange-400 lg:p-6 lg:text-xl`;
+
+export const selectedRowGradientClasses = `${GRADIENTS.primarySelectedRow} border-l-4 border-primary shadow-lg scale-[1.02] relative z-10 animate-float`;
+
+export const orangeInfoCardClasses = `${GRADIENTS.primaryInfoCard} rounded-2xl border border-primary/20 hover:border-primary/40 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10`;
 
 export const heroTitle = "text-center text-2xl font-semibold md:text-3xl";
 
