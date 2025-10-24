@@ -8,6 +8,8 @@ declare namespace Cloudflare {
 	interface Env {
 		BeelieversNFT: KVNamespace;
 		BeelieversD1: D1Database;
+        TRADEPORT_API_USER: string;
+        TRADEPORT_API_KEY: string;
 	}
 }
 interface Env extends Cloudflare.Env {}

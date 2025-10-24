@@ -21,6 +21,11 @@ export type Req =
 	| {
 			method: "queryRaffle";
 			params: [];
+	  }
+	| {
+			method: "checkNftOwnership";
+			// userAddress, network
+			params: [string, string];
 	  };
 
 export async function makeReq<T>(
@@ -40,3 +45,5 @@ export interface RaffleResp_ {
 }
 
 export type QueryRaffleResp = RaffleResp_ | null;
+
+export type CheckNftOwnershipResp = boolean;

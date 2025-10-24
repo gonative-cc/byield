@@ -12,7 +12,12 @@ import { toast } from "~/hooks/use-toast";
 // https://reactrouter.com/start/framework/data-loading#using-both-loaders
 export async function loader({ params, context, request }: Route.LoaderArgs): Promise<LoaderDataResp> {
 	const env = context.cloudflare.env;
-	const ctrl = new Controller(env.BeelieversNFT, env.BeelieversD1);
+	const ctrl = new Controller(
+		env.BeelieversNFT,
+		env.BeelieversD1,
+		env.TRADEPORT_API_USER,
+		env.TRADEPORT_API_KEY,
+	);
 	const url = new URL(request.url);
 	// We can try to set user address to the params
 	// Probably we can use https://reactrouter.com/start/framework/route-module#unstable_clientmiddleware
@@ -24,7 +29,12 @@ export async function loader({ params, context, request }: Route.LoaderArgs): Pr
 // This is a server action to post data to server (data mutations)
 export async function action({ request, context }: Route.ActionArgs) {
 	const env = context.cloudflare.env;
-	const ctrl = new Controller(env.BeelieversNFT, env.BeelieversD1);
+	const ctrl = new Controller(
+		env.BeelieversNFT,
+		env.BeelieversD1,
+		env.TRADEPORT_API_USER,
+		env.TRADEPORT_API_KEY,
+	);
 	return ctrl.handleJsonRPC(request);
 }
 
