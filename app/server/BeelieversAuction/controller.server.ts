@@ -3,6 +3,7 @@ import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
 
 import type { LoaderDataResp, AuctionInfo } from "./types";
 import type { QueryRaffleResp, Req, QueryUserResp } from "./jsonrpc";
+import { Network } from "./jsonrpc";
 import { defaultAuctionInfo, defaultUser, mainnetRaffleWinners } from "./defaults";
 import { checkTxOnChain, verifySignature } from "./auth.server";
 
@@ -199,7 +200,7 @@ export default class Controller {
 		};
 	}
 
-	async checkNftOwnership(userAddress: string, _network: string): Promise<boolean> {
+	async checkNftOwnership(userAddress: string, _network: Network): Promise<boolean> {
 		const beelieverCollectionId = "6496c047-dcdd-44e2-b8ca-13c27ac0478a";
 
 		try {

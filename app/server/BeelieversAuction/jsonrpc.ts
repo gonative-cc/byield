@@ -1,6 +1,12 @@
 import type { FetcherWithComponents } from "react-router";
 import type { Raffle, User } from "./types";
 
+export enum Network {
+	Testnet = "testnet",
+	Mainnet = "mainnet",
+	Localnet = "localnet",
+}
+
 // TODO: make response types
 // TODO: maybe we should extend this by adding network as the top level param?
 export type Req =
@@ -25,7 +31,7 @@ export type Req =
 	| {
 			method: "checkNftOwnership";
 			// userAddress, network
-			params: [string, string];
+			params: [string, Network];
 	  };
 
 export async function makeReq<T>(
