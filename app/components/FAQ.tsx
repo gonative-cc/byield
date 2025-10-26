@@ -15,15 +15,11 @@ interface FAQProps {
 export function FAQ({ faqs, description = "" }: FAQProps) {
 	const renderQuestion = (faq: FAQ) => {
 		return (
-			<div key={faq.id} className={`${orangeInfoCardClasses} collapse-plus collapse border`}>
+			<div key={faq.id} className={`${orangeInfoCardClasses} collapse-plus collapse`}>
 				<input type="checkbox" />
-				<div className="collapse-title text-primary text-lg font-medium">{faq.question}</div>
+				<div className="collapse-title text-lg font-medium">{faq.question}</div>
 				<div className="collapse-content">
-					{typeof faq.answer === "string" ? (
-						<p className="text-foreground">{faq.answer}</p>
-					) : (
-						faq.answer
-					)}
+					{typeof faq.answer === "string" ? <p>{faq.answer}</p> : faq.answer}
 				</div>
 			</div>
 		);
@@ -32,10 +28,12 @@ export function FAQ({ faqs, description = "" }: FAQProps) {
 	return (
 		<div className="border-primary/20 w-full max-w-5xl rounded-2xl border p-4 shadow-2xl lg:p-8">
 			<div className="mb-6 text-center">
-				<h2 className="text-primary mb-3 text-3xl font-bold">🤔 Frequently Asked Questions</h2>
-				{description && <p className="text-muted-foreground">{description}</p>}
+				<h2 className="text-primary-foreground mb-3 text-3xl font-bold">
+					🤔 Frequently Asked Questions
+				</h2>
+				{description && <p className="text-base-content/75">{description}</p>}
 			</div>
-			<div className="space-y-4">{faqs.map(renderQuestion)}</div>
+			<div className="text-base-content space-y-4">{faqs.map(renderQuestion)}</div>
 		</div>
 	);
 }

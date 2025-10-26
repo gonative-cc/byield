@@ -16,8 +16,8 @@ export function TransactionStatus({ isSuccess, txnId, handleRetry }: Transaction
 			<div className="flex flex-col items-center gap-2">
 				<Icon
 					className={classNames({
-						"text-green-500": isSuccess,
-						"text-red-500": !isSuccess,
+						"text-success": isSuccess,
+						"text-error": !isSuccess,
 					})}
 					size={30}
 				/>{" "}

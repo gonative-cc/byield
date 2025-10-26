@@ -3,6 +3,7 @@ import { useSuiClientContext } from "@mysten/dapp-kit";
 import type { SuiClient, SuiTransactionBlockResponse } from "@mysten/sui/client";
 import { ExternalLink } from "lucide-react";
 import { trimAddress } from "~/components/Wallet/walletHelper";
+import { GRADIENTS } from "~/util/tailwind";
 import { mkSuiVisionUrl, mkWalrusImageUrl } from "~/lib/suienv";
 import { useNetworkVariables } from "~/networkConfig";
 
@@ -76,10 +77,10 @@ export function NftDisplay({ nftId }: NftDisplayProps) {
 	const background = getAttributeValue(metadata.attributes, "Background");
 
 	const name = (nftType === "Mythic" ? "✨ " : "🐝 ") + nftType + ": " + (mythicName || metadata.name);
-	const nameCls = "font-bold my-2 text-base " + (nftType === "Mythic" ? "text-yellow-400" : "text-primary");
+	const nameCls = "font-bold my-2 text-base " + (nftType === "Mythic" ? "text-warning" : "text-primary");
 
 	return (
-		<div className="from-primary/5 w-full rounded-2xl bg-gradient-to-br to-yellow-400/5 p-6 md:max-w-xs md:min-w-xs">
+		<div className={`${GRADIENTS.primaryNftBg} w-full rounded-2xl p-6 md:max-w-xs md:min-w-xs`}>
 			<div className="flex flex-col items-center gap-3">
 				<p className="text-primary text-xl font-bold">Your BTCFi Beeliever</p>
 				{imageUrl ? (
@@ -103,12 +104,14 @@ export function NftDisplay({ nftId }: NftDisplayProps) {
 						/>
 					</a>
 				) : (
-					<div className="from-primary/20 border-primary/20 flex h-48 w-48 items-center justify-center rounded-2xl border-2 bg-gradient-to-br to-orange-400/20 text-6xl">
+					<div
+						className={`${GRADIENTS.primaryNft} border-primary/20 flex h-48 w-48 items-center justify-center rounded-2xl border-2 text-6xl`}
+					>
 						🐝
 					</div>
 				)}
 
-				<div className="text-muted-foreground w-full text-sm">
+				<div className="text-base-content/75 w-full text-sm">
 					<p className={nameCls}>{name}</p>
 					<p>Beeliever #{metadata.token_id}</p>
 					<p>Object ID: {trimAddress(nftId)}</p>
@@ -119,10 +122,7 @@ export function NftDisplay({ nftId }: NftDisplayProps) {
 							<p> Badges: </p>
 							<div className="my-2 flex flex-wrap justify-center gap-2">
 								{metadata.badges.map((badge, index) => (
-									<span
-										key={index}
-										className="rounded-full border border-blue-400/30 bg-blue-500/20 px-2 py-1 text-blue-400"
-									>
+									<span key={index} className="badge badge-info badge-outline">
 										{badge}
 									</span>
 								))}

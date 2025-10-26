@@ -1,6 +1,6 @@
 import { ChevronsDown, ChevronsUp } from "lucide-react";
 import { useState, type ReactNode } from "react";
-import { cn } from "~/util/tailwind";
+import { cn, collapseGradientClasses } from "~/util/tailwind";
 
 interface CollapseProps {
 	title: string | ReactNode;
@@ -20,7 +20,7 @@ export function Collapse({ title, className = "", children }: CollapseProps) {
 		>
 			<button
 				onClick={() => setShowInfo((prevState) => !prevState)}
-				className="from-primary/10 to-primary/5 hover:from-primary/20 hover:to-primary/10 text-primary flex w-full items-center justify-between bg-gradient-to-r p-4 text-left text-lg hover:text-orange-400 lg:p-6 lg:text-xl"
+				className={collapseGradientClasses}
 			>
 				{typeof title === "string" ? <span className="font-bold">{title}</span> : title}
 				<div className={`transform transition-transform duration-300 group-hover:scale-110`}>

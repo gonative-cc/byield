@@ -14,6 +14,7 @@ import { NBTCRaw } from "~/components/icons";
 import { formatSUI } from "~/lib/denoms";
 import { FAQ } from "~/components/FAQ";
 import { useCurrentAccount } from "@mysten/dapp-kit";
+import { heroTitle } from "~/util/tailwind";
 
 const FAQS = [
 	{
@@ -87,7 +88,7 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 					🐝 BTCFi Beelievers
 					<span className="text-foreground"> Mint</span>
 				</p>
-				<p className="text-muted-foreground mt-3 text-lg">
+				<p className="text-base-content/75 mt-3 text-lg">
 					➡️{" "}
 					<a
 						href="https://www.gonative.cc/beelievers"
@@ -144,11 +145,7 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 }
 
 function Header({ children }: { children: ReactNode }) {
-	return (
-		<h1 className="text-primary flex max-w-120 flex-col items-center text-2xl font-semibold md:text-3xl">
-			{children}
-		</h1>
-	);
+	return <h1 className={heroTitle + " text-primary-foreground"}>{children}</h1>;
 }
 
 function RaffleResults({ raffle }: { raffle: QueryRaffleResp }) {
@@ -157,7 +154,7 @@ function RaffleResults({ raffle }: { raffle: QueryRaffleResp }) {
 	return (
 		<>
 			<section className="mb-6 w-full">
-				<div className="text-primary mb-2 text-xl font-bold transition-colors duration-300 group-hover:text-orange-400">
+				<div className="text-primary-foreground group-hover:text-primary mb-2 text-xl font-bold transition-colors duration-300">
 					<NBTCRaw className="mr-2 inline h-[1.1em] w-auto align-middle" /> Total winnings:{" "}
 					{formatSUI(raffle.totalAmount)} nBTC
 				</div>
