@@ -39,6 +39,14 @@ To apply migrations to the local Cloudflare env:
 bun run db:migrate:local
 ```
 
+### Local env variables
+
+Copy and update env example:
+
+```sh
+cp .env.example .env
+```
+
 ## Contributing
 
 Participating in open source is often a highly collaborative experience. We’re encouraged to create in public view, and we’re incentivize to welcome contributions of all kinds from people around the world.
@@ -47,22 +55,12 @@ Check out [contributing repo](https://github.com/gonative-cc/contributig) for ou
 
 After cloning the repository, **make sure to run `make setup-hooks`.**
 
-### Development
-
 Run `bun run prepare` to install git hooks that will run on commit and code push.
 
 You will need to rerun typegen whenever you make changes to `wrangler.toml`.
 
 ```sh
 bun run cf-typegen
-```
-
-### Local env variables
-
-Copy and update env example:
-
-```sh
-cp .env.example .env
 ```
 
 ### Styling
