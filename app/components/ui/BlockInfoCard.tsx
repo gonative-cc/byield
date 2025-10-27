@@ -2,7 +2,7 @@ import { Timer, CheckCircle2, Clock } from "lucide-react";
 import { toast } from "~/hooks/use-toast";
 import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 
-export function BlockInfoCard() {
+export function BitcoinBlockInfoCard() {
 	const bitcoinConfig = useBitcoinConfig();
 
 	const blockTime = bitcoinConfig?.blockTimeSec;
