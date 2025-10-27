@@ -125,7 +125,7 @@ export function SideBar() {
 			<div
 				ref={sidebarRef}
 				className={classNames({
-					"fixed top-0 left-0 z-50 h-full border-r transition-all duration-300 ease-in-out md:static md:translate-x-0": true,
+					"bg-base-100 fixed top-0 left-0 z-50 h-full border-r transition-all duration-300 ease-in-out md:static md:translate-x-0": true,
 					"mt-6 translate-x-0 md:mt-0": isMobileOpen,
 					"-translate-x-full": !isMobileOpen,
 					"w-16": isCollapsed,
