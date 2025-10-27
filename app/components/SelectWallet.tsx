@@ -7,6 +7,7 @@ import { trimAddress } from "~/components/Wallet/walletHelper";
 import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
 import { SUIIcon } from "~/components/icons";
 import { useCurrentAccount, useAccounts, useSwitchAccount } from "@mysten/dapp-kit";
+import { CopyButton } from "./ui/CopyButton";
 
 export function SelectWallet() {
 	const { connectWallet } = useXverseConnect();
@@ -95,7 +96,9 @@ const walletBadge = (
 				))}
 			</select>
 		) : (
-			<span className="text-xs md:text-sm">{trimAddress(currentAccount)}</span>
+			<span className="flex items-center gap-2 text-xs md:text-sm">
+				{trimAddress(currentAccount)} <CopyButton text={currentAccount} />
+			</span>
 		)}
 	</div>
 );
