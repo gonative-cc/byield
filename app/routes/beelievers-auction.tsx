@@ -7,7 +7,7 @@ import type { LoaderDataResp } from "~/server/BeelieversAuction/types";
 import type { Route } from "./+types/beelievers-auction";
 import { isProductionMode } from "~/lib/appenv";
 import { toast } from "~/hooks/use-toast";
-import { pageBgClasses, cn } from "~/util/tailwind";
+import { GRADIENTS, cn } from "~/util/tailwind";
 
 // if we need to load something directly from the client (browser):
 // https://reactrouter.com/start/framework/data-loading#using-both-loaders
@@ -45,7 +45,7 @@ export default function BeelieversAuctionPage({ loaderData }: Route.ComponentPro
 	}, [disconnect, isTestnet]);
 
 	return (
-		<div className={cn(pageBgClasses(), "p-4 sm:p-6 lg:p-8")}>
+		<div className={cn(GRADIENTS.pageBg, "p-4 sm:p-6 lg:p-8")}>
 			<div className="flex justify-center">
 				<div className="animate-in fade-in-0 w-full max-w-7xl duration-700">
 					<BeelieversAuction info={loaderData.details} leaderboard={loaderData.leaderboard} />

@@ -7,6 +7,7 @@ import { SellNBTCTabContent } from "./SellNBTCTabContent";
 import { ArrowUpRight } from "lucide-react";
 import { useCurrentAccount, useDisconnectWallet, useSuiClientContext } from "@mysten/dapp-kit";
 import type { UseCoinBalanceResult } from "~/components/Wallet/SuiWallet/useBalance";
+import { heroTitle } from "~/util/tailwind";
 
 export function BuyNBTC() {
 	const { network } = useSuiClientContext();
@@ -30,9 +31,9 @@ export function BuyNBTC() {
 
 	return (
 		<div className="flex flex-col items-center gap-8 px-2 pt-2">
-			<p className="max-w-96 text-center text-2xl font-semibold md:text-3xl">
-				Native enables <span className="text-primary text-2xl md:text-3xl">BTCFi</span> in the{" "}
-				<span className="text-primary text-2xl md:text-3xl">Web3 native</span> way!
+			<p className={heroTitle + " max-w-96"}>
+				Native enables <span className="text-primary-foreground">BTCFi</span> in the{" "}
+				<span className="text-primary-foreground">Web3 native</span> way!
 			</p>
 			<div className="card w-full max-w-lg">
 				<div className="card-body flex flex-col gap-4 p-6 text-white">

@@ -21,7 +21,7 @@ export function CopyButton({ text }: CopyButtonProps) {
 	return (
 		<button onClick={handleCopy} className={"hover:bg-primary/10"}>
 			{copied ? (
-				<Check className="text-green-500" size={16} />
+				<Check className="text-success" size={16} />
 			) : (
 				<Copy size={16} className="text-primary" />
 			)}

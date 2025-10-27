@@ -15,7 +15,7 @@ export function NBTCBalance({ balance }: NBTCBalanceProps) {
 				<TrimmedNumber
 					displayType="text"
 					value={formatNBTC(balance)}
-					className="text-gray-400"
+					className="text-base-content/75"
 					readOnly
 					suffix=" nBTC"
 				/>

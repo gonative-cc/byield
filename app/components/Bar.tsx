@@ -210,7 +210,7 @@ function WalletOverviewModal() {
 				{addressInfo.length > 0 && shouldShowBitcoinWallet && (
 					<div className="mb-2">
 						<div className="mb-3 flex items-center gap-2">
-							<Bitcoin className="text-amber-500" size={20} />
+							<Bitcoin className="text-primary-foreground" size={20} />
 							<h4 className="text-base font-semibold">Bitcoin Wallet</h4>
 						</div>
 

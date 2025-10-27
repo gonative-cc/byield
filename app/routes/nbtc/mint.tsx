@@ -13,6 +13,7 @@ import { FAQ } from "~/components/FAQ";
 import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
 import { BitcoinNetworkType } from "sats-connect";
 import { useCurrentAccount } from "@mysten/dapp-kit";
+import { heroTitle } from "~/util/tailwind";
 
 const FAQS = [
 	{
@@ -167,8 +168,8 @@ export default function Mint() {
 
 	return (
 		<div className="mx-auto max-w-7xl space-y-6 px-4 py-4">
-			<h1 className="text-center text-4xl font-bold">
-				Mint<span className="text-primary"> nBTC</span>
+			<h1 className={heroTitle + " text-center"}>
+				Mint<span className="text-primary-foreground"> nBTC</span>
 			</h1>
 
 			{/* Main Content Grid */}
