@@ -32,7 +32,7 @@ function Percentage({ onChange }: { onChange: (value: number) => void }) {
 					type="button"
 					key={v}
 					onClick={() => onChange(v)}
-					className="btn btn-sm btn-primary btn-outline"
+					className="btn btn-sm btn-secondary btn-outline"
 				>
 					{v}%
 				</button>

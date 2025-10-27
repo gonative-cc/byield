@@ -195,7 +195,7 @@ export default function Mint() {
 								<button
 									onClick={fetchMintTxs}
 									disabled={isLoading}
-									className="btn btn-sm btn-accent"
+									className="btn btn-sm btn-ghost"
 									title="Refresh transactions"
 								>
 									<RefreshCw size={16} className={isLoading ? "animate-spin" : ""} />

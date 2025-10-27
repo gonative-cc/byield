@@ -239,10 +239,7 @@ function WalletOverviewModal() {
 								</div>
 							)}
 
-							<button
-								onClick={disconnectWallet}
-								className="btn btn-accent btn-sm text-foreground mt-2 w-auto"
-							>
+							<button onClick={disconnectWallet} className="btn btn-error btn-sm mt-2 w-auto">
 								Disconnect BTC Wallet
 							</button>
 						</div>
@@ -294,7 +291,7 @@ function WalletOverviewModal() {
 
 							<button
 								onClick={handleSuiDisconnect}
-								className="btn btn-accent btn-sm text-foreground mt-2 w-auto"
+								className="btn btn-error btn-sm mt-2 w-auto"
 							>
 								Disconnect Sui Wallet
 							</button>

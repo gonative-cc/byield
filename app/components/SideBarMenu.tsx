@@ -183,7 +183,7 @@ function ParentItem(item: MenuItem, currentPath: string, collapsed: boolean) {
 		<div
 			className={classNames(itemCls, {
 				"bg-primary": currentPath === item.link,
-				"hover:bg-accent": currentPath !== item.link,
+				"hover:bg-neutral": currentPath !== item.link,
 				"cursor-default": item.link === "",
 			})}
 		>
@@ -211,7 +211,7 @@ function SubItems(subItems: MenuSubItem[], currentPath: string) {
 					to={subItem.link}
 					className={classNames(itemCls, "text-sm", {
 						"bg-primary": currentPath === subItem.link,
-						"hover:bg-accent": currentPath !== subItem.link,
+						"hover:bg-neutral": currentPath !== subItem.link,
 					})}
 				>
 					<span>{subItem.title}</span>

@@ -44,7 +44,7 @@ export function SelectWallet() {
 		shouldShowBitcoinWallet &&
 		(isBitcoinConnected ? (
 			walletBadge(
-				<Bitcoin size={20} className="text-primary-foreground" />,
+				<Bitcoin size={20} />,
 				bitcoinAddresses,
 				currentAddress?.address || "",
 				handleBitcoinAddressChange,
@@ -77,7 +77,7 @@ export function SelectWallet() {
 	);
 }
 
-const walletBadgeStyle = "flex items-center gap-1.5 rounded-full border bg-accent px-3 py-1.5 text-sm";
+const walletBadgeStyle = "gap-1 px-2 btn btn-sm btn-primary btn-outline";
 
 const walletBadge = (
 	badge: React.ReactNode,
@@ -96,7 +96,7 @@ const walletBadge = (
 				))}
 			</select>
 		) : (
-			<span className="flex items-center gap-2 text-xs md:text-sm">
+			<span className="text-xs md:text-sm">
 				{trimAddress(currentAccount)} <CopyButton text={currentAccount} />
 			</span>
 		)}

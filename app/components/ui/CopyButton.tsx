@@ -12,7 +12,7 @@ export function CopyButton({ text }: CopyButtonProps) {
 		try {
 			await navigator.clipboard.writeText(text);
 			setCopied(true);
-			setTimeout(() => setCopied(false), 2000);
+			setTimeout(() => setCopied(false), 2500);
 		} catch (err) {
 			console.error("Failed to copy text: ", err);
 		}
@@ -20,11 +20,7 @@ export function CopyButton({ text }: CopyButtonProps) {
 
 	return (
 		<button onClick={handleCopy} className={"hover:bg-primary/10"}>
-			{copied ? (
-				<Check className="text-success" size={16} />
-			) : (
-				<Copy size={16} className="text-primary" />
-			)}
+			{copied ? <Check className="text-success" size={16} /> : <Copy size={16} />}
 		</button>
 	);
 }

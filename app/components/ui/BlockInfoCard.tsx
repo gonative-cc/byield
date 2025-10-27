@@ -29,7 +29,7 @@ export function BitcoinBlockInfoCard() {
 							<Timer size={16} className="text-primary" />
 							Block Time
 						</div>
-						<span className="badge badge-accent">{blockTime / 60} min</span>
+						<span className="badge badge-info">{blockTime / 60} min</span>
 					</div>
 
 					<div className="flex items-center justify-between">
@@ -37,7 +37,7 @@ export function BitcoinBlockInfoCard() {
 							<CheckCircle2 size={16} className="text-primary" />
 							Confirmations
 						</div>
-						<span className="badge badge-accent">{confirmationDepth}</span>
+						<span className="badge badge-info">{confirmationDepth}</span>
 					</div>
 
 					<div className="divider my-0"></div>
@@ -47,7 +47,7 @@ export function BitcoinBlockInfoCard() {
 							<Clock size={16} className="text-primary" />
 							Est. Time
 						</div>
-						<span className="badge badge-accent">~{estimatedTime} min</span>
+						<span className="badge badge-info">~{estimatedTime} min</span>
 					</div>
 				</div>
 			</div>
