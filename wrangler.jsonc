@@ -56,6 +56,10 @@
 	/**
 	 * Note: Use secrets to store sensitive data.
 	 * https://developers.cloudflare.com/workers/configuration/secrets/
+	 *
+	 * Required secrets (set via: wrangler secret put SECRET_NAME):
+	 * - TRADEPORT_API_USER: TradePort API username
+	 * - TRADEPORT_API_KEY: TradePort API key
 	 */
 
 	/**
