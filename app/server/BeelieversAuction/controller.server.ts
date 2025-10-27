@@ -3,6 +3,7 @@ import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
 
 import type { LoaderDataResp, AuctionInfo } from "./types";
 import type { QueryRaffleResp, Req, QueryUserResp } from "./jsonrpc";
+import { Network } from "./jsonrpc";
 import { defaultAuctionInfo, defaultUser, mainnetRaffleWinners } from "./defaults";
 import { checkTxOnChain, verifySignature } from "./auth.server";
 
@@ -32,7 +33,15 @@ export default class Controller {
 	// hardcoded based on the mainnet result
 	finalized_clearing_price = 5260500000;
 
-	constructor(kv: KVNamespace, d1: D1Database) {
+	tradeportApiUser: string;
+	tradeportApiKey: string;
+
+	constructor(
+		kv: KVNamespace,
+		d1: D1Database,
+		tradeportApiUser: string,
+		tradeportApiKey: string,
+	) {
 		this.isProduction = isProductionMode();
 		if (this.isProduction) {
 			this.suiNet = "mainnet";
@@ -50,6 +59,8 @@ export default class Controller {
 		}
 
 		this.kv = kv;
+		this.tradeportApiUser = tradeportApiUser;
+		this.tradeportApiKey = tradeportApiKey;
 
 		const ai = defaultAuctionInfo(this.isProduction);
 		this.auctionInfo = ai;
@@ -111,6 +122,10 @@ export default class Controller {
 			}
 			case "queryRaffle": {
 				return this.getRaffle();
+			}
+			case "checkNftOwnership": {
+				const [userAddress, network] = reqData.params;
+				return this.checkNftOwnership(userAddress, network);
 			}
 			default:
 				return httpresp.notFound("Unknown method");
@@ -183,5 +198,55 @@ export default class Controller {
 			winners: mainnetRaffleWinners(),
 			totalAmount: 93650950,
 		};
+	}
+
+	async checkNftOwnership(userAddress: string, _network: Network): Promise<boolean> {
+		const beelieverCollectionId = "6496c047-dcdd-44e2-b8ca-13c27ac0478a";
+
+		try {
+			const query = `
+				query CheckBeelieverOwnership($owner: String!, $collectionId: uuid!) {
+					sui {
+						nfts(
+							where: { 
+								owner: { _eq: $owner }
+								collection_id: { _eq: $collectionId }
+								burned: { _eq: false }
+							}
+							limit: 1
+						) {
+							id
+						}
+					}
+				}
+			`;
+
+			const response = await fetch("https://api.indexer.xyz/graphql", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					"x-api-user": this.tradeportApiUser,
+					"x-api-key": this.tradeportApiKey,
+				},
+				body: JSON.stringify({
+					query,
+					variables: { owner: userAddress, collectionId: beelieverCollectionId },
+				}),
+			});
+
+			if (!response.ok) return false;
+
+			const result = (await response.json()) as {
+				data?: { sui?: { nfts?: Array<{ id: string }> } };
+				errors?: { message: string }[];
+			};
+
+			if (result.errors) return false;
+
+			return (result.data?.sui?.nfts || []).length > 0;
+		} catch (error) {
+			logError({ msg: "Failed to check NFT ownership", method: "checkNftOwnership" }, error);
+			return false;
+		}
 	}
 }
