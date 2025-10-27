@@ -57,6 +57,14 @@ You will need to rerun typegen whenever you make changes to `wrangler.toml`.
 bun run cf-typegen
 ```
 
+### Local env variables
+
+Copy and update env example:
+
+```sh
+cp .env.example .env
+```
+
 ### Styling
 
 We are using [Tailwind CSS](https://tailwindcss.com/) and [DaisyUI](https://daisyui.com):
