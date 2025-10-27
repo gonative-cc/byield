@@ -4,16 +4,24 @@
 import type { BtcIndexerRpc } from "./app/server/nbtc/btc-indexer-rpc.types";
 
 declare namespace Cloudflare {
-	interface GlobalProps {
-		mainModule: typeof import("./workers/app");
-	}
-	interface Env {
-		BeelieversNFT: KVNamespace;
-		BeelieversD1: D1Database;
-		BTCINDEXER: BtcIndexerRpc;
-	}
+    interface GlobalProps {
+        mainModule: typeof import("./workers/app");
+    }
+    interface Env {
+        BeelieversNFT: KVNamespace;
+        TRADEPORT_API_USER: string;
+        TRADEPORT_API_KEY: string;
+        BeelieversD1: D1Database;
+        BTCINDEXER: BtcIndexerRpc;
+    }
 }
-interface Env extends Cloudflare.Env {}
+interface Env extends Cloudflare.Env { }
+type StringifyValues<EnvType extends Record<string, unknown>> = {
+    [Binding in keyof EnvType]: EnvType[Binding] extends string ? EnvType[Binding] : string;
+};
+declare namespace NodeJS {
+    interface ProcessEnv extends StringifyValues<Pick<Cloudflare.Env, "TRADEPORT_API_USER" | "TRADEPORT_API_KEY">> { }
+}
 
 // Begin runtime types
 /*! *****************************************************************************
