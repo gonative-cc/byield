@@ -113,7 +113,7 @@ export default class Controller {
 	async handleJsonRPC(r: Request) {
 		let reqData: Req;
 		try {
-			reqData = (await r.json()) as Req;
+			reqData = await r.json<Req>();
 		} catch (_err) {
 			console.error({ msg: "Expecting JSON Content-Type and JSON body", error: _err });
 			return new Response("Expecting JSON Content-Type and JSON body", {
