@@ -15,6 +15,8 @@ import { makeReq } from "~/server/nbtc/jsonrpc";
 import { useFetcher } from "react-router";
 import type { UTXO } from "~/server/nbtc/types";
 import { useCurrentAccount } from "@mysten/dapp-kit";
+import { NBTCBalance } from "~/components/NBTCBalance";
+import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 
 function formatSuiAddress(suiAddress: string) {
 	if (!suiAddress.toLowerCase().startsWith("0x")) {
@@ -60,6 +62,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 	const currentAccount = useCurrentAccount();
 	const suiAddr = currentAccount?.address || null;
 	const cfg = useBitcoinConfig();
+	const nbtcBalanceRes = useCoinBalance("NBTC");
 
 	const utxosRPC = useFetcher<UTXO[]>();
 	const postNbtcTxRPC = useFetcher();
@@ -151,6 +154,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 				<div className="card">
 					<div className="card-body flex flex-col space-y-4">
 						<h2 className="text-center text-lg">Deposit BTC and mint nBTC on Sui</h2>
+						{suiAddr && <NBTCBalance balance={nbtcBalanceRes.balance} />}
 						<FormNumericInput
 							required
 							name="numberOfBTC"
