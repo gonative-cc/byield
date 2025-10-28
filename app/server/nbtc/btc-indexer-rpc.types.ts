@@ -1,3 +1,4 @@
+// TODO: use types from btcindexer, rahter than copying it
 export interface TxStatusResp {
 	btc_tx_id: string;
 	amount_sats: number;

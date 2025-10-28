@@ -1,5 +1,4 @@
 import { isValidSuiAddress } from "@mysten/sui/utils";
-import type { MintTransaction, MintingTxStatus } from "./types";
 import type { QueryMintTxResp, Req } from "./jsonrpc";
 import type { BitcoinNetworkType } from "sats-connect";
 import { mustGetBitcoinConfig } from "~/hooks/useBitcoinConfig";
@@ -8,34 +7,19 @@ import {
 	serverError,
 	notFound,
 	handleNonSuccessResp as handleFailResp,
+	jsonHeader,
 } from "../http-resp";
 import { protectedBitcoinRPC } from "./btc-proxy.server";
-import type { TxStatusResp, BtcIndexerRpc } from "./btc-indexer-rpc.types";
+import type { BtcIndexerRpc } from "./btc-indexer-rpc.types";
+import { convertTxStatusToMintTx } from "./convert";
 
 export default class Controller {
 	btcRPCUrl: string | null = null;
-	indexerRpc: BtcIndexerRpc | null = null;
+	btcindexer: BtcIndexerRpc | null = null;
 
 	constructor(network: BitcoinNetworkType, indexerRpc?: BtcIndexerRpc) {
 		this.handleNetwork(network);
-		this.indexerRpc = indexerRpc || null;
-	}
-
-	private convertTxStatusToMintTx(tx: TxStatusResp): MintTransaction {
-		return {
-			bitcoinTxId: tx.btc_tx_id,
-			amountInSatoshi: tx.amount_sats,
-			status: tx.status as MintingTxStatus,
-			suiAddress: tx.sui_recipient,
-			suiTxId: tx.sui_tx_id || undefined,
-			timestamp: new Date(tx.created_at).getTime(),
-			numberOfConfirmation: tx.confirmations,
-			operationStartDate: new Date(tx.created_at).getTime(),
-			bitcoinExplorerUrl: tx.bitcoin_explorer_url,
-			suiExplorerUrl: tx.sui_explorer_url || undefined,
-			fees: tx.fees || 1000,
-			errorMessage: tx.error_message || undefined,
-		};
+		this.btcindexer = indexerRpc || null;
 	}
 
 	private async getMintTxs(suiAddr: string): Promise<QueryMintTxResp | Response> {
@@ -43,14 +27,12 @@ export default class Controller {
 		if (!isValidSuiAddress(suiAddr)) {
 			return badRequest();
 		}
-		if (!this.indexerRpc) {
+		if (!this.btcindexer) {
 			return serverError(method, new Error("Indexer RPC not configured"));
 		}
 		try {
-			const txStatuses = await this.indexerRpc.statusBySuiAddress(suiAddr);
-			const mintTxs: MintTransaction[] = txStatuses.map((tx) =>
-				this.convertTxStatusToMintTx(tx),
-			);
+			const txStatuses = await this.btcindexer.statusBySuiAddress(suiAddr);
+			const mintTxs = txStatuses.map(convertTxStatusToMintTx);
 			return mintTxs;
 		} catch (error) {
 			return serverError(method, error);
@@ -107,7 +89,7 @@ export default class Controller {
 
 	private async postNbtcTx(txId: string) {
 		const method = "nbtc:postNbtcTx";
-		if (!this.indexerRpc) {
+		if (!this.btcindexer) {
 			return serverError(method, new Error("Indexer RPC not configured"));
 		}
 		try {
@@ -118,10 +100,10 @@ export default class Controller {
 			if (!txHex) {
 				throw new Error(`Error fetching tx hex: ${txId}`);
 			}
-			const result = await this.indexerRpc.putNbtcTx(txHex);
+			const result = await this.btcindexer.putNbtcTx(txHex);
 			return new Response(JSON.stringify(result), {
 				status: 200,
-				headers: { "Content-Type": "application/json" },
+				headers: jsonHeader,
 			});
 		} catch (error) {
 			return serverError(method, error);

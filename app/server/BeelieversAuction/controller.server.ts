@@ -1,6 +1,5 @@
 import { isValidSuiAddress } from "@mysten/sui/utils";
 import { getFullnodeUrl, SuiClient } from "@mysten/sui/client";
-import type { Env } from "~/../../worker-configuration";
 
 import type { LoaderDataResp, AuctionInfo } from "./types";
 import type { QueryRaffleResp, Req, QueryUserResp } from "./jsonrpc";
@@ -19,7 +18,7 @@ import { logError } from "~/lib/log";
 const maxTxIdSize = 44;
 
 export default class Controller {
-	kv: Env["BeelieversNFT"];
+	kv: KVNamespace;
 	kvKeyTxPrefix = "tx_";
 	kvKeyTxPrefixNotAuthorized = "txNA_";
 
@@ -38,8 +37,8 @@ export default class Controller {
 	tradeportApiKey: string;
 
 	constructor(
-		kv: Env["BeelieversNFT"],
-		d1: Env["BeelieversD1"],
+		kv: KVNamespace,
+		d1: D1Database,
 		tradeportApiUser: string,
 		tradeportApiKey: string,
 	) {
@@ -102,7 +101,7 @@ export default class Controller {
 	async handleJsonRPC(r: Request) {
 		let reqData: Req;
 		try {
-			reqData = (await r.json()) as Req;
+			reqData = await r.json<Req>();
 		} catch (_err) {
 			logError({ msg: "handle RPC", method: r.method }, _err);
 			return new Response("Expecting JSON Content-Type and JSON body", {
