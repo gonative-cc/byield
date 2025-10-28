@@ -1,6 +1,8 @@
 import { Info, CheckCircle, XCircle } from "lucide-react";
+
 import { type MintTransaction, MintingStatus } from "~/server/nbtc/types";
 import { AnimatedHourglass } from "~/components/ui/AnimatedHourglass";
+import { Tooltip } from "~/components/ui/tooltip";
 import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import { NumericFormat } from "react-number-format";
 import { formatBTC } from "~/lib/denoms";
@@ -236,15 +238,7 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 							[{formatTimeRemaining(estimatedTimeRemaining())}]
 						</span>
 					)}
-				</div>
-
-				<div className="alert">
-					<Info size={16} className="flex-shrink-0" />
-					<span className="text-xs">
-						Bitcoin requires confirmations to ensure that a transaction is final and irreversible,
-						preventing double-spending. Confirmation is a Bitcoin Block minted after that
-						transaction. 1 bitcoin block takes about {blockTime / 60} minutes.
-					</span>
+					<ConfirmationsTooltip />
 				</div>
 
 				<div className="flex items-center gap-2 text-sm">
@@ -277,5 +271,13 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 				{isFailed && <FailedTransactionAlert transaction={transaction} />}
 			</div>
 		</div>
+	);
+}
+
+function ConfirmationsTooltip() {
+	return (
+		<Tooltip tooltip="Bitcoin requires confirmations to ensure that a transaction is final and irreversible, preventing double-spending. Confirmation is a Bitcoin Block minted after that transaction. 1 bitcoin block takes about {blockTime / 60} minutes.">
+			<Info size="1em" className="text-primary-foreground hover:text-primary ml-1 transition-colors" />
+		</Tooltip>
 	);
 }
