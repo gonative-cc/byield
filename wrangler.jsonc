@@ -51,12 +51,10 @@
 	/**
 	 * Environment Variables
 	 * https://developers.cloudflare.com/workers/configuration/environment-variables/
+	 * To add secrets use:
 	 * https://developers.cloudflare.com/workers/configuration/secrets/
 	 */
-	"vars": {
-		"TRADEPORT_API_USER": "",
-		"TRADEPORT_API_KEY": "",
-	},
+	// "vars": { }
 
 	/**
 	 * Service Bindings (communicate between multiple Workers)
