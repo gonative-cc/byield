@@ -24,6 +24,12 @@
 		// wrangler (rather than vite as in case of wrangler.jsonc)
 		"directory": "./build/client/",
 	},
+
+	"vars": {
+		"TRADEPORT_API_USER": "",
+		"TRADEPORT_API_KEY": "",
+	},
+
 	"kv_namespaces": [
 		{
 			"binding": "BeelieversNFT",

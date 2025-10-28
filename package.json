@@ -9,7 +9,7 @@
 		"cf-typegen": "wrangler types",
 		"build": "react-router build",
 		"build:dev": "react-router build --mode dev",
-		"deploy": "rm -rf build && bun run build --mode dev && wrangler deploy",
+		"deploy": "rm -rf build && bun run build --mode dev && wrangler deploy --env=\"\"",
 		"deploy:prod:legacy": "rm -rf build && bun run build && wrangler deploy -c ./wrangler-prod.jsonc",
 		"deploy:prod": "CLOUDFLARE_ENV=prod bun run build && wrangler deploy",
 		"deploy:prod:ver": "bun run build && wrangler versions upload -c ./wrangler-prod.jsonc",
@@ -87,7 +87,7 @@
 		"typescript-eslint": "^8.46.2",
 		"vite": "^6.4.1",
 		"vite-tsconfig-paths": "^5.1.4",
-		"vitest": "^3.2.4",
+		"vitest": "^4.0.4",
 		"wrangler": "^4.45.0"
 	},
 	"lint-staged": {

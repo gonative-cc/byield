@@ -25,6 +25,7 @@ describe("authentication testcases", () => {
 			},
 		]);
 
+		// call move call
 		tx.moveCall({
 			target: "0x02::address::to_bytes",
 			arguments: [tx.pure.address(keypair.toSuiAddress())],
