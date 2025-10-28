@@ -3,10 +3,12 @@ import { useState } from "react";
 
 interface CopyButtonProps {
 	text: string;
+	size?: number | string;
 }
 
-export function CopyButton({ text }: CopyButtonProps) {
+export function CopyButton({ text, size }: CopyButtonProps) {
 	const [copied, setCopied] = useState(false);
+	const sizeDef = size || "1em";
 
 	const handleCopy = async () => {
 		try {
@@ -20,7 +22,7 @@ export function CopyButton({ text }: CopyButtonProps) {
 
 	return (
 		<button onClick={handleCopy} className={"hover:bg-primary/10"}>
-			{copied ? <Check className="text-success" size={16} /> : <Copy size={16} />}
+			{copied ? <Check className="text-success" size={sizeDef} /> : <Copy size={sizeDef} />}
 		</button>
 	);
 }
