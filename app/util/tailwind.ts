@@ -70,7 +70,7 @@ export function alertPrimaryClasses() {
 	return "alert bg-primary border-primary";
 }
 
-export const collapseGradientClasses = `${GRADIENTS.primaryCollapse} text-primary flex w-full items-center justify-between p-4 text-left text-lg hover:text-orange-400 lg:p-6 lg:text-xl`;
+export const collapseGradientClasses = `${GRADIENTS.primaryCollapse} text-primary-foreground flex w-full items-center justify-between p-4 text-left text-lg hover:text-primary lg:p-6 lg:text-xl`;
 
 export const selectedRowGradientClasses = `${GRADIENTS.primarySelectedRow} border-l-4 border-primary shadow-lg scale-[1.02] relative z-10 animate-float`;
 

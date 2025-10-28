@@ -44,7 +44,7 @@ export function BeelieversBadge() {
 	const ownsNft = fetcher.data !== undefined ? fetcher.data : cachedResult;
 
 	return ownsNft ? (
-		<div className="badge badge-primary badge-sm gap-1">
+		<div className="badge badge-accent">
 			<img src="/assets/ui-icons/beelievers-badge2.svg" alt="Beeliever" className="h-4 w-4" />
 			Beeliever
 		</div>
