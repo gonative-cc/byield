@@ -8,7 +8,7 @@ import Controller from "~/server/nbtc/controller.server";
 import { useFetcher } from "react-router";
 import { makeReq, type QueryMintTxResp } from "~/server/nbtc/jsonrpc";
 import { useEffect, useRef, useCallback, useMemo } from "react";
-import { BlockInfoCard } from "~/components/ui/BlockInfoCard";
+import { BitcoinBlockInfoCard } from "~/components/ui/BlockInfoCard";
 import { FAQ } from "~/components/FAQ";
 import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
 import { BitcoinNetworkType } from "sats-connect";
@@ -213,7 +213,7 @@ export default function Mint() {
 
 				{/* Right Column - Info & Instructions */}
 				<div className="space-y-4">
-					<BlockInfoCard />
+					<BitcoinBlockInfoCard />
 
 					<div className="card">
 						<div className="card-body">
