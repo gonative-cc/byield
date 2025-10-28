@@ -50,17 +50,11 @@
 
 	/**
 	 * Environment Variables
-	 * https://developers.cloudflare.com/workers/wrangler/configuration/#environment-variables
-	 */
-	// "vars": { "AUCTION_PACKAGE_ID": "0x12345", },
-	/**
-	 * Note: Use secrets to store sensitive data.
+	 * https://developers.cloudflare.com/workers/configuration/environment-variables/
+	 * To add secrets use:
 	 * https://developers.cloudflare.com/workers/configuration/secrets/
-	 *
-	 * Required secrets (set via: wrangler secret put SECRET_NAME):
-	 * - TRADEPORT_API_USER: TradePort API username
-	 * - TRADEPORT_API_KEY: TradePort API key
 	 */
+	// "vars": { }
 
 	/**
 	 * Service Bindings (communicate between multiple Workers)
