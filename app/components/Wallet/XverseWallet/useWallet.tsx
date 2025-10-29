@@ -92,13 +92,13 @@ export const useXverseWallet = () => {
 	useEffect(() => {
 		async function getWalletStatus() {
 			if (isBitcoinConnected) {
-				Promise.all([getAddresses(), getBalance(), getNetworkStatus()]);
+				await Promise.all([getAddresses(), getBalance(), getNetworkStatus()]);
 			} else {
 				resetWalletState();
 			}
 		}
 		getWalletStatus();
-	}, [getAddresses, getBalance, getNetworkStatus, isBitcoinConnected, resetWalletState]);
+	}, [getAddresses, getBalance, getNetworkStatus, isBitcoinConnected, resetWalletState, network]);
 
 	const disconnectWallet = useCallback(async () => {
 		try {
