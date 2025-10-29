@@ -1,6 +1,8 @@
 import { Info, CheckCircle, XCircle } from "lucide-react";
+
 import { type MintTransaction, MintingStatus } from "~/server/nbtc/types";
 import { AnimatedHourglass } from "~/components/ui/AnimatedHourglass";
+import { Tooltip } from "~/components/ui/tooltip";
 import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import { NumericFormat } from "react-number-format";
 import { formatBTC } from "~/lib/denoms";
@@ -14,7 +16,7 @@ function PostConfirmationFailureAlert() {
 	return (
 		<div className={`${infoBoxClasses()} space-y-3`}>
 			<div className="flex items-start gap-3">
-				<XCircle size={16} className="text-primary mt-0.5 flex-shrink-0" />
+				<XCircle size={16} className="text-primary mt-0.5 shrink-0" />
 				<div className="flex-1 space-y-3">
 					<div className="text-primary font-medium">
 						Transaction Failed - Manual Resolution Required
@@ -71,7 +73,7 @@ function SimpleErrorAlert({ title, message }: { title: string; message: string }
 	return (
 		<div className={infoBoxClasses()}>
 			<div className="flex items-start gap-3">
-				<XCircle size={16} className="text-primary mt-0.5 flex-shrink-0" />
+				<XCircle size={16} className="text-primary mt-0.5 shrink-0" />
 				<div className="space-y-3">
 					<div>
 						<div className="text-primary mb-1 font-medium">{title}</div>
@@ -193,9 +195,9 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 
 				<div className="flex items-center gap-2 text-sm">
 					{isFailed && transaction.numberOfConfirmation === 0 ? (
-						<XCircle size={16} className="text-error flex-shrink-0" />
+						<XCircle size={16} className="text-error shrink-0" />
 					) : isBroadcasted ? (
-						<CheckCircle size={16} className="text-success flex-shrink-0" />
+						<CheckCircle size={16} className="text-success shrink-0" />
 					) : (
 						<AnimatedHourglass size="md" />
 					)}
@@ -220,7 +222,7 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 
 				<div className="flex items-center gap-2 text-sm">
 					{isFailed && transaction.numberOfConfirmation === 0 ? null : isConfirmed ? (
-						<CheckCircle size={16} className="text-success flex-shrink-0" />
+						<CheckCircle size={16} className="text-success shrink-0" />
 					) : transaction.numberOfConfirmation > 0 ? (
 						<AnimatedHourglass size="md" />
 					) : null}
@@ -236,22 +238,14 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 							[{formatTimeRemaining(estimatedTimeRemaining())}]
 						</span>
 					)}
-				</div>
-
-				<div className="alert">
-					<Info size={16} className="flex-shrink-0" />
-					<span className="text-xs">
-						Bitcoin requires confirmations to ensure that a transaction is final and irreversible,
-						preventing double-spending. Confirmation is a Bitcoin Block minted after that
-						transaction. 1 bitcoin block takes about {blockTime / 60} minutes.
-					</span>
+					<ConfirmationsTooltip blockTime={blockTime} />
 				</div>
 
 				<div className="flex items-center gap-2 text-sm">
 					{isMinted ? (
-						<CheckCircle size={16} className="text-success flex-shrink-0" />
+						<CheckCircle size={16} className="text-success shrink-0" />
 					) : isFailed ? (
-						<XCircle size={16} className="text-error flex-shrink-0" />
+						<XCircle size={16} className="text-error shrink-0" />
 					) : isConfirmed ? (
 						<AnimatedHourglass size="md" />
 					) : null}
@@ -277,5 +271,15 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 				{isFailed && <FailedTransactionAlert transaction={transaction} />}
 			</div>
 		</div>
+	);
+}
+
+function ConfirmationsTooltip({ blockTime }: { blockTime: number }) {
+	return (
+		<Tooltip
+			tooltip={`Bitcoin requires confirmations to ensure that a transaction is final and irreversible, preventing double-spending. Confirmation is a Bitcoin Block minted after that transaction. 1 bitcoin block takes about ${blockTime / 60} minutes.`}
+		>
+			<Info size="1em" className="text-primary-foreground hover:text-primary ml-1 transition-colors" />
+		</Tooltip>
 	);
 }
