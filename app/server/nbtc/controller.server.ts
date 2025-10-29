@@ -36,15 +36,21 @@ export default class Controller {
 		};
 	}
 
-	private async getMintTxs(suiAddr: string): Promise<QueryMintTxResp | Response> {
+	private async getMintTxs(address: string): Promise<QueryMintTxResp | Response> {
 		const method = "nbtc:getMintTxs";
-		if (!isValidSuiAddress(suiAddr)) {
+		const isSuiAddr = isValidSuiAddress(address);
+
+		if (!isSuiAddr && !address) {
 			return badRequest();
 		}
-		const url = this.indexerBaseUrl + `/nbtc?sui_recipient=${suiAddr}`;
+
+		const url = isSuiAddr
+			? `${this.indexerBaseUrl}/nbtc?sui_recipient=${address}`
+			: `${this.indexerBaseUrl}/bitcoin/deposits?sender=${address}`;
+
 		try {
 			const r = await fetch(url);
-			if (!r.ok) return handleFailResp(method, "can't fetch mint txs by sui address", r);
+			if (!r.ok) return handleFailResp(method, "can't fetch mint txs by address", r);
 			const data: IndexerTransaction[] = await r.json();
 			const mintTxs: MintTransaction[] = data.map((tx) => this.convertIndexerTransaction(tx));
 			return mintTxs;
