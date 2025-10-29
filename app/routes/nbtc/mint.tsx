@@ -111,7 +111,7 @@ const validNetworks: BitcoinNetworkType[] = [
 ];
 
 // This is a server mint to post data to server (data mutations)
-export async function action({ request }: Route.ActionArgs) {
+export async function action({ request, context }: Route.ActionArgs) {
 	const reqData = await request.clone().json();
 	const network = (reqData as { params: [BitcoinNetworkType] }).params[0];
 
@@ -119,7 +119,8 @@ export async function action({ request }: Route.ActionArgs) {
 		throw new Error("Invalid network type");
 	}
 
-	const ctrl = new Controller(network);
+	const env = context.cloudflare.env;
+	const ctrl = new Controller(network, env.BTCINDEXER);
 	return ctrl.handleJsonRPC(request);
 }
 

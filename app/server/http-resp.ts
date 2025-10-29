@@ -1,5 +1,7 @@
 import { logError, logHttpError } from "~/lib/log";
 
+export const jsonHeader = { "Content-Type": "application/json" };
+
 export function badRequest(msg: string = "Bad Request"): Response {
 	return new Response(msg, { status: 400 });
 }
