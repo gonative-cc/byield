@@ -1,6 +1,5 @@
 import type { AppLoadContext } from "react-router";
 import { createRequestHandler } from "react-router";
-import type { Env } from "../worker-configuration";
 
 declare module "react-router" {
 	export interface AppLoadContext {
