@@ -124,24 +124,28 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function Mint() {
-	const { network } = useXverseWallet();
+	const { network, currentAddress } = useXverseWallet();
+	const btcAddr = currentAddress?.address || null;
 	const currentAccount = useCurrentAccount();
 	const suiAddr = currentAccount?.address || null;
-	const mintTxFetcher = useFetcher<QueryMintTxResp>({ key: suiAddr || undefined });
-	const prevSuiAddrRef = useRef<string | null>(null);
+
+	const activeAddr = suiAddr || btcAddr;
+	const mintTxFetcher = useFetcher<QueryMintTxResp>({ key: activeAddr || undefined });
+	const prevAddrRef = useRef<string | null>(null);
 	const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
 	const mintTxs = useMemo(() => mintTxFetcher.data || [], [mintTxFetcher.data]);
 	const isLoading = mintTxFetcher.state !== "idle";
-	const hasTxFetcherError = mintTxFetcher.state === "idle" && mintTxFetcher.data === undefined && suiAddr;
+	const hasTxFetcherError =
+		mintTxFetcher.state === "idle" && mintTxFetcher.data === undefined && activeAddr;
 	const txFetcherError = hasTxFetcherError ? "Failed to load transactions" : null;
 
 	// Function to fetch mint transactions
 	const fetchMintTxs = useCallback(() => {
-		if (suiAddr) {
-			makeReq<QueryMintTxResp>(mintTxFetcher, { method: "queryMintTx", params: [network, suiAddr] });
+		if (activeAddr) {
+			makeReq<QueryMintTxResp>(mintTxFetcher, { method: "queryMintTx", params: [network, activeAddr] });
 		}
-	}, [suiAddr, mintTxFetcher, network]);
+	}, [activeAddr, mintTxFetcher, network]);
 
 	// Handle address changes, interval setup, and initial fetch
 	useEffect(() => {
@@ -150,8 +154,8 @@ export default function Mint() {
 		}
 
 		// Handle address change or initial fetch
-		if (prevSuiAddrRef.current !== suiAddr || (mintTxFetcher.state === "idle" && !mintTxs)) {
-			prevSuiAddrRef.current = suiAddr;
+		if (prevAddrRef.current !== activeAddr || (mintTxFetcher.state === "idle" && !mintTxs)) {
+			prevAddrRef.current = activeAddr;
 			fetchMintTxs();
 		}
 
@@ -163,7 +167,7 @@ export default function Mint() {
 				clearInterval(intervalRef.current);
 			}
 		};
-	}, [suiAddr, fetchMintTxs, mintTxFetcher.state, mintTxs, mintTxFetcher]);
+	}, [activeAddr, fetchMintTxs, mintTxFetcher.state, mintTxs, mintTxFetcher]);
 
 	return (
 		<div className="mx-auto max-w-7xl space-y-6 px-4 py-4">
@@ -178,7 +182,7 @@ export default function Mint() {
 					<MintBTC fetchMintTxs={fetchMintTxs} />
 
 					{/* Transaction Table Section */}
-					{suiAddr && (
+					{activeAddr && (
 						<>
 							{txFetcherError && (
 								<div className="alert alert-error">
