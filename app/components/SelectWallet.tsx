@@ -16,7 +16,6 @@ import { formatSUI, formatBTC, formatNBTC } from "~/lib/denoms";
 
 import { type Option, SelectInput } from "./ui/select";
 import { SuiConnectModal } from "./Wallet/SuiWallet/SuiModal";
-import { useXverseConnect } from "./Wallet/XverseWallet/useWallet";
 import { trimAddress } from "~/components/Wallet/walletHelper";
 import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
 import { SUIIcon } from "~/components/icons";
@@ -26,7 +25,7 @@ import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { CopyButton } from "./ui/CopyButton";
 
 export function SelectWallet() {
-	const { connectWallet } = useXverseConnect();
+	const { connectWallet } = useXverseWallet();
 	const { pathname } = useLocation();
 
 	const { currentAddress, setCurrentAddress, addressInfo: bitcoinAddresses } = useXverseWallet();
