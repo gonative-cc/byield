@@ -25,9 +25,9 @@ export const GRADIENTS = {
 
 	// Primary gradients
 	primaryCard: "bg-gradient-to-r from-primary/10 to-secondary/10",
-	primaryAvatar: "bg-gradient-to-r from-primary to-orange-400",
-	primaryNft: "bg-gradient-to-br from-primary/20 to-orange-400/20",
-	primaryNftBg: "bg-gradient-to-br from-primary/5 to-yellow-400/5",
+	primaryAvatar: "bg-gradient-to-r from-primary to-primary-foreground",
+	primaryNft: "bg-gradient-to-br from-primary/20 to-primary-foreground/20",
+	primaryNftBg: "bg-gradient-to-br from-primary/5 to-warning/5",
 	primaryCollapse:
 		"bg-gradient-to-r from-primary/10 to-primary/5 hover:from-primary/20 hover:to-primary/10",
 	primarySelectedRow: "bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20",
@@ -35,7 +35,7 @@ export const GRADIENTS = {
 
 	// Status gradients
 	purpleStatus: "bg-gradient-to-r from-purple-500/20 to-pink-500/20",
-	orangeWarning: "bg-gradient-to-r from-orange-700/50 to-orange-700/40",
+	orangeWarning: "bg-gradient-to-r from-primary-foreground/50 to-primary-foreground/40",
 } as const;
 
 export function avatarGradientClasses() {

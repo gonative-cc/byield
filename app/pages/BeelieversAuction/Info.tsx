@@ -232,7 +232,7 @@ const NotAWinnerNotifier = ({ user, auctionSize }: { user?: User; auctionSize: n
 	if (!user || user.amount === 0 || user.rank === null || user.rank < auctionSize) return null;
 
 	return (
-		<div className={`rounded-lg border border-orange-500/70 ${GRADIENTS.orangeWarning} p-2`}>
+		<div className={`border-primary-foreground/70 rounded-lg border ${GRADIENTS.orangeWarning} p-2`}>
 			<span className="text-lg">🔨</span> You slipped from the auction winning list (top 5810 spots).
 			Bid more to save your spot!
 		</div>
