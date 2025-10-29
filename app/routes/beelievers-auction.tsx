@@ -14,7 +14,7 @@ import { GRADIENTS, cn } from "~/util/tailwind";
 export async function loader({ params, context, request }: Route.LoaderArgs): Promise<LoaderDataResp> {
 	const env = context.cloudflare.env;
 	const ctrl = new Controller(
-		env.BeelieversNFT as KVNamespace,
+		env.BeelieversNFT,
 		env.BeelieversD1,
 		env.TRADEPORT_API_USER,
 		env.TRADEPORT_API_KEY,
@@ -31,7 +31,7 @@ export async function loader({ params, context, request }: Route.LoaderArgs): Pr
 export async function action({ request, context }: Route.ActionArgs) {
 	const env = context.cloudflare.env;
 	const ctrl = new Controller(
-		env.BeelieversNFT as KVNamespace,
+		env.BeelieversNFT,
 		env.BeelieversD1,
 		env.TRADEPORT_API_USER,
 		env.TRADEPORT_API_KEY,

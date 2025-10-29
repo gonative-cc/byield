@@ -1,10 +1,13 @@
 import type { MintTransaction, MintingTxStatus } from "./types";
 import type { TxStatusResp } from "./btc-indexer-rpc.types";
+import { isProductionMode } from "~/lib/appenv";
+import { mainnetCfg, testnetCfg } from "~/config/sui/contracts-config";
 
 export function convertTxStatusToMintTx(tx: TxStatusResp): MintTransaction {
 	let suiExplorerUrl: string | undefined;
 	if (tx.sui_tx_id) {
-		suiExplorerUrl = `https://suiscan.xyz/mainnet/tx/${tx.sui_tx_id}`;
+		const cfg = isProductionMode() ? mainnetCfg : testnetCfg;
+		suiExplorerUrl = `${cfg.explorer}/txblock/${tx.sui_tx_id}`;
 	}
 
 	return {
