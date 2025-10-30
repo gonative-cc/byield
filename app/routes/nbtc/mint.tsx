@@ -113,12 +113,12 @@ function InstallXverseWallet({ mobileOS }: { mobileOS: "ios" | "android" | null 
 		mobileOS === "ios" ? iOSStoreLink : mobileOS === "android" ? androidPlayStoreLink : websiteLink;
 
 	return (
-		<div className="alert alert-warning">
+		<div className="alert bg-primary">
 			<div>
 				<h3 className="font-bold">Xverse Wallet Required</h3>
 				<div className="text-sm">
 					To mint nBTC, you need the Xverse wallet installed.
-					<a href={href} target="_blank" className="link link-primary ml-1" rel="noreferrer">
+					<a href={href} target="_blank" className="link link-neutral ml-1" rel="noreferrer">
 						Download here
 					</a>
 				</div>
@@ -196,7 +196,7 @@ export default function Mint() {
 
 	return (
 		<div className="mx-auto max-w-7xl space-y-6 px-4 py-4">
-			{isMobile && !isXverseInstalled && <InstallXverseWallet mobileOS={mobileOS} />}
+			{!isMobile && isXverseInstalled && <InstallXverseWallet mobileOS={mobileOS} />}
 			<h1 className={heroTitle + " text-center"}>
 				Mint<span className="text-primary-foreground"> nBTC</span>
 			</h1>
