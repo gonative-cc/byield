@@ -29,6 +29,7 @@ export const useXverseWallet = () => {
 	const [network, setNetwork] = useState<BitcoinNetworkType>(BitcoinNetworkType.Regtest);
 	const queryClient = useQueryClient();
 	const isBitcoinConnected = !!bitcoinAddress;
+	const isXverseInstalled = typeof window !== "undefined" && "BitcoinProvider" in window;
 
 	const connectWallet = useCallback(async () => {
 		try {
@@ -128,6 +129,7 @@ export const useXverseWallet = () => {
 		balance,
 		network,
 		currentAddress,
+		isXverseInstalled,
 		addressInfo,
 		setCurrentAddress,
 		refreshBalance: getBalance,
