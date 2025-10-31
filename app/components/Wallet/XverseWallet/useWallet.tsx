@@ -27,6 +27,7 @@ export const useXverseWallet = () => {
 	const [currentAddress, setCurrentAddress] = useState<Address | null>(null);
 	const [balance, setBalance] = useState<string>();
 	const [network, setNetwork] = useState<BitcoinNetworkType>(BitcoinNetworkType.Regtest);
+	const [isXverseInstalled, setIsXverseInstalled] = useState(false);
 	const queryClient = useQueryClient();
 	const isBitcoinConnected = !!bitcoinAddress;
 
@@ -96,6 +97,7 @@ export const useXverseWallet = () => {
 			} else {
 				resetWalletState();
 			}
+			setIsXverseInstalled(typeof window !== "undefined" && "BitcoinProvider" in window);
 		}
 		getWalletStatus();
 	}, [getAddresses, getBalance, getNetworkStatus, isBitcoinConnected, resetWalletState, network]);
@@ -128,6 +130,7 @@ export const useXverseWallet = () => {
 		balance,
 		network,
 		currentAddress,
+		isXverseInstalled,
 		addressInfo,
 		setCurrentAddress,
 		refreshBalance: getBalance,

@@ -14,6 +14,7 @@ import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
 import { BitcoinNetworkType } from "sats-connect";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { heroTitle } from "~/util/tailwind";
+import { useMobile } from "~/hooks/useMobile";
 
 const FAQS = [
 	{
@@ -104,6 +105,28 @@ const FAQS = [
 	},
 ];
 
+function InstallXverseWallet({ mobileOS }: { mobileOS: "ios" | "android" | null }) {
+	const androidPlayStoreLink = "https://play.google.com/store/apps/details?id=com.secretkeylabs.xverse";
+	const iOSStoreLink = "https://apps.apple.com/in/app/xverse-bitcoin-crypto-wallet/id1552272513";
+	const websiteLink = "https://www.xverse.app";
+	const href =
+		mobileOS === "ios" ? iOSStoreLink : mobileOS === "android" ? androidPlayStoreLink : websiteLink;
+
+	return (
+		<div className="alert bg-primary">
+			<div>
+				<h3 className="font-bold">Xverse Wallet Required</h3>
+				<div className="text-sm">
+					To mint nBTC, you need the Xverse wallet installed.
+					<a href={href} target="_blank" className="link link-neutral ml-1" rel="noreferrer">
+						Download here
+					</a>
+				</div>
+			</div>
+		</div>
+	);
+}
+
 const validNetworks: BitcoinNetworkType[] = [
 	BitcoinNetworkType.Mainnet,
 	BitcoinNetworkType.Testnet4,
@@ -125,7 +148,8 @@ export async function action({ request, context }: Route.ActionArgs) {
 }
 
 export default function Mint() {
-	const { network, currentAddress } = useXverseWallet();
+	const { network, currentAddress, isXverseInstalled } = useXverseWallet();
+	const { isMobile, mobileOS } = useMobile();
 	const btcAddr = currentAddress?.address || null;
 	const currentAccount = useCurrentAccount();
 	const suiAddr = currentAccount?.address || null;
@@ -172,6 +196,7 @@ export default function Mint() {
 
 	return (
 		<div className="mx-auto max-w-7xl space-y-6 px-4 py-4">
+			{isMobile && !isXverseInstalled && <InstallXverseWallet mobileOS={mobileOS} />}
 			<h1 className={heroTitle + " text-center"}>
 				Mint<span className="text-primary-foreground"> nBTC</span>
 			</h1>
