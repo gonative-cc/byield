@@ -52,7 +52,7 @@ export function RegtestInstructions() {
 				</li>
 				<li>
 					<strong>Add BTC URL:</strong> In the field labeled <strong>BTC URL</strong>, paste the
-					following address: <code>http://bitcoin-devnet.gonative.cc:3002</code>
+					following address: <code>https://bitcoin-devnet.gonative.cc</code>
 				</li>
 				<li>
 					<strong>Save:</strong> Press <strong>Save.</strong>

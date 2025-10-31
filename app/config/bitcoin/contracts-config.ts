@@ -33,17 +33,17 @@ export const mainnetCfg: BitcoinConfig = {
 };
 
 export const devnetCfg: BitcoinConfig = {
-	bitcoinBroadcastLink: "http://bitcoin-devnet.gonative.cc:3002/tx/",
+	bitcoinBroadcastLink: "https://bitcoin-devnet.gonative.cc/tx/",
 	confirmationDepth: 4,
 	blockTimeSec: 120,
-	mempoolApiUrl: "http://bitcoin-devnet.gonative.cc:3002",
+	mempoolApiUrl: "https://bitcoin-devnet.gonative.cc",
 	minerFeeSats: 1000,
 	nBTC: {
 		depositAddress: "bcrt1q90xm34jqm0kcpfclkdmn868rw6vcv9fzvfg6p6",
 		mintingFee: 1000,
 	},
 	indexerUrl: "https://btcindexer.gonative-cc.workers.dev:443",
-	btcRPCUrl: "http://bitcoin-devnet.gonative.cc:3002",
+	btcRPCUrl: "https://bitcoin-devnet.gonative.cc",
 	minMintInSats: 1000,
 };
 
