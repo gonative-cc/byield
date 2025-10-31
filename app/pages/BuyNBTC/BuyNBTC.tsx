@@ -37,7 +37,7 @@ export function BuyNBTC() {
 			</p>
 			<div className="card w-full max-w-lg">
 				<div className="card-body flex flex-col gap-4 p-6 text-white">
-					{isSuiWalletConnected && <NBTCBalance balance={nbtcBalanceRes.balance} />}
+					{isSuiWalletConnected && <NBTCBalance />}
 					<Instructions />
 					<BuyNBTCTabs nbtcBalanceRes={nbtcBalanceRes} suiBalanceRes={suiBalanceRes} />
 					{isSuiWalletConnected && (

@@ -15,6 +15,7 @@ import { BitcoinNetworkType } from "sats-connect";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { heroTitle } from "~/util/tailwind";
 import { useMobile } from "~/hooks/useMobile";
+import { useQueryClient } from "@tanstack/react-query";
 
 const FAQS = [
 	{
@@ -153,6 +154,7 @@ export default function Mint() {
 	const btcAddr = currentAddress?.address || null;
 	const currentAccount = useCurrentAccount();
 	const suiAddr = currentAccount?.address || null;
+	const queryClient = useQueryClient();
 
 	const activeAddr = suiAddr || btcAddr;
 	const mintTxFetcher = useFetcher<QueryMintTxResp>({ key: activeAddr || undefined });
@@ -166,11 +168,15 @@ export default function Mint() {
 	const txFetcherError = hasTxFetcherError ? "Failed to load transactions" : null;
 
 	// Function to fetch mint transactions
-	const fetchMintTxs = useCallback(() => {
+	const fetchMintTxs = useCallback(async () => {
 		if (activeAddr) {
-			makeReq<QueryMintTxResp>(mintTxFetcher, { method: "queryMintTx", params: [network, activeAddr] });
+			await makeReq<QueryMintTxResp>(mintTxFetcher, {
+				method: "queryMintTx",
+				params: [network, activeAddr],
+			});
+			await queryClient.invalidateQueries({ queryKey: ["coinBalance", "NBTC"] });
 		}
-	}, [activeAddr, mintTxFetcher, network]);
+	}, [activeAddr, mintTxFetcher, network, queryClient]);
 
 	// Handle address changes, interval setup, and initial fetch
 	useEffect(() => {

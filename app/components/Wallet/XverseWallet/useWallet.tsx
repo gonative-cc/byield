@@ -11,7 +11,7 @@ import Wallet, {
 } from "sats-connect";
 import type { Address } from "sats-connect";
 import { toast } from "~/hooks/use-toast";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useXverseAddress } from "./useXverseAddress";
 
 const showToast = (title: string, description: string) =>
@@ -25,7 +25,6 @@ export const useXverseWallet = () => {
 	const { bitcoinAddress } = useXverseAddress();
 	const [addressInfo, setAddressInfo] = useState<Address[]>([]);
 	const [currentAddress, setCurrentAddress] = useState<Address | null>(null);
-	const [balance, setBalance] = useState<string>();
 	const [network, setNetwork] = useState<BitcoinNetworkType>(BitcoinNetworkType.Regtest);
 	const [isXverseInstalled, setIsXverseInstalled] = useState(false);
 	const queryClient = useQueryClient();
@@ -50,18 +49,11 @@ export const useXverseWallet = () => {
 		}
 	}, [queryClient]);
 
-	const getBalance = useCallback(async () => {
-		try {
-			const response = await Wallet.request(getBalanceMethodName, null);
-			if (response.status === "success") {
-				setBalance(response.result.total);
-			} else {
-				showToast("Balance", "Failed to get the balance");
-			}
-		} catch (err) {
-			console.log(err);
-		}
-	}, []);
+	const { data } = useQuery({
+		queryKey: ["BTCBalance"],
+		queryFn: () => Wallet.request(getBalanceMethodName, null),
+		enabled: isBitcoinConnected,
+	});
 
 	const getAddresses = useCallback(async () => {
 		const response = await Wallet.request(getAddressesMethodName, {
@@ -87,20 +79,19 @@ export const useXverseWallet = () => {
 	const resetWalletState = useCallback(() => {
 		setAddressInfo([]);
 		setCurrentAddress(null);
-		setBalance(undefined);
 	}, []);
 
 	useEffect(() => {
 		async function getWalletStatus() {
 			if (isBitcoinConnected) {
-				await Promise.all([getAddresses(), getBalance(), getNetworkStatus()]);
+				await Promise.all([getAddresses(), getNetworkStatus()]);
 			} else {
 				resetWalletState();
 			}
 			setIsXverseInstalled(typeof window !== "undefined" && "BitcoinProvider" in window);
 		}
 		getWalletStatus();
-	}, [getAddresses, getBalance, getNetworkStatus, isBitcoinConnected, resetWalletState, network]);
+	}, [getAddresses, getNetworkStatus, isBitcoinConnected, resetWalletState, network]);
 
 	const disconnectWallet = useCallback(async () => {
 		try {
@@ -127,13 +118,12 @@ export const useXverseWallet = () => {
 	}, []);
 
 	return {
-		balance,
+		balance: data?.status === "success" ? data.result.total : null,
 		network,
 		currentAddress,
 		isXverseInstalled,
 		addressInfo,
 		setCurrentAddress,
-		refreshBalance: getBalance,
 		connectWallet,
 		disconnectWallet,
 		switchNetwork,
