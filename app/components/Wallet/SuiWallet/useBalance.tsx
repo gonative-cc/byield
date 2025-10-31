@@ -1,6 +1,5 @@
-import { useSuiClient, useCurrentAccount } from "@mysten/dapp-kit";
-import { useState, useEffect, useCallback } from "react";
-import { SuiClient, type CoinBalance } from "@mysten/sui/client";
+import { useSuiClient, useCurrentAccount, useSuiClientContext } from "@mysten/dapp-kit";
+import { useQuery } from "@tanstack/react-query";
 import { useNetworkVariables } from "~/networkConfig";
 
 export interface UseCoinBalanceResult {
@@ -10,24 +9,12 @@ export interface UseCoinBalanceResult {
 	refetch: () => void;
 }
 
-async function fetchBalance(
-	suiClient: SuiClient,
-	owner: string,
-	coin?: string,
-): Promise<CoinBalance | Error> {
-	try {
-		return suiClient.getBalance({ owner, coinType: coin });
-	} catch (err) {
-		return err instanceof Error ? err : new Error("Failed to fetch balance: " + err);
-	}
-}
-
-// Coin address is a coin package ID followed by the type. Default to 0x2::sui::SUI.
-export function useCoinBalance(coinOrVariant?: string): UseCoinBalanceResult {
+export function useCoinBalance(coinOrVariant?: string) {
 	const suiClient = useSuiClient();
 	const account = useCurrentAccount();
 	const userAddr = account?.address || null;
 	const { nbtc } = useNetworkVariables();
+	const { network } = useSuiClientContext();
 
 	const resolvedCoinAddr =
 		coinOrVariant === undefined || coinOrVariant === "SUI"
@@ -36,43 +23,19 @@ export function useCoinBalance(coinOrVariant?: string): UseCoinBalanceResult {
 				? nbtc.pkgId + nbtc.coinType
 				: coinOrVariant;
 
-	const [balance, setBalance] = useState<CoinBalance | null>(null);
-	const [isLoading, setIsLoading] = useState<boolean>(true);
-	const [error, setError] = useState<Error | null>(null);
-
-	const refetch = useCallback(() => {
-		if (userAddr === null) {
-			setBalance(null);
-			setIsLoading(false);
-			setError(null);
-			return;
-		}
-
-		let cancelled = false;
-
-		console.log(`Fetching coin (${resolvedCoinAddr ?? "SUI"}) balance for`, userAddr);
-		setIsLoading(true);
-		setError(null);
-
-		fetchBalance(suiClient, userAddr, resolvedCoinAddr).then((resOrErr) => {
-			if (cancelled) {
-				return;
-			}
-			setIsLoading(false);
-			if (resOrErr instanceof Error) setError(resOrErr);
-			else setBalance(resOrErr);
-		});
-
-		// cleanup function
-		return () => {
-			cancelled = true;
-		};
-	}, [suiClient, resolvedCoinAddr, userAddr]);
-
-	useEffect(refetch, [refetch]);
+	const {
+		data: balance,
+		error,
+		isLoading,
+		refetch,
+	} = useQuery({
+		queryKey: ["coinBalance", userAddr, network, resolvedCoinAddr],
+		queryFn: () => suiClient.getBalance({ owner: userAddr!, coinType: resolvedCoinAddr }),
+		enabled: !!userAddr,
+	});
 
 	return {
-		balance: balance === null ? 0n : BigInt(balance.totalBalance),
+		balance: balance ? BigInt(balance.totalBalance) : 0n,
 		isLoading,
 		error,
 		refetch,
