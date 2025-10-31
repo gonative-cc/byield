@@ -154,7 +154,7 @@ export default function Mint() {
 	const btcAddr = currentAddress?.address || null;
 	const currentAccount = useCurrentAccount();
 	const suiAddr = currentAccount?.address || null;
-	const { refetch } = useCoinBalance();
+	const { refetch } = useCoinBalance("NBTC");
 
 	const activeAddr = suiAddr || btcAddr;
 	const mintTxFetcher = useFetcher<QueryMintTxResp>({ key: activeAddr || undefined });
