@@ -4,10 +4,7 @@ import { TrimmedNumber } from "./TrimmedNumber";
 import { useCoinBalance } from "./Wallet/SuiWallet/useBalance";
 
 export function NBTCBalance() {
-	const nbtcBalanceRes = useCoinBalance("NBTC");
-
-	if (!nbtcBalanceRes) return null;
-	const balance = nbtcBalanceRes.balance;
+	const { balance } = useCoinBalance("NBTC");
 
 	return (
 		<div className="bg-base-300 flex items-center gap-4 rounded-2xl p-3.5">

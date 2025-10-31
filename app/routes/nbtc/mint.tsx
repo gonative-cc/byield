@@ -15,7 +15,7 @@ import { BitcoinNetworkType } from "sats-connect";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { heroTitle } from "~/util/tailwind";
 import { useMobile } from "~/hooks/useMobile";
-import { useQueryClient } from "@tanstack/react-query";
+import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 
 const FAQS = [
 	{
@@ -154,7 +154,7 @@ export default function Mint() {
 	const btcAddr = currentAddress?.address || null;
 	const currentAccount = useCurrentAccount();
 	const suiAddr = currentAccount?.address || null;
-	const queryClient = useQueryClient();
+	const { refetch } = useCoinBalance();
 
 	const activeAddr = suiAddr || btcAddr;
 	const mintTxFetcher = useFetcher<QueryMintTxResp>({ key: activeAddr || undefined });
@@ -174,9 +174,9 @@ export default function Mint() {
 				method: "queryMintTx",
 				params: [network, activeAddr],
 			});
-			await queryClient.invalidateQueries({ queryKey: ["coinBalance", "NBTC"] });
+			refetch();
 		}
-	}, [activeAddr, mintTxFetcher, network, queryClient]);
+	}, [activeAddr, mintTxFetcher, network, refetch]);
 
 	// Handle address changes, interval setup, and initial fetch
 	useEffect(() => {

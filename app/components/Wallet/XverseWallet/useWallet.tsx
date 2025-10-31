@@ -49,8 +49,8 @@ export const useXverseWallet = () => {
 		}
 	}, [queryClient]);
 
-	const { data } = useQuery({
-		queryKey: ["BTCBalance"],
+	const { data, refetch: getBalance } = useQuery({
+		queryKey: ["BTCBalance", bitcoinAddress, network],
 		queryFn: () => Wallet.request(getBalanceMethodName, null),
 		enabled: isBitcoinConnected,
 	});
@@ -123,6 +123,7 @@ export const useXverseWallet = () => {
 		currentAddress,
 		isXverseInstalled,
 		addressInfo,
+		getBalance,
 		setCurrentAddress,
 		connectWallet,
 		disconnectWallet,

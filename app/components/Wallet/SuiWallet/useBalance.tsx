@@ -1,4 +1,4 @@
-import { useSuiClient, useCurrentAccount } from "@mysten/dapp-kit";
+import { useSuiClient, useCurrentAccount, useSuiClientContext } from "@mysten/dapp-kit";
 import { useQuery } from "@tanstack/react-query";
 import { useNetworkVariables } from "~/networkConfig";
 
@@ -14,6 +14,7 @@ export function useCoinBalance(coinOrVariant?: string) {
 	const account = useCurrentAccount();
 	const userAddr = account?.address || null;
 	const { nbtc } = useNetworkVariables();
+	const { network } = useSuiClientContext();
 
 	const resolvedCoinAddr =
 		coinOrVariant === undefined || coinOrVariant === "SUI"
@@ -28,14 +29,14 @@ export function useCoinBalance(coinOrVariant?: string) {
 		isLoading,
 		refetch,
 	} = useQuery({
-		queryKey: ["coinBalance", resolvedCoinAddr],
+		queryKey: ["coinBalance", userAddr, network, resolvedCoinAddr],
 		queryFn: () => suiClient.getBalance({ owner: userAddr!, coinType: resolvedCoinAddr }),
 		enabled: !!userAddr,
 	});
 
 	return {
-		isLoading,
 		balance: balance ? BigInt(balance.totalBalance) : 0n,
+		isLoading,
 		error,
 		refetch,
 	};
