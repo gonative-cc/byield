@@ -15,9 +15,9 @@ import { makeReq } from "~/server/nbtc/jsonrpc";
 import { useFetcher } from "react-router";
 import type { UTXO } from "~/server/nbtc/types";
 import { useCurrentAccount } from "@mysten/dapp-kit";
+import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { BitCoinIcon, NBTCIcon } from "~/components/icons";
 import { TrimmedNumber } from "~/components/TrimmedNumber";
-import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 
 function BalanceCard() {
 	const { balance } = useXverseWallet();
@@ -98,7 +98,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 	const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 	const [isProcessing, setIsProcessing] = useState(false);
 	const { connectWallet } = useXverseWallet();
-	const { balance: walletBalance, currentAddress, network } = useXverseWallet();
+	const { balance: walletBalance, currentAddress, network, getBalance } = useXverseWallet();
 	const isBitcoinConnected = !!currentAddress;
 	const currentAccount = useCurrentAccount();
 	const suiAddr = currentAccount?.address || null;
@@ -173,6 +173,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 					method: "queryUTXOs",
 					params: [network, currentAddress.address],
 				});
+				getBalance();
 			} else {
 				throw new Error("Transaction signing failed");
 			}

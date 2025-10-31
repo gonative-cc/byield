@@ -1,12 +1,11 @@
 import { formatNBTC } from "~/lib/denoms";
 import { NBTCIcon } from "./icons";
 import { TrimmedNumber } from "./TrimmedNumber";
+import { useCoinBalance } from "./Wallet/SuiWallet/useBalance";
 
-interface NBTCBalanceProps {
-	balance: bigint;
-}
+export function NBTCBalance() {
+	const { balance } = useCoinBalance("NBTC");
 
-export function NBTCBalance({ balance }: NBTCBalanceProps) {
 	return (
 		<div className="bg-base-300 flex items-center gap-4 rounded-2xl p-3.5">
 			<NBTCIcon prefix="" className="mr-0" />
