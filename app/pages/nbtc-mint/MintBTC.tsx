@@ -3,7 +3,7 @@ import { FormInput } from "../../components/form/FormInput";
 import { useXverseWallet } from "../../components/Wallet/XverseWallet/useWallet";
 import { useEffect, useState } from "react";
 import { FormNumericInput } from "../../components/form/FormNumericInput";
-import { BTC, formatBTC, parseBTC } from "~/lib/denoms";
+import { BTC, formatBTC, formatNBTC, parseBTC } from "~/lib/denoms";
 import { nBTCMintTx } from "~/lib/nbtc";
 import { BitcoinIcon, Info } from "lucide-react";
 import { buttonEffectClasses, classNames } from "~/util/tailwind";
@@ -15,8 +15,49 @@ import { makeReq } from "~/server/nbtc/jsonrpc";
 import { useFetcher } from "react-router";
 import type { UTXO } from "~/server/nbtc/types";
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { NBTCBalance } from "~/components/NBTCBalance";
+import { BitCoinIcon, NBTCIcon } from "~/components/icons";
+import { TrimmedNumber } from "~/components/TrimmedNumber";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
+
+function BalanceCard() {
+	const { balance } = useXverseWallet();
+	const nbtcBalanceRes = useCoinBalance("NBTC");
+
+	if (!nbtcBalanceRes || !balance) return null;
+
+	return (
+		<div className="mx-auto flex min-w-1/2 flex-col space-y-2">
+			<span className="mb-4 text-center">Your balance</span>
+			<div className="flex w-full items-center justify-between">
+				<div className="flex items-center gap-2">
+					<BitCoinIcon /> BTC
+				</div>
+				<div className="flex flex-col gap-1">
+					<TrimmedNumber
+						displayType="text"
+						value={formatBTC(BigInt(balance))}
+						className="text-base-content/75"
+						readOnly
+					/>
+				</div>
+			</div>
+			<div className="divider" />
+			<div className="flex w-full items-center justify-between">
+				<div className="flex items-center gap-2">
+					<NBTCIcon prefix="" /> nBTC
+				</div>
+				<div className="flex flex-col gap-1">
+					<TrimmedNumber
+						displayType="text"
+						value={formatNBTC(BigInt(nbtcBalanceRes.balance))}
+						className="text-base-content/75"
+						readOnly
+					/>
+				</div>
+			</div>
+		</div>
+	);
+}
 
 function formatSuiAddress(suiAddress: string) {
 	if (!suiAddress.toLowerCase().startsWith("0x")) {
@@ -62,7 +103,6 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 	const currentAccount = useCurrentAccount();
 	const suiAddr = currentAccount?.address || null;
 	const cfg = useBitcoinConfig();
-	const nbtcBalanceRes = useCoinBalance("NBTC");
 
 	const utxosRPC = useFetcher<UTXO[]>();
 	const postNbtcTxRPC = useFetcher();
@@ -154,7 +194,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 				<div className="card">
 					<div className="card-body flex flex-col space-y-4">
 						<h2 className="text-center text-lg">Deposit BTC and mint nBTC on Sui</h2>
-						{suiAddr && <NBTCBalance balance={nbtcBalanceRes.balance} />}
+						<BalanceCard />
 						<FormNumericInput
 							required
 							name="numberOfBTC"
@@ -163,6 +203,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 							inputMode="decimal"
 							decimalScale={BTC}
 							allowNegative={false}
+							rightAdornments={<BitCoinIcon />}
 							rules={{
 								validate: {
 									isWalletConnected: () =>
