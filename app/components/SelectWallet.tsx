@@ -1,19 +1,12 @@
 import { useLocation } from "react-router";
 import { BitcoinIcon, Bitcoin, Wallet } from "lucide-react";
 import { useCallback, useMemo } from "react";
-import {
-	useSuiClientContext,
-	useCurrentAccount,
-	useAccounts,
-	useDisconnectWallet,
-	useSwitchAccount,
-} from "@mysten/dapp-kit";
+import { useCurrentAccount, useAccounts, useDisconnectWallet, useSwitchAccount } from "@mysten/dapp-kit";
+import { useSuiNetwork } from "~/hooks/useSuiNetwork";
 import { BitcoinNetworkType } from "sats-connect";
-
 import { routes } from "~/config/walletVisibility";
 import { isProductionMode } from "~/lib/appenv";
 import { formatSUI, formatBTC, formatNBTC } from "~/lib/denoms";
-
 import { type Option, SelectInput } from "./ui/select";
 import { SuiConnectModal } from "./Wallet/SuiWallet/SuiModal";
 import { trimAddress } from "~/components/Wallet/walletHelper";
@@ -284,42 +277,38 @@ function SuiNetworkOptions() {
 	const location = useLocation();
 	const pathname = location.pathname;
 
-	const { network, selectNetwork } = useSuiClientContext();
+	const { network, selectNetwork } = useSuiNetwork();
 	const handleChange = useCallback(
-		(value: SuiNetwork) => {
-			selectNetwork(value);
+		(value: string) => {
+			selectNetwork(value as "testnet" | "mainnet" | "localnet");
 		},
 		[selectNetwork],
 	);
 
-	const isAuctionPathname = pathname === "/beelievers-auction" && isProductionMode();
 	const isDevMode = !isProductionMode();
+	const isAuctionPathname = pathname === "/beelievers-auction" && !isDevMode;
 
 	const networks = useMemo(() => {
 		if (isAuctionPathname) {
-			return [{ label: SuiNetworkLabel[SuiNetwork.MainNet], value: SuiNetwork.MainNet }];
+			return [{ label: "Mainnet", value: "mainnet" }];
 		}
 
-		const baseNetworks = [{ label: SuiNetworkLabel[SuiNetwork.TestNet], value: SuiNetwork.TestNet }];
+		const baseNetworks = [{ label: "Testnet", value: "testnet" }];
 
 		// Add localnet option in dev mode
 		if (isDevMode) {
-			baseNetworks.unshift({ label: SuiNetworkLabel[SuiNetwork.LocalNet], value: SuiNetwork.LocalNet });
+			baseNetworks.unshift({ label: "Localnet", value: "localnet" });
 		}
 
 		return baseNetworks;
 	}, [isAuctionPathname, isDevMode]);
 
-	const suiWalletNetworks: Option<SuiNetwork>[] = useMemo(() => networks, [networks]);
-
-	const currentNetwork = (network as SuiNetwork) || (isDevMode ? SuiNetwork.LocalNet : SuiNetwork.TestNet);
-
 	return (
 		<SelectInput
-			options={suiWalletNetworks}
+			options={networks}
 			placeholder="Select network"
 			onValueChange={handleChange}
-			value={currentNetwork}
+			value={network}
 		/>
 	);
 }
@@ -383,15 +372,3 @@ function Accounts() {
 		/>
 	);
 }
-
-enum SuiNetwork {
-	LocalNet = "localnet",
-	TestNet = "testnet",
-	MainNet = "mainnet",
-}
-
-const SuiNetworkLabel: Record<SuiNetwork, string> = {
-	[SuiNetwork.LocalNet]: "Localnet",
-	[SuiNetwork.TestNet]: "Testnet",
-	[SuiNetwork.MainNet]: "Mainnet",
-};
