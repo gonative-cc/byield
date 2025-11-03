@@ -19,8 +19,8 @@ export const storage = {
 		return localStorage.getItem(STORAGE_KEYS.SUI_NETWORK);
 	},
 
-	setSuiNetwork: (network: string) => {
-		if (typeof window === "undefined") return;
+	setSuiNetwork: (network: "testnet" | "mainnet" | "localnet" | null) => {
+		if (typeof window === "undefined" || !network) return;
 		localStorage.setItem(STORAGE_KEYS.SUI_NETWORK, network);
 	},
 };
