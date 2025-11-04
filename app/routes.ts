@@ -7,6 +7,7 @@ export default remixRoutesOptionAdapter((defineRoutes) => {
 		route("/market", "routes/market.tsx");
 		route("/nbtc/mint", "routes/nbtc/mint.tsx");
 		route("/beelievers-auction", "routes/beelievers-auction.tsx");
+		route("/reserve-dashboard", "routes/reserve-dashboard.tsx");
 		// Add 404 catch-all route
 		route("*", "routes/404.tsx");
 	});
