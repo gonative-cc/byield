@@ -7,11 +7,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SuiClientProvider, WalletProvider as SuiWalletProvider } from "@mysten/dapp-kit";
 import { Toaster } from "~/components/ui/toaster";
 import { isProductionMode, printAppEnv } from "./lib/appenv";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Footer } from "~/components/Footer";
 import { SideBarProvider } from "./providers/SiderBarProvider";
 import { SideBar } from "~/components/SideBarMenu";
 import { ErrorBoundary } from "~/components/ErrorBoundary";
+import { storage } from "~/lib/storage";
 
 const queryClient = new QueryClient();
 
@@ -71,13 +72,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 function NativeApp({ children }: { children: React.ReactNode }) {
-	// TODO: use wallet API to switch the network
-
 	const location = useLocation();
 	const pathname = location.pathname;
 
-	const defaultSuiNet: "testnet" | "mainnet" =
-		isProductionMode() && pathname === "/beelievers-auction" ? "mainnet" : "testnet";
+	const [suiNetwork, setSuiNetwork] = useState<"testnet" | "mainnet" | "localnet">();
 
 	useEffect(() => {
 		if (!isProductionMode()) {
@@ -85,11 +83,23 @@ function NativeApp({ children }: { children: React.ReactNode }) {
 		}
 	}, []);
 
+	useEffect(() => {
+		function getSuiNetwork() {
+			// Update network if pathname changes and no saved preference
+			if (!storage.getSuiNetwork()) {
+				const defaultNet =
+					isProductionMode() && pathname === "/beelievers-auction" ? "mainnet" : "testnet";
+				setSuiNetwork(defaultNet);
+			}
+		}
+		getSuiNetwork();
+	}, [pathname, suiNetwork]);
+
 	return (
 		<>
 			<div className="flex min-h-screen w-full flex-col gap-4">
 				<QueryClientProvider client={queryClient}>
-					<SuiClientProvider networks={networkConfig} defaultNetwork={defaultSuiNet}>
+					<SuiClientProvider networks={networkConfig} defaultNetwork={suiNetwork}>
 						<SuiWalletProvider autoConnect>
 							<main className="flex-1">{children}</main>
 							<Footer />
