@@ -42,7 +42,10 @@ export const ReserveDashboard = ({
 						<p className="text-primary text-3xl font-bold sm:text-4xl">
 							{totalLockedBTC.toLocaleString()} BTC
 						</p>
-						<a href="#" className="link link-primary inline-block text-sm hover:underline">
+						<a
+							href="https://mempool.space/"
+							className="link link-primary inline-block text-sm hover:underline"
+						>
 							View on Bitcoin Explorer
 						</a>
 						<div className="divider mt-6 pt-4" />
@@ -65,7 +68,10 @@ export const ReserveDashboard = ({
 						<p className="text-primary text-3xl font-bold sm:text-4xl">
 							{totalMintedNBTC.toLocaleString()} nBTC
 						</p>
-						<a href="#" className="link link-primary inline-block text-sm hover:underline">
+						<a
+							href={"https://suiscan.xyz/mainnet/home"}
+							className="link link-primary inline-block text-sm hover:underline"
+						>
 							View on Sui Explorer
 						</a>
 						<div className="divider mt-6 pt-4" />
