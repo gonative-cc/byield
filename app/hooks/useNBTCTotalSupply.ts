@@ -1,18 +1,11 @@
 import { useCurrentAccount, useSuiClient } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
+import { bcs } from "@mysten/sui/bcs";
 import { useQuery } from "@tanstack/react-query";
 import type { SuiJsonRpcClient } from "node_modules/@mysten/sui/dist/esm/jsonRpc/client";
 import { formatNBTC } from "~/lib/denoms";
 import { useNetworkVariables } from "~/networkConfig";
 import type { ContractsCfg } from "~/config/sui/contracts-config";
-
-function decodeU64LittleEndian(bytes: number[]): bigint {
-	let value = BigInt(0);
-	for (let i = 0; i < bytes.length; i++) {
-		value += BigInt(bytes[i]) << BigInt(8 * i);
-	}
-	return value;
-}
 
 async function getTotalNBTCSupply(
 	suiClient: SuiJsonRpcClient,
@@ -24,7 +17,7 @@ async function getTotalNBTCSupply(
 	txn.setSender(suiAddr);
 	txn.moveCall({
 		target: `${contract.pkgId}::nbtc::total_supply`,
-		arguments: [txn.object(contract.objectId)],
+		arguments: [txn.object(contract.contractId)],
 	});
 
 	const res = await suiClient.devInspectTransactionBlock({
@@ -38,9 +31,9 @@ async function getTotalNBTCSupply(
 	const bytes = res.results?.[0].returnValues?.[0]?.[0];
 	if (!bytes) throw new Error("No return value");
 
-	const supply = decodeU64LittleEndian(bytes);
+	const supply = bcs.u64().parse(new Uint8Array(bytes));
 
-	return formatNBTC(supply);
+	return formatNBTC(BigInt(supply));
 }
 
 export const useNBTCTotalSupply = () => {
