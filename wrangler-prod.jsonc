@@ -42,7 +42,14 @@
 			"database_name": "beelievers-prod",
 			"database_id": "f75ec68a-1df1-4a42-aeba-1d27875bf4e5",
 			"migrations_table": "migrations",
-			"migrations_dir": "./db/migrations/",
+			"migrations_dir": "./db/beelievers/",
+		},
+		{
+			"binding": "BYieldD1",
+			"database_name": "byield-prod",
+			"database_id": "f39490b8-c66e-45cf-ac0a-05c64cdce67d",
+			"migrations_table": "migrations",
+			"migrations_dir": "./db/byield/",
 		},
 	],
 }
