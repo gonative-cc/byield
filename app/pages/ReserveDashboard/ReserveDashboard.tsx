@@ -23,7 +23,7 @@ function Header() {
 				</div>
 				<div>
 					<h1 className="text-xl font-bold">Native nBTC Proof of Reserves</h1>
-					<div className="text-base-content/70 mt-1 flex items-center gap-2 text-sm">
+					<div className="text-base-content/70 flex items-center gap-2 text-sm">
 						<span>STATUS: Fully backed</span>
 					</div>
 				</div>

@@ -1,10 +1,6 @@
 import type { Route } from "./+types/reserve-dashboard";
 import { ReserveController } from "~/server/reserve-dashboard/controller.server";
 import { BitcoinNetworkType } from "sats-connect";
-import { useFetcher } from "react-router";
-import { useEffect } from "react";
-import { makeReq, type QueryLockedBTCResp } from "~/server/reserve-dashboard/jsonrpc";
-import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
 import { ReserveDashboard } from "~/pages/ReserveDashboard/ReserveDashboard";
 
 const validNetworks: BitcoinNetworkType[] = [
