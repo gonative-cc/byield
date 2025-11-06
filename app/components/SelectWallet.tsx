@@ -104,7 +104,7 @@ const walletBadge = (
 				))}
 			</select>
 		) : (
-			<span className="content-center text-xs md:text-sm">
+			<span className="flex content-center items-center gap-1 text-xs md:text-sm">
 				{trimAddress(currentAccount)} <CopyButton text={currentAccount} />
 			</span>
 		)}
