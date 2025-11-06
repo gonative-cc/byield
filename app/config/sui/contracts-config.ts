@@ -22,7 +22,7 @@ export interface BeelieversMintCfg {
 export interface NbtcCfg {
 	pkgId: string;
 	coinType: string;
-	objectId: string;
+	contractId: string;
 }
 
 export interface ContractsCfg {
@@ -56,7 +56,7 @@ export const mainnetCfg: ContractsCfg = {
 	nbtc: {
 		coinType: "::nbtc::NBTC",
 		pkgId: "",
-		objectId: "",
+		contractId: "",
 	},
 };
 
@@ -82,7 +82,7 @@ export const testnetCfg: ContractsCfg = {
 	nbtc: {
 		coinType: "::nbtc::NBTC",
 		pkgId: "0x50be08b805766cc1a2901b925d3fb80b6362fcb25f269cb78067429237e222ec",
-		objectId: "0x5905e0c452bb5f237fb106ec2ecff962fbc60cd180090fb07a79d14d9d628a96",
+		contractId: "0x5905e0c452bb5f237fb106ec2ecff962fbc60cd180090fb07a79d14d9d628a96",
 	},
 };
 
@@ -113,7 +113,7 @@ export const localnetCfg: ContractsCfg = {
 	nbtc: {
 		coinType: "::nbtc::NBTC",
 		pkgId: "",
-		objectId: "",
+		contractId: "",
 	},
 };
 
