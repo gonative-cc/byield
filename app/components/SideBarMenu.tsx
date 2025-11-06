@@ -42,6 +42,13 @@ function navMenuItems(): MenuItem[] {
 						subNavItems: [],
 						title: "Mint nBTC",
 					},
+					{
+						id: "navigation-2-3",
+						link: "reserve-dashboard",
+						icon: "",
+						subNavItems: [],
+						title: "Reserves",
+					},
 				],
 			},
 			{
@@ -49,13 +56,6 @@ function navMenuItems(): MenuItem[] {
 				id: "navigation-4",
 				title: "Beelievers Auction (mainnet)",
 				link: "/beelievers-auction",
-				subNavItems: [],
-			},
-			{
-				icon: "/assets/navigation/bee-with-bitcoin.svg",
-				id: "navigation-5",
-				title: "Reserve Dashboard",
-				link: "/reserve-dashboard",
 				subNavItems: [],
 			},
 		];
@@ -82,6 +82,13 @@ function navMenuItems(): MenuItem[] {
 					subNavItems: [],
 					title: "Mint nBTC",
 				},
+				{
+					id: "navigation-2-3",
+					link: "reserve-dashboard",
+					icon: "",
+					subNavItems: [],
+					title: "Reserves",
+				},
 			],
 		},
 		{
@@ -96,13 +103,6 @@ function navMenuItems(): MenuItem[] {
 			id: "navigation-4",
 			title: "Beelievers Auction (mainnet)",
 			link: "/beelievers-auction",
-			subNavItems: [],
-		},
-		{
-			icon: "/assets/navigation/bee-with-bitcoin.svg",
-			id: "navigation-5",
-			title: "Reserve Dashboard",
-			link: "/reserve-dashboard",
 			subNavItems: [],
 		},
 	];
