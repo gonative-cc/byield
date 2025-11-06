@@ -13,6 +13,7 @@ import type { Address } from "sats-connect";
 import { toast } from "~/hooks/use-toast";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useXverseAddress } from "./useXverseAddress";
+import { storage } from "~/lib/storage";
 
 const showToast = (title: string, description: string) =>
 	toast({ title, description, variant: "destructive" });
@@ -25,7 +26,10 @@ export const useXverseWallet = () => {
 	const { bitcoinAddress } = useXverseAddress();
 	const [addressInfo, setAddressInfo] = useState<Address[]>([]);
 	const [currentAddress, setCurrentAddress] = useState<Address | null>(null);
-	const [network, setNetwork] = useState<BitcoinNetworkType>(BitcoinNetworkType.Regtest);
+	const [network, setNetwork] = useState<BitcoinNetworkType>(() => {
+		const savedNetwork = storage.getXverseNetwork();
+		return (savedNetwork as BitcoinNetworkType) || BitcoinNetworkType.Regtest;
+	});
 	const [isXverseInstalled, setIsXverseInstalled] = useState(false);
 	const queryClient = useQueryClient();
 	const isBitcoinConnected = !!bitcoinAddress;
@@ -111,6 +115,7 @@ export const useXverseWallet = () => {
 		const response = await Wallet.request(changeNetworkMethodName, { name: newNetwork });
 		if (response.status === "success") {
 			setNetwork(newNetwork);
+			storage.setXverseNetwork(newNetwork);
 		} else {
 			console.error("Failed to switch network:", response.error);
 			showToast("Network", "Failed to switch network");
