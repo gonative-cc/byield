@@ -1,12 +1,20 @@
+import { useCurrentAccount } from "@mysten/dapp-kit";
 import { Info, ShieldCheck } from "lucide-react";
+import { useEffect } from "react";
+import { useFetcher } from "react-router";
+import { CopyButton } from "~/components/ui/CopyButton";
+import { SuiConnectModal } from "~/components/Wallet/SuiWallet/SuiModal";
+import { trimAddress } from "~/components/Wallet/walletHelper";
+import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
+import { useNBTCTotalSupply } from "~/hooks/useNBTCTotalSupply";
+import { useNetworkVariables } from "~/networkConfig";
+import { makeReq, type QueryLockedBTCResp } from "~/server/reserve-dashboard/jsonrpc";
 
-interface NBTCProofOfReserveProps {
-	totalLockedBTC?: number;
-	totalMintedNBTC?: number;
-	lastRefresh?: string;
+function Loader() {
+	return <div className="skeleton h-8 w-40"></div>;
 }
 
-function Header({ lastRefresh }: { lastRefresh: string }) {
+function Header() {
 	return (
 		<div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 			<div className="flex items-center gap-3">
@@ -20,42 +28,51 @@ function Header({ lastRefresh }: { lastRefresh: string }) {
 					</div>
 				</div>
 			</div>
-			<div className="text-base-content/75 text-sm sm:text-right">Last Refresh: {lastRefresh}</div>
 		</div>
 	);
 }
 
-export const ReserveDashboard = ({
-	totalLockedBTC = 1250.45,
-	totalMintedNBTC = 1250.4,
-	lastRefresh = "1m ago",
-}: NBTCProofOfReserveProps) => {
+export const ReserveDashboard = () => {
+	const currentAccount = useCurrentAccount();
+	const suiAddr = currentAccount?.address || null;
+	const { totalSupply: totalMintedNBTC, isLoading } = useNBTCTotalSupply();
+	const {
+		nbtc: { pkgId },
+	} = useNetworkVariables();
+
+	const { network } = useXverseWallet();
+	const lockedBTCFetcher = useFetcher<QueryLockedBTCResp>();
+	const raffle: QueryLockedBTCResp = lockedBTCFetcher.data ?? null;
+
+	useEffect(() => {
+		if (lockedBTCFetcher.state === "idle" && !raffle) {
+			makeReq<QueryLockedBTCResp>(lockedBTCFetcher, { method: "queryLockedBTC", params: [network] });
+		}
+	}, [raffle, lockedBTCFetcher, network]);
+
+	const totalLockedBTC = lockedBTCFetcher.data?.totalLockedBTC;
+	const isPageLoading = lockedBTCFetcher.state !== "idle" || isLoading;
+
 	return (
 		<div className="mx-auto space-y-6 p-6 sm:p-8">
-			<Header lastRefresh={lastRefresh} />
+			<Header />
 			<div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
 				<div className="card">
 					<div className="card-body">
 						<p className="text-base-content/60 mb-2 text-sm font-medium tracking-wide uppercase">
 							Total BTC Locked (Reserves)
 						</p>
-						<p className="text-primary text-3xl font-bold sm:text-4xl">
-							{totalLockedBTC.toLocaleString()} BTC
-						</p>
-						<a
-							href="https://mempool.space/"
-							className="link link-primary inline-block text-sm hover:underline"
-						>
-							View on Bitcoin Explorer
-						</a>
+						{isPageLoading ? (
+							<Loader />
+						) : (
+							<p className="text-primary text-2xl font-bold sm:text-3xl">
+								{totalLockedBTC} BTC
+							</p>
+						)}
 						<div className="divider mt-6 pt-4" />
-						<div className="mb-3 flex items-center justify-center gap-2 sm:justify-start">
-							<div className="bg-primary h-5 w-5 rounded-full"></div>
-							<h3 className="text-base-content text-sm font-semibold sm:text-base">
-								Bitcoin dWallet UTXOs (Reserve)
-							</h3>
-						</div>
-						<p className="text-base-content/75 text-sm break-all">Address: bc1q_dwalle</p>
+						<p className="text-base-content/75 flex items-center gap-2 text-sm break-all">
+							Address: {trimAddress(pkgId)} <CopyButton text={pkgId} />
+						</p>
 					</div>
 				</div>
 
@@ -65,27 +82,22 @@ export const ReserveDashboard = ({
 						<p className="text-base-content/60 mb-2 text-sm font-medium tracking-wide uppercase">
 							Total nBTC Minted (Liability)
 						</p>
-						<p className="text-primary text-3xl font-bold sm:text-4xl">
-							{totalMintedNBTC.toLocaleString()} nBTC
-						</p>
-						<a
-							href={"https://suiscan.xyz/mainnet/home"}
-							className="link link-primary inline-block text-sm hover:underline"
-						>
-							View on Sui Explorer
-						</a>
+						{isPageLoading ? (
+							<Loader />
+						) : !suiAddr ? (
+							<SuiConnectModal />
+						) : (
+							<p className="text-primary text-2xl font-bold sm:text-3xl">
+								{totalMintedNBTC} nBTC
+							</p>
+						)}
 						<div className="divider mt-6 pt-4" />
-						<div className="mb-3 flex items-center justify-center gap-2 sm:justify-start">
-							<div className="bg-secondary h-5 w-5 rounded-full"></div>
-							<h3 className="text-base-content text-sm font-semibold sm:text-base">
-								nBTC Mint Contracts (Liability)
-							</h3>
-						</div>
-						<p className="text-base-content/75 text-sm break-all">Contract: 0x_nbtc_contract</p>
+						<p className="text-base-content/75 flex items-center gap-2 text-sm break-all">
+							Contract: {trimAddress(pkgId)} <CopyButton text={pkgId} />
+						</p>
 					</div>
 				</div>
 			</div>
-
 			{/* How to Verify Manually */}
 			<span className="alert alert-info">
 				<Info />
