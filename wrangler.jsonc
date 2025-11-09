@@ -80,6 +80,15 @@
 	// CLOUDFLARE_ENV=prod bun run build && wrangler deploy
 	// details: https://developers.cloudflare.com/workers/vite-plugin/reference/cloudflare-environments/
 	"env": {
+		"dev": {
+			"services": [
+				{
+					"binding": "BTCINDEXER",
+					"service": "btcindexer",
+					"entrypoint": "BtcIndexerRpcMock",
+				},
+			],
+		},
 		"prod": {
 			"route": "byield.gonative.cc",
 			"minify": true,

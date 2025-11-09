@@ -15,7 +15,7 @@
 		"deploy:prod:ver": "bun run build && wrangler versions upload -c ./wrangler-prod.jsonc",
 		"preview": "vite preview",
 		"preview:wrangler": "wrangler dev",
-		"dev": "react-router dev",
+		"dev": "CLOUDFLARE_ENV=dev react-router dev",
 		"lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
 		"lint:fix": "bun run lint --fix",
 		"format": "prettier --write .",
