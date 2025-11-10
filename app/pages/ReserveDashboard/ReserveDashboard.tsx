@@ -42,13 +42,13 @@ export const ReserveDashboard = () => {
 
 	const { network } = useXverseWallet();
 	const lockedBTCFetcher = useFetcher<QueryLockedBTCResp>();
-	const raffle: QueryLockedBTCResp = lockedBTCFetcher.data ?? null;
+	const lockedBTCData: QueryLockedBTCResp = lockedBTCFetcher.data ?? null;
 
 	useEffect(() => {
-		if (lockedBTCFetcher.state === "idle" && !raffle) {
+		if (lockedBTCFetcher.state === "idle" && !lockedBTCData) {
 			makeReq<QueryLockedBTCResp>(lockedBTCFetcher, { method: "queryLockedBTC", params: [network] });
 		}
-	}, [raffle, lockedBTCFetcher, network]);
+	}, [lockedBTCData, lockedBTCFetcher, network]);
 
 	const totalLockedBTC = lockedBTCFetcher.data?.totalLockedBTC;
 	const isPageLoading = lockedBTCFetcher.state !== "idle" || isLoading;

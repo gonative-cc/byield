@@ -2,7 +2,7 @@ import { useCurrentAccount, useSuiClient } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
 import { bcs } from "@mysten/sui/bcs";
 import { useQuery } from "@tanstack/react-query";
-import type { SuiJsonRpcClient } from "node_modules/@mysten/sui/dist/esm/jsonRpc/client";
+import type { SuiJsonRpcClient } from "@mysten/sui/jsonRpc";
 import { formatNBTC } from "~/lib/denoms";
 import { useNetworkVariables } from "~/networkConfig";
 import type { ContractsCfg } from "~/config/sui/contracts-config";
@@ -13,7 +13,6 @@ async function getTotalNBTCSupply(
 	contract: ContractsCfg["nbtc"],
 ) {
 	const txn = new Transaction();
-	if (!suiAddr) return;
 	txn.setSender(suiAddr);
 	txn.moveCall({
 		target: `${contract.pkgId}::nbtc::total_supply`,

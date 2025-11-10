@@ -9,7 +9,7 @@ const validNetworks: BitcoinNetworkType[] = [
 	BitcoinNetworkType.Regtest,
 ];
 
-// This is a server mint to post data to server (data mutations)
+// This is a server handler to post data to server (data mutations)
 export async function action({ request }: Route.ActionArgs) {
 	const reqData = await request.clone().json();
 	const network = (reqData as { params: [BitcoinNetworkType] }).params[0];

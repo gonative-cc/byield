@@ -1,5 +1,5 @@
 import type { BitcoinNetworkType } from "sats-connect";
-import { notFound } from "../http-resp";
+import { badRequest, notFound, serverError } from "../http-resp";
 import type { QueryLockedBTCResp, Req } from "./jsonrpc";
 import { mustGetBitcoinConfig } from "~/hooks/useBitcoinConfig";
 
@@ -9,6 +9,8 @@ interface Res {
 		spent_txo_sum: number;
 	};
 }
+
+const BTC_TO_SATHOSHIS = 100000000;
 
 export class ReserveController {
 	btcRPCUrl: string | null = null;
@@ -20,11 +22,13 @@ export class ReserveController {
 
 	async queryLockedBTC(): Promise<QueryLockedBTCResp> {
 		try {
+			if (!this.depositAddress) badRequest();
 			const url = this.btcRPCUrl + `/address/${this.depositAddress}`;
 			const response = await fetch(url);
 			const data: Res = await response.json();
 			const totalLockedBTC =
-				(data.chain_stats.funded_txo_sum - data.chain_stats.spent_txo_sum) / 100000000; // Convert satoshis to BTC
+				(data.chain_stats.funded_txo_sum - data.chain_stats.spent_txo_sum) /
+				BTC_TO_SATHOSHIS; // Convert satoshis to BTC
 
 			return {
 				totalLockedBTC,
