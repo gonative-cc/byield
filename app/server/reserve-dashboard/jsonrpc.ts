@@ -1,5 +1,5 @@
 import type { FetcherWithComponents } from "react-router";
-import type { QueryLockedBTC } from "./types";
+import type { QueryLockedBTC, CBTCData } from "./types";
 import type { BitcoinNetworkType } from "sats-connect";
 
 export type Req = {
@@ -17,3 +17,4 @@ export async function makeReq<T>(
 }
 
 export type QueryLockedBTCResp = QueryLockedBTC | null;
+export type QueryCBTCDataResp = CBTCData[] | null;
