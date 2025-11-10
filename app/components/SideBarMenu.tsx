@@ -44,7 +44,7 @@ function navMenuItems(): MenuItem[] {
 					},
 					{
 						id: "navigation-2-3",
-						link: "reserve-dashboard",
+						link: "/reserve-dashboard",
 						icon: "",
 						subNavItems: [],
 						title: "Reserves",
@@ -84,7 +84,7 @@ function navMenuItems(): MenuItem[] {
 				},
 				{
 					id: "navigation-2-3",
-					link: "reserve-dashboard",
+					link: "/reserve-dashboard",
 					icon: "",
 					subNavItems: [],
 					title: "Reserves",
