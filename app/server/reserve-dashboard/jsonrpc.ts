@@ -17,4 +17,3 @@ export async function makeReq<T>(
 }
 
 export type QueryLockedBTCResp = QueryLockedBTC | null;
-export type QueryCBTCDataResp = CBTCData[] | null;

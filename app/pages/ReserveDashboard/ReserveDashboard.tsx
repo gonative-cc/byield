@@ -131,7 +131,7 @@ export const ReserveDashboard = () => {
 								<div className="divider mt-6 pt-4" />
 								<p className="text-base-content/75 flex items-center gap-2 text-sm break-all">
 									Address: {trimAddress(CBTCData?.[0]?.btc_addr || "")}{" "}
-									<CopyButton text={pkgId} />
+									<CopyButton text={CBTCData?.[0]?.btc_addr || ""} />
 								</p>
 							</div>
 						</div>
@@ -153,7 +153,7 @@ export const ReserveDashboard = () => {
 								<div className="divider mt-6 pt-4" />
 								<p className="text-base-content/75 flex items-center gap-2 text-sm break-all">
 									Contract: {trimAddress(CBTCData?.[0]?.cbtc_pkg || "")}{" "}
-									<CopyButton text={pkgId} />
+									<CopyButton text={CBTCData?.[0]?.cbtc_pkg || ""} />
 								</p>
 							</div>
 						</div>
