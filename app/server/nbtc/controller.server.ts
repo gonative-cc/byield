@@ -18,9 +18,9 @@ export default class Controller {
 	btcRPCUrl: string | null = null;
 	btcindexer: BtcIndexerRpc | null = null;
 
-	constructor(network: BitcoinNetworkType, indexerRpc?: BtcIndexerRpc) {
+	constructor(network: BitcoinNetworkType, indexerRpc: BtcIndexerRpc) {
 		this.handleNetwork(network);
-		this.btcindexer = indexerRpc || null;
+		this.btcindexer = indexerRpc;
 	}
 
 	private async getMintTxs(suiAddr: string): Promise<QueryMintTxResp | Response> {

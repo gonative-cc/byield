@@ -13,10 +13,10 @@ export class ReserveController {
 	network: BitcoinNetworkType;
 	indexerRpc: BtcIndexerRpc | null = null;
 
-	constructor(network: BitcoinNetworkType, d1: D1Database, indexerRpc?: BtcIndexerRpc) {
+	constructor(network: BitcoinNetworkType, d1: D1Database, indexerRpc: BtcIndexerRpc) {
 		this.d1 = d1;
 		this.network = network;
-		this.indexerRpc = indexerRpc || null;
+		this.indexerRpc = indexerRpc;
 		this.handleNetwork(network);
 	}
 
@@ -39,7 +39,7 @@ export class ReserveController {
 
 	async queryCBTCData(): Promise<CBTCData[] | Response> {
 		try {
-			const query = `SELECT * from cbtc where network = ?`;
+			const query = `SELECT network, name, btc_addr, cbtc_pkg, cbtc_obj, note FROM cbtc WHERE network = ?`;
 			const result = await this.d1.prepare(query).bind(this.network).all<CBTCData>();
 			console.log(result);
 			if (result.error) {
