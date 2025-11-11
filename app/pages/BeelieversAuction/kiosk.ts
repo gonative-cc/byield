@@ -3,7 +3,7 @@ import { KioskClient, Network, KioskTransaction } from "@mysten/kiosk";
 import type { SuiClient } from "@mysten/sui/client";
 import { signAndExecTx, type TxSigner } from "~/lib/suienv";
 import { toast } from "~/hooks/use-toast";
-import { logger } from "~/lib/log";
+import { logError, logger } from "~/lib/log";
 
 export interface KioskInfo {
 	kioskId: string;
@@ -91,7 +91,7 @@ export const verifyKiosk = async (
 		});
 		return !!(kioskObject.data && capObject.data);
 	} catch (error) {
-		logger.error({ msg: "Error verifying kiosk", method: "fetchKioskFromChain", error });
+		logError({ msg: "Error verifying kiosk", method: "fetchKioskFromChain" }, error);
 		return false;
 	}
 };
@@ -124,11 +124,13 @@ export const initializeKioskInfo = async (
 			}
 		}
 	} catch (error) {
-		logger.error({
-			msg: "Error fetching kiosks from network",
-			method: "initializeKioskInfo",
+		logError(
+			{
+				msg: "Error fetching kiosks from network",
+				method: "initializeKioskInfo",
+			},
 			error,
-		});
+		);
 	}
 
 	return null;

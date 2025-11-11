@@ -1,6 +1,6 @@
 import { Check, Copy } from "lucide-react";
 import { useState } from "react";
-import { logger } from "~/lib/log";
+import { logError } from "~/lib/log";
 
 interface CopyButtonProps {
 	text: string;
@@ -17,7 +17,7 @@ export function CopyButton({ text, size }: CopyButtonProps) {
 			setCopied(true);
 			setTimeout(() => setCopied(false), 2500);
 		} catch (err) {
-			logger.error({ msg: "Failed to copy text", method: "CopyButton", error: err });
+			logError({ msg: "Failed to copy text", method: "CopyButton" }, err);
 		}
 	};
 

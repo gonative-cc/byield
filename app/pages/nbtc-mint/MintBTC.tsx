@@ -18,7 +18,7 @@ import { useCurrentAccount } from "@mysten/dapp-kit";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { BitCoinIcon, NBTCIcon } from "~/components/icons";
 import { TrimmedNumber } from "~/components/TrimmedNumber";
-import { logger } from "~/lib/log";
+import { logError, logger } from "~/lib/log";
 
 function BalanceCard() {
 	const { balance } = useXverseWallet();
@@ -179,7 +179,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 				throw new Error("Transaction signing failed");
 			}
 		} catch (error) {
-			logger.error({ msg: "nBTC mint transaction failed", method: "MintBTC", error });
+			logError({ msg: "nBTC mint transaction failed", method: "MintBTC" }, error);
 			toast({
 				title: "Transaction Failed",
 				description: error instanceof Error ? error.message : "Unknown error occurred",

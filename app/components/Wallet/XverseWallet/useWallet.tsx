@@ -14,7 +14,7 @@ import { toast } from "~/hooks/use-toast";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useXverseAddress } from "./useXverseAddress";
 import { storage } from "~/lib/storage";
-import { logger } from "~/lib/log";
+import { logError, logger } from "~/lib/log";
 
 const showToast = (title: string, description: string) =>
 	toast({ title, description, variant: "destructive" });
@@ -50,7 +50,7 @@ export const useXverseWallet = () => {
 				showToast("Wallet", "Failed to connect wallet");
 			}
 		} catch (err) {
-			logger.error({ msg: "Wallet connection error", method: "xverse:useWallet", error: err });
+			logError({ msg: "Wallet connection error", method: "xverse:useWallet" }, err);
 		}
 	}, [queryClient]);
 
@@ -108,7 +108,7 @@ export const useXverseWallet = () => {
 				showToast("Wallet", "Failed to disconnect wallet");
 			}
 		} catch (err) {
-			logger.warn({ msg: "Wallet disconnect", method: "xverse:useWallet", error: err });
+			logError({ msg: "Wallet disconnect", method: "xverse:useWallet" }, err);
 		}
 	}, [queryClient, resetWalletState]);
 

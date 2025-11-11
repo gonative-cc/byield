@@ -28,7 +28,7 @@ import type { KioskInfo } from "./kiosk";
 import { initializeKioskInfo, createKiosk } from "./kiosk";
 import { LoadingSpinner } from "~/components/LoadingSpinner";
 import { cardShowcaseClasses, cn, primaryBadgeClasses } from "~/util/tailwind";
-import { logger } from "~/lib/log";
+import { logError, logger } from "~/lib/log";
 
 interface MintInfoItemProps {
 	title: string;
@@ -139,7 +139,7 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 				}
 			}
 		} catch (error) {
-			logger.error({ msg: "Error minting", method: "MintInfo", error });
+			logError({ msg: "Error minting", method: "MintInfo" }, error);
 
 			const userMessage = handleMintError(error);
 
@@ -199,7 +199,7 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 				},
 			);
 		} catch (error) {
-			logger.error({ msg: "Claim tx error (outer catch)", method: "ui:MintInfo:refund", error });
+			logError({ msg: "Claim tx error (outer catch)", method: "MintInfo:refund" }, error);
 
 			toast({
 				title: "Transaction error",
@@ -516,7 +516,7 @@ async function queryHasMinted(addr: string, client: SuiClient, cfg: BeelieversMi
 
 		return result.results?.[0]?.returnValues?.[0]?.[0]?.[0] === 1;
 	} catch (error) {
-		logger.error({ msg: "Error checking mint status", method: "MintInfo:queryHasMinted", error });
+		logError({ msg: "Error checking mint status", method: "MintInfo:queryHasMinted" }, error);
 		return false;
 	}
 }

@@ -6,7 +6,7 @@ import { trimAddress } from "~/components/Wallet/walletHelper";
 import { GRADIENTS } from "~/util/tailwind";
 import { mkSuiVisionUrl, mkWalrusImageUrl } from "~/lib/suienv";
 import { useNetworkVariables } from "~/networkConfig";
-import { logger } from "~/lib/log";
+import { logError, logger } from "~/lib/log";
 
 interface NftMetadata {
 	id: string;
@@ -50,7 +50,7 @@ async function fetchNftMetadata(client: SuiClient, nftId: string): Promise<NftMe
 		}
 		return null;
 	} catch (error) {
-		logger.error({ msg: ">>> Error fetchNftMetadata", method: "fetchNftMetadata", nftId, error });
+		logError({ msg: ">>> Error fetchNftMetadata", method: "fetchNftMetadata", nftId }, error);
 		return null;
 	}
 }
@@ -189,7 +189,7 @@ export async function queryNftFromKiosk(
 		}
 		return null;
 	} catch (error) {
-		logger.error({ msg: "Error querying NFT from kiosk", method: "queryNftFromKiosk", kioskId, error });
+		logError({ msg: "Error querying NFT from kiosk", method: "queryNftFromKiosk", kioskId }, error);
 		return null;
 	}
 }
@@ -215,13 +215,15 @@ export async function queryNftByModule(
 
 		return null;
 	} catch (error) {
-		logger.error({
-			msg: "Error querying NFT by module",
-			method: "queryNftByMoveModule",
-			address,
-			mintPkgId,
+		logError(
+			{
+				msg: "Error querying NFT by module",
+				method: "queryNftByMoveModule",
+				address,
+				mintPkgId,
+			},
 			error,
-		});
+		);
 		return null;
 	}
 }
@@ -265,7 +267,7 @@ export function findNftInTxResult(result: SuiTransactionBlockResponse): string |
 		});
 		return null;
 	} catch (error) {
-		logger.error({ msg: "Error extracting NFT ID", method: "findNftInTxResult", error });
+		logError({ msg: "Error extracting NFT ID", method: "findNftInTxResult" }, error);
 		return null;
 	}
 }
