@@ -1,7 +1,8 @@
 import type { BitcoinNetworkType } from "sats-connect";
-import { badRequest, notFound, serverError } from "../http-resp";
+import { badRequest, notFound } from "../http-resp";
 import type { QueryLockedBTCResp, Req } from "./jsonrpc";
 import { mustGetBitcoinConfig } from "~/hooks/useBitcoinConfig";
+import { logError } from "~/lib/log";
 
 interface Res {
 	chain_stats: {
@@ -10,7 +11,7 @@ interface Res {
 	};
 }
 
-const BTC_TO_SATHOSHIS = 100000000;
+const BTC_TO_SATOSHIS = 100000000;
 
 export class ReserveController {
 	btcRPCUrl: string | null = null;
@@ -20,21 +21,21 @@ export class ReserveController {
 		this.handleNetwork(network);
 	}
 
-	async queryLockedBTC(): Promise<QueryLockedBTCResp> {
+	async queryLockedBTC(): Promise<QueryLockedBTCResp | Response> {
 		try {
-			if (!this.depositAddress) badRequest();
+			if (!this.depositAddress) return badRequest();
 			const url = this.btcRPCUrl + `/address/${this.depositAddress}`;
 			const response = await fetch(url);
 			const data: Res = await response.json();
 			const totalLockedBTC =
 				(data.chain_stats.funded_txo_sum - data.chain_stats.spent_txo_sum) /
-				BTC_TO_SATHOSHIS; // Convert satoshis to BTC
+				BTC_TO_SATOSHIS; // Convert satoshis to BTC
 
 			return {
 				totalLockedBTC,
 			};
 		} catch (error) {
-			console.error("Error fetching BTC reserves:", error);
+			logError({ msg: "Error fetching BTC reserves", method: "queryLockedBTC" }, error);
 			throw error;
 		}
 	}
@@ -50,7 +51,10 @@ export class ReserveController {
 		try {
 			reqData = await r.json<Req>();
 		} catch (_err) {
-			console.error({ msg: "Expecting JSON Content-Type and JSON body", error: _err });
+			logError(
+				{ msg: "Expecting JSON Content-Type and JSON body", method: "handleJsonRPC" },
+				_err,
+			);
 			return new Response("Expecting JSON Content-Type and JSON body", {
 				status: 400,
 			});

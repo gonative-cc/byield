@@ -66,7 +66,7 @@ export const ReserveDashboard = () => {
 							<Loader />
 						) : (
 							<p className="text-primary text-2xl font-bold sm:text-3xl">
-								{totalLockedBTC} BTC
+								{totalLockedBTC ?? "N/A"} BTC
 							</p>
 						)}
 						<div className="divider mt-6 pt-4" />
@@ -88,7 +88,7 @@ export const ReserveDashboard = () => {
 							<SuiConnectModal />
 						) : (
 							<p className="text-primary text-2xl font-bold sm:text-3xl">
-								{totalMintedNBTC} nBTC
+								{totalMintedNBTC ?? "N/A"} nBTC
 							</p>
 						)}
 						<div className="divider mt-6 pt-4" />
