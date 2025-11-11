@@ -1,4 +1,27 @@
+import type { Route } from "./+types/reserve-dashboard";
+import { ReserveController } from "~/server/reserve-dashboard/controller.server";
+import { BitcoinNetworkType } from "sats-connect";
 import { ReserveDashboard } from "~/pages/ReserveDashboard/ReserveDashboard";
+
+const validNetworks: BitcoinNetworkType[] = [
+	BitcoinNetworkType.Mainnet,
+	BitcoinNetworkType.Testnet4,
+	BitcoinNetworkType.Regtest,
+];
+
+// This is a server mint to post data to server (data mutations)
+export async function action({ request, context }: Route.ActionArgs) {
+	const env = context.cloudflare.env;
+	const reqData = await request.clone().json();
+	const network = (reqData as { params: [BitcoinNetworkType] }).params[0];
+
+	if (!network || !validNetworks.includes(network)) {
+		throw new Error("Invalid network type");
+	}
+
+	const ctrl = new ReserveController(network, env.BYieldD1);
+	return ctrl.handleJsonRPC(request);
+}
 
 export default function ReserveDashboardPage() {
 	return (
