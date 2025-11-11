@@ -3,6 +3,7 @@ import { KioskClient, Network, KioskTransaction } from "@mysten/kiosk";
 import type { SuiClient } from "@mysten/sui/client";
 import { signAndExecTx, type TxSigner } from "~/lib/suienv";
 import { toast } from "~/hooks/use-toast";
+import { logger } from "~/lib/log";
 
 export interface KioskInfo {
 	kioskId: string;
@@ -41,13 +42,13 @@ export async function createKiosk(
 	if (!kioskId || !kioskCapId) {
 		throw new Error("Failed to retrieve kiosk or kiosk cap ID, tx ID:" + result.digest);
 	}
-	console.log(
-		">>> Kiosk created, tx ID:",
-		result.digest,
-		"\nkiosk and kioskCap:",
+	logger.debug({
+		msg: ">>>> Kiosk created, tx ID:",
+		method: "createKiosk",
+		txId: result.digest,
 		kioskId,
 		kioskCapId,
-	);
+	});
 
 	return storeKioskInfo(userAddr, kioskId, kioskCapId);
 }
@@ -90,7 +91,7 @@ export const verifyKiosk = async (
 		});
 		return !!(kioskObject.data && capObject.data);
 	} catch (error) {
-		console.error("Error verifying kiosk:", error);
+		logger.error({ msg: "Error verifying kiosk", method: "fetchKioskFromChain", error });
 		return false;
 	}
 };
@@ -101,7 +102,7 @@ export const initializeKioskInfo = async (
 	network: Network,
 ): Promise<KioskInfo | null> => {
 	const stored = getStoredKioskInfo(address);
-	console.log("stored kiosk", stored);
+	logger.debug({ msg: "stored kiosk", method: "kiosk:initializeKioskInfo", stored });
 
 	if (stored) {
 		const isValid = await verifyKiosk(stored.kioskId, stored.kioskCapId, client);
@@ -123,7 +124,11 @@ export const initializeKioskInfo = async (
 			}
 		}
 	} catch (error) {
-		console.error("Error fetching kiosks from network:", error);
+		logger.error({
+			msg: "Error fetching kiosks from network",
+			method: "initializeKioskInfo",
+			error,
+		});
 	}
 
 	return null;

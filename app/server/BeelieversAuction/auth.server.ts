@@ -3,7 +3,7 @@ import { verifyTransactionSignature } from "@mysten/sui/verify";
 import { TransactionDataBuilder } from "@mysten/sui/transactions";
 
 import { delay } from "~/lib/batteries";
-import { logError } from "~/lib/log";
+import { logError, logger } from "~/lib/log";
 
 export type BidTxEvent = {
 	sender: string;
@@ -54,7 +54,12 @@ function processTransactionData(
 		return `[${source}] WARNING: Event sender ${sender} does not match provided bidder address ${bidderAddr} for tx ${suiTxId}.`;
 	}
 
-	console.log(`[${source}] Successfully validated tx ${suiTxId}`);
+	logger.info({
+		msg: "Successfully validated tx",
+		method: "processTransactionData",
+		source,
+		suiTxId,
+	});
 	return {
 		sender,
 		auctionId: auction_id,
@@ -76,7 +81,12 @@ async function queryIndexerFallback(
 
 	for (let attempt = 1; attempt <= MAX_ATTEMPT; attempt++) {
 		try {
-			console.log(`[Fallback] Querying public Suivision indexer for tx: ${suiTxId}`);
+			logger.info({
+				msg: "[Fallback] Querying public Suivision indexer for tx",
+				method: "queryIndexerFallback",
+				suiTxId,
+				attempt,
+			});
 			const response = await fetch(indexerUrl, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
@@ -101,10 +111,20 @@ async function queryIndexerFallback(
 				trustedPackageId,
 			);
 		} catch (error) {
-			console.error(`[Fallback] Attempt ${attempt} failed for tx ${suiTxId}:`, error);
+			logger.error({
+				msg: "[Fallback] attempt failed for tx",
+				method: "queryIndexerFallback",
+				attempt,
+				suiTxId,
+				error,
+			});
 
 			if (attempt < MAX_ATTEMPT) {
-				console.log(`[Fallback] Retrying in ${RETRY_DELAY_MS / 1000}s...`);
+				logger.info({
+					msg: "[Fallback] Retrying fallback query",
+					method: "queryIndexerFallback",
+					delaySeconds: RETRY_DELAY_MS / 1000,
+				});
 				await delay(RETRY_DELAY_MS);
 			}
 		}
@@ -120,7 +140,11 @@ export async function checkTxOnChain(
 	indexerURL: string,
 ): Promise<BidTxEvent | TxCheckError> {
 	try {
-		console.log(`[Primary] Querying Sui RPC for tx: ${suiTxId}`);
+		logger.info({
+			msg: "[Primary] Querying Sui RPC for tx",
+			method: "checkTxOnChain",
+			suiTxId,
+		});
 		const tx: SuiTransactionBlockResponse = await suiClient.getTransactionBlock({
 			digest: suiTxId,
 			options: {

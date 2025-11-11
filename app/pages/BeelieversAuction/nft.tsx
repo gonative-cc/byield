@@ -6,6 +6,7 @@ import { trimAddress } from "~/components/Wallet/walletHelper";
 import { GRADIENTS } from "~/util/tailwind";
 import { mkSuiVisionUrl, mkWalrusImageUrl } from "~/lib/suienv";
 import { useNetworkVariables } from "~/networkConfig";
+import { logger } from "~/lib/log";
 
 interface NftMetadata {
 	id: string;
@@ -49,7 +50,7 @@ async function fetchNftMetadata(client: SuiClient, nftId: string): Promise<NftMe
 		}
 		return null;
 	} catch (error) {
-		console.error(">>> Error: fetchNftMetadata", error);
+		logger.error({ msg: ">>> Error fetchNftMetadata", method: "fetchNftMetadata", nftId, error });
 		return null;
 	}
 }
@@ -176,7 +177,11 @@ export async function queryNftFromKiosk(
 
 				if (itemObject.data?.type?.includes(nftTypeName)) {
 					if (itemObject.data.content && "fields" in itemObject.data.content) {
-						console.log("found nft in kiosk", itemObject.data);
+						logger.debug({
+							msg: "found nft in kiosk",
+							method: "queryNftFromKiosk",
+							data: itemObject.data,
+						});
 						return obj.objectId;
 					}
 				}
@@ -184,7 +189,7 @@ export async function queryNftFromKiosk(
 		}
 		return null;
 	} catch (error) {
-		console.error("Error querying NFT from kiosk:", error);
+		logger.error({ msg: "Error querying NFT from kiosk", method: "queryNftFromKiosk", kioskId, error });
 		return null;
 	}
 }
@@ -210,7 +215,13 @@ export async function queryNftByModule(
 
 		return null;
 	} catch (error) {
-		console.error("Error querying NFT by module:", error);
+		logger.error({
+			msg: "Error querying NFT by module",
+			method: "queryNftByMoveModule",
+			address,
+			mintPkgId,
+			error,
+		});
 		return null;
 	}
 }
@@ -232,22 +243,29 @@ export const findExistingNft = async (
 export function findNftInTxResult(result: SuiTransactionBlockResponse): string | null {
 	try {
 		if (result.events) {
-			console.log(">>> Mint Events:", result.events);
+			logger.debug({ msg: ">>> Mint Events", method: "findNftInTxResult", events: result.events });
 			for (const event of result.events) {
 				if (
 					event.type.includes("::mint::NFTMinted") &&
 					(event.parsedJson as NFTMintedEvent)?.nft_id
 				) {
 					const nftId = (event.parsedJson as NFTMintedEvent).nft_id;
-					console.log(">>> Extracted NFT ID from event:", nftId);
+					logger.debug({
+						msg: ">>> Extracted NFT ID from event",
+						method: "findNftInTxResult",
+						nftId,
+					});
 					return nftId;
 				}
 			}
 		}
-		console.log(">>> No NFTMinted event found - NFT is likely stored in kiosk");
+		logger.debug({
+			msg: ">>> No NFTMinted event found - NFT is likely stored in kiosk",
+			method: "findNftInTxResult",
+		});
 		return null;
 	} catch (error) {
-		console.error("Error extracting NFT ID:", error);
+		logger.error({ msg: "Error extracting NFT ID", method: "findNftInTxResult", error });
 		return null;
 	}
 }

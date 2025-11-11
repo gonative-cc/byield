@@ -28,6 +28,7 @@ import type { KioskInfo } from "./kiosk";
 import { initializeKioskInfo, createKiosk } from "./kiosk";
 import { LoadingSpinner } from "~/components/LoadingSpinner";
 import { cardShowcaseClasses, cn, primaryBadgeClasses } from "~/util/tailwind";
+import { logger } from "~/lib/log";
 
 interface MintInfoItemProps {
 	title: string;
@@ -109,9 +110,9 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 			toast({ title: "Minting NFT", variant: "info" });
 
 			const result = await signAndExecTx(tx, client, signTransaction);
-			console.log(">>> Mint tx:", result.digest);
+			logger.info({ msg: ">>>> Mint tx:", method: "MintInfo", digest: result.digest });
 			if (result.errors) {
-				console.error(">>> Mint FAILED", result.errors);
+				logger.error({ msg: ">>>> Mint FAILED", method: "MintInfo", errors: result.errors });
 			}
 
 			const nftId = findNftInTxResult(result);
@@ -121,7 +122,11 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 				setNftId(nftId);
 				toast(createNftSuccessToast(nftId, contractsConfig));
 			} else {
-				console.log("nft not found in tx result, checking querying indexer with kiosk");
+				logger.info({
+					msg: "nft not found in tx result, checking querying indexer with kiosk",
+					method: "MintInfo",
+					kioskId,
+				});
 				const nftFromKiosk = await queryNftFromKiosk(kioskId, beelieversMint.pkgId, client);
 				if (nftFromKiosk) {
 					setNftId(nftFromKiosk);
@@ -134,7 +139,7 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 				}
 			}
 		} catch (error) {
-			console.error("Error minting:", error);
+			logger.error({ msg: "Error minting", method: "MintInfo", error });
 
 			const userMessage = handleMintError(error);
 
@@ -170,7 +175,11 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 								description: `SUI refunded`,
 							});
 						} else {
-							console.error("Claim tx error: ", effects?.status.error);
+							logger.error({
+								msg: "Claim tx error",
+								method: "MintInfo:handleRefund",
+								error: effects?.status.error,
+							});
 							toast({
 								title: "Refund failed",
 								description: "Please try again later.",
@@ -179,7 +188,7 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 						}
 					},
 					onError: (error) => {
-						console.error("Claim tx error:", error);
+						logger.error({ msg: "Claim tx error", method: "MintInfo:handleRefund", error });
 
 						toast({
 							title: "Refund failed",
@@ -190,7 +199,7 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 				},
 			);
 		} catch (error) {
-			console.error("Claim tx error:", error);
+			logger.error({ msg: "Claim tx error (outer catch)", method: "ui:MintInfo:refund", error });
 
 			toast({
 				title: "Transaction error",
@@ -306,7 +315,7 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 
 			const kiosk = await initializeKioskInfo(userAddr, client, network as Network);
 			setKiosk(kiosk);
-			console.log(">>> MintInfo: Loaded kiosk for address:", userAddr, kiosk);
+			logger.debug({ msg: ">>> Loaded kiosk for address", method: "MintInfo", userAddr, kiosk });
 
 			if (hasMinted) {
 				const existingNftId = await findExistingNft(
@@ -317,7 +326,12 @@ export function MintInfo({ user, auctionInfo: { clearingPrice, auctionSize: _auc
 				);
 				if (existingNftId) {
 					setNftId(existingNftId);
-					console.log(">>> MintInfo: Found existing NFT for address:", userAddr, existingNftId);
+					logger.debug({
+						msg: ">>> Found existing NFT for address",
+						method: "MintInfo",
+						userAddr,
+						existingNftId,
+					});
 				}
 			}
 		};
@@ -502,7 +516,7 @@ async function queryHasMinted(addr: string, client: SuiClient, cfg: BeelieversMi
 
 		return result.results?.[0]?.returnValues?.[0]?.[0]?.[0] === 1;
 	} catch (error) {
-		console.error("Error checking mint status:", error);
+		logger.error({ msg: "Error checking mint status", method: "MintInfo:queryHasMinted", error });
 		return false;
 	}
 }

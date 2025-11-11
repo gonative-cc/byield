@@ -9,6 +9,7 @@ import { GA_EVENT_NAME, GA_CATEGORY, useGoogleAnalytics } from "~/lib/googleAnal
 import { useNetworkVariables } from "~/networkConfig";
 import type { UseCoinBalanceResult } from "~/components/Wallet/SuiWallet/useBalance";
 import { moveCallTarget, type NbtcOtcCfg } from "~/config/sui/contracts-config";
+import { logger } from "~/lib/log";
 
 const buyNBTCFunction = "buy_nbtc";
 const sellNBTCFunction = "sell_nbtc";
@@ -48,7 +49,12 @@ async function createNBTCTxn(
 		txn.transferObjects([resultCoin], senderAddress);
 	} else {
 		if (nbtcBalance < amount) {
-			console.error("Not enough nBTC balance available.");
+			logger.error({
+				msg: "Not enough nBTC balance available",
+				method: "useNBTC",
+				nbtcBalance,
+				amount,
+			});
 			toast({
 				title: "Sell nBTC",
 				description: "Not enough nBTC balance available.",
@@ -123,7 +129,10 @@ export const useBuySellNBTC = ({ variant, nbtcBalanceRes, suiBalanceRes }: NBTCP
 		async (amount: bigint) => {
 			const title = variant === "BUY" ? "Buy nBTC" : "Sell nBTC";
 			if (!account) {
-				console.error("Account is not available. Cannot proceed with the transaction.");
+				logger.error({
+					msg: "Account is not available. Cannot proceed with the transaction",
+					method: "useNBTC",
+				});
 				toast({
 					title,
 					description: "Account is not available. Cannot proceed with the transaction.",
@@ -143,7 +152,7 @@ export const useBuySellNBTC = ({ variant, nbtcBalanceRes, suiBalanceRes }: NBTCP
 			);
 			const label = variant === "BUY" ? `user tried to buy ${formatSUI(amount)} SUI` : "";
 			if (!transaction) {
-				console.error("Failed to create the transaction");
+				logger.error({ msg: "Failed to create the transaction", method: "useNBTC" });
 				return;
 			}
 			signAndExecuteTransaction(

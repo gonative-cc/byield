@@ -23,7 +23,7 @@ export async function loader({ params, context, request }: Route.LoaderArgs): Pr
 	// We can try to set user address to the params
 	// Probably we can use https://reactrouter.com/start/framework/route-module#unstable_clientmiddleware
 	// const suiAddress = url.searchParams.get("suiAddress") ?? undefined;
-	console.log(">>>>> Page Loader handler - params:", params, "url:", url.href);
+	// Debug: Page Loader handler
 	return await ctrl.loadPageData();
 }
 

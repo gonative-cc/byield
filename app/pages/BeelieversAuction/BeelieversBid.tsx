@@ -16,6 +16,7 @@ import { toast } from "~/hooks/use-toast";
 import { useNetworkVariables } from "~/networkConfig";
 import { SUIIcon } from "~/components/icons";
 import { moveCallTarget, type BeelieversAuctionCfg } from "~/config/sui/contracts-config";
+import { logger } from "~/lib/log";
 import {
 	buttonEffectClasses,
 	classNames,
@@ -108,14 +109,13 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 			{ transaction },
 			{
 				onSuccess: async (result, _variables) => {
-					console.log(
-						">>>> Bid tx submitted, digest: ",
-						result.digest,
-						"\n tx data:",
-						result.bytes,
-						"\n signature",
-						result.signature,
-					);
+					logger.info({
+						msg: ">>>> Bid tx submitted, digest: ",
+						method: "BeelieversBid",
+						digest: result.digest,
+						bytes: result.bytes,
+						signature: result.signature,
+					});
 
 					// Probably we firstly need to wait for tx, before submitting to the server
 					const { effects } = await client.waitForTransaction({
@@ -132,7 +132,11 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 							params: [account.address, result.bytes, result.signature, note],
 						});
 					} else {
-						console.error("err", effects?.status.error);
+						logger.error({
+							msg: "Bid transaction failed",
+							method: "BeelieversBid",
+							error: effects?.status.error,
+						});
 						toast({
 							title,
 							description: "Bid failed. Please try again later.\n",

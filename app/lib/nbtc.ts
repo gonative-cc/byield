@@ -11,7 +11,7 @@ import {
 import { uint8ArrayToHex, hexToUint8Array } from "./buffer";
 import { toast } from "~/hooks/use-toast";
 import type { BitcoinConfig } from "~/config/bitcoin/contracts-config";
-import { logError } from "./log";
+import { logError, logger } from "./log";
 
 export const PRICE_PER_NBTC_IN_SUI = 25000n;
 const DUST_THRESHOLD_SATOSHI = 546;
@@ -60,7 +60,7 @@ export async function nBTCMintTx(
 	const networkCfg = await getBitcoinNetworkConfig(network);
 	if (!networkCfg) {
 		const description = "can't fetch bitcoin network config for network: " + network;
-		console.error(description);
+		logger.error({ msg: description, method: "nBTCMintTx", network });
 		toast({
 			title: "Bitcoin network",
 			description,
@@ -70,7 +70,11 @@ export async function nBTCMintTx(
 	}
 	try {
 		if (!utxos?.length) {
-			console.error("utxos not found.");
+			logger.error({
+				msg: "utxos not found",
+				method: "nBTCMintTx",
+				bitcoinAddress: bitcoinAddress.address,
+			});
 			toast({
 				title: "UTXO",
 				description: "UTXOs not found for this address.",
@@ -107,7 +111,12 @@ export async function nBTCMintTx(
 				witnessProgram: "",
 			};
 		} catch (error) {
-			console.error("Invalid Bitcoin address:", error);
+			logger.error({
+				msg: "Invalid Bitcoin address",
+				method: "nBTCMintTx",
+				address: bitcoinAddress.address,
+				error,
+			});
 			toast({
 				title: "Address",
 				description: "Invalid Bitcoin address format.",
@@ -125,7 +134,14 @@ export async function nBTCMintTx(
 		const totalRequired = mintAmountInSatoshi + estimatedFee;
 
 		if (totalAvailable < totalRequired) {
-			console.error("Insufficient funds for transaction and fee.");
+			logger.error({
+				msg: "Insufficient funds for transaction and fee",
+				method: "nBTCMintTx",
+				totalAvailable,
+				totalRequired,
+				mintAmountInSatoshi,
+				estimatedFee,
+			});
 			toast({
 				title: "Insufficient Funds",
 				description: `Need ${totalRequired} satoshis but only have ${totalAvailable} available.`,
@@ -215,7 +231,7 @@ export async function nBTCMintTx(
 		}
 		return response;
 	} catch (error) {
-		console.error("nBTC Mint Transaction Error:", error);
+		logger.error({ msg: "nBTC Mint Transaction Error", method: "nBTCMintTx", error });
 		toast({
 			title: "Transaction Error",
 			description: error instanceof Error ? error.message : "An unexpected error occurred.",
