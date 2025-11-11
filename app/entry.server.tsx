@@ -2,6 +2,7 @@ import type { AppLoadContext, EntryContext } from "react-router";
 import { ServerRouter } from "react-router";
 import { isbot } from "isbot";
 import { renderToReadableStream } from "react-dom/server";
+import { logError } from "~/lib/log";
 
 export default async function handleRequest(
 	request: Request,
@@ -20,7 +21,7 @@ export default async function handleRequest(
 			// errors encountered during initial shell rendering since they'll
 			// reject and get logged in handleDocumentRequest.
 			if (shellRendered) {
-				console.error(error);
+				logError({ msg: "Server render error", method: "handleRequest" }, error);
 			}
 		},
 	});

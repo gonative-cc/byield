@@ -14,6 +14,7 @@ import { toast } from "~/hooks/use-toast";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useXverseAddress } from "./useXverseAddress";
 import { storage } from "~/lib/storage";
+import { logError, logger } from "~/lib/log";
 
 const showToast = (title: string, description: string) =>
 	toast({ title, description, variant: "destructive" });
@@ -49,7 +50,7 @@ export const useXverseWallet = () => {
 				showToast("Wallet", "Failed to connect wallet");
 			}
 		} catch (err) {
-			console.error(err);
+			logError({ msg: "Wallet connection error", method: "xverse:useWallet" }, err);
 		}
 	}, [queryClient]);
 
@@ -107,7 +108,7 @@ export const useXverseWallet = () => {
 				showToast("Wallet", "Failed to disconnect wallet");
 			}
 		} catch (err) {
-			console.log(err);
+			logError({ msg: "Wallet disconnect", method: "xverse:useWallet" }, err);
 		}
 	}, [queryClient, resetWalletState]);
 
@@ -117,7 +118,11 @@ export const useXverseWallet = () => {
 			setNetwork(newNetwork);
 			storage.setXverseNetwork(newNetwork);
 		} else {
-			console.error("Failed to switch network:", response.error);
+			logger.error({
+				msg: "Failed to switch network",
+				method: "xverse:useWallet",
+				error: response.error,
+			});
 			showToast("Network", "Failed to switch network");
 		}
 	}, []);

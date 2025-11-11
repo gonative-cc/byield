@@ -18,6 +18,7 @@ import { useCurrentAccount } from "@mysten/dapp-kit";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { BitCoinIcon, NBTCIcon } from "~/components/icons";
 import { TrimmedNumber } from "~/components/TrimmedNumber";
+import { logError, logger } from "~/lib/log";
 
 function BalanceCard() {
 	const { balance } = useXverseWallet();
@@ -136,7 +137,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 		if (!currentAddress) return;
 
 		if (!cfg.nBTC.depositAddress) {
-			console.error({ msg: "Missing depositAddress in bitcoin config", network });
+			logger.error({ msg: "Missing depositAddress in bitcoin config", method: "MintBTC", network });
 			toast({
 				title: "Network Configuration Error",
 				description: `Missing deposit address for network ${network}. Please switch to TestnetV2, Mainnet, or Devnet for nBTC minting.`,
@@ -178,7 +179,7 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 				throw new Error("Transaction signing failed");
 			}
 		} catch (error) {
-			console.error({ msg: "nBTC mint transaction failed", error });
+			logError({ msg: "nBTC mint transaction failed", method: "MintBTC" }, error);
 			toast({
 				title: "Transaction Failed",
 				description: error instanceof Error ? error.message : "Unknown error occurred",

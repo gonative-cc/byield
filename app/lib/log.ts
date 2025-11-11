@@ -10,6 +10,7 @@ export interface Context {
 	method: string;
 	error?: unknown;
 	httpError?: HttpError;
+	[key: string]: unknown;
 }
 
 export function logError(ctx: Context, error?: unknown) {
@@ -25,7 +26,7 @@ export function logError(ctx: Context, error?: unknown) {
 			ctx.error = error;
 		}
 	}
-	console.error(ctx);
+	logger.error(ctx);
 }
 
 // Logs the error and returns resp body as a text
@@ -36,6 +37,23 @@ export async function logHttpError(ctx: Context, resp: Response): Promise<string
 		body: body,
 		url: resp.url,
 	};
-	console.error(ctx);
+	logger.error(ctx);
 	return body;
 }
+
+export interface LogData {
+	msg: string;
+	[key: string]: unknown;
+}
+
+function log(level: "debug" | "info" | "warn" | "error", data: LogData) {
+	const output = { ...data, level };
+	console[level === "info" ? "log" : level](output);
+}
+
+export const logger = {
+	debug: (data: LogData) => log("debug", data),
+	info: (data: LogData) => log("info", data),
+	warn: (data: LogData) => log("warn", data),
+	error: (data: LogData) => log("error", data),
+};

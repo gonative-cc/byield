@@ -52,8 +52,6 @@ export function BeelieversAuction({ info, leaderboard }: BeelieversAuctionProps)
 	const raffle: QueryRaffleResp = raffleFetcher.data ?? null;
 	const auctionState = getAuctionState(info.startsAt, info.endsAt, info.clearingPrice);
 
-	console.log(">>>> user", user);
-
 	const processedLeaderboard = useMemo(
 		() =>
 			leaderboard.map((l) =>

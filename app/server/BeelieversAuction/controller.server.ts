@@ -13,7 +13,7 @@ import { Auction, type BidResult } from "./auction.server";
 
 import { mainnetCfg, testnetCfg } from "~/config/sui/contracts-config";
 import * as httpresp from "../http-resp";
-import { logError } from "~/lib/log";
+import { logError, logger } from "~/lib/log";
 
 const maxTxIdSize = 44;
 
@@ -108,7 +108,7 @@ export default class Controller {
 				status: 400,
 			});
 		}
-		console.log("handle RPC", reqData);
+		logger.debug({ msg: "handle RPC", method: "beelieversAuction:handleJsonRPC", reqData });
 		switch (reqData.method) {
 			case "queryUser":
 				return this.getUserData(reqData.params[0]);
@@ -141,7 +141,12 @@ export default class Controller {
 		const txDigest = await verifySignature(userAddr, txBytes, signature);
 		if (txDigest === null) return httpresp.notAuthorized();
 		if (txDigest.length > maxTxIdSize) {
-			console.error("txDigest too long!", txDigest);
+			logger.error({
+				msg: "txDigest too long",
+				method: "beelieversAuction:postBidTx",
+				txDigest,
+				maxTxIdSize,
+			});
 			return httpresp.badRequest("Bad Tx Digest");
 		}
 		// TODO: Vu: extract timestamp from txBytes
@@ -160,7 +165,12 @@ export default class Controller {
 				this.fallbackIndexerUrl,
 			);
 			if (typeof bidEvent === "string") {
-				console.error("[Controller] On-chain validation failed:", bidEvent);
+				logger.error({
+					msg: "[Controller] On-chain validation failed",
+					method: "beelieversAuction:postBidTx",
+					txDigest,
+					bidEvent,
+				});
 				const keyKvNA = this.kvKeyTxPrefixNotAuthorized + txDigest;
 				await this.kv.put(keyKvNA, "");
 				return httpresp.notAuthorized();

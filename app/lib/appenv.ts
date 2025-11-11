@@ -4,6 +4,8 @@ export function isProductionMode(): boolean {
 	return import.meta.env.MODE === "production";
 }
 
+import { logger } from "./log";
+
 export function printAppEnv() {
-	console.log("App Env: ", import.meta.env);
+	logger.debug({ msg: "App Env", method: "printAppEnv", env: import.meta.env });
 }

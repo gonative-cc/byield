@@ -16,6 +16,7 @@ import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { TrimmedNumber } from "~/components/TrimmedNumber";
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { CopyButton } from "./ui/CopyButton";
+import { logger } from "~/lib/log";
 
 export function SelectWallet() {
 	const { connectWallet } = useXverseWallet();
@@ -258,7 +259,12 @@ function SuiAccounts() {
 				switchAccount(
 					{ account: newAccount },
 					{
-						onSuccess: () => console.log(`Switched to ${newAccount.address}`),
+						onSuccess: () =>
+							logger.debug({
+								msg: "Switched to account",
+								method: "SelectWallet",
+								address: newAccount.address,
+							}),
 					},
 				);
 			}}

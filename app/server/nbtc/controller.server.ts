@@ -12,6 +12,7 @@ import {
 import { protectedBitcoinRPC } from "./btc-proxy.server";
 import type { BtcIndexerRpc } from "./btc-indexer-rpc.types";
 import { convertTxStatusToMintTx } from "./convert";
+import { logError, logger } from "~/lib/log";
 
 export default class Controller {
 	btcRPCUrl: string | null = null;
@@ -42,7 +43,7 @@ export default class Controller {
 	private async queryUTXOs(address: string) {
 		const method = "nbtc:queryUTXOs";
 		const path = `/address/${encodeURIComponent(address)}/utxo`;
-		console.trace({ msg: "Querying nBTCUTXOs", address, btcRPCUrl: this.btcRPCUrl });
+		logger.debug({ msg: "Querying nBTCUTXOs", method, address, btcRPCUrl: this.btcRPCUrl });
 
 		// URL is dummy
 		const request = new Request("https://internal-proxy-auth", {
@@ -115,7 +116,13 @@ export default class Controller {
 		try {
 			reqData = await r.json<Req>();
 		} catch (_err) {
-			console.error({ msg: "Expecting JSON Content-Type and JSON body", error: _err });
+			logError(
+				{
+					msg: "Expecting JSON Content-Type and JSON body",
+					method: "nbtc:handleJsonRPC",
+				},
+				_err,
+			);
 			return new Response("Expecting JSON Content-Type and JSON body", {
 				status: 400,
 			});
