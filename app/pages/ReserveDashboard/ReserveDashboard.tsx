@@ -14,6 +14,16 @@ function Loader() {
 	return <div className="skeleton h-8 w-40"></div>;
 }
 
+const renderTabHeader = (title: string, checked = false) => (
+	<input
+		type="radio"
+		name="tab_proof_of_reserve"
+		className="tab checked:bg-primary rounded-full"
+		aria-label={title}
+		defaultChecked={checked}
+	/>
+);
+
 function Header() {
 	return (
 		<div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -51,50 +61,102 @@ export const ReserveDashboard = () => {
 	}, [lockedBTCData, lockedBTCFetcher, network]);
 
 	const totalLockedBTC = lockedBTCFetcher.data?.totalLockedBTC;
+	const CBTCData = lockedBTCFetcher.data?.CBTCData;
 	const isPageLoading = lockedBTCFetcher.state !== "idle" || isLoading;
 
 	return (
 		<div className="mx-auto space-y-6 p-6 sm:p-8">
 			<Header />
-			<div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-				<div className="card">
-					<div className="card-body">
-						<p className="text-base-content/60 mb-2 text-sm font-medium tracking-wide uppercase">
-							Total BTC Locked (Reserves)
-						</p>
-						{isPageLoading ? (
-							<Loader />
-						) : (
-							<p className="text-primary text-2xl font-bold sm:text-3xl">
-								{totalLockedBTC ?? "N/A"} BTC
-							</p>
-						)}
-						<div className="divider mt-6 pt-4" />
-						<p className="text-base-content/75 flex items-center gap-2 text-sm break-all">
-							Address: {trimAddress(pkgId)} <CopyButton text={pkgId} />
-						</p>
+			<div className="tabs tabs-boxed rounded-full p-1">
+				{renderTabHeader("nBTC", true)}
+				<div className="tab-content py-6">
+					<div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+						<div className="card">
+							<div className="card-body">
+								<p className="text-base-content/60 mb-2 text-sm font-medium tracking-wide uppercase">
+									Total BTC Locked (Reserves)
+								</p>
+								{isPageLoading ? (
+									<Loader />
+								) : (
+									<p className="text-primary text-2xl font-bold sm:text-3xl">
+										{totalLockedBTC} BTC
+									</p>
+								)}
+								<div className="divider mt-6 pt-4" />
+								<p className="text-base-content/75 flex items-center gap-2 text-sm break-all">
+									Address: {trimAddress(pkgId)} <CopyButton text={pkgId} />
+								</p>
+							</div>
+						</div>
+
+						{/* Liability Card */}
+						<div className="card">
+							<div className="card-body">
+								<p className="text-base-content/60 mb-2 text-sm font-medium tracking-wide uppercase">
+									Total nBTC Minted (Liability)
+								</p>
+								{isPageLoading ? (
+									<Loader />
+								) : !suiAddr ? (
+									<SuiConnectModal />
+								) : (
+									<p className="text-primary text-2xl font-bold sm:text-3xl">
+										{totalMintedNBTC} nBTC
+									</p>
+								)}
+								<div className="divider mt-6 pt-4" />
+								<p className="text-base-content/75 flex items-center gap-2 text-sm break-all">
+									Contract: {trimAddress(pkgId)} <CopyButton text={pkgId} />
+								</p>
+							</div>
+						</div>
 					</div>
 				</div>
+				{renderTabHeader("cBTC")}
+				<div className="tab-content py-6">
+					<div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+						<div className="card">
+							<div className="card-body">
+								<p className="text-base-content/60 mb-2 text-sm font-medium tracking-wide uppercase">
+									Total BTC Locked (Reserves)
+								</p>
+								{isPageLoading ? (
+									<Loader />
+								) : (
+									<p className="text-primary text-2xl font-bold sm:text-3xl">
+										{totalLockedBTC} BTC
+									</p>
+								)}
+								<div className="divider mt-6 pt-4" />
+								<p className="text-base-content/75 flex items-center gap-2 text-sm break-all">
+									Address: {trimAddress(CBTCData?.[0]?.btc_addr || "")}{" "}
+									<CopyButton text={CBTCData?.[0]?.btc_addr || ""} />
+								</p>
+							</div>
+						</div>
 
-				{/* Liability Card */}
-				<div className="card">
-					<div className="card-body">
-						<p className="text-base-content/60 mb-2 text-sm font-medium tracking-wide uppercase">
-							Total nBTC Minted (Liability)
-						</p>
-						{isPageLoading ? (
-							<Loader />
-						) : !suiAddr ? (
-							<SuiConnectModal />
-						) : (
-							<p className="text-primary text-2xl font-bold sm:text-3xl">
-								{totalMintedNBTC ?? "N/A"} nBTC
-							</p>
-						)}
-						<div className="divider mt-6 pt-4" />
-						<p className="text-base-content/75 flex items-center gap-2 text-sm break-all">
-							Contract: {trimAddress(pkgId)} <CopyButton text={pkgId} />
-						</p>
+						{/* Liability Card */}
+						<div className="card">
+							<div className="card-body">
+								<p className="text-base-content/60 mb-2 text-sm font-medium tracking-wide uppercase">
+									Total cBTC
+								</p>
+								{isPageLoading ? (
+									<Loader />
+								) : (
+									<p className="text-primary text-2xl font-bold sm:text-3xl">
+										{/* TODO: not available as of now */}
+										{totalMintedNBTC} cBTC
+									</p>
+								)}
+								<div className="divider mt-6 pt-4" />
+								<p className="text-base-content/75 flex items-center gap-2 text-sm break-all">
+									Contract: {trimAddress(CBTCData?.[0]?.cbtc_pkg || "")}{" "}
+									<CopyButton text={CBTCData?.[0]?.cbtc_pkg || ""} />
+								</p>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
