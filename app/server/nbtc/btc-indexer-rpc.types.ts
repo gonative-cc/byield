@@ -16,5 +16,5 @@ export interface TxStatusResp {
 export interface BtcIndexerRpc {
 	statusBySuiAddress(suiAddress: string): Promise<TxStatusResp[]>;
 	putNbtcTx(txHex: string): Promise<{ tx_id: string; registered_deposits: number }>;
-	lockedBTCDeposit(): Promise<number | undefined>;
+	lockedBTCDeposit(): Promise<number | null>;
 }
