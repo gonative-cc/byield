@@ -80,6 +80,33 @@
 	// CLOUDFLARE_ENV=prod bun run build && wrangler deploy
 	// details: https://developers.cloudflare.com/workers/vite-plugin/reference/cloudflare-environments/
 	"env": {
+		"dev": {
+			"kv_namespaces": [
+				{
+					"binding": "BeelieversNFT",
+					"id": "181c1046829d47d2a3791087dba7e0bf",
+				},
+			],
+			"d1_databases": [
+				{
+					"binding": "BeelieversD1",
+					"database_name": "beelievers-dev",
+					"database_id": "edd65a3a-e21a-41a3-a3b1-43adbd00a8c3",
+				},
+				{
+					"binding": "BYieldD1",
+					"database_name": "byield-dev",
+					"database_id": "e0772a14-1734-4eab-b193-84675dd08a20",
+				},
+			],
+			"services": [
+				{
+					"binding": "BTCINDEXER",
+					"service": "btcindexer",
+					"entrypoint": "BtcIndexerRpcMock",
+				},
+			],
+		},
 		"prod": {
 			"route": "byield.gonative.cc",
 			"minify": true,
