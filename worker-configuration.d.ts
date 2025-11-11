@@ -11,7 +11,7 @@ declare namespace Cloudflare {
 		TRADEPORT_API_KEY: string;
 		BeelieversD1: D1Database;
 		BYieldD1: D1Database;
-		BTCINDEXER: Service /* entrypoint BtcIndexerRpc from btcindexer */;
+		BTCINDEXER: Service & import("./app/server/nbtc/btc-indexer-rpc.types").BtcIndexerRpc;
 	}
 }
 interface Env extends Cloudflare.Env {}
