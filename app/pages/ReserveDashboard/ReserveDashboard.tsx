@@ -7,6 +7,7 @@ import { SuiConnectModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import { trimAddress } from "~/components/Wallet/walletHelper";
 import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
 import { useNBTCTotalSupply } from "~/hooks/useNBTCTotalSupply";
+import { formatBTC } from "~/lib/denoms";
 import { useNetworkVariables } from "~/networkConfig";
 import { makeReq, type QueryLockedBTCResp } from "~/server/reserve-dashboard/jsonrpc";
 
@@ -56,12 +57,12 @@ export const ReserveDashboard = () => {
 
 	useEffect(() => {
 		if (lockedBTCFetcher.state === "idle" && !lockedBTCData) {
-			makeReq<QueryLockedBTCResp>(lockedBTCFetcher, { method: "queryLockedBTC", params: [network] });
+			makeReq<QueryLockedBTCResp>(lockedBTCFetcher, { method: "loadReservePage", params: [network] });
 		}
 	}, [lockedBTCData, lockedBTCFetcher, network]);
 
 	const totalLockedBTC = lockedBTCFetcher.data?.totalLockedBTC;
-	const CBTCData = lockedBTCFetcher.data?.CBTCData;
+	const CBTCData = lockedBTCFetcher.data?.cBTCData;
 	const isPageLoading = lockedBTCFetcher.state !== "idle" || isLoading;
 
 	return (
@@ -80,7 +81,7 @@ export const ReserveDashboard = () => {
 									<Loader />
 								) : (
 									<p className="text-primary text-2xl font-bold sm:text-3xl">
-										{totalLockedBTC} BTC
+										{totalLockedBTC ? formatBTC(totalLockedBTC) + " BTC" : "N/A"}
 									</p>
 								)}
 								<div className="divider mt-6 pt-4" />
@@ -125,7 +126,7 @@ export const ReserveDashboard = () => {
 									<Loader />
 								) : (
 									<p className="text-primary text-2xl font-bold sm:text-3xl">
-										{totalLockedBTC} BTC
+										{totalLockedBTC ? formatBTC(totalLockedBTC) + " BTC" : "N/A"}
 									</p>
 								)}
 								<div className="divider mt-6 pt-4" />

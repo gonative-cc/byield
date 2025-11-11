@@ -19,7 +19,7 @@ export async function action({ request, context }: Route.ActionArgs) {
 		throw new Error("Invalid network type");
 	}
 
-	const ctrl = new ReserveController(network, env.BYieldD1);
+	const ctrl = new ReserveController(network, env.BYieldD1, env.BTCINDEXER);
 	return ctrl.handleJsonRPC(request);
 }
 

@@ -1,67 +1,53 @@
 import type { BitcoinNetworkType } from "sats-connect";
-import { badRequest, handleNonSuccessResp, notFound } from "../http-resp";
+import { notFound, serverError } from "../http-resp";
 import type { QueryLockedBTCResp, Req } from "./jsonrpc";
-import type { CBTCData } from "./types";
 import { mustGetBitcoinConfig } from "~/hooks/useBitcoinConfig";
+import type { BtcIndexerRpc } from "../nbtc/btc-indexer-rpc.types";
 import { logError } from "~/lib/log";
-
-interface Res {
-	chain_stats: {
-		funded_txo_sum: number;
-		spent_txo_sum: number;
-	};
-}
-
-const BTC_TO_SATOSHIS = 100000000;
+import type { CBTCData } from "./types";
 
 export class ReserveController {
 	btcRPCUrl: string | null = null;
 	depositAddress: string | null = null;
 	d1: D1Database;
 	network: BitcoinNetworkType;
+	indexerRpc: BtcIndexerRpc | null = null;
 
-	constructor(network: BitcoinNetworkType, d1: D1Database) {
+	constructor(network: BitcoinNetworkType, d1: D1Database, indexerRpc?: BtcIndexerRpc) {
 		this.d1 = d1;
 		this.network = network;
+		this.indexerRpc = indexerRpc || null;
 		this.handleNetwork(network);
 	}
 
-	async queryLockedBTC(): Promise<QueryLockedBTCResp | Response> {
+	async loadReservePage(): Promise<QueryLockedBTCResp | Response> {
 		try {
-			if (!this.depositAddress) return badRequest();
-			const url = this.btcRPCUrl + `/address/${this.depositAddress}`;
-			const response = await fetch(url);
-			const data: Res = await response.json();
-			const totalLockedBTC =
-				(data.chain_stats.funded_txo_sum - data.chain_stats.spent_txo_sum) /
-				BTC_TO_SATOSHIS; // Convert satoshis to BTC
-
-			// TODO: query cBTC data using package id and object id
-			const cBTCData = await this.queryCBTCData();
-			if (cBTCData instanceof Response) return cBTCData;
+			const totalLockedBTC = await this.indexerRpc?.lockedBTCDeposit();
+			if (totalLockedBTC === undefined || totalLockedBTC === null) {
+				throw Error("Failed to get locked BTC");
+			}
+			const cBTCData: CBTCData[] | Response = await this.queryCBTCData();
+			if (cBTCData instanceof Response) throw Error("Failed to get cBTC data");
 			return {
 				totalLockedBTC,
-				CBTCData: cBTCData,
+				cBTCData,
 			};
 		} catch (error) {
-			logError({ msg: "Error fetching BTC reserves", method: "queryLockedBTC" }, error);
-			throw error;
+			return serverError("reserver-dashboard:loadReservePage", error);
 		}
 	}
 
 	async queryCBTCData(): Promise<CBTCData[] | Response> {
 		try {
-			const query =
-				"SELECT network, name, btc_addr, cbtc_pkg, cbtc_obj, note FROM cbtc WHERE network = ?";
+			const query = `SELECT * from cbtc where network = ?`;
 			const result = await this.d1.prepare(query).bind(this.network).all<CBTCData>();
 			console.log(result);
 			if (result.error) {
-				return handleNonSuccessResp("queryCBTCData", "Can't query cBTC data", result.error);
+				throw Error(result.error);
 			}
 			return result.results;
 		} catch (error) {
-			console.error("Error fetching cBTC data:", error);
-			throw error;
+			return serverError("reserver-dashboard:queryCBTCData", error);
 		}
 	}
 
@@ -86,8 +72,8 @@ export class ReserveController {
 		}
 
 		switch (reqData.method) {
-			case "queryLockedBTC":
-				return this.queryLockedBTC();
+			case "loadReservePage":
+				return this.loadReservePage();
 			default:
 				return notFound("Unknown method");
 		}
