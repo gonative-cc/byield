@@ -111,12 +111,14 @@ export async function nBTCMintTx(
 				witnessProgram: "",
 			};
 		} catch (error) {
-			logger.error({
-				msg: "Invalid Bitcoin address",
-				method: "nBTCMintTx",
-				address: bitcoinAddress.address,
+			logError(
+				{
+					msg: "Invalid Bitcoin address",
+					method: "nBTCMintTx",
+					address: bitcoinAddress.address,
+				},
 				error,
-			});
+			);
 			toast({
 				title: "Address",
 				description: "Invalid Bitcoin address format.",
@@ -231,7 +233,7 @@ export async function nBTCMintTx(
 		}
 		return response;
 	} catch (error) {
-		logger.error({ msg: "nBTC Mint Transaction Error", method: "nBTCMintTx", error });
+		logError({ msg: "nBTC Mint Transaction Error", method: "nBTCMintTx" }, error);
 		toast({
 			title: "Transaction Error",
 			description: error instanceof Error ? error.message : "An unexpected error occurred.",

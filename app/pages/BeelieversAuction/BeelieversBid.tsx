@@ -16,7 +16,7 @@ import { toast } from "~/hooks/use-toast";
 import { useNetworkVariables } from "~/networkConfig";
 import { SUIIcon } from "~/components/icons";
 import { moveCallTarget, type BeelieversAuctionCfg } from "~/config/sui/contracts-config";
-import { logger } from "~/lib/log";
+import { logError, logger } from "~/lib/log";
 import {
 	buttonEffectClasses,
 	classNames,
@@ -132,11 +132,13 @@ export function BeelieversBid({ user, entryBidMist }: BeelieversBidProps) {
 							params: [account.address, result.bytes, result.signature, note],
 						});
 					} else {
-						logger.error({
-							msg: "Bid transaction failed",
-							method: "BeelieversBid",
-							error: effects?.status.error,
-						});
+						logError(
+							{
+								msg: "Bid transaction failed",
+								method: "BeelieversBid",
+							},
+							effects?.status.error,
+						);
 						toast({
 							title,
 							description: "Bid failed. Please try again later.\n",

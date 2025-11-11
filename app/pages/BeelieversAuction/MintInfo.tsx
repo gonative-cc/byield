@@ -175,11 +175,13 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 								description: `SUI refunded`,
 							});
 						} else {
-							logger.error({
-								msg: "Claim tx error",
-								method: "MintInfo:handleRefund",
-								error: effects?.status.error,
-							});
+							logError(
+								{
+									msg: "Claim tx error",
+									method: "MintInfo:handleRefund",
+								},
+								effects?.status.error,
+							);
 							toast({
 								title: "Refund failed",
 								description: "Please try again later.",
@@ -188,7 +190,7 @@ function MintAction({ isWinner, doRefund, hasMinted, setNftId, kiosk, setKiosk }
 						}
 					},
 					onError: (error) => {
-						logger.error({ msg: "Claim tx error", method: "MintInfo:handleRefund", error });
+						logError({ msg: "Claim tx error", method: "MintInfo:handleRefund" }, error);
 
 						toast({
 							title: "Refund failed",

@@ -12,7 +12,7 @@ import {
 import { protectedBitcoinRPC } from "./btc-proxy.server";
 import type { BtcIndexerRpc } from "./btc-indexer-rpc.types";
 import { convertTxStatusToMintTx } from "./convert";
-import { logger } from "~/lib/log";
+import { logError, logger } from "~/lib/log";
 
 export default class Controller {
 	btcRPCUrl: string | null = null;
@@ -116,11 +116,13 @@ export default class Controller {
 		try {
 			reqData = await r.json<Req>();
 		} catch (_err) {
-			logger.error({
-				msg: "Expecting JSON Content-Type and JSON body",
-				method: "nbtc:handleJsonRPC",
-				error: _err,
-			});
+			logError(
+				{
+					msg: "Expecting JSON Content-Type and JSON body",
+					method: "nbtc:handleJsonRPC",
+				},
+				_err,
+			);
 			return new Response("Expecting JSON Content-Type and JSON body", {
 				status: 400,
 			});

@@ -111,13 +111,15 @@ async function queryIndexerFallback(
 				trustedPackageId,
 			);
 		} catch (error) {
-			logger.error({
-				msg: "[Fallback] attempt failed for tx",
-				method: "queryIndexerFallback",
-				attempt,
-				suiTxId,
+			logError(
+				{
+					msg: "[Fallback] attempt failed for tx",
+					method: "queryIndexerFallback",
+					attempt,
+					suiTxId,
+				},
 				error,
-			});
+			);
 
 			if (attempt < MAX_ATTEMPT) {
 				logger.info({
