@@ -1,5 +1,5 @@
 import type { BitcoinNetworkType } from "sats-connect";
-import { notFound, serverError } from "../http-resp";
+import { badRequest, notFound, serverError } from "../http-resp";
 import type { QueryLockedBTCResp, Req } from "./jsonrpc";
 import { mustGetBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import type { BtcIndexerRpc } from "../nbtc/btc-indexer-rpc.types";
@@ -22,7 +22,8 @@ export class ReserveController {
 
 	async loadReservePage(): Promise<QueryLockedBTCResp | Response> {
 		try {
-			const totalLockedBTC = await this.indexerRpc?.lockedBTCDeposit();
+			if (!this.depositAddress) return badRequest("deposit address not found");
+			const totalLockedBTC = await this.indexerRpc?.lockedBTCDeposit(this.depositAddress);
 			if (totalLockedBTC === undefined || totalLockedBTC === null) {
 				throw Error("Failed to get locked BTC");
 			}
