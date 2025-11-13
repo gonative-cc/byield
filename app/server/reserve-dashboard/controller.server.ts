@@ -36,7 +36,7 @@ export class ReserveController {
 				(data.chain_stats.funded_txo_sum - data.chain_stats.spent_txo_sum) /
 				BTC_TO_SATOSHIS; // Convert satoshis to BTC
 
-			// TODO: query cBTC data using package id and object id
+			// TODO: query ncBTC data using package id and object id
 			const cBTCData = await this.queryCBTCData();
 			if (cBTCData instanceof Response) return cBTCData;
 			return {
@@ -56,11 +56,15 @@ export class ReserveController {
 			const result = await this.d1.prepare(query).bind(this.network).all<CBTCData>();
 			console.log(result);
 			if (result.error) {
-				return handleNonSuccessResp("queryCBTCData", "Can't query cBTC data", result.error);
+				return handleNonSuccessResp(
+					"queryCBTCData",
+					"Can't query ncBTC data",
+					result.error,
+				);
 			}
 			return result.results;
 		} catch (error) {
-			console.error("Error fetching cBTC data:", error);
+			console.error("Error fetching ncBTC data:", error);
 			throw error;
 		}
 	}
