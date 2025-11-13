@@ -89,12 +89,18 @@ export const ReserveDashboard = () => {
 						value={totalLockedBTC || 0}
 						unit="BTC"
 						isLoading={isPageLoading}
-						tableData={CBTCData?.map((item) => ({
-							name: item.name,
-							address: item.btc_addr,
-							amount: 1.25271058,
-							unit: "BTC",
-						}))}
+						tableData={
+							(CBTCData &&
+								Array.isArray(CBTCData) &&
+								CBTCData.map((item) => ({
+									name: item.name,
+									address: item.btc_addr,
+									// TODO: replace with real data
+									amount: 1.25271058,
+									unit: "BTC",
+								}))) ||
+							[]
+						}
 					/>
 
 					<ReserveCard
@@ -102,12 +108,18 @@ export const ReserveDashboard = () => {
 						value={totalMintedNBTC || 0}
 						unit="ncBTC"
 						isLoading={isPageLoading}
-						tableData={CBTCData?.map((item) => ({
-							name: item.name,
-							address: item.cbtc_pkg,
-							amount: 1.25271058,
-							unit: "ncBTC",
-						}))}
+						tableData={
+							(CBTCData &&
+								Array.isArray(CBTCData) &&
+								CBTCData?.map((item) => ({
+									name: item.name,
+									address: item.cbtc_pkg,
+									// TODO: replace with real data
+									amount: 1.25271058,
+									unit: "ncBTC",
+								}))) ||
+							[]
+						}
 					/>
 				</TabContent>
 			</div>
