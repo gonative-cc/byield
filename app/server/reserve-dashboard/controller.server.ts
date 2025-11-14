@@ -32,7 +32,7 @@ export class ReserveController {
 			return totalLockedBTC;
 		} catch (err) {
 			logError({ msg: "Error fetching BTC reserves", method: "getTotalBTCBalance" }, err);
-			throw err;
+			return 0;
 		}
 	}
 
@@ -84,7 +84,7 @@ export class ReserveController {
 			return value;
 		} catch (err) {
 			logError({ msg: "Error fetching total supply", method: "getTotalSupply" }, err);
-			throw err;
+			return 0;
 		}
 	}
 
@@ -101,7 +101,7 @@ export class ReserveController {
 			};
 		} catch (error) {
 			logError({ msg: "Error fetching BTC reserves", method: "queryLockedNBTC" }, error);
-			throw error;
+			return serverError("queryLockedNBTC", "Error fetching BTC reserves");
 		}
 	}
 
@@ -140,7 +140,7 @@ export class ReserveController {
 			};
 		} catch (error) {
 			logError({ msg: "Error fetching ncBTC data", method: "queryNCBTCData" }, error);
-			throw error;
+			return serverError("queryLockedNBTC", "Error fetching ncBTC data");
 		}
 	}
 
