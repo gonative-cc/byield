@@ -112,7 +112,7 @@ export class ReserveController {
 				);
 			}
 
-			const res = await Promise.all(
+			const NCBTCData = await Promise.all(
 				result.results.map(async (row) => {
 					const amount = await this.getTotalBTCBalance(row.btc_addr);
 					const totalSupply = await this.getTotalSupply(row.cbtc_obj);
@@ -124,13 +124,13 @@ export class ReserveController {
 				}),
 			);
 
-			const totalLockedBTC = res.reduce((acc, row) => acc + row.amount, 0);
-			const totalNCBTCSupply = res.reduce((acc, row) => acc + row.totalSupply, 0);
+			const totalLockedBTC = NCBTCData.reduce((acc, row) => acc + row.amount, 0);
+			const totalNCBTCSupply = NCBTCData.reduce((acc, row) => acc + row.totalSupply, 0);
 
 			return {
 				totalLockedBTC,
 				totalNCBTCSupply,
-				NCBTCData: res,
+				NCBTCData,
 			};
 		} catch (error) {
 			logError({ msg: "Error fetching ncBTC data", method: "queryNCBTCData" }, error);
