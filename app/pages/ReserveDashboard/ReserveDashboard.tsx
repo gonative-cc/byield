@@ -40,7 +40,7 @@ function NBTCReserveTabContent() {
 		nbtc: { pkgId, contractId },
 	} = useNetworkVariables();
 	const { network } = useXverseWallet();
-	const { graphqlURl } = useNetworkVariables();
+	const { graphqlURL } = useNetworkVariables();
 	const lockedBTCFetcher = useFetcher<QueryLockedNBTCResp>();
 	const lockedBTCData: QueryLockedNBTCResp = lockedBTCFetcher.data ?? null;
 
@@ -48,10 +48,10 @@ function NBTCReserveTabContent() {
 		if (lockedBTCFetcher.state === "idle" && !lockedBTCData) {
 			makeReq<QueryLockedNBTCResp>(lockedBTCFetcher, {
 				method: "queryLockedNBTC",
-				params: [network, graphqlURl, contractId],
+				params: [network, graphqlURL, contractId],
 			});
 		}
-	}, [lockedBTCData, lockedBTCFetcher, network, contractId, graphqlURl]);
+	}, [lockedBTCData, lockedBTCFetcher, network, contractId, graphqlURL]);
 
 	const totalLockedBTC = lockedBTCFetcher.data?.totalLockedBTC;
 	const totalNBTCSupply = lockedBTCFetcher.data?.totalNBTCSupply || 0;
@@ -81,7 +81,7 @@ function NBTCReserveTabContent() {
 
 function NCBTCReserveTabContent() {
 	const { network } = useXverseWallet();
-	const { graphqlURl } = useNetworkVariables();
+	const { graphqlURL } = useNetworkVariables();
 	const lockedCNBTCFetcher = useFetcher<QueryLockedNCBTCResp>();
 	const lockedNCBTCData: QueryLockedNCBTCResp = lockedCNBTCFetcher.data ?? null;
 
@@ -89,10 +89,10 @@ function NCBTCReserveTabContent() {
 		if (lockedCNBTCFetcher.state === "idle" && !lockedNCBTCData) {
 			makeReq<QueryLockedNCBTCResp>(lockedCNBTCFetcher, {
 				method: "queryLockedNCBTC",
-				params: [network, graphqlURl],
+				params: [network, graphqlURL],
 			});
 		}
-	}, [graphqlURl, lockedNCBTCData, lockedCNBTCFetcher, network]);
+	}, [graphqlURL, lockedNCBTCData, lockedCNBTCFetcher, network]);
 
 	const totalLockedBTC = lockedCNBTCFetcher.data?.totalLockedBTC;
 	const totalLockedNCBTC = lockedCNBTCFetcher.data?.totalNCBTCSupply;
