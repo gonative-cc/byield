@@ -38,9 +38,9 @@ export function ReserveCard({
 					{isLoading ? (
 						<div className="skeleton h-8 w-40" />
 					) : (
-							<p className="flex items-center gap-3 text-primary text-2xl font-bold sm:text-3xl">
-								{value} {unit}
-							</p>
+						<p className="text-primary flex items-center gap-3 text-2xl font-bold sm:text-3xl">
+							{value} {unit}
+						</p>
 					)}
 
 					{shouldShowTable && (
@@ -50,17 +50,12 @@ export function ReserveCard({
 									<tr className="font-medium">
 										<th>Name</th>
 										<th>Address</th>
-										<th className="text-right">
-											Amount
-										</th>
+										<th className="text-right">Amount</th>
 									</tr>
 								</thead>
 								<tbody>
 									{tableData.map((item) => (
-										<tr
-											key={item.address}
-											className="font-medium"
-										>
+										<tr key={item.address} className="font-medium">
 											<td>{item.name}</td>
 											<td className="font-mono text-sm">{trimAddress(item.address)}</td>
 											<td className="text-right">
