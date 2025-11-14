@@ -5,6 +5,7 @@ import { Collapse } from "~/components/ui/collapse";
 import { RefreshCw } from "lucide-react";
 import type { Route } from "./+types/mint";
 import Controller from "~/server/nbtc/controller.server";
+import type { BtcIndexerRpc } from "~/server/nbtc/btc-indexer-rpc.types";
 import { useFetcher } from "react-router";
 import { makeReq, type QueryMintTxResp } from "~/server/nbtc/jsonrpc";
 import { useEffect, useRef, useCallback, useMemo } from "react";
@@ -144,7 +145,7 @@ export async function action({ request, context }: Route.ActionArgs) {
 	}
 
 	const env = context.cloudflare.env;
-	const ctrl = new Controller(network, env.BTCINDEXER);
+	const ctrl = new Controller(network, env.BTCINDEXER as unknown as BtcIndexerRpc);
 	return ctrl.handleJsonRPC(request);
 }
 
