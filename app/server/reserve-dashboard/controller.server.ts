@@ -1,47 +1,97 @@
 import type { BitcoinNetworkType } from "sats-connect";
 import { badRequest, handleNonSuccessResp, notFound } from "../http-resp";
-import type { QueryLockedBTCResp, Req } from "./jsonrpc";
-import type { CBTCData } from "./types";
+import type { QueryLockedNBTCResp, QueryLockedNCBTCResp, Req } from "./jsonrpc";
+import type { NCBTCData, TotalBTCRes, TotalSupplyResponse } from "./types";
 import { mustGetBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import { logError } from "~/lib/log";
-
-interface Res {
-	chain_stats: {
-		funded_txo_sum: number;
-		spent_txo_sum: number;
-	};
-}
-
-const BTC_TO_SATOSHIS = 100000000;
 
 export class ReserveController {
 	btcRPCUrl: string | null = null;
 	depositAddress: string | null = null;
 	d1: D1Database;
 	network: BitcoinNetworkType;
+	suiGraphQLUrl: string | null = null;
 
-	constructor(network: BitcoinNetworkType, d1: D1Database) {
+	constructor(network: BitcoinNetworkType, suiGraphQLUrl: string, d1: D1Database) {
 		this.d1 = d1;
 		this.network = network;
+		this.suiGraphQLUrl = suiGraphQLUrl;
 		this.handleNetwork(network);
 	}
 
-	async queryLockedBTC(): Promise<QueryLockedBTCResp | Response> {
+	private async getTotalBTCBalance(address: string): Promise<number> {
+		try {
+			const url = this.btcRPCUrl + `/address/${address}`;
+			const response = await fetch(url);
+			const {
+				chain_stats: { funded_txo_sum, spent_txo_sum },
+			} = await response.json<TotalBTCRes>();
+			const totalLockedBTC = funded_txo_sum - spent_txo_sum;
+			return totalLockedBTC;
+		} catch (err) {
+			logError({ msg: "Error fetching BTC reserves", method: "queryLockedBTC" }, err);
+			throw err;
+		}
+	}
+
+	private async getTotalSupply(contractId: string): Promise<number> {
+		try {
+			if (!this.suiGraphQLUrl) throw badRequest();
+			const endpoint = this.suiGraphQLUrl;
+			const query = `
+				query GetTotalSupply($contractId: SuiAddress!) {
+					object(address: $contractId) {
+						address
+						asMoveObject {
+							contents {
+								json
+							}
+						}
+					}
+				}
+			`;
+
+			const res = await fetch(endpoint, {
+				method: "POST",
+				body: JSON.stringify({
+					query: query,
+					variables: {
+						contractId,
+					},
+				}),
+			});
+
+			const {
+				data: {
+					object: {
+						asMoveObject: {
+							contents: {
+								json: {
+									cap: {
+										total_supply: { value },
+									},
+								},
+							},
+						},
+					},
+				},
+			} = await res.json<TotalSupplyResponse>();
+			return value;
+		} catch (err) {
+			logError({ msg: "Error fetching total supply", method: "queryLockedBTC" }, err);
+			throw err;
+		}
+	}
+
+	async queryLockedNBTC(nBTCContractId: string): Promise<QueryLockedNBTCResp | Response> {
 		try {
 			if (!this.depositAddress) return badRequest();
-			const url = this.btcRPCUrl + `/address/${this.depositAddress}`;
-			const response = await fetch(url);
-			const data: Res = await response.json();
-			const totalLockedBTC =
-				(data.chain_stats.funded_txo_sum - data.chain_stats.spent_txo_sum) /
-				BTC_TO_SATOSHIS; // Convert satoshis to BTC
+			const totalLockedBTC = await this.getTotalBTCBalance(this.depositAddress);
+			const totalNBTCSupply = await this.getTotalSupply(nBTCContractId);
 
-			// TODO: query ncBTC data using package id and object id
-			const cBTCData = await this.queryCBTCData();
-			if (cBTCData instanceof Response) return cBTCData;
 			return {
 				totalLockedBTC,
-				CBTCData: cBTCData,
+				totalNBTCSupply,
 			};
 		} catch (error) {
 			logError({ msg: "Error fetching BTC reserves", method: "queryLockedBTC" }, error);
@@ -49,12 +99,11 @@ export class ReserveController {
 		}
 	}
 
-	async queryCBTCData(): Promise<CBTCData[] | Response> {
+	async queryNCBTCData(): Promise<QueryLockedNCBTCResp | Response> {
 		try {
 			const query =
 				"SELECT network, name, btc_addr, cbtc_pkg, cbtc_obj, note FROM cbtc WHERE network = ?";
-			const result = await this.d1.prepare(query).bind(this.network).all<CBTCData>();
-			console.log(result);
+			const result = await this.d1.prepare(query).bind(this.network).all<NCBTCData>();
 			if (result.error) {
 				return handleNonSuccessResp(
 					"queryCBTCData",
@@ -62,9 +111,29 @@ export class ReserveController {
 					result.error,
 				);
 			}
-			return result.results;
+
+			const res = await Promise.all(
+				result.results.map(async (row) => {
+					const amount = await this.getTotalBTCBalance(row.btc_addr);
+					const totalSupply = await this.getTotalSupply(row.cbtc_obj);
+					return {
+						...row,
+						amount,
+						totalSupply,
+					};
+				}),
+			);
+
+			const totalLockedBTC = res.reduce((acc, row) => acc + row.amount, 0);
+			const totalNCBTCSupply = res.reduce((acc, row) => acc + row.totalSupply, 0);
+
+			return {
+				totalLockedBTC,
+				totalNCBTCSupply,
+				NCBTCData: res,
+			};
 		} catch (error) {
-			console.error("Error fetching ncBTC data:", error);
+			logError({ msg: "Error fetching ncBTC data", method: "queryNCBTCData" }, error);
 			throw error;
 		}
 	}
@@ -90,8 +159,10 @@ export class ReserveController {
 		}
 
 		switch (reqData.method) {
-			case "queryLockedBTC":
-				return this.queryLockedBTC();
+			case "queryLockedNBTC":
+				return this.queryLockedNBTC(reqData.params[2]);
+			case "queryLockedNCBTC":
+				return this.queryNCBTCData();
 			default:
 				return notFound("Unknown method");
 		}

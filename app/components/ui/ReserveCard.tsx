@@ -4,7 +4,7 @@ import { trimAddress } from "../Wallet/walletHelper";
 interface TableData {
 	name: string;
 	address: string;
-	amount: number;
+	amount: string;
 	unit: string;
 }
 
@@ -16,7 +16,6 @@ interface ReserveCardProps {
 	addressLabel?: string;
 	address?: string;
 	tableData?: TableData[];
-	children?: React.ReactNode;
 }
 
 export function ReserveCard({
@@ -27,17 +26,14 @@ export function ReserveCard({
 	addressLabel,
 	address,
 	tableData,
-	children,
 }: ReserveCardProps) {
 	return (
-		<div className="card md:min-w-96">
+		<div className="card md:min-h-54 md:min-w-96">
 			<div className="card-body">
 				<p className="text-base-content/60 text-sm font-medium tracking-wide">{title}</p>
 
 				{isLoading ? (
 					<div className="skeleton h-8 w-40" />
-				) : children ? (
-					children
 				) : (
 					<div className="flex items-center gap-3">
 						<p className="text-primary text-2xl font-bold sm:text-3xl">
