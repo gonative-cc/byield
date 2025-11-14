@@ -13,13 +13,15 @@ const validNetworks: BitcoinNetworkType[] = [
 export async function action({ request, context }: Route.ActionArgs) {
 	const env = context.cloudflare.env;
 	const reqData = await request.clone().json();
-	const network = (reqData as { params: [BitcoinNetworkType] }).params[0];
+	const { params } = reqData as { params: [BitcoinNetworkType, string, string] };
+	const network = params[0];
+	const graphqlURl = params[1];
 
 	if (!network || !validNetworks.includes(network)) {
 		throw new Error("Invalid network type");
 	}
 
-	const ctrl = new ReserveController(network, env.BYieldD1);
+	const ctrl = new ReserveController(network, graphqlURl, env.BYieldD1);
 	return ctrl.handleJsonRPC(request);
 }
 

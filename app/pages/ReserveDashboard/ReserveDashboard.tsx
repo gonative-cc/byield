@@ -1,14 +1,16 @@
-import { useCurrentAccount } from "@mysten/dapp-kit";
 import { ShieldCheck } from "lucide-react";
 import { useEffect } from "react";
 import { useFetcher } from "react-router";
 import { ReserveCard } from "~/components/ui/ReserveCard";
 import { TabContent, TabHeader } from "~/components/ui/TabContent";
-import { SuiConnectModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
-import { useNBTCTotalSupply } from "~/hooks/useNBTCTotalSupply";
+import { formatBTC, formatNBTC } from "~/lib/denoms";
 import { useNetworkVariables } from "~/networkConfig";
-import { makeReq, type QueryLockedBTCResp } from "~/server/reserve-dashboard/jsonrpc";
+import {
+	makeReq,
+	type QueryLockedNCBTCResp,
+	type QueryLockedNBTCResp,
+} from "~/server/reserve-dashboard/jsonrpc";
 
 function Header() {
 	return (
@@ -33,95 +35,110 @@ function Header() {
 	);
 }
 
-export const ReserveDashboard = () => {
-	const currentAccount = useCurrentAccount();
-	const suiAddr = currentAccount?.address || null;
-	const { totalSupply: totalMintedNBTC, isLoading } = useNBTCTotalSupply();
+function NBTCReserveTabContent() {
 	const {
-		nbtc: { pkgId },
+		nbtc: { pkgId, contractId },
 	} = useNetworkVariables();
-
 	const { network } = useXverseWallet();
-	const lockedBTCFetcher = useFetcher<QueryLockedBTCResp>();
-	const lockedBTCData: QueryLockedBTCResp = lockedBTCFetcher.data ?? null;
+	const { graphqlURL } = useNetworkVariables();
+	const lockedBTCFetcher = useFetcher<QueryLockedNBTCResp>();
+	const lockedBTCData: QueryLockedNBTCResp = lockedBTCFetcher.data ?? null;
 
 	useEffect(() => {
 		if (lockedBTCFetcher.state === "idle" && !lockedBTCData) {
-			makeReq<QueryLockedBTCResp>(lockedBTCFetcher, { method: "queryLockedBTC", params: [network] });
+			makeReq<QueryLockedNBTCResp>(lockedBTCFetcher, {
+				method: "queryLockedNBTC",
+				params: [network, graphqlURL, contractId],
+			});
 		}
-	}, [lockedBTCData, lockedBTCFetcher, network]);
+	}, [lockedBTCData, lockedBTCFetcher, network, contractId, graphqlURL]);
 
 	const totalLockedBTC = lockedBTCFetcher.data?.totalLockedBTC;
-	const CBTCData = lockedBTCFetcher.data?.CBTCData;
-	const isPageLoading = lockedBTCFetcher.state !== "idle" || isLoading;
+	const totalNBTCSupply = lockedBTCFetcher.data?.totalNBTCSupply || 0;
+	const isPageLoading = lockedBTCFetcher.state !== "idle";
 
+	return (
+		<TabContent>
+			<ReserveCard
+				title="Total BTC Locked (Reserves)"
+				value={formatBTC(BigInt(totalLockedBTC || 0))}
+				unit="BTC"
+				isLoading={isPageLoading}
+				addressLabel="Address"
+				address={pkgId}
+			/>
+			<ReserveCard
+				title="Total nBTC Minted (Liability)"
+				value={formatNBTC(totalNBTCSupply)}
+				unit="nBTC"
+				isLoading={isPageLoading}
+				addressLabel="Contract"
+				address={pkgId}
+			/>
+		</TabContent>
+	);
+}
+
+function NCBTCReserveTabContent() {
+	const { network } = useXverseWallet();
+	const { graphqlURL } = useNetworkVariables();
+	const lockedCNBTCFetcher = useFetcher<QueryLockedNCBTCResp>();
+	const lockedNCBTCData: QueryLockedNCBTCResp = lockedCNBTCFetcher.data ?? null;
+
+	useEffect(() => {
+		if (lockedCNBTCFetcher.state === "idle" && !lockedNCBTCData) {
+			makeReq<QueryLockedNCBTCResp>(lockedCNBTCFetcher, {
+				method: "queryLockedNCBTC",
+				params: [network, graphqlURL],
+			});
+		}
+	}, [graphqlURL, lockedNCBTCData, lockedCNBTCFetcher, network]);
+
+	const totalLockedBTC = lockedCNBTCFetcher.data?.totalLockedBTC;
+	const totalLockedNCBTC = lockedCNBTCFetcher.data?.totalNCBTCSupply;
+	const NCBTCData = lockedCNBTCFetcher.data?.NCBTCData || [];
+	const isPageLoading = lockedCNBTCFetcher.state !== "idle";
+
+	return (
+		<TabContent>
+			<ReserveCard
+				title="Total BTC Locked (Reserves)"
+				value={formatBTC(BigInt(totalLockedBTC || 0))}
+				unit="BTC"
+				isLoading={isPageLoading}
+				tableData={NCBTCData.map((item) => ({
+					name: item.name,
+					address: item.btc_addr,
+					amount: formatBTC(item.amount),
+					unit: "BTC",
+				}))}
+			/>
+
+			<ReserveCard
+				title="Total ncBTC"
+				value={formatNBTC(totalLockedNCBTC || 0)}
+				unit="ncBTC"
+				isLoading={isPageLoading}
+				tableData={NCBTCData?.map((item) => ({
+					name: item.name,
+					address: item.cbtc_pkg,
+					amount: formatNBTC(item.totalSupply),
+					unit: "ncBTC",
+				}))}
+			/>
+		</TabContent>
+	);
+}
+
+export const ReserveDashboard = () => {
 	return (
 		<div className="mx-auto space-y-6 p-6 sm:p-8">
 			<Header />
 			<div className="tabs tabs-boxed rounded-full p-1">
 				<TabHeader title="nBTC" checked={true} />
-				<TabContent>
-					<ReserveCard
-						title="Total BTC Locked (Reserves)"
-						value={totalLockedBTC || 0}
-						unit="BTC"
-						isLoading={isPageLoading}
-						addressLabel="Address"
-						address={pkgId}
-					/>
-
-					<ReserveCard
-						title="Total nBTC Minted (Liability)"
-						value={totalMintedNBTC || 0}
-						unit="nBTC"
-						isLoading={isPageLoading}
-						addressLabel="Contract"
-						address={pkgId}
-					>
-						{!suiAddr && <SuiConnectModal />}
-					</ReserveCard>
-				</TabContent>
-
+				<NBTCReserveTabContent />
 				<TabHeader title="ncBTC" />
-				<TabContent>
-					<ReserveCard
-						title="Total BTC Locked (Reserves)"
-						value={totalLockedBTC || 0}
-						unit="BTC"
-						isLoading={isPageLoading}
-						tableData={
-							(CBTCData &&
-								Array.isArray(CBTCData) &&
-								CBTCData.map((item) => ({
-									name: item.name,
-									address: item.btc_addr,
-									// TODO: replace with real data
-									amount: 1.25271058,
-									unit: "BTC",
-								}))) ||
-							[]
-						}
-					/>
-
-					<ReserveCard
-						title="Total ncBTC"
-						value={totalMintedNBTC || 0}
-						unit="ncBTC"
-						isLoading={isPageLoading}
-						tableData={
-							(CBTCData &&
-								Array.isArray(CBTCData) &&
-								CBTCData?.map((item) => ({
-									name: item.name,
-									address: item.cbtc_pkg,
-									// TODO: replace with real data
-									amount: 1.25271058,
-									unit: "ncBTC",
-								}))) ||
-							[]
-						}
-					/>
-				</TabContent>
+				<NCBTCReserveTabContent />
 			</div>
 		</div>
 	);
