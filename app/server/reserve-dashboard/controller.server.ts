@@ -24,6 +24,7 @@ export class ReserveController {
 			if (!this.btcRPCUrl) throw badRequest();
 			const url = this.btcRPCUrl + `/address/${address}`;
 			const response = await fetch(url);
+			if (!response.ok) throw Error(response.statusText);
 			const {
 				chain_stats: { funded_txo_sum, spent_txo_sum },
 			} = await response.json<TotalBTCRes>();
@@ -61,6 +62,7 @@ export class ReserveController {
 					},
 				}),
 			});
+			if (!res.ok) throw new Error(res.statusText);
 
 			const { data, errors } = await res.json<GraphQLResponse<TotalSupplyResponse>>();
 			if (errors?.length) {
@@ -109,7 +111,7 @@ export class ReserveController {
 			const result = await this.d1.prepare(query).bind(this.network).all<NCBTCData>();
 			if (result.error) {
 				return handleNonSuccessResp(
-					"queryCBTCData",
+					"queryNCBTCData",
 					"Can't query ncBTC data",
 					result.error,
 				);

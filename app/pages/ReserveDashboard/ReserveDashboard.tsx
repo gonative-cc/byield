@@ -83,16 +83,16 @@ function NCBTCReserveTabContent() {
 	const { network } = useXverseWallet();
 	const { graphqlURl } = useNetworkVariables();
 	const lockedCNBTCFetcher = useFetcher<QueryLockedNCBTCResp>();
-	const lockedBTCData: QueryLockedNCBTCResp = lockedCNBTCFetcher.data ?? null;
+	const lockedNCBTCData: QueryLockedNCBTCResp = lockedCNBTCFetcher.data ?? null;
 
 	useEffect(() => {
-		if (lockedCNBTCFetcher.state === "idle" && !lockedBTCData) {
+		if (lockedCNBTCFetcher.state === "idle" && !lockedNCBTCData) {
 			makeReq<QueryLockedNCBTCResp>(lockedCNBTCFetcher, {
 				method: "queryLockedNCBTC",
 				params: [network, graphqlURl],
 			});
 		}
-	}, [graphqlURl, lockedBTCData, lockedCNBTCFetcher, network]);
+	}, [graphqlURl, lockedNCBTCData, lockedCNBTCFetcher, network]);
 
 	const totalLockedBTC = lockedCNBTCFetcher.data?.totalLockedBTC;
 	const totalLockedNCBTC = lockedCNBTCFetcher.data?.totalNCBTCSupply;

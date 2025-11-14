@@ -13,7 +13,7 @@ const validNetworks: BitcoinNetworkType[] = [
 export async function action({ request, context }: Route.ActionArgs) {
 	const env = context.cloudflare.env;
 	const reqData = await request.clone().json();
-	const { params } = reqData as { params: [BitcoinNetworkType, string] };
+	const { params } = reqData as { params: [BitcoinNetworkType, string, string] };
 	const network = params[0];
 	const graphqlURl = params[1];
 
