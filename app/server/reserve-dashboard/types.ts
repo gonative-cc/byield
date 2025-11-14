@@ -27,19 +27,22 @@ export interface TotalBTCRes {
 	};
 }
 export interface TotalSupplyResponse {
-	data: {
-		object: {
-			asMoveObject: {
-				contents: {
-					json: {
-						cap: {
-							total_supply: {
-								value: number;
-							};
+	object: {
+		asMoveObject: {
+			contents: {
+				json: {
+					cap: {
+						total_supply: {
+							value: number;
 						};
 					};
 				};
 			};
 		};
 	};
+}
+
+export interface GraphQLResponse<T> {
+	data: T;
+	errors?: Array<{ message: string }>;
 }
