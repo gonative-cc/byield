@@ -1,5 +1,5 @@
 import type { BitcoinNetworkType } from "sats-connect";
-import { badRequest, handleNonSuccessResp, notFound } from "../http-resp";
+import { badRequest, handleNonSuccessResp, notFound, serverError } from "../http-resp";
 import type { QueryLockedNBTCResp, QueryLockedNCBTCResp, Req } from "./jsonrpc";
 import type { GraphQLResponse, NCBTCData, TotalBTCRes, TotalSupplyResponse } from "./types";
 import { mustGetBitcoinConfig } from "~/hooks/useBitcoinConfig";
@@ -90,7 +90,8 @@ export class ReserveController {
 
 	async queryLockedNBTC(nBTCContractId: string): Promise<QueryLockedNBTCResp | Response> {
 		try {
-			if (!this.depositAddress) return badRequest();
+			if (!this.depositAddress)
+				return serverError("queryLockedNBTC", new Error("Deposit address not found"));
 			const totalLockedBTC = await this.getTotalBTCBalance(this.depositAddress);
 			const totalNBTCSupply = await this.getTotalSupply(nBTCContractId);
 
@@ -99,7 +100,7 @@ export class ReserveController {
 				totalNBTCSupply,
 			};
 		} catch (error) {
-			logError({ msg: "Error fetching BTC reserves", method: "queryLockedBTC" }, error);
+			logError({ msg: "Error fetching BTC reserves", method: "queryLockedNBTC" }, error);
 			throw error;
 		}
 	}

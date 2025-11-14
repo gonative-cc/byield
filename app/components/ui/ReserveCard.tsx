@@ -38,21 +38,19 @@ export function ReserveCard({
 					{isLoading ? (
 						<div className="skeleton h-8 w-40" />
 					) : (
-						<div className="flex items-center gap-3">
-							<p className="text-primary text-2xl font-bold sm:text-3xl">
+							<p className="flex items-center gap-3 text-primary text-2xl font-bold sm:text-3xl">
 								{value} {unit}
 							</p>
-						</div>
 					)}
 
 					{shouldShowTable && (
 						<div className="mt-4 overflow-x-auto">
 							<table className="table-sm table">
 								<thead>
-									<tr>
-										<th className="text-base-content/75 font-medium">Name</th>
-										<th className="text-base-content/75 font-medium">Address</th>
-										<th className="text-base-content/75 text-right font-medium">
+									<tr className="font-medium">
+										<th>Name</th>
+										<th>Address</th>
+										<th className="text-right">
 											Amount
 										</th>
 									</tr>
@@ -61,11 +59,11 @@ export function ReserveCard({
 									{tableData.map((item) => (
 										<tr
 											key={item.address}
-											className="hover:bg-base-200/50 border-base-300"
+											className="font-medium"
 										>
-											<td className="font-medium">{item.name}</td>
+											<td>{item.name}</td>
 											<td className="font-mono text-sm">{trimAddress(item.address)}</td>
-											<td className="text-right font-medium">
+											<td className="text-right">
 												{item.amount} {item.unit}
 											</td>
 										</tr>
