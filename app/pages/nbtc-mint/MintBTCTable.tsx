@@ -28,7 +28,6 @@ function buildSuiTransactionUrl(txId: string, explorerUrl?: string, configExplor
 	if (explorerUrl) {
 		return explorerUrl;
 	}
-
 	if (configExplorerUrl) {
 		return `${configExplorerUrl}/txblock/${txId}`;
 	}
