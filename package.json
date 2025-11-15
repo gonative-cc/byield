@@ -25,8 +25,11 @@
 		"db:migrate": "wrangler d1 migrations apply BeelieversD1",
 		"test": "vitest"
 	},
+	"workspaces": ["external/workers/packages/*"],
 	"dependencies": {
 		"@ethersproject/units": "^5.8.0",
+		"@gonative-cc/lib": "workspace:*",
+		"@gonative-cc/btcindexer": "workspace:*",
 		"@mysten/dapp-kit": "^0.19.9",
 		"@mysten/kiosk": "^0.14.4",
 		"@mysten/sui": "^1.45.0",
