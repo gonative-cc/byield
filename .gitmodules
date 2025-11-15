@@ -1,0 +1,3 @@
+[submodule "external/workers"]
+	path = external/workers
+	url = https://github.com/gonative-cc/workers.git

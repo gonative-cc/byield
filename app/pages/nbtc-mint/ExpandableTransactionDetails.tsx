@@ -1,6 +1,7 @@
 import { Info, CheckCircle, XCircle } from "lucide-react";
+import { MintTxStatus } from "@gonative-cc/btcindexer/models";
 
-import { type MintTransaction, MintingStatus } from "~/server/nbtc/types";
+import { type MintTransaction } from "~/server/nbtc/types";
 import { AnimatedHourglass } from "~/components/ui/AnimatedHourglass";
 import { Tooltip } from "~/components/ui/tooltip";
 import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
@@ -96,13 +97,13 @@ function SimpleErrorAlert({ title, message }: { title: string; message: string }
 function FailedTransactionAlert({ transaction }: FailedTransactionAlertProps) {
 	const isPostConfirmationFailure =
 		transaction.numberOfConfirmation >= 4 &&
-		transaction.status === MintingStatus.Failed &&
+		transaction.status === MintTxStatus.MintFailed &&
 		!transaction.suiTxId;
 
 	const isBroadcastFailure =
-		transaction.numberOfConfirmation === 0 && transaction.status === MintingStatus.Failed;
+		transaction.numberOfConfirmation === 0 && transaction.status === MintTxStatus.MintFailed;
 
-	const isReorgFailure = transaction.status === MintingStatus.Reorg;
+	const isReorgFailure = transaction.status === MintTxStatus.Reorg;
 
 	if (isPostConfirmationFailure) {
 		return <PostConfirmationFailureAlert />;
@@ -158,8 +159,8 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 
 	const estimatedTimeRemaining = () => {
 		if (
-			transaction.status !== MintingStatus.Confirming &&
-			transaction.status !== MintingStatus.Broadcasting
+			transaction.status !== MintTxStatus.Confirming &&
+			transaction.status !== MintTxStatus.Broadcasting
 		)
 			return null;
 		const remainingConfirmations = Math.max(0, confirmationDepth - transaction.numberOfConfirmation);
@@ -173,15 +174,15 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 		return `~${minutes} minutes`;
 	};
 
-	const isBroadcasted = transaction.status !== MintingStatus.Broadcasting;
+	const isBroadcasted = transaction.status !== MintTxStatus.Broadcasting;
 	const isConfirmed = transaction.numberOfConfirmation >= confirmationDepth;
-	const isMinted = transaction.status === MintingStatus.Minted;
+	const isMinted = transaction.status === MintTxStatus.Minted;
 	const isFailed =
-		transaction.status === MintingStatus.Failed || transaction.status === MintingStatus.Reorg;
+		transaction.status === MintTxStatus.MintFailed || transaction.status === MintTxStatus.Reorg;
 	const showTimeRemaining =
 		!isConfirmed &&
-		(transaction.status === MintingStatus.Confirming ||
-			transaction.status === MintingStatus.Broadcasting) &&
+		(transaction.status === MintTxStatus.Confirming ||
+			transaction.status === MintTxStatus.Broadcasting) &&
 		estimatedTimeRemaining();
 
 	return (
