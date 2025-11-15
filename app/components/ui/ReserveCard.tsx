@@ -57,7 +57,12 @@ export function ReserveCard({
 									{tableData.map((item) => (
 										<tr key={item.address} className="font-medium">
 											<td>{item.name}</td>
-											<td className="font-mono text-sm">{trimAddress(item.address)}</td>
+											<td className="font-mono text-sm">
+												<div className="flex items-center gap-2">
+													{trimAddress(item.address)}
+													<CopyButton text={item.address} />
+												</div>
+											</td>
 											<td className="text-right">
 												{item.amount} {item.unit}
 											</td>
