@@ -1,9 +1,12 @@
-import type { MintTransaction, MintingTxStatus } from "./types";
-import type { TxStatusResp } from "./btc-indexer-rpc.types";
+import type { MintTxStatus } from "@gonative-cc/btcindexer/models";
+
+import type { MintTransaction } from "./types";
 import { isProductionMode } from "~/lib/appenv";
 import { mainnetCfg, testnetCfg } from "~/config/sui/contracts-config";
 
-export function convertTxStatusToMintTx(tx: TxStatusResp): MintTransaction {
+import type { NbtcTxResp } from "@gonative-cc/btcindexer/models";
+
+export function nbtcMintTxRespToMintTx(tx: NbtcTxResp): MintTransaction {
 	let suiExplorerUrl: string | undefined;
 	if (tx.sui_tx_id) {
 		const cfg = isProductionMode() ? mainnetCfg : testnetCfg;
@@ -13,15 +16,15 @@ export function convertTxStatusToMintTx(tx: TxStatusResp): MintTransaction {
 	return {
 		bitcoinTxId: tx.btc_tx_id,
 		amountInSatoshi: tx.amount_sats,
-		status: tx.status as MintingTxStatus,
+		status: tx.status as MintTxStatus,
 		suiAddress: tx.sui_recipient,
 		suiTxId: tx.sui_tx_id || undefined,
 		timestamp: new Date(tx.created_at).getTime(),
 		numberOfConfirmation: tx.confirmations,
 		operationStartDate: new Date(tx.created_at).getTime(),
-		bitcoinExplorerUrl: tx.bitcoin_explorer_url,
 		suiExplorerUrl,
-		fees: tx.fees || 1000,
-		errorMessage: tx.error_message || undefined,
+		// TODO: bitcoinExplorerUrl, fees, errorMessage
+		bitcoinExplorerUrl: undefined,
+		fees: 1000,
 	};
 }

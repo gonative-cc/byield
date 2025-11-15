@@ -1,18 +1,20 @@
+import { BitcoinNetworkType } from "sats-connect";
+import { useCurrentAccount } from "@mysten/dapp-kit";
+import { useEffect, useRef, useCallback, useMemo } from "react";
+import { useFetcher } from "react-router";
+import { RefreshCw } from "lucide-react";
+import type { BtcIndexerRpcI } from "@gonative-cc/btcindexer/rpc-interface";
+
+import type { Route } from "./+types/mint";
 import { RegtestInstructions } from "~/pages/nbtc-mint/RegtestInstructions";
 import { MintBTC } from "~/pages/nbtc-mint/MintBTC";
 import { MintBTCTable } from "~/pages/nbtc-mint/MintBTCTable";
 import { Collapse } from "~/components/ui/collapse";
-import { RefreshCw } from "lucide-react";
-import type { Route } from "./+types/mint";
 import Controller from "~/server/nbtc/controller.server";
-import { useFetcher } from "react-router";
 import { makeReq, type QueryMintTxResp } from "~/server/nbtc/jsonrpc";
-import { useEffect, useRef, useCallback, useMemo } from "react";
 import { BitcoinBlockInfoCard } from "~/components/ui/BlockInfoCard";
 import { FAQ } from "~/components/FAQ";
 import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
-import { BitcoinNetworkType } from "sats-connect";
-import { useCurrentAccount } from "@mysten/dapp-kit";
 import { heroTitle } from "~/util/tailwind";
 import { useMobile } from "~/hooks/useMobile";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
@@ -144,7 +146,8 @@ export async function action({ request, context }: Route.ActionArgs) {
 	}
 
 	const env = context.cloudflare.env;
-	const ctrl = new Controller(network, env.BTCINDEXER);
+	// @ts-expect-error Convertion of type
+	const ctrl = new Controller(network, env.BTCINDEXER as BtcIndexerRpcI);
 	return ctrl.handleJsonRPC(request);
 }
 

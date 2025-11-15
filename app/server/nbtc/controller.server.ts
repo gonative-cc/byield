@@ -1,6 +1,8 @@
 import { isValidSuiAddress } from "@mysten/sui/utils";
-import type { QueryMintTxResp, Req } from "./jsonrpc";
 import type { BitcoinNetworkType } from "sats-connect";
+import type { BtcIndexerRpcI } from "@gonative-cc/btcindexer/rpc-interface";
+
+import type { QueryMintTxResp, Req } from "./jsonrpc";
 import { mustGetBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import {
 	badRequest,
@@ -10,17 +12,17 @@ import {
 	jsonHeader,
 } from "../http-resp";
 import { protectedBitcoinRPC } from "./btc-proxy.server";
-import type { BtcIndexerRpc } from "./btc-indexer-rpc.types";
-import { convertTxStatusToMintTx } from "./convert";
+import { nbtcMintTxRespToMintTx } from "./convert";
 import { logError, logger } from "~/lib/log";
 
 export default class Controller {
+	// TODO: must be defined and set through constructor
 	btcRPCUrl: string | null = null;
-	btcindexer: BtcIndexerRpc | null = null;
+	btcindexer: BtcIndexerRpcI;
 
-	constructor(network: BitcoinNetworkType, indexerRpc?: BtcIndexerRpc) {
+	constructor(network: BitcoinNetworkType, indexerRpc: BtcIndexerRpcI) {
 		this.handleNetwork(network);
-		this.btcindexer = indexerRpc || null;
+		this.btcindexer = indexerRpc;
 	}
 
 	private async getMintTxs(suiAddr: string): Promise<QueryMintTxResp | Response> {
@@ -32,15 +34,14 @@ export default class Controller {
 			return serverError(method, new Error("Indexer RPC not configured"));
 		}
 		try {
-			const txStatuses = await this.btcindexer.statusBySuiAddress(suiAddr);
-			const mintTxs = txStatuses.map(convertTxStatusToMintTx);
-			return mintTxs;
+			const mints = await this.btcindexer.nbtcMintTxsBySuiAddr(suiAddr);
+			return mints.map(nbtcMintTxRespToMintTx);
 		} catch (error) {
 			return serverError(method, error);
 		}
 	}
 
-	private async queryUTXOs(address: string) {
+	private async queryUTXOs(address: string): Promise<Response> {
 		const method = "nbtc:queryUTXOs";
 		const path = `/address/${encodeURIComponent(address)}/utxo`;
 		logger.debug({ msg: "Querying nBTCUTXOs", method, address, btcRPCUrl: this.btcRPCUrl });
