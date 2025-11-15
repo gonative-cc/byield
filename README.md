@@ -21,7 +21,7 @@ Note: we use Bun instead of Node.js for JS and TS execution and package manageme
 Run the dev server (using wrangler Cloudflare framework as a backend):
 
 ```sh
-# firstly install the latest dependencies
+# firstly install the latest dependencies and initialize git submodules
 bun install
 ```
 

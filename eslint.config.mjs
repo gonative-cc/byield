@@ -22,7 +22,7 @@ export default defineConfig([
   ...tailwind.configs["flat/recommended"],
   includeIgnoreFile(gitignorePath),
   {
-    ignores: ["worker-configuration.d.ts", "workers/app.ts"],
+    ignores: ["worker-configuration.d.ts", "workers/app.ts", "external"],
   },
 
   {
