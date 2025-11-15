@@ -4,6 +4,7 @@ build
 pnpm-lock.yaml
 node_modules
 package.json
+external
 
 worker-configuration.d.ts
 
