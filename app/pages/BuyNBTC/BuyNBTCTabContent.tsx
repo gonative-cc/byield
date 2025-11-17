@@ -146,7 +146,12 @@ export function BuyNBTCTabContent({ nbtcBalanceRes, suiBalanceRes }: BuyNBTCTabC
 				)}
 			</form>
 			{(isSuccess || isError) && (
-				<Modal title={"Buy nBTC Transaction Status"} open handleClose={resetForm}>
+				<Modal
+					id={"buy-nbtc-modal"}
+					title={"Buy nBTC Transaction Status"}
+					open
+					handleClose={resetForm}
+				>
 					<TransactionStatus
 						isSuccess={data?.effects?.status?.status === "success"}
 						handleRetry={resetForm}

@@ -1,14 +1,7 @@
 import { useConnectWallet, useWallets } from "@mysten/dapp-kit";
-import {
-	DialogHeader,
-	Dialog,
-	DialogTrigger,
-	DialogContent,
-	DialogTitle,
-	DialogDescription,
-} from "../../ui/dialog";
 import { toast } from "~/hooks/use-toast";
 import { SUIIcon } from "~/components/icons";
+import { Modal, ModalTriggerButton } from "~/components/ui/dialog";
 
 interface InstallWalletProps {
 	link: string;
@@ -50,9 +43,7 @@ function AvailableWallets() {
 	if (!slushWallet && !phantomWallet) {
 		return (
 			<>
-				<DialogDescription className="text-error">
-					No Sui-compatible wallets detected
-				</DialogDescription>
+				<span className="text-error">No Sui-compatible wallets detected</span>
 				<div className="flex flex-col gap-1">
 					<InstallWallet link="https://slush.app/" name="Slush" />
 					<InstallWallet link="https://phantom.app/" name="Phantom" />
@@ -112,24 +103,24 @@ function AvailableWallets() {
 }
 
 export function SuiConnectModal() {
+	const id = "sui-modal";
 	return (
-		<Dialog>
-			<DialogTrigger asChild>
-				<button className="btn btn-primary btn-sm">
-					<SUIIcon prefix="" className="h-4 w-4" /> Connect Sui
-				</button>
-			</DialogTrigger>
-			<DialogContent className="sm:max-w-[425px]">
-				<DialogHeader>
-					<DialogTitle>Connect Sui Wallet</DialogTitle>
-				</DialogHeader>
-				<DialogDescription>Please select a wallet to connect</DialogDescription>
-				<DialogDescription className="text-xs">
+		<>
+			<ModalTriggerButton id={id} className="btn-primary btn-sm">
+				<SUIIcon prefix="" className="h-4 w-4" /> Connect Sui
+			</ModalTriggerButton>
+			<Modal
+				id={id}
+				title="Connect Sui Wallet"
+				description="Please select a wallet to connect"
+				className="sm:max-w-[425px]"
+			>
+				<p className="mb-4 text-xs">
 					If you are accessing the app from mobile, please use wallet browser e.g Slush wallet
 					browser.
-				</DialogDescription>
+				</p>
 				<AvailableWallets />
-			</DialogContent>
-		</Dialog>
+			</Modal>
+		</>
 	);
 }

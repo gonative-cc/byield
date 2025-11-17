@@ -14,9 +14,9 @@ import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
 import { SUIIcon } from "~/components/icons";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { TrimmedNumber } from "~/components/TrimmedNumber";
-import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { CopyButton } from "./ui/CopyButton";
 import { logger } from "~/lib/log";
+import { Modal, ModalTriggerButton } from "./ui/dialog";
 
 export function SelectWallet() {
 	const { connectWallet } = useXverseWallet();
@@ -118,6 +118,7 @@ export function WalletOverviewModal() {
 	const currentSuiAccount = useCurrentAccount();
 	const { balance: suiBalance } = useCoinBalance();
 	const nbtcBalanceRes = useCoinBalance("NBTC");
+	const id = "wallet-overview";
 
 	const { pathname } = useLocation();
 	const shouldShowBitcoinWallet = routes[pathname]?.bitcoin ?? true;
@@ -128,17 +129,12 @@ export function WalletOverviewModal() {
 	};
 
 	return (
-		<Dialog>
-			<DialogTrigger>
-				<button className={walletBadgeStyle} aria-label="Wallet Overview">
-					<Wallet size={18} />
-					<span className="ml-1 hidden md:inline">Overview</span>
-				</button>
-			</DialogTrigger>
-			<DialogContent
-				className="bg-base-100 border-base-300 max-w-sm rounded-lg border p-6 shadow-xl"
-				onClick={(e) => e.stopPropagation()}
-			>
+		<>
+			<ModalTriggerButton id={id} className={walletBadgeStyle}>
+				<Wallet size={18} />
+				<span className="ml-1 hidden md:inline">Overview</span>
+			</ModalTriggerButton>
+			<Modal id={id} className="bg-base-100 border-base-300 max-w-sm rounded-lg border p-6 shadow-xl">
 				<h3 className="text-base-content text-lg font-bold">Wallet Overview</h3>
 
 				{/* Bitcoin Wallet Section */}
@@ -232,8 +228,8 @@ export function WalletOverviewModal() {
 						</div>
 					</div>
 				)}
-			</DialogContent>
-		</Dialog>
+			</Modal>
+		</>
 	);
 }
 
