@@ -19,6 +19,11 @@
 			"id": "discord",
 			"src": "https://cdn.prod.website-files.com/669384bb0581e8c6129231e2/67137e7b2f98d2b03a4eda52_Group%2077.svg",
 			"link": "https://discord.com/invite/gonative"
+		},
+		{
+			"id": "youtube",
+			"src": "https://cdn.prod.website-files.com/669384bb0581e8c6129231e2/691b1cbb8803a4c7256d400b_a88229de50bdcafbe23e677b20705af7_Screenshot%202025-11-17%20at%206.29.57%E2%80%AFPM.png",
+			"link": "https://www.youtube.com/@goNativeCC"
 		}
 	],
 	"redirects": [
