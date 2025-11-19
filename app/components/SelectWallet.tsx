@@ -118,7 +118,7 @@ export function WalletOverviewModal() {
 	const currentSuiAccount = useCurrentAccount();
 	const { balance: suiBalance } = useCoinBalance();
 	const nbtcBalanceRes = useCoinBalance("NBTC");
-	const id = "wallet-overview";
+	const id = "wallet-overview-modal";
 
 	const { pathname } = useLocation();
 	const shouldShowBitcoinWallet = routes[pathname]?.bitcoin ?? true;

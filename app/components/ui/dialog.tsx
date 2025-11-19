@@ -13,13 +13,14 @@ interface ModalProps {
 	className?: string;
 }
 
-function openModal(id: string, operation: "open" | "close") {
+function openModal(id: string, operation: "open" | "close", handleClose?: () => void) {
 	const modal = document?.getElementById(id) as HTMLDialogElement;
 	if (modal) {
 		if (operation === "open") {
 			modal.showModal();
 		}
 		if (operation === "close") {
+			if (handleClose) handleClose();
 			modal.close();
 		}
 	} else {
@@ -33,7 +34,7 @@ export function Modal({ id, open, title, description, children, handleClose, cla
 		if (open) {
 			openModal(id, "open");
 		} else {
-			openModal(id, "close");
+			openModal(id, "close", handleClose);
 		}
 	}, [handleClose, id, open]);
 
@@ -42,7 +43,7 @@ export function Modal({ id, open, title, description, children, handleClose, cla
 			<div className={cn("modal-box", className)}>
 				<button
 					className="btn btn-sm btn-circle btn-ghost absolute top-1 right-2"
-					onClick={() => openModal(id, "close")}
+					onClick={() => openModal(id, "close", handleClose)}
 				>
 					<X />
 				</button>
@@ -50,7 +51,7 @@ export function Modal({ id, open, title, description, children, handleClose, cla
 				{description && <p className="mb-2">{description}</p>}
 				{children}
 			</div>
-			<form method="dialog" className="modal-backdrop">
+			<form method="dialog" className="modal-backdrop" onSubmit={handleClose}>
 				<button>close</button>
 			</form>
 		</dialog>
