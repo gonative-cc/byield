@@ -150,49 +150,130 @@ function Home({ redirectTab }: HomeProps) {
 }
 
 function Dashboard() {
-	// TODO: replace hardcoded data
 	return (
-		<div className="space-y-8">
-			<div className="space-y-4 text-center">
-				<h1 className={`${heroTitle} text-4xl md:text-5xl`}>
-					<span className="text-primary-foreground">Native</span> Hive Program
-				</h1>
-				<p className="text-base-content/80 text-xl">Build the Hive. Earn Your Swarm.</p>
+		<div className="space-y-6">
+			{/* Header with Total Hive Score and Status Badges */}
+			<div className="bg-base-300 rounded-lg p-6">
+				<div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+					<div>
+						<div className="text-base-content/70 mb-1 text-sm">Total Hive Score ⚡</div>
+						<div className="text-5xl font-bold text-white">4,250</div>
+					</div>
+					<div className="flex flex-wrap gap-2">
+						<div className="badge badge-warning badge-outline px-3 py-2">🐝 Early Bee Active</div>
+						<div className="badge badge-warning badge-outline px-3 py-2">
+							🎯 Beeliever NFT Active
+						</div>
+					</div>
+				</div>
+				<div className="mt-4 flex items-center gap-2 text-sm">
+					<span className="text-base-content/70">Referral Link:</span>
+					<code className="bg-base-100 rounded px-2 py-1 text-xs">native.cc/r/hive-bee-123</code>
+					<button className="btn btn-xs btn-ghost">📋</button>
+				</div>
 			</div>
 
-			<div className="card shadow-lg">
-				<div className="card-body">
-					<h2 className="card-title mb-6 text-2xl">Progress Hub</h2>
+			{/* Category Breakdown */}
+			<div>
+				<h2 className="mb-4 text-xl font-bold">Category Breakdown</h2>
 
-					<div className="stats stats-vertical lg:stats-horizontal shadow">
-						<div className="stat">
-							<div className="stat-title">Hive Score</div>
-							<div className="stat-value text-primary-foreground">0</div>
+				{/* Contributor Section */}
+				<div className="bg-base-300 mb-4 rounded-lg p-6">
+					<div className="mb-4 flex items-center justify-between">
+						<div className="flex items-center gap-3">
+							<div className="bg-warning flex h-8 w-8 items-center justify-center rounded">
+								🛡️
+							</div>
+							<div>
+								<h3 className="font-bold">Contributor (Primary)</h3>
+								<p className="text-base-content/70 text-sm">
+									Lock liquidity to earn the highest tier SBTs.
+								</p>
+							</div>
 						</div>
-						<div className="stat">
-							<div className="stat-title">Total SBTs Claimed</div>
-							<div className="stat-value">1/30</div>
+						<button className="btn btn-warning">⬆️ Deposit Assets</button>
+					</div>
+					<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+						<div>
+							<div className="text-base-content/70 mb-1 text-sm">Current Tier</div>
+							<div className="text-warning mb-2 font-bold">IV - Hive Saver</div>
+							<div className="mb-1 text-2xl font-bold text-white">$2,750</div>
+							<div className="text-base-content/70 text-sm">Locked Liquidity</div>
+						</div>
+						<div>
+							<div className="text-base-content/70 mb-2 text-sm">
+								Next Tier: V - Vault Keeper
+							</div>
+							<div className="bg-base-100 mb-2 h-2 w-full rounded-full">
+								<div className="bg-warning h-2 rounded-full" style={{ width: "55%" }}></div>
+							</div>
+							<div className="text-base-content/70 text-sm">Reach $5,000 to upgrade</div>
+							<div className="text-base-content/50 mt-1 text-xs">
+								Deposits go to the Lockdrop Escrow.
+							</div>
+						</div>
+					</div>
+				</div>
+
+				{/* Member and Spreader Sections */}
+				<div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+					{/* Member Section */}
+					<div className="bg-base-300 rounded-lg p-6">
+						<div className="mb-4 flex items-center gap-3">
+							<div className="bg-info flex h-8 w-8 items-center justify-center rounded">👤</div>
+							<h3 className="font-bold">Member</h3>
+						</div>
+						<div className="mb-4">
+							<div className="text-base-content/70 mb-1 text-sm">Current Tier</div>
+							<div className="text-info mb-2 font-bold">V - BYield Profile</div>
+							<div className="text-2xl font-bold text-white">5</div>
+							<div className="text-base-content/70 text-sm">Tasks Completed</div>
+						</div>
+						<div>
+							<div className="text-base-content/70 mb-2 text-sm">
+								Next Tier: VI - Pollen Seeker
+							</div>
+							<div className="bg-base-100 mb-2 h-2 w-full rounded-full">
+								<div className="bg-info h-2 rounded-full" style={{ width: "83%" }}></div>
+							</div>
+							<div className="text-base-content/70 text-sm">Req: Obtain Discord Role</div>
 						</div>
 					</div>
 
-					<div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
-						<div className="card bg-base-100 shadow">
-							<div className="card-body text-center">
-								<h3 className="card-title justify-center">Lockdrop SBT</h3>
-								<div className="text-primary-foreground text-2xl font-bold">0</div>
+					{/* Spreader Section */}
+					<div className="bg-base-300 rounded-lg p-6">
+						<div className="mb-4 flex items-center justify-between">
+							<div className="flex items-center gap-3">
+								<div className="bg-success flex h-8 w-8 items-center justify-center rounded">
+									🌐
+								</div>
+								<h3 className="font-bold">Spreader</h3>
+							</div>
+							<button className="btn btn-success btn-sm">Refer & Earn</button>
+						</div>
+						<div className="mb-4">
+							<div className="text-base-content/70 mb-1 text-sm">Current Tier</div>
+							<div className="text-success mb-2 font-bold">II - Network Starter</div>
+							<div className="text-2xl font-bold text-white">4</div>
+							<div className="text-base-content/70 text-sm">Verified Referrals</div>
+						</div>
+						<div className="mb-4">
+							<div className="text-base-content/70 mb-2 text-sm">Your Invite Link</div>
+							<div className="flex items-center gap-2">
+								<code className="bg-base-100 flex-1 rounded px-2 py-1 text-xs">
+									https://native.cc/r/hive-bee-123
+								</code>
+								<button className="btn btn-xs btn-ghost">📋</button>
 							</div>
 						</div>
-						<div className="card bg-base-100 shadow">
-							<div className="card-body text-center">
-								<h3 className="card-title justify-center">Social SBT</h3>
-								<div className="text-primary-foreground text-2xl font-bold">0</div>
+						<div>
+							<div className="text-base-content/70 mb-2 text-sm">
+								Next Tier: III - Signal Booster
 							</div>
-						</div>
-						<div className="card bg-base-100 shadow">
-							<div className="card-body text-center">
-								<h3 className="card-title justify-center">Referral SBT</h3>
-								<div className="text-primary-foreground text-2xl font-bold">0</div>
+							<div className="bg-base-100 mb-2 h-2 w-full rounded-full">
+								<div className="bg-success h-2 rounded-full" style={{ width: "80%" }}></div>
 							</div>
+							<div className="text-base-content/70 text-sm">Req: 5 Verified Referrals</div>
 						</div>
 					</div>
 				</div>
