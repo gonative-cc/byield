@@ -20,8 +20,8 @@ function openModal(id: string, operation: "open" | "close", handleClose?: () => 
 			modal.showModal();
 		}
 		if (operation === "close") {
-			if (handleClose) handleClose();
 			modal.close();
+			if (handleClose) handleClose();
 		}
 	} else {
 		console.error(`modal id ${id} not found`);
