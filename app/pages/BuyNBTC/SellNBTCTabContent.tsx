@@ -156,7 +156,12 @@ export function SellNBTCTabContent({ nbtcBalanceRes, suiBalanceRes }: SellNBTCTa
 					<SuiConnectModal />
 				)}
 				{(isSuccess || isError) && (
-					<Modal title={"Sell nBTC Transaction Status"} open handleClose={resetForm}>
+					<Modal
+						id="sell-nbtc-modal"
+						title={"Sell nBTC Transaction Status"}
+						open
+						handleClose={resetForm}
+					>
 						<TransactionStatus
 							isSuccess={data?.effects?.status?.status === "success"}
 							handleRetry={resetForm}

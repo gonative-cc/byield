@@ -17,7 +17,12 @@ export function TxConfirmationModal({ isOpen, onClose, txId: _txId }: TxConfirma
 	const estimatedTime = Math.ceil((blockTime * confirmationDepth) / 60);
 
 	return (
-		<Modal open={isOpen} title="Transaction Sent Successfully" handleClose={onClose}>
+		<Modal
+			id="tx-confirmation-modal"
+			open={isOpen}
+			title="Transaction Sent Successfully"
+			handleClose={onClose}
+		>
 			<div className="space-y-4">
 				<div className={alertPrimaryClasses()}>
 					<CheckCircle size={20} className="text-white" />

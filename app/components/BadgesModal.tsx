@@ -1,6 +1,5 @@
-import { DialogTrigger } from "@radix-ui/react-dialog";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "~/components/ui/dialog";
+import { Modal, ModalTriggerButton } from "./ui/dialog";
 import { primaryHeadingClasses } from "~/util/tailwind";
 
 interface BadgeInfo {
@@ -165,17 +164,18 @@ const BADGES: BadgeInfo[] = [
 
 export function BadgesModal({ msg = "View All Badges" }: { msg?: string }) {
 	const [selectedBadge, setSelectedBadge] = useState<BadgeInfo | null>(null);
+	const id = "auction-badges-modal";
 
 	return (
-		<Dialog>
-			<DialogTrigger asChild>
-				<button className="btn btn-primary btn-outline">🏆 {msg}</button>
-			</DialogTrigger>
-			<DialogContent className="max-h-[80vh] w-[95vw] max-w-4xl overflow-y-auto sm:w-full">
-				<DialogHeader>
-					<DialogTitle className={primaryHeadingClasses()}>🏆 Auction Badges</DialogTitle>
-				</DialogHeader>
-
+		<>
+			<ModalTriggerButton id={id} className="btn-primary btn-outline">
+				🏆 {msg}
+			</ModalTriggerButton>
+			<Modal
+				id={id}
+				title={<span className={primaryHeadingClasses()}>🏆 Auction Badges</span>}
+				className="max-h-[80vh] w-[95vw] max-w-4xl overflow-y-auto sm:w-full"
+			>
 				<div className="flex flex-col gap-6 lg:flex-row">
 					{/* Left side - Badges grid */}
 					<div className="flex-1">
@@ -218,7 +218,7 @@ export function BadgesModal({ msg = "View All Badges" }: { msg?: string }) {
 						</div>
 					)}
 				</div>
-			</DialogContent>
-		</Dialog>
+			</Modal>
+		</>
 	);
 }
