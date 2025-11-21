@@ -1,5 +1,3 @@
-import type { MintTxStatus } from "@gonative-cc/btcindexer/models";
-
 import type { MintTransaction } from "./types";
 import { isProductionMode } from "~/lib/appenv";
 import { mainnetCfg, testnetCfg } from "~/config/sui/contracts-config";
@@ -16,7 +14,7 @@ export function nbtcMintTxRespToMintTx(tx: NbtcTxResp): MintTransaction {
 	return {
 		bitcoinTxId: tx.btc_tx_id,
 		amountInSatoshi: tx.amount_sats,
-		status: tx.status as MintTxStatus,
+		status: tx.status,
 		suiAddress: tx.sui_recipient,
 		suiTxId: tx.sui_tx_id || undefined,
 		timestamp: new Date(tx.created_at).getTime(),

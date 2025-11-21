@@ -1,6 +1,4 @@
 import { Info, CheckCircle, XCircle } from "lucide-react";
-import { MintTxStatus } from "@gonative-cc/btcindexer/models";
-
 import { type MintTransaction } from "~/server/nbtc/types";
 import { AnimatedHourglass } from "~/components/ui/AnimatedHourglass";
 import { Tooltip } from "~/components/ui/tooltip";
@@ -8,6 +6,7 @@ import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import { NumericFormat } from "react-number-format";
 import { formatBTC } from "~/lib/denoms";
 import { infoBoxClasses } from "~/util/tailwind";
+import { BTCIndexerLib } from "~/lib/btcindexer.client";
 
 interface FailedTransactionAlertProps {
 	transaction: MintTransaction;
@@ -97,13 +96,14 @@ function SimpleErrorAlert({ title, message }: { title: string; message: string }
 function FailedTransactionAlert({ transaction }: FailedTransactionAlertProps) {
 	const isPostConfirmationFailure =
 		transaction.numberOfConfirmation >= 4 &&
-		transaction.status === MintTxStatus.MintFailed &&
+		transaction.status === BTCIndexerLib?.MintTxStatus.MintFailed &&
 		!transaction.suiTxId;
 
 	const isBroadcastFailure =
-		transaction.numberOfConfirmation === 0 && transaction.status === MintTxStatus.MintFailed;
+		transaction.numberOfConfirmation === 0 &&
+		transaction.status === BTCIndexerLib?.MintTxStatus.MintFailed;
 
-	const isReorgFailure = transaction.status === MintTxStatus.Reorg;
+	const isReorgFailure = transaction.status === BTCIndexerLib?.MintTxStatus.Reorg;
 
 	if (isPostConfirmationFailure) {
 		return <PostConfirmationFailureAlert />;
@@ -159,8 +159,8 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 
 	const estimatedTimeRemaining = () => {
 		if (
-			transaction.status !== MintTxStatus.Confirming &&
-			transaction.status !== MintTxStatus.Broadcasting
+			transaction.status !== BTCIndexerLib?.MintTxStatus.Confirming &&
+			transaction.status !== BTCIndexerLib?.MintTxStatus.Broadcasting
 		)
 			return null;
 		const remainingConfirmations = Math.max(0, confirmationDepth - transaction.numberOfConfirmation);
@@ -174,15 +174,16 @@ export function ExpandableTransactionDetails({ transaction }: ExpandableTransact
 		return `~${minutes} minutes`;
 	};
 
-	const isBroadcasted = transaction.status !== MintTxStatus.Broadcasting;
+	const isBroadcasted = transaction.status !== BTCIndexerLib?.MintTxStatus.Broadcasting;
 	const isConfirmed = transaction.numberOfConfirmation >= confirmationDepth;
-	const isMinted = transaction.status === MintTxStatus.Minted;
+	const isMinted = transaction.status === BTCIndexerLib?.MintTxStatus.Minted;
 	const isFailed =
-		transaction.status === MintTxStatus.MintFailed || transaction.status === MintTxStatus.Reorg;
+		transaction.status === BTCIndexerLib?.MintTxStatus.MintFailed ||
+		transaction.status === BTCIndexerLib?.MintTxStatus.Reorg;
 	const showTimeRemaining =
 		!isConfirmed &&
-		(transaction.status === MintTxStatus.Confirming ||
-			transaction.status === MintTxStatus.Broadcasting) &&
+		(transaction.status === BTCIndexerLib?.MintTxStatus.Confirming ||
+			transaction.status === BTCIndexerLib?.MintTxStatus.Broadcasting) &&
 		estimatedTimeRemaining();
 
 	return (

@@ -1,6 +1,4 @@
 import type { CellProps, Column, Row } from "react-table";
-import { MintTxStatus } from "@gonative-cc/btcindexer/models";
-
 import { Table } from "~/components/ui/table";
 import { Tooltip } from "~/components/ui/tooltip";
 import { trimAddress } from "~/components/Wallet/walletHelper";
@@ -12,6 +10,7 @@ import { ExpandableTransactionDetails } from "~/pages/nbtc-mint/ExpandableTransa
 import { AnimatedHourglass } from "~/components/ui/AnimatedHourglass";
 import { useState, useMemo, useCallback } from "react";
 import { useNetworkVariable } from "~/networkConfig";
+import { BTCIndexerLib } from "~/lib/btcindexer.client";
 
 function MintTableTooltip({ tooltip, label }: { tooltip: string; label: string }) {
 	return (
@@ -34,9 +33,9 @@ function buildSuiTransactionUrl(txId: string, explorerUrl?: string, configExplor
 	return `https://testnet.suivision.xyz/txblock/${txId}`;
 }
 
-const getStatusDisplay = (status: MintTxStatus) => {
+const getStatusDisplay = (status: import("@gonative-cc/btcindexer/models").MintTxStatus) => {
 	// TODO: handle reorg case - we need to inform a user when BTC was reorg and his deposit was not confirmed
-	const isActive = status != MintTxStatus.Minted;
+	const isActive = status != BTCIndexerLib?.MintTxStatus.Minted;
 	return (
 		<div className="flex items-center gap-2">
 			{isActive && <AnimatedHourglass size="md" />}
