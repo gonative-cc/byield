@@ -1,5 +1,6 @@
 import type { AppLoadContext } from "react-router";
 import { createRequestHandler } from "react-router";
+import { checkBotProtection } from "~/server/bot-protection.server";
 
 declare module "react-router" {
 	export interface AppLoadContext {
@@ -17,6 +18,15 @@ const requestHandler = createRequestHandler(
 
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+		const botCheck = checkBotProtection(request, false);
+
+		if (!botCheck.allowed) {
+			return new Response(JSON.stringify({ error: botCheck.reason }), {
+				status: 403,
+				headers: { "Content-Type": "application/json" },
+			});
+		}
+
 		return requestHandler(request, {
 			cloudflare: { env, ctx },
 		});
