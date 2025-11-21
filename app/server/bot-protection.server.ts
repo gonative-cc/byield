@@ -1,5 +1,4 @@
 // Requires Bot Management Enterprise add-on enabled in Cloudflare dashboard.
-// Once enabled, Cloudflare automatically populates request.cf.botManagement with bot scores and flags.
 export function checkBotProtection(request: Request, blockBots = false) {
 	const ip =
 		request.headers.get("CF-Connecting-IP") ||
