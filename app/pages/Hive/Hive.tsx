@@ -35,7 +35,7 @@ export function HivePage() {
 }
 
 interface HomeProps {
-	redirectTab: (redirecTab: TabType) => void;
+	redirectTab: (redirectTab: TabType) => void;
 }
 
 function Home({ redirectTab }: HomeProps) {
@@ -212,8 +212,8 @@ function FAQ() {
 const ControlledHiveTabs = () => {
 	const [activeTab, setActiveTab] = useState<TabType>("home");
 
-	const redirectTab = (redirecTab: TabType) => {
-		setActiveTab(() => redirecTab);
+	const redirectTab = (redirectTab: TabType) => {
+		setActiveTab(() => redirectTab);
 	};
 
 	return (
