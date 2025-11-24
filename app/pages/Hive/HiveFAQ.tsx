@@ -35,7 +35,7 @@ const FAQS = [
 	{
 		id: "faq-7",
 		question: "What is my Swarm Score?",
-		answer: "Your Swarm Score is a cumulative total of all the points you earn from minting Hive SBTs. It's a quantitative measure of your overall contribution and verifiable impact within the program..",
+		answer: "Your Swarm Score is a cumulative total of all the points you earn from minting Hive SBTs. It's a quantitative measure of your overall contribution and verifiable impact within the program.",
 	},
 ];
 
