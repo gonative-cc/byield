@@ -1,3 +1,13 @@
+interface RequestWithCf extends Request {
+	cf?: {
+		botManagement?: {
+			score: number;
+			verifiedBot: boolean;
+			staticResource: boolean;
+		};
+	};
+}
+
 // Requires Bot Management Enterprise add-on enabled in Cloudflare dashboard.
 export function checkBotProtection(request: Request, blockBots = false) {
 	const ip =
@@ -5,13 +15,7 @@ export function checkBotProtection(request: Request, blockBots = false) {
 		request.headers.get("X-Forwarded-For") ||
 		"unknown";
 
-	const botMgmt = (
-		request as {
-			cf?: {
-				botManagement?: { score: number; verifiedBot: boolean; staticResource: boolean };
-			};
-		}
-	).cf?.botManagement;
+	const botMgmt = (request as RequestWithCf).cf?.botManagement;
 	if (!botMgmt) {
 		return {
 			allowed: true,

@@ -54,6 +54,24 @@ describe("Bot Protection", () => {
 		expect(result.allowed).toBe(true);
 	});
 
+	it("allows verified bots even when blocking is enabled", () => {
+		const request = createRequestWithBotMgmt("192.168.1.1", 1, true);
+
+		const result = checkBotProtection(request, true);
+
+		expect(result.isBot).toBe(false);
+		expect(result.allowed).toBe(true);
+	});
+
+	it("allows static resources even when blocking is enabled", () => {
+		const request = createRequestWithBotMgmt("192.168.1.1", 1, false, true);
+
+		const result = checkBotProtection(request, true);
+
+		expect(result.isBot).toBe(false);
+		expect(result.allowed).toBe(true);
+	});
+
 	it("detects definite bots (score 1)", () => {
 		const request = createRequestWithBotMgmt("192.168.1.1", 1);
 
