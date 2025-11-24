@@ -6,5 +6,5 @@
 			"@cloudflare/vitest-pool-workers" // provides `cloudflare:test` types
 		]
 	},
-	"include": ["./**/*.ts", "../worker-configuration.d.ts", "../app/**/*.ts"]
+	"include": ["./**/*.ts", "../worker-configuration.d.ts"]
 }

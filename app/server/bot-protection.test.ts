@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { checkBotProtection } from "../app/server/bot-protection.server";
+import { checkBotProtection } from "./bot-protection.server";
 
 function createRequestWithBotMgmt(
 	ip: string,
