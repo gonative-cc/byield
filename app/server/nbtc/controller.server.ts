@@ -1,7 +1,6 @@
 import { isValidSuiAddress } from "@mysten/sui/utils";
 import type { BitcoinNetworkType } from "sats-connect";
 import type { BtcIndexerRpcI } from "@gonative-cc/btcindexer/rpc-interface";
-
 import type { QueryMintTxResp, Req } from "./jsonrpc";
 import { mustGetBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import {
@@ -16,13 +15,13 @@ import { nbtcMintTxRespToMintTx } from "./convert";
 import { logError, logger } from "~/lib/log";
 
 export default class Controller {
-	// TODO: must be defined and set through constructor
-	btcRPCUrl: string | null = null;
+	btcRPCUrl: string;
 	btcindexer: BtcIndexerRpcI;
 
 	constructor(network: BitcoinNetworkType, indexerRpc: BtcIndexerRpcI) {
-		this.handleNetwork(network);
 		this.btcindexer = indexerRpc;
+		const networkConfig = mustGetBitcoinConfig(network);
+		this.btcRPCUrl = networkConfig?.btcRPCUrl;
 	}
 
 	private async getMintTxs(suiAddr: string): Promise<QueryMintTxResp | Response> {
@@ -59,11 +58,6 @@ export default class Controller {
 			return handleFailResp(method, "Can't query Bitcoin UTXOs", rpcResponse);
 		}
 		return rpcResponse;
-	}
-
-	private handleNetwork(network: BitcoinNetworkType) {
-		const networkConfig = mustGetBitcoinConfig(network);
-		this.btcRPCUrl = networkConfig?.btcRPCUrl || null;
 	}
 
 	private async fetchTxHexByTxId(txId: string) {
