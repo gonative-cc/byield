@@ -59,7 +59,7 @@
 	"devDependencies": {
 		"@cloudflare/vite-plugin": "^1.14.2",
 		"@cloudflare/vitest-pool-workers": "^0.10.7",
-		"@eslint/compat": "^1.4.1",
+		"@eslint/compat": "^2.0.0",
 		"@eslint/js": "^9.39.1",
 		"@mysten/utils": "^0.2.0",
 		"@react-router/dev": "^7.9.6",
