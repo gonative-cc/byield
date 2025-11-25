@@ -6,7 +6,7 @@ import { mustGetBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import { logError } from "~/lib/log";
 
 export class ReserveController {
-	btcRPCUrl: string | null = null;
+	btcRPCUrl: string;
 	depositAddress: string | null = null;
 	d1: D1Database;
 	network: BitcoinNetworkType;
@@ -16,7 +16,10 @@ export class ReserveController {
 		this.d1 = d1;
 		this.network = network;
 		this.suiGraphQLURl = suiGraphQLURl;
-		this.handleNetwork(network);
+
+		const networkConfig = mustGetBitcoinConfig(network);
+		this.btcRPCUrl = networkConfig.btcRPCUrl;
+		this.depositAddress = networkConfig.nBTC.depositAddress || null;
 	}
 
 	private async getTotalBTCBalance(address: string): Promise<number> {
@@ -142,12 +145,6 @@ export class ReserveController {
 			logError({ msg: "Error fetching ncBTC data", method: "queryNCBTCData" }, error);
 			return serverError("queryLockedNBTC", "Error fetching ncBTC data");
 		}
-	}
-
-	private handleNetwork(network: BitcoinNetworkType) {
-		const networkConfig = mustGetBitcoinConfig(network);
-		this.btcRPCUrl = networkConfig?.btcRPCUrl || null;
-		this.depositAddress = networkConfig.nBTC.depositAddress || null;
 	}
 
 	async handleJsonRPC(r: Request) {
