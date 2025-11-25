@@ -127,7 +127,7 @@ export function Home({ redirectTab }: HomeProps) {
 					<div className="space-y-4">
 						<button
 							className="btn btn-primary md:btn-lg"
-							onClick={() => redirectTab("Dashboard")}
+							onClick={() => redirectTab("dashboard")}
 						>
 							Connect wallet to view your hive dashboard
 						</button>
@@ -169,7 +169,7 @@ export function Home({ redirectTab }: HomeProps) {
 						Connect your wallet to mint your first Hive SBTs and establish your permanent,
 						on-chain role in Native&apos;s genesis.
 					</p>
-					<button className="btn btn-primary md:btn-lg" onClick={() => redirectTab("Dashboard")}>
+					<button className="btn btn-primary md:btn-lg" onClick={() => redirectTab("dashboard")}>
 						Connect wallet to view your hive dashboard
 					</button>
 				</div>
