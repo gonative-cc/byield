@@ -106,7 +106,7 @@ function navMenuItems(): MenuItem[] {
 			subNavItems: [],
 		},
 		{
-			icon: "/assets/navigation/bee-with-bitcoin.svg",
+			icon: "/assets/navigation/hive.svg",
 			id: "navigation-5",
 			title: "Hive",
 			link: "/hive",

@@ -36,12 +36,11 @@ const SBT_TOKENS: SBTToken[] = [
 
 const GLOBAL_MULTIPLIERS: Multiplier[] = [
 	{ label: "Early Bee (first 2,000 eligible wallets)", bonus: "+20%" },
-	{ label: "Beelievers Normal NFT holder", bonus: "+50%" },
-	{ label: "Beelievers Mythics NFT holder", bonus: "+50%" },
-	{ label: "Holding >=5 Beelievers", bonus: "+50%" },
-	{ label: "Holding >=10 Beelievers", bonus: "+50%" },
-	{ label: "Holding >=20 Beelievers", bonus: "+50%" },
-	{ label: "Referral +1% to the referrer per user referred", bonus: "" },
+	{ label: "Beelievers Normal NFT holder", bonus: "+15%" },
+	{ label: "Beelievers Mythics NFT holder", bonus: "+30%" },
+	{ label: "Holding >=5 Beelievers NFTs", bonus: "+5%" },
+	{ label: "Holding >=10 Beelievers NFTs", bonus: "+10%" },
+	{ label: "Holding >=20 Beelievers NFTs", bonus: "+15%" },
 ];
 
 // Reusable Components
