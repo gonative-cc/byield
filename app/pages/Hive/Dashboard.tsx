@@ -1,5 +1,7 @@
-import { CircleCheck, CirclePlus, Share2, Shield, Users } from "lucide-react";
+import { useCurrentAccount } from "@mysten/dapp-kit";
+import { CircleCheck, CirclePlus, Share2, Shield, Users, Wallet } from "lucide-react";
 import { CopyButton } from "~/components/ui/CopyButton";
+import { SuiConnectModal } from "~/components/Wallet/SuiWallet/SuiModal";
 
 function HiveScoreHeader() {
 	return (
@@ -35,7 +37,7 @@ function ContributorCard() {
 			<div className="card-body">
 				<div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 					<div className="flex items-start gap-3">
-						<div className="bg-primary flex h-10 w-10 flex-shrink-0 items-center justify-center rounded">
+						<div className="bg-primary flex h-10 w-10 shrink-0 items-center justify-center rounded">
 							<Shield />
 						</div>
 						<div>
@@ -77,7 +79,7 @@ function MemberCard() {
 		<div className="card">
 			<div className="card-body">
 				<div className="mb-4 flex items-start gap-3">
-					<Users className="text-info flex-shrink-0" />
+					<Users className="text-info shrink-0" />
 					<h3 className="font-bold">Member</h3>
 				</div>
 				<div className="mb-4">
@@ -102,7 +104,7 @@ function SpreaderCard() {
 			<div className="card-body">
 				<div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
 					<div className="flex items-start gap-3">
-						<Share2 className="text-success flex-shrink-0" />
+						<Share2 className="text-success shrink-0" />
 						<h3 className="font-bold">Spreader</h3>
 					</div>
 					<button className="btn btn-success btn-sm">Refer & Earn</button>
@@ -116,7 +118,7 @@ function SpreaderCard() {
 				<div className="mb-4">
 					<div className="text-base-content/70 mb-2 text-sm">Your Invite Link</div>
 					<div className="flex items-center gap-2">
-						<code className="bg-base-100 flex-1 rounded px-2 py-1 text-xs break-all">
+						<code className="bg-base-100 flex-1 rounded px-2 py-1 text-xs break-words">
 							https://native.cc/r/hive-bee-123
 						</code>
 						<CopyButton text="https://native.cc/r/hive-bee-123" />
@@ -133,6 +135,26 @@ function SpreaderCard() {
 }
 
 export function Dashboard() {
+	const suiAccount = useCurrentAccount();
+	const isSuiConnected = !!suiAccount;
+
+	if (!isSuiConnected) {
+		return (
+			<div className="flex items-center justify-center">
+				<div className="card max-w-md">
+					<div className="card-body text-center">
+						<Wallet className="text-primary-foreground mx-auto mb-4 h-16 w-16" />
+						<h2 className="card-title justify-center">Connect Your SUI Wallet</h2>
+						<p className="text-base-content/70 mb-4">
+							Connect your SUI wallet to access your Hive Dashboard and track your rewards.
+						</p>
+						<SuiConnectModal />
+					</div>
+				</div>
+			</div>
+		);
+	}
+
 	return (
 		<div className="space-y-6">
 			<HiveScoreHeader />

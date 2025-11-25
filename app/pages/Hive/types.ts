@@ -1,1 +1,1 @@
-export type TabType = "Home" | "Dashboard" | "Faq";
+export type TabType = "home" | "dashboard" | "faq";

@@ -5,17 +5,17 @@ import { HiveFAQ } from "./HiveFAQ";
 import { Dashboard } from "./Dashboard";
 
 export const ControlledHiveTabs = () => {
-	const [activeTab, setActiveTab] = useState<TabType>("Home");
+	const [activeTab, setActiveTab] = useState<TabType>("home");
 
 	const redirectTab = (redirectTab: TabType) => {
-		setActiveTab(() => redirectTab);
+		setActiveTab(redirectTab);
 	};
 
 	const renderTabButton = (newTab: TabType) => {
 		return (
 			<button
 				onClick={() => setActiveTab(newTab)}
-				className={`tab font-medium ${activeTab === newTab ? "bg-primary text-primary-content rounded-full" : ""}`}
+				className={`tab font-medium capitalize ${activeTab === newTab ? "bg-primary text-primary-content rounded-full" : ""}`}
 			>
 				{newTab}
 			</button>
@@ -26,15 +26,15 @@ export const ControlledHiveTabs = () => {
 		<div className="w-full">
 			<div className="mb-12 flex justify-center">
 				<div className="tabs tabs-boxed bg-base-200 rounded-full shadow-lg">
-					{renderTabButton("Home")}
-					{renderTabButton("Dashboard")}
-					{renderTabButton("Faq")}
+					{renderTabButton("home")}
+					{renderTabButton("dashboard")}
+					{renderTabButton("faq")}
 				</div>
 			</div>
 
-			{activeTab === "Home" && <Home redirectTab={redirectTab} />}
-			{activeTab === "Dashboard" && <Dashboard />}
-			{activeTab === "Faq" && <HiveFAQ />}
+			{activeTab === "home" && <Home redirectTab={redirectTab} />}
+			{activeTab === "dashboard" && <Dashboard />}
+			{activeTab === "faq" && <HiveFAQ />}
 		</div>
 	);
 };
