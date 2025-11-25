@@ -8,6 +8,7 @@ on:
       - '**.jsx'
       - '**.ts'
       - '**.tsx'
+      - 'package.json'
 
 concurrency:
   group: ci-${{ github.ref }}-${{ github.workflow }}
