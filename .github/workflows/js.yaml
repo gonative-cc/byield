@@ -9,6 +9,7 @@ on:
       - '**.ts'
       - '**.tsx'
       - 'package.json'
+      - '**/bun.lock'
 
 concurrency:
   group: ci-${{ github.ref }}-${{ github.workflow }}
