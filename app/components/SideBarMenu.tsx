@@ -58,6 +58,13 @@ function navMenuItems(): MenuItem[] {
 				link: "/beelievers-auction",
 				subNavItems: [],
 			},
+			{
+				icon: "/assets/navigation/hive.svg",
+				id: "navigation-3",
+				title: "Hive",
+				link: "/hive",
+				subNavItems: [],
+			},
 		];
 	}
 
@@ -106,7 +113,7 @@ function navMenuItems(): MenuItem[] {
 			subNavItems: [],
 		},
 		{
-			icon: "/assets/navigation/bee-with-bitcoin.svg",
+			icon: "/assets/navigation/hive.svg",
 			id: "navigation-5",
 			title: "Hive",
 			link: "/hive",

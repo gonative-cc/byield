@@ -5,6 +5,8 @@ import { SideBarContext } from "~/providers/SiderBarProvider";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { BeelieversBadge } from "./BeelieversBadge";
 import { useXverseAddress } from "./Wallet/XverseWallet/useXverseAddress";
+import { useLocation } from "react-router";
+import { routes } from "~/config/walletVisibility";
 
 export function WalletBar() {
 	const { toggleMobileMenu } = useContext(SideBarContext);
@@ -13,6 +15,11 @@ export function WalletBar() {
 	const suiAccount = useCurrentAccount();
 	const isSuiConnected = !!suiAccount;
 	const shouldShowOverView = isBitcoinConnected || isSuiConnected;
+
+	// active route path
+	const { pathname } = useLocation();
+	const shouldShowBitcoinWallet = routes[pathname]?.bitcoin ?? true;
+	const shouldShowSUIWallet = routes[pathname]?.sui ?? true;
 
 	return (
 		<header className="bg-base-100/90 supports-backdrop-filter:bg-base-100/70 sticky top-0 z-50 flex h-16 w-full items-center justify-between border-b pr-2 backdrop-blur-sm">
@@ -36,7 +43,9 @@ export function WalletBar() {
 			<div className="flex items-center gap-2">
 				{shouldShowOverView && <BeelieversBadge />}
 				<SelectWallet />
-				{shouldShowOverView && <WalletOverviewModal />}
+				{shouldShowOverView && (shouldShowBitcoinWallet || shouldShowSUIWallet) && (
+					<WalletOverviewModal />
+				)}
 			</div>
 		</header>
 	);
