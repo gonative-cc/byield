@@ -9,6 +9,7 @@ interface SBTToken {
 }
 
 interface Multiplier {
+	id: string;
 	label: string;
 	bonus: string;
 }
@@ -35,13 +36,12 @@ const SBT_TOKENS: SBTToken[] = [
 ];
 
 const GLOBAL_MULTIPLIERS: Multiplier[] = [
-	{ label: "Early Bee (first 2,000 eligible wallets)", bonus: "+20%" },
-	{ label: "Beelievers Normal NFT holder", bonus: "+50%" },
-	{ label: "Beelievers Mythics NFT holder", bonus: "+50%" },
-	{ label: "Holding >=5 Beelievers", bonus: "+50%" },
-	{ label: "Holding >=10 Beelievers", bonus: "+50%" },
-	{ label: "Holding >=20 Beelievers", bonus: "+50%" },
-	{ label: "Referral +1% to the referrer per user referred", bonus: "" },
+	{ id: "gb-1", label: "Early Bee (first 2,000 eligible wallets)", bonus: "+20%" },
+	{ id: "gb-2", label: "Beelievers Normal NFT holder", bonus: "+50%" },
+	{ id: "gb-3", label: "Beelievers Mythics NFT holder", bonus: "+50%" },
+	{ id: "gb-4", label: "Holding >=5 Beelievers", bonus: "+50%" },
+	{ id: "gb-5", label: "Holding >=10 Beelievers", bonus: "+50%" },
+	{ id: "gb-6", label: "Holding >=20 Beelievers", bonus: "+50%" },
 ];
 
 // Reusable Components
@@ -78,15 +78,13 @@ function GlobalMultipliersSection() {
 			<div className="card-body">
 				<h2 className="card-title mb-6 text-center text-2xl font-bold">Global Multipliers</h2>
 				<ul className="space-y-3">
-					{GLOBAL_MULTIPLIERS.map((multiplier, index) => (
+					{GLOBAL_MULTIPLIERS.map(({ label, id, bonus }) => (
 						<li
-							key={index}
+							key={id}
 							className="bg-base-100 flex items-center justify-between rounded-lg px-4 py-2"
 						>
-							<span className="text-sm md:text-base">{multiplier.label}</span>
-							{multiplier.bonus && (
-								<span className="badge badge-primary font-semibold">{multiplier.bonus}</span>
-							)}
+							<span className="text-sm md:text-base">{label}</span>
+							{bonus && <span className="badge badge-primary font-semibold">{bonus}</span>}
 						</li>
 					))}
 				</ul>

@@ -7,8 +7,8 @@ import { Dashboard } from "./Dashboard";
 export const ControlledHiveTabs = () => {
 	const [activeTab, setActiveTab] = useState<TabType>("home");
 
-	const redirectTab = (redirectTab: TabType) => {
-		setActiveTab(redirectTab);
+	const redirectTab = (tab: TabType) => {
+		setActiveTab(tab);
 	};
 
 	const renderTabButton = (newTab: TabType) => {
