@@ -14,7 +14,7 @@ export default function Hive() {
 			disconnect();
 			toast({ title: "Testnet is not supported. Switch to mainnet", variant: "warning" });
 		}
-	}, [disconnect, isMainnet]);
+	}, [disconnect, isMainnet, network]);
 
 	return (
 		<div className="flex justify-center py-4 md:px-10">
