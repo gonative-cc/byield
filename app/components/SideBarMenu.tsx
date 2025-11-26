@@ -53,7 +53,7 @@ function navMenuItems(): MenuItem[] {
 			},
 			{
 				icon: "/assets/navigation/bee-with-bitcoin.svg",
-				id: "navigation-4",
+				id: "navigation-2",
 				title: "Beelievers Auction (mainnet)",
 				link: "/beelievers-auction",
 				subNavItems: [],
@@ -103,6 +103,13 @@ function navMenuItems(): MenuItem[] {
 			id: "navigation-4",
 			title: "Beelievers Auction (mainnet)",
 			link: "/beelievers-auction",
+			subNavItems: [],
+		},
+		{
+			icon: "/assets/navigation/bee-with-bitcoin.svg",
+			id: "navigation-5",
+			title: "Hive",
+			link: "/hive",
 			subNavItems: [],
 		},
 	];
