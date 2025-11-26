@@ -289,9 +289,10 @@ function SuiNetworkOptions() {
 
 	const isDevMode = !isProductionMode();
 	const isAuctionPathname = pathname === "/beelievers-auction" && !isDevMode;
+	const isHivePathname = pathname === "/hive";
 
 	const networks = useMemo(() => {
-		if (isAuctionPathname) {
+		if (isAuctionPathname || isHivePathname) {
 			return [{ label: "Mainnet", value: "mainnet" }];
 		}
 
@@ -303,7 +304,7 @@ function SuiNetworkOptions() {
 		}
 
 		return baseNetworks;
-	}, [isAuctionPathname, isDevMode]);
+	}, [isAuctionPathname, isDevMode, isHivePathname]);
 
 	return (
 		<SelectInput
