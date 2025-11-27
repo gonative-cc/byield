@@ -28,6 +28,8 @@ function navMenuItems(): MenuItem[] {
 				title: "nBTC (testnet)",
 				link: "",
 				subNavItems: [
+					/*
+					disabling buy or sell of mint nbtc and will be enabled later
 					// {
 					// 	id: "navigation-2-1",
 					// 	icon: "",
@@ -35,6 +37,7 @@ function navMenuItems(): MenuItem[] {
 					// 	link: "/",
 					// 	title: "Buy or Sell nBTC",
 					// },
+					*/
 					{
 						id: "navigation-2-2",
 						link: "/nbtc/mint",
@@ -75,13 +78,16 @@ function navMenuItems(): MenuItem[] {
 			title: "nBTC (testnet)",
 			link: "",
 			subNavItems: [
-				// {
-				// 	id: "navigation-2-1",
-				// 	link: "/",
-				// 	icon: "",
-				// 	subNavItems: [],
-				// 	title: "Buy or Sell nBTC",
-				// },
+				/*
+				disabling buy or sell of mint nbtc and will be enabled later
+				{
+					id: "navigation-2-1",
+					link: "/",
+					icon: "",
+					subNavItems: [],
+					title: "Buy or Sell nBTC",
+				},
+				*/
 				{
 					id: "navigation-2-2",
 					link: "/nbtc/mint",
