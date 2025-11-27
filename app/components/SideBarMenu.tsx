@@ -28,13 +28,13 @@ function navMenuItems(): MenuItem[] {
 				title: "nBTC (testnet)",
 				link: "",
 				subNavItems: [
-					{
-						id: "navigation-2-1",
-						icon: "",
-						subNavItems: [],
-						link: "/",
-						title: "Buy or Sell nBTC",
-					},
+					// {
+					// 	id: "navigation-2-1",
+					// 	icon: "",
+					// 	subNavItems: [],
+					// 	link: "/",
+					// 	title: "Buy or Sell nBTC",
+					// },
 					{
 						id: "navigation-2-2",
 						link: "/nbtc/mint",
@@ -75,13 +75,13 @@ function navMenuItems(): MenuItem[] {
 			title: "nBTC (testnet)",
 			link: "",
 			subNavItems: [
-				{
-					id: "navigation-2-1",
-					link: "/",
-					icon: "",
-					subNavItems: [],
-					title: "Buy or Sell nBTC",
-				},
+				// {
+				// 	id: "navigation-2-1",
+				// 	link: "/",
+				// 	icon: "",
+				// 	subNavItems: [],
+				// 	title: "Buy or Sell nBTC",
+				// },
 				{
 					id: "navigation-2-2",
 					link: "/nbtc/mint",

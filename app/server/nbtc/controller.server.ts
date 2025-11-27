@@ -4,7 +4,6 @@ import type { BtcIndexerRpcI } from "@gonative-cc/btcindexer/rpc-interface";
 import type { QueryMintTxResp, Req } from "./jsonrpc";
 import { mustGetBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import {
-	badRequest,
 	serverError,
 	notFound,
 	handleNonSuccessResp as handleFailResp,
@@ -13,6 +12,7 @@ import {
 import { protectedBitcoinRPC } from "./btc-proxy.server";
 import { nbtcMintTxRespToMintTx } from "./convert";
 import { logError, logger } from "~/lib/log";
+import type { NbtcTxResp } from "@gonative-cc/btcindexer/models";
 
 export default class Controller {
 	btcRPCUrl: string;
@@ -24,17 +24,26 @@ export default class Controller {
 		this.btcRPCUrl = networkConfig.btcRPCUrl;
 	}
 
-	private async getMintTxs(suiAddr: string): Promise<QueryMintTxResp | Response> {
+	// addr can be sui or btc address
+	private async getMintTxs(addr: string): Promise<QueryMintTxResp | Response> {
 		const method = "nbtc:getMintTxs";
-		if (!isValidSuiAddress(suiAddr)) {
-			return badRequest();
-		}
 		if (!this.btcindexer) {
 			return serverError(method, new Error("Indexer RPC not configured"));
 		}
+
+		let fetchTxsPromise: Promise<NbtcTxResp[]>;
+
+		if (isValidSuiAddress(addr)) {
+			const suiAddr = addr;
+			fetchTxsPromise = this.btcindexer.nbtcMintTxsBySuiAddr(suiAddr);
+		} else {
+			const btcAddr = addr;
+			fetchTxsPromise = this.btcindexer.depositsBySender(btcAddr);
+		}
+
 		try {
-			const mints = await this.btcindexer.nbtcMintTxsBySuiAddr(suiAddr);
-			return mints.map(nbtcMintTxRespToMintTx);
+			const rawMints = await fetchTxsPromise;
+			return rawMints.map(nbtcMintTxRespToMintTx);
 		} catch (error) {
 			return serverError(method, error);
 		}
