@@ -38,12 +38,8 @@ const mockNbtcTxResp: NbtcTxResp = {
 	created_at: 1764243033,
 	confirmations: 6,
 	vout: 1,
-	// null if tx was detected in mempool
 	block_hash: null,
-	// null if tx was detected in mempool
 	block_height: null,
-	// epoch time in ms
-	// epoch time in ms
 	updated_at: 1764243033,
 	retry_count: 2,
 	nbtc_pkg: "0x54321",
@@ -67,7 +63,7 @@ describe("Controller getMintTxs", () => {
 	});
 
 	it("should fetch by SUI address when valid", async () => {
-		const suiAddr = "0x1234567890abcdef1234567890abcdef12345678";
+		const suiAddr = "0x0dfeef16c6730d27c1b53ba3b96c75831c2fbc66882b3ff136513bbdce9c60ea";
 		vi.mocked(mockIndexer.nbtcMintTxsBySuiAddr).mockResolvedValue([mockNbtcTxResp]);
 
 		const result = await controller["getMintTxs"](null, suiAddr);
@@ -88,23 +84,21 @@ describe("Controller getMintTxs", () => {
 
 	it("should fetch from both sources when both addresses provided", async () => {
 		const btcAddr = "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh";
-		const suiAddr = "0x1234567890abcdef1234567890abcdef12345678";
+		const suiAddr = "0x0dfeef16c6730d27c1b53ba3b96c75831c2fbc66882b3ff136513bbdce9c60ea";
 
 		vi.mocked(mockIndexer.nbtcMintTxsBySuiAddr).mockResolvedValue([mockNbtcTxResp]);
 		vi.mocked(mockIndexer.depositsBySender).mockResolvedValue([mockNbtcTxResp]);
 
 		const result = await controller["getMintTxs"](btcAddr, suiAddr);
 
-		expect(mockIndexer.nbtcMintTxsBySuiAddr).toHaveBeenCalledWith(suiAddr);
 		expect(mockIndexer.depositsBySender).toHaveBeenCalledWith(btcAddr);
+		expect(mockIndexer.nbtcMintTxsBySuiAddr).toHaveBeenCalledWith(suiAddr);
 		expect(Array.isArray(result)).toBe(true);
 	});
 
 	it("should return badRequest when indexer throws", async () => {
 		const suiAddr = "0x1234567890abcdef1234567890abcdef12345678";
-		vi.mocked(await mockIndexer.nbtcMintTxsBySuiAddr).mockRejectedValue(
-			new Error("Network error"),
-		);
+		vi.mocked(mockIndexer.nbtcMintTxsBySuiAddr).mockRejectedValue(new Error("Network error"));
 
 		const result = await controller["getMintTxs"](null, suiAddr);
 
