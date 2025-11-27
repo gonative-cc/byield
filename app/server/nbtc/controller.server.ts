@@ -4,15 +4,16 @@ import type { BtcIndexerRpcI } from "@gonative-cc/btcindexer/rpc-interface";
 import type { QueryMintTxResp, Req } from "./jsonrpc";
 import { mustGetBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import {
-	badRequest,
 	serverError,
 	notFound,
 	handleNonSuccessResp as handleFailResp,
 	jsonHeader,
+	badRequest,
 } from "../http-resp";
 import { protectedBitcoinRPC } from "./btc-proxy.server";
 import { nbtcMintTxRespToMintTx } from "./convert";
 import { logError, logger } from "~/lib/log";
+import type { NbtcTxResp } from "@gonative-cc/btcindexer/models";
 
 export default class Controller {
 	btcRPCUrl: string;
@@ -24,17 +25,30 @@ export default class Controller {
 		this.btcRPCUrl = networkConfig.btcRPCUrl;
 	}
 
-	private async getMintTxs(suiAddr: string): Promise<QueryMintTxResp | Response> {
+	private async getMintTxs(
+		btcAddr: string | null,
+		suiAddr: string | null,
+	): Promise<QueryMintTxResp | Response> {
 		const method = "nbtc:getMintTxs";
-		if (!isValidSuiAddress(suiAddr)) {
-			return badRequest();
-		}
 		if (!this.btcindexer) {
 			return serverError(method, new Error("Indexer RPC not configured"));
 		}
+		if (!btcAddr && !suiAddr) return badRequest();
+
+		const fetchPromises: Promise<NbtcTxResp[]>[] = [];
+		if (suiAddr && isValidSuiAddress(suiAddr)) {
+			fetchPromises.push(this.btcindexer.nbtcMintTxsBySuiAddr(suiAddr));
+		}
+		if (btcAddr) {
+			fetchPromises.push(this.btcindexer.depositsBySender(btcAddr));
+		}
+
+		if (fetchPromises.length === 0) return badRequest();
+
 		try {
-			const mints = await this.btcindexer.nbtcMintTxsBySuiAddr(suiAddr);
-			return mints.map(nbtcMintTxRespToMintTx);
+			const results = await Promise.all(fetchPromises);
+			const rawMints = results.flat();
+			return rawMints.map(nbtcMintTxRespToMintTx);
 		} catch (error) {
 			return serverError(method, error);
 		}
@@ -125,7 +139,7 @@ export default class Controller {
 
 		switch (reqData.method) {
 			case "queryMintTx":
-				return this.getMintTxs(reqData.params[1]);
+				return this.getMintTxs(reqData.params[1], reqData.params[2]);
 			case "postNbtcTx":
 				return this.postNbtcTx(reqData.params[1]);
 			case "queryUTXOs":

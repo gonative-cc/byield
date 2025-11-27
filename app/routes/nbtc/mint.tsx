@@ -175,11 +175,11 @@ export default function Mint() {
 		if (activeAddr) {
 			await makeReq<QueryMintTxResp>(mintTxFetcher, {
 				method: "queryMintTx",
-				params: [network, activeAddr],
+				params: [network, suiAddr, btcAddr],
 			});
 			refetch();
 		}
-	}, [activeAddr, mintTxFetcher, network, refetch]);
+	}, [activeAddr, btcAddr, mintTxFetcher, network, refetch, suiAddr]);
 
 	// Handle address changes, interval setup, and initial fetch
 	useEffect(() => {

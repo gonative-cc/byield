@@ -5,8 +5,8 @@ import type { BitcoinNetworkType } from "sats-connect";
 export type Req =
 	| {
 			method: "queryMintTx";
-			// network, address (sui or bitcoin)
-			params: [BitcoinNetworkType, string];
+			// network, sui address, bitcoin address
+			params: [BitcoinNetworkType, string | null, string | null];
 	  }
 	| {
 			method: "postNbtcTx";

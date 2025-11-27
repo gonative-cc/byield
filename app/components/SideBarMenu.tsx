@@ -28,13 +28,16 @@ function navMenuItems(): MenuItem[] {
 				title: "nBTC (testnet)",
 				link: "",
 				subNavItems: [
-					{
-						id: "navigation-2-1",
-						icon: "",
-						subNavItems: [],
-						link: "/",
-						title: "Buy or Sell nBTC",
-					},
+					/*
+					disabling buy or sell of nbtc and will be enabled later
+					// {
+					// 	id: "navigation-2-1",
+					// 	icon: "",
+					// 	subNavItems: [],
+					// 	link: "/",
+					// 	title: "Buy or Sell nBTC",
+					// },
+					*/
 					{
 						id: "navigation-2-2",
 						link: "/nbtc/mint",
