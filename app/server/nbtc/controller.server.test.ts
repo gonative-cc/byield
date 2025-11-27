@@ -100,14 +100,16 @@ describe("Controller getMintTxs", () => {
 		expect(Array.isArray(result)).toBe(true);
 	});
 
-	it("should return serverError when indexer throws", async () => {
+	it("should return badRequest when indexer throws", async () => {
 		const suiAddr = "0x1234567890abcdef1234567890abcdef12345678";
-		vi.mocked(mockIndexer.nbtcMintTxsBySuiAddr).mockRejectedValue(new Error("Network error"));
+		vi.mocked(await mockIndexer.nbtcMintTxsBySuiAddr).mockRejectedValue(
+			new Error("Network error"),
+		);
 
 		const result = await controller["getMintTxs"](null, suiAddr);
 
 		expect(result).toBeInstanceOf(Response);
-		expect((result as Response).status).toBe(500);
+		expect((result as Response).status).toBe(400);
 	});
 
 	it("should skip invalid SUI address", async () => {
