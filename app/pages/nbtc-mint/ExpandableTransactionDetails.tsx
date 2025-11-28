@@ -94,7 +94,9 @@ function SimpleErrorAlert({ title, message }: { title: string; message: string }
 }
 
 function FailedTransactionAlert({ transaction }: FailedTransactionAlertProps) {
-	const canRedeposit = transaction.numberOfConfirmation >= 5;
+	const canRedeposit =
+		transaction.status === BTCIndexerLib?.MintTxStatus.FinalizedReorg ||
+		transaction.numberOfConfirmation >= 5;
 	const isPostConfirmationFailure =
 		transaction.numberOfConfirmation >= 4 &&
 		transaction.status === BTCIndexerLib?.MintTxStatus.MintFailed &&
