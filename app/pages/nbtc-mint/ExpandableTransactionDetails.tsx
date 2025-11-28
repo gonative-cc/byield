@@ -94,6 +94,9 @@ function SimpleErrorAlert({ title, message }: { title: string; message: string }
 }
 
 function FailedTransactionAlert({ transaction }: FailedTransactionAlertProps) {
+	const canRedeposit =
+		transaction.status === BTCIndexerLib?.MintTxStatus.FinalizedReorg ||
+		transaction.numberOfConfirmation >= 5;
 	const isPostConfirmationFailure =
 		transaction.numberOfConfirmation >= 4 &&
 		transaction.status === BTCIndexerLib?.MintTxStatus.MintFailed &&
@@ -103,7 +106,9 @@ function FailedTransactionAlert({ transaction }: FailedTransactionAlertProps) {
 		transaction.numberOfConfirmation === 0 &&
 		transaction.status === BTCIndexerLib?.MintTxStatus.MintFailed;
 
-	const isReorgFailure = transaction.status === BTCIndexerLib?.MintTxStatus.Reorg;
+	const isReorgFailure =
+		transaction.status === BTCIndexerLib?.MintTxStatus.Reorg ||
+		transaction.status === BTCIndexerLib?.MintTxStatus.FinalizedReorg;
 
 	if (isPostConfirmationFailure) {
 		return <PostConfirmationFailureAlert />;
@@ -124,10 +129,14 @@ function FailedTransactionAlert({ transaction }: FailedTransactionAlertProps) {
 	if (isReorgFailure) {
 		return (
 			<SimpleErrorAlert
-				title="Transaction Reorganized"
+				title="Bitcoin Reorg Detected"
 				message={
 					transaction.errorMessage ||
-					"The block that your transaction was mined in is no longer part of the heaviest chain due to a Bitcoin reorg"
+					`Your BTC transaction has not been confirmed due to a blockchain reorganization. ${
+						canRedeposit
+							? "You can now make a new deposit."
+							: "Please wait until your transaction is at least 5 blocks behind before redepositing."
+					}`
 				}
 			/>
 		);

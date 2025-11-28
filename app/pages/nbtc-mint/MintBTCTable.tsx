@@ -34,7 +34,6 @@ function buildSuiTransactionUrl(txId: string, explorerUrl?: string, configExplor
 }
 
 const getStatusDisplay = (status: import("@gonative-cc/btcindexer/models").MintTxStatus) => {
-	// TODO: handle reorg case - we need to inform a user when BTC was reorg and his deposit was not confirmed
 	const isActive = status != BTCIndexerLib?.MintTxStatus.Minted;
 	return (
 		<div className="flex items-center gap-2">
