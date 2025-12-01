@@ -2,6 +2,7 @@ import { useCurrentAccount } from "@mysten/dapp-kit";
 import { CircleCheck, CirclePlus, Share2, Shield, Users, Wallet } from "lucide-react";
 import { CopyButton } from "~/components/ui/CopyButton";
 import { SuiConnectModal } from "~/components/Wallet/SuiWallet/SuiModal";
+import { LockDropSbt, ReferralSbt, SocialSbt } from "./constant";
 
 function HiveScoreHeader() {
 	return (
@@ -32,6 +33,12 @@ function HiveScoreHeader() {
 }
 
 function ContributorCard() {
+	// TODO: Get current level and next level from API
+	const currentLevel = 2;
+	const nextLevel = currentLevel + 1;
+	const currentTier = LockDropSbt.tiers[currentLevel - 1];
+	const nextTier = LockDropSbt.tiers[nextLevel - 1];
+
 	return (
 		<div className="card mb-4">
 			<div className="card-body">
@@ -59,14 +66,18 @@ function ContributorCard() {
 				<div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
 					<div>
 						<div className="text-base-content/70 mb-1 text-sm">Current Tier</div>
-						<div className="text-primary-foreground mb-2 font-bold">IV - Hive Saver</div>
+						<div className="text-primary-foreground mb-2 font-bold">
+							{currentTier.tier} - {currentTier.name}
+						</div>
 						<div className="mb-1 text-xl font-bold text-white sm:text-2xl">$2,750</div>
 						<div className="text-base-content/70 text-sm">Locked Liquidity</div>
 					</div>
 					<div>
-						<div className="text-base-content/70 mb-2 text-sm">Next Tier: V - Vault Keeper</div>
+						<div className="text-base-content/70 mb-2 text-sm">
+							Next Tier: {nextTier.tier} - {nextTier.name}
+						</div>
 						<progress className="progress progress-primary mb-1" value={55} max="100" />
-						<div className="text-base-content/70 text-sm">Reach $5,000 to upgrade</div>
+						<div className="text-base-content/70 text-sm">{nextTier.requirement}</div>
 					</div>
 				</div>
 			</div>
@@ -75,6 +86,12 @@ function ContributorCard() {
 }
 
 function MemberCard() {
+	// TODO: Get current level and next level from API
+	const currentLevel = 6;
+	const nextLevel = currentLevel + 1;
+	const currentTier = SocialSbt.tiers[currentLevel - 1];
+	const nextTier = SocialSbt.tiers[nextLevel - 1];
+
 	return (
 		<div className="card">
 			<div className="card-body">
@@ -84,14 +101,17 @@ function MemberCard() {
 				</div>
 				<div className="mb-4">
 					<div className="text-base-content/70 mb-1 text-sm">Current Tier</div>
-					<div className="text-info mb-2 font-bold">V - BYield Profile</div>
+					<div className="text-info mb-2 font-bold">
+						{currentTier.tier} - {currentTier.name}
+					</div>
 					<div className="text-base-content/70 mb-1 text-sm">Tasks Completed</div>
 					<div className="text-xl font-bold text-white sm:text-2xl">5</div>
 				</div>
 				<div>
-					<div className="text-base-content/70 mb-2 text-sm">Next Tier: VI - Pollen Seeker</div>
-					<progress className="progress progress-info mb-1" value={55} max="100" />
-					<div className="text-base-content/70 text-sm">Req: Obtain Discord Role</div>
+					<div className="text-base-content/70 mb-2 text-sm">
+						Next Tier: {nextTier.tier} - {nextTier.name}
+					</div>
+					<div className="text-sm">Req: {nextTier.requirement}</div>
 				</div>
 			</div>
 		</div>
@@ -99,6 +119,12 @@ function MemberCard() {
 }
 
 function SpreaderCard() {
+	// TODO: Get current level and next level from API
+	const currentLevel = 2;
+	const nextLevel = currentLevel + 1;
+	const currentTier = ReferralSbt.tiers[currentLevel - 1];
+	const nextTier = ReferralSbt.tiers[nextLevel - 1];
+
 	return (
 		<div className="card">
 			<div className="card-body">
@@ -111,7 +137,9 @@ function SpreaderCard() {
 				</div>
 				<div className="mb-4">
 					<div className="text-base-content/70 mb-1 text-sm">Current Tier</div>
-					<div className="text-success mb-2 font-bold">II - Network Starter</div>
+					<div className="text-success mb-2 font-bold">
+						{currentTier.tier} - {currentTier.name}
+					</div>
 					<div className="text-base-content/70 text-sm">Verified Referrals</div>
 					<div className="text-xl font-bold text-white sm:text-2xl">4</div>
 				</div>
@@ -125,9 +153,11 @@ function SpreaderCard() {
 					</div>
 				</div>
 				<div>
-					<div className="text-base-content/70 mb-2 text-sm">Next Tier: III - Signal Booster</div>
+					<div className="text-base-content/70 mb-2 text-sm">
+						Next Tier: {nextTier.tier} - {nextTier.name}
+					</div>
 					<progress className="progress progress-success mb-1" value={55} max="100" />
-					<div className="text-base-content/70 text-sm">Req: 5 Verified Referrals</div>
+					<div className="text-base-content/70 text-sm">Req: {nextTier.requirement}</div>
 				</div>
 			</div>
 		</div>
