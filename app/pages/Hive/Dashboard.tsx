@@ -1,8 +1,12 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { CircleCheck, CirclePlus, Share2, Shield, Users, Wallet } from "lucide-react";
+import { useEffect } from "react";
+import { useFetcher } from "react-router";
 import { CopyButton } from "~/components/ui/CopyButton";
+import { DashboardSkeletonLoader } from "~/pages/Hive/SkeletonLoader";
 import { SuiConnectModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import { LockDropSbt, ReferralSbt, SocialSbt } from "./constant";
+import { makeReq, type QueryUserDataResp } from "~/server/hive/jsonrpc";
 
 function HiveScoreHeader() {
 	return (
@@ -176,6 +180,18 @@ function SpreaderCard() {
 export function Dashboard() {
 	const suiAccount = useCurrentAccount();
 	const isSuiConnected = !!suiAccount;
+	const userHiveDashboardFetcher = useFetcher<QueryUserDataResp>();
+	const hiveUserDashboardData: QueryUserDataResp = userHiveDashboardFetcher.data ?? null;
+	const isPageLoading = userHiveDashboardFetcher.state !== "idle";
+
+	useEffect(() => {
+		if (userHiveDashboardFetcher.state === "idle" && !hiveUserDashboardData && suiAccount) {
+			makeReq<QueryUserDataResp>(userHiveDashboardFetcher, {
+				method: "queryHiveUserData",
+				params: [suiAccount.address],
+			});
+		}
+	}, [hiveUserDashboardData, userHiveDashboardFetcher, suiAccount]);
 
 	if (!isSuiConnected) {
 		return (
@@ -192,6 +208,10 @@ export function Dashboard() {
 				</div>
 			</div>
 		);
+	}
+
+	if (isPageLoading) {
+		return <DashboardSkeletonLoader />;
 	}
 
 	return (

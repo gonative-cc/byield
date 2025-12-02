@@ -3,6 +3,14 @@ import { isProductionMode } from "~/lib/appenv";
 import { HivePage } from "~/pages/Hive/Hive";
 import { toast } from "~/hooks/use-toast";
 import { useEffect } from "react";
+import type { Route } from "./+types/hive";
+import { HiveController } from "~/server/hive/controller.server";
+
+// This is a server hive to post data to server (data mutations)
+export async function action({ request }: Route.ActionArgs) {
+	const ctrl = new HiveController();
+	return ctrl.handleJsonRPC(request);
+}
 
 export default function Hive() {
 	const { network } = useSuiClientContext();
