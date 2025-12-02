@@ -36,8 +36,9 @@ function ContributorCard() {
 	// TODO: Get current level and next level from API
 	const currentLevel = 2;
 	const nextLevel = currentLevel + 1;
+	const isNextLevelAvailable = nextLevel <= 10;
 	const currentTier = LockDropSbt.tiers[currentLevel - 1];
-	const nextTier = LockDropSbt.tiers[nextLevel - 1];
+	const nextTier = isNextLevelAvailable ? LockDropSbt.tiers[nextLevel - 1] : null;
 
 	return (
 		<div className="card mb-4">
@@ -72,13 +73,15 @@ function ContributorCard() {
 						<div className="mb-1 text-xl font-bold text-white sm:text-2xl">$2,750</div>
 						<div className="text-base-content/70 text-sm">Locked Liquidity</div>
 					</div>
-					<div>
-						<div className="text-base-content/70 mb-2 text-sm">
-							Next Tier: {nextTier.tier} - {nextTier.name}
+					{nextTier && (
+						<div>
+							<div className="text-base-content/70 mb-2 text-sm">
+								Next Tier: {nextTier.tier} - {nextTier.name}
+							</div>
+							<progress className="progress progress-primary mb-1" value={55} max="100" />
+							<div className="text-base-content/70 text-sm">{nextTier.requirement}</div>
 						</div>
-						<progress className="progress progress-primary mb-1" value={55} max="100" />
-						<div className="text-base-content/70 text-sm">{nextTier.requirement}</div>
-					</div>
+					)}
 				</div>
 			</div>
 		</div>
@@ -89,8 +92,9 @@ function MemberCard() {
 	// TODO: Get current level and next level from API
 	const currentLevel = 6;
 	const nextLevel = currentLevel + 1;
+	const isNextLevelAvailable = nextLevel <= 10;
 	const currentTier = SocialSbt.tiers[currentLevel - 1];
-	const nextTier = SocialSbt.tiers[nextLevel - 1];
+	const nextTier = isNextLevelAvailable ? SocialSbt.tiers[nextLevel - 1] : null;
 
 	return (
 		<div className="card">
@@ -107,12 +111,14 @@ function MemberCard() {
 					<div className="text-base-content/70 mb-1 text-sm">Tasks Completed</div>
 					<div className="text-xl font-bold text-white sm:text-2xl">5</div>
 				</div>
-				<div>
-					<div className="text-base-content/70 mb-2 text-sm">
-						Next Tier: {nextTier.tier} - {nextTier.name}
+				{nextTier && (
+					<div>
+						<div className="text-base-content/70 mb-2 text-sm">
+							Next Tier: {nextTier.tier} - {nextTier.name}
+						</div>
+						<div className="text-sm">Req: {nextTier.requirement}</div>
 					</div>
-					<div className="text-sm">Req: {nextTier.requirement}</div>
-				</div>
+				)}
 			</div>
 		</div>
 	);
@@ -120,10 +126,11 @@ function MemberCard() {
 
 function SpreaderCard() {
 	// TODO: Get current level and next level from API
-	const currentLevel = 2;
+	const currentLevel = 9;
 	const nextLevel = currentLevel + 1;
+	const isNextLevelAvailable = nextLevel <= 10;
 	const currentTier = ReferralSbt.tiers[currentLevel - 1];
-	const nextTier = ReferralSbt.tiers[nextLevel - 1];
+	const nextTier = isNextLevelAvailable ? ReferralSbt.tiers[nextLevel - 1] : null;
 
 	return (
 		<div className="card">
@@ -152,13 +159,15 @@ function SpreaderCard() {
 						<CopyButton text="https://native.cc/r/hive-bee-123" />
 					</div>
 				</div>
-				<div>
-					<div className="text-base-content/70 mb-2 text-sm">
-						Next Tier: {nextTier.tier} - {nextTier.name}
+				{nextTier && (
+					<div>
+						<div className="text-base-content/70 mb-2 text-sm">
+							Next Tier: {nextTier.tier} - {nextTier.name}
+						</div>
+						<progress className="progress progress-success mb-1" value={55} max="100" />
+						<div className="text-base-content/70 text-sm">Req: {nextTier.requirement}</div>
 					</div>
-					<progress className="progress progress-success mb-1" value={55} max="100" />
-					<div className="text-base-content/70 text-sm">Req: {nextTier.requirement}</div>
-				</div>
+				)}
 			</div>
 		</div>
 	);
