@@ -25,6 +25,12 @@ export interface NbtcCfg {
 	contractId: string;
 }
 
+export interface LockdropCfg {
+	pkgId: string;
+	lockdropId: string;
+	module: string;
+}
+
 export interface ContractsCfg {
 	explorer: string;
 	accountExplorer: string;
@@ -33,6 +39,7 @@ export interface ContractsCfg {
 	beelieversAuction: BeelieversAuctionCfg;
 	beelieversMint: BeelieversMintCfg;
 	nbtc: NbtcCfg;
+	lockdrop: LockdropCfg;
 }
 
 export const mainnetCfg: ContractsCfg = {
@@ -60,6 +67,11 @@ export const mainnetCfg: ContractsCfg = {
 		pkgId: "",
 		contractId: "",
 	},
+	lockdrop: {
+		pkgId: "",
+		lockdropId: "",
+		module: "lockdrop",
+	},
 };
 
 export const testnetCfg: ContractsCfg = {
@@ -86,6 +98,11 @@ export const testnetCfg: ContractsCfg = {
 		coinType: "::nbtc::NBTC",
 		pkgId: "0x50be08b805766cc1a2901b925d3fb80b6362fcb25f269cb78067429237e222ec",
 		contractId: "0x5905e0c452bb5f237fb106ec2ecff962fbc60cd180090fb07a79d14d9d628a96",
+	},
+	lockdrop: {
+		pkgId: "0xdd67bb6eb81db686dd9f92246e767d0ed4e462747db7851a9225d0d1dfa134f6",
+		lockdropId: "0x22ec2544c3b1240affbafc60dec0fc95cfe9698afc62dbe8b9c5128baa00e318",
+		module: "lockdrop",
 	},
 };
 
@@ -118,6 +135,11 @@ export const localnetCfg: ContractsCfg = {
 		coinType: "::nbtc::NBTC",
 		pkgId: "",
 		contractId: "",
+	},
+	lockdrop: {
+		pkgId: "",
+		lockdropId: "",
+		module: "lockdrop",
 	},
 };
 

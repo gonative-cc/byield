@@ -1,8 +1,10 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { CircleCheck, CirclePlus, Share2, Shield, Users, Wallet } from "lucide-react";
+import { useState } from "react";
 import { CopyButton } from "~/components/ui/CopyButton";
 import { SuiConnectModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import { LockDropSbt, ReferralSbt, SocialSbt } from "./constant";
+import { DepositModal } from "./DepositModal";
 
 function HiveScoreHeader() {
 	return (
@@ -33,12 +35,14 @@ function HiveScoreHeader() {
 }
 
 function ContributorCard() {
+	const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
 	// TODO: Get current level and next level from API
 	const currentLevel = 2;
 	const nextLevel = currentLevel + 1;
 	const isNextLevelAvailable = nextLevel <= 10;
 	const currentTier = LockDropSbt.tiers[currentLevel - 1];
 	const nextTier = isNextLevelAvailable ? LockDropSbt.tiers[nextLevel - 1] : null;
+
 
 	return (
 		<div className="card mb-4">
@@ -56,7 +60,10 @@ function ContributorCard() {
 						</div>
 					</div>
 					<div className="flex flex-col gap-2 sm:items-end">
-						<button className="btn btn-primary btn-sm sm:btn-lg">
+						<button
+							className="btn btn-primary btn-sm sm:btn-lg"
+							onClick={() => setIsDepositModalOpen(true)}
+						>
 							<CirclePlus /> Deposit Assets
 						</button>
 						<div className="text-base-content/50 text-center text-xs sm:text-right">
@@ -84,6 +91,7 @@ function ContributorCard() {
 					)}
 				</div>
 			</div>
+			<DepositModal open={isDepositModalOpen} onClose={() => setIsDepositModalOpen(false)} />
 		</div>
 	);
 }
