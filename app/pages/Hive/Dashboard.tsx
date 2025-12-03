@@ -43,7 +43,6 @@ function ContributorCard() {
 	const currentTier = LockDropSbt.tiers[currentLevel - 1];
 	const nextTier = isNextLevelAvailable ? LockDropSbt.tiers[nextLevel - 1] : null;
 
-
 	return (
 		<div className="card mb-4">
 			<div className="card-body">

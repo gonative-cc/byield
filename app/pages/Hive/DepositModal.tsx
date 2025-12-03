@@ -7,8 +7,13 @@ import { TransactionStatus } from "../BuyNBTC/TransactionStatus";
 import { formatSUI, parseSUI, SUI } from "~/lib/denoms";
 import { SUIIcon } from "~/components/icons";
 import { classNames } from "~/util/tailwind";
-import { useLockdropDeposit } from "./useLockdropDeposit";
 import { useCoinBalance, type UseCoinBalanceResult } from "~/components/Wallet/SuiWallet/useBalance";
+import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
+import { Transaction } from "@mysten/sui/transactions";
+import { toast } from "~/hooks/use-toast";
+import { useNetworkVariables } from "~/networkConfig";
+import { moveCallTarget, type LockdropCfg } from "~/config/sui/contracts-config";
+import { logger } from "~/lib/log";
 
 const DEPOSIT_GAS = parseSUI("0.01");
 
@@ -52,8 +57,82 @@ interface DepositModalProps {
 
 export function DepositModal({ open, onClose }: DepositModalProps) {
 	const suiBalanceRes: UseCoinBalanceResult = useCoinBalance("SUI");
-	const { handleDeposit, resetMutation, isPending, isSuccess, isError, data, isSuiWalletConnected } =
-		useLockdropDeposit();
+	const account = useCurrentAccount();
+	const client = useSuiClient();
+	const { lockdrop } = useNetworkVariables();
+	const isSuiWalletConnected = !!account;
+
+	const {
+		mutate: signAndExecuteTransaction,
+		reset: resetMutation,
+		isPending,
+		isSuccess,
+		isError,
+		data,
+	} = useSignAndExecuteTransaction({
+		execute: async ({ bytes, signature }) =>
+			await client.executeTransactionBlock({
+				transactionBlock: bytes,
+				signature,
+				options: {
+					showObjectChanges: true,
+					showEffects: true,
+					showRawEffects: true,
+				},
+			}),
+	});
+
+	const handleDeposit = useCallback(
+		async (amount: bigint) => {
+			if (!account) {
+				logger.error({
+					msg: "Account is not available. Cannot proceed with the deposit",
+					method: "useLockdropDeposit",
+				});
+				toast({
+					title: "Deposit Assets",
+					description: "Account is not available. Cannot proceed with the deposit.",
+					variant: "destructive",
+				});
+				return;
+			}
+
+			const transaction = await createLockdropDepositTxn(account.address, amount, lockdrop);
+
+			if (!transaction) {
+				logger.error({
+					msg: "Failed to create the deposit transaction",
+					method: "useLockdropDeposit",
+				});
+				return;
+			}
+
+			signAndExecuteTransaction(
+				{ transaction },
+				{
+					onSuccess: () => {
+						toast({
+							title: "Deposit Successful",
+							description: `Successfully deposited ${formatSUI(amount)} SUI to lockdrop`,
+						});
+					},
+					onError: (error) => {
+						logger.error({
+							msg: "Deposit transaction failed",
+							method: "useLockdropDeposit",
+							error,
+						});
+						toast({
+							title: "Deposit Failed",
+							description: "Failed to deposit assets. Please try again.",
+							variant: "destructive",
+						});
+					},
+				},
+			);
+		},
+		[account, lockdrop, signAndExecuteTransaction],
+	);
 
 	const depositForm = useForm<DepositForm>({
 		mode: "all",
@@ -151,4 +230,28 @@ export function DepositModal({ open, onClose }: DepositModalProps) {
 			)}
 		</Modal>
 	);
+}
+
+async function createLockdropDepositTxn(
+	senderAddress: string,
+	suiAmountInMist: bigint,
+	lockdropCfg: LockdropCfg,
+): Promise<Transaction | null> {
+	const txn = new Transaction();
+	txn.setSender(senderAddress);
+
+	const [coins] = txn.splitCoins(txn.gas, [txn.pure.u64(suiAmountInMist)]);
+
+	txn.moveCall({
+		target: moveCallTarget(lockdropCfg, "deposit"),
+		// TODO: support other type of coins
+		typeArguments: ["0x02::sui::SUI"],
+		arguments: [
+			txn.object(lockdropCfg.lockdropId),
+			txn.object("0x6"), // Clock object
+			coins,
+		],
+	});
+
+	return txn;
 }
