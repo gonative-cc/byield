@@ -28,10 +28,8 @@ async function fetchData<T>(url: string, options?: RequestInit): Promise<T | Res
 export class HiveController {
 	async queryUserData(suiAddr: string): Promise<QueryUserDataResp | Response> {
 		try {
-			const url = `${URL}/user`;
-			return await fetchData<QueryUserDataResp>(url, {
-				body: new URLSearchParams({ address: suiAddr }),
-			});
+			const url = `${URL}/user?address=${suiAddr}`;
+			return await fetchData<QueryUserDataResp>(url);
 		} catch (error) {
 			logError({ msg: "Error fetching all user data", method: "queryUserData" }, error);
 			return serverError("queryUserData", "Error fetching all user data");
