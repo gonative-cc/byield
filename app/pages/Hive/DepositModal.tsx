@@ -1,21 +1,21 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useTransition } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Modal } from "~/components/ui/dialog";
 import { FormNumericInput } from "~/components/form/FormNumericInput";
 import { LoadingSpinner } from "~/components/LoadingSpinner";
-import { TransactionStatus } from "../BuyNBTC/TransactionStatus";
 import { formatSUI, parseSUI, SUI } from "~/lib/denoms";
 import { SUIIcon } from "~/components/icons";
 import { classNames } from "~/util/tailwind";
-import { useCoinBalance, type UseCoinBalanceResult } from "~/components/Wallet/SuiWallet/useBalance";
-import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
+import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
+import { useCurrentAccount, useSignTransaction, useSuiClient } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
 import { toast } from "~/hooks/use-toast";
 import { useNetworkVariables } from "~/networkConfig";
 import { moveCallTarget, type LockdropCfg } from "~/config/sui/contracts-config";
 import { logger } from "~/lib/log";
+import { signAndExecTx } from "~/lib/suienv";
 
-const DEPOSIT_GAS = parseSUI("0.01");
+const DEPOSIT_GAS = parseSUI("0.003");
 
 interface SUIRightAdornmentProps {
 	maxSUIAmount: string;
@@ -56,38 +56,20 @@ interface DepositModalProps {
 }
 
 export function DepositModal({ open, onClose }: DepositModalProps) {
-	const suiBalanceRes: UseCoinBalanceResult = useCoinBalance("SUI");
+	const suiBalanceRes = useCoinBalance("SUI");
+	const { mutateAsync: signTransaction } = useSignTransaction();
 	const account = useCurrentAccount();
 	const client = useSuiClient();
 	const { lockdrop } = useNetworkVariables();
 	const isSuiWalletConnected = !!account;
-
-	const {
-		mutate: signAndExecuteTransaction,
-		reset: resetMutation,
-		isPending,
-		isSuccess,
-		isError,
-		data,
-	} = useSignAndExecuteTransaction({
-		execute: async ({ bytes, signature }) =>
-			await client.executeTransactionBlock({
-				transactionBlock: bytes,
-				signature,
-				options: {
-					showObjectChanges: true,
-					showEffects: true,
-					showRawEffects: true,
-				},
-			}),
-	});
+	const [isDepositing, startTransition] = useTransition();
 
 	const handleDeposit = useCallback(
 		async (amount: bigint) => {
 			if (!account) {
 				logger.error({
 					msg: "Account is not available. Cannot proceed with the deposit",
-					method: "useLockdropDeposit",
+					method: "DepositModal",
 				});
 				toast({
 					title: "Deposit Assets",
@@ -97,47 +79,46 @@ export function DepositModal({ open, onClose }: DepositModalProps) {
 				return;
 			}
 
-			const transaction = await createLockdropDepositTxn(account.address, amount, lockdrop);
-
-			if (!transaction) {
-				logger.error({
-					msg: "Failed to create the deposit transaction",
-					method: "useLockdropDeposit",
+			try {
+				const transaction = createLockdropDepositTxn(account.address, amount, lockdrop);
+				const result = await signAndExecTx(transaction, client, signTransaction, {
+					showObjectChanges: true,
+					showEffects: true,
+					showRawEffects: true,
 				});
-				return;
+				logger.info({ msg: "Deposit tx:", method: "DepositModal", digest: result.digest });
+				if (result.effects?.status?.status === "success") {
+					toast({
+						title: "Deposit Successful",
+						description: `Successfully deposited ${formatSUI(amount)} SUI to lockdrop`,
+					});
+				} else {
+					logger.error({ msg: "Deposit FAILED", method: "DepositModal", errors: result.errors });
+					toast({
+						title: "Deposit Failed",
+						description: "Transaction failed. Please try again.",
+						variant: "destructive",
+					});
+				}
+			} catch (error) {
+				logger.error({ msg: "Error depositing", method: "DepositModal", errors: error });
+				toast({
+					title: "Deposit Failed",
+					description: "Failed to deposit assets. Please try again.",
+					variant: "destructive",
+				});
+			} finally {
+				suiBalanceRes.refetch();
+				onClose();
 			}
-
-			signAndExecuteTransaction(
-				{ transaction },
-				{
-					onSuccess: () => {
-						toast({
-							title: "Deposit Successful",
-							description: `Successfully deposited ${formatSUI(amount)} SUI to lockdrop`,
-						});
-					},
-					onError: (error) => {
-						logger.error({
-							msg: "Deposit transaction failed",
-							method: "useLockdropDeposit",
-							error,
-						});
-						toast({
-							title: "Deposit Failed",
-							description: "Failed to deposit assets. Please try again.",
-							variant: "destructive",
-						});
-					},
-				},
-			);
 		},
-		[account, lockdrop, signAndExecuteTransaction],
+		[account, lockdrop, client, signTransaction, suiBalanceRes, onClose],
 	);
 
 	const depositForm = useForm<DepositForm>({
 		mode: "all",
 		reValidateMode: "onChange",
-		disabled: isPending || isSuccess || isError,
+		disabled: isDepositing,
 	});
 	const { watch, trigger, handleSubmit, reset, setValue } = depositForm;
 	const suiAmount = watch("suiAmount");
@@ -145,11 +126,10 @@ export function DepositModal({ open, onClose }: DepositModalProps) {
 	const mistAmount: bigint = parseSUI(suiAmount?.length > 0 && suiAmount !== "." ? suiAmount : "0");
 
 	const resetForm = useCallback(() => {
-		resetMutation();
 		reset({
 			suiAmount: "",
 		});
-	}, [reset, resetMutation]);
+	}, [reset]);
 
 	const handleClose = useCallback(() => {
 		resetForm();
@@ -187,56 +167,50 @@ export function DepositModal({ open, onClose }: DepositModalProps) {
 			open={open}
 			handleClose={handleClose}
 		>
-			{isSuccess || isError ? (
-				<TransactionStatus
-					isSuccess={data?.effects?.status?.status === "success"}
-					handleRetry={resetForm}
-					txnId={data?.digest}
-				/>
-			) : (
-				<FormProvider {...depositForm}>
-					<form
-						onSubmit={(e) => handleSubmit(() => handleDeposit(mistAmount))(e)}
-						className="flex w-full flex-col gap-4"
-					>
-						<FormNumericInput
-							required
-							name="suiAmount"
-							placeholder="Enter SUI amount"
-							className={classNames({
-								"h-16": true,
-								"pt-8": suiAmountAfterFee > 0,
-							})}
-							inputMode="decimal"
-							decimalScale={SUI}
-							allowNegative={false}
-							rightAdornments={
-								<SUIRightAdornment
-									onMaxClick={(val: string) => setValue("suiAmount", val)}
-									maxSUIAmount={maxSUIAmount}
-								/>
-							}
-							rules={suiAmountInputRules}
-						/>
-						<div className="text-base-content/70 text-sm">
-							Your SUI will be locked in the lockdrop escrow until the lockdrop period ends.
-						</div>
-						<button className="btn btn-primary" type="submit" disabled={isPending}>
-							<LoadingSpinner isLoading={isPending} />
-							Deposit Assets
-						</button>
-					</form>
-				</FormProvider>
-			)}
+			<FormProvider {...depositForm}>
+				<form
+					onSubmit={(e) => {
+						startTransition(() => handleSubmit(() => handleDeposit(mistAmount))(e));
+					}}
+					className="flex w-full flex-col gap-4"
+				>
+					<FormNumericInput
+						required
+						name="suiAmount"
+						placeholder="Enter SUI amount"
+						className={classNames({
+							"h-16": true,
+							"pt-8": suiAmountAfterFee > 0,
+						})}
+						inputMode="decimal"
+						decimalScale={SUI}
+						allowNegative={false}
+						rightAdornments={
+							<SUIRightAdornment
+								onMaxClick={(val: string) => setValue("suiAmount", val)}
+								maxSUIAmount={maxSUIAmount}
+							/>
+						}
+						rules={suiAmountInputRules}
+					/>
+					<div className="text-base-content/70 text-sm">
+						Your SUI will be locked in the lockdrop escrow until the lockdrop period ends.
+					</div>
+					<button className="btn btn-primary" type="submit" disabled={isDepositing}>
+						<LoadingSpinner isLoading={isDepositing} />
+						Deposit Assets
+					</button>
+				</form>
+			</FormProvider>
 		</Modal>
 	);
 }
 
-async function createLockdropDepositTxn(
+function createLockdropDepositTxn(
 	senderAddress: string,
 	suiAmountInMist: bigint,
 	lockdropCfg: LockdropCfg,
-): Promise<Transaction | null> {
+): Transaction {
 	const txn = new Transaction();
 	txn.setSender(senderAddress);
 
