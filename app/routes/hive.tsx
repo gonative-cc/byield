@@ -7,8 +7,9 @@ import type { Route } from "./+types/hive";
 import { HiveController } from "~/server/hive/controller.server";
 
 // This is a server hive to post data to server (data mutations)
-export async function action({ request }: Route.ActionArgs) {
-	const ctrl = new HiveController();
+export async function action({ request, context }: Route.ActionArgs) {
+	const TBOOK_AUTH_TOKEN = context.cloudflare.env.TBOOK_AUTH_TOKEN;
+	const ctrl = new HiveController(TBOOK_AUTH_TOKEN);
 	return ctrl.handleJsonRPC(request);
 }
 

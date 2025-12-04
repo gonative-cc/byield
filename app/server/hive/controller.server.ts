@@ -3,7 +3,7 @@ import type { QueryAllUserDataResp, QueryUserDataResp, Req } from "./jsonrpc";
 import { logError } from "~/lib/log";
 
 const URL = "https://rd-api-staging.tbook.com/sbt-data/gonative";
-const AUTH_TOKEN = "tbk_authorization_djoi39ide2";
+let AUTH_TOKEN: string = "";
 
 async function fetchData<T>(url: string, options?: RequestInit): Promise<T | Response> {
 	try {
@@ -26,6 +26,10 @@ async function fetchData<T>(url: string, options?: RequestInit): Promise<T | Res
 }
 
 export class HiveController {
+	constructor(tbookAuthToken: string) {
+		AUTH_TOKEN = tbookAuthToken;
+	}
+
 	async queryUserData(suiAddr: string): Promise<QueryUserDataResp | Response> {
 		try {
 			const url = `${URL}/user?address=${suiAddr}`;
