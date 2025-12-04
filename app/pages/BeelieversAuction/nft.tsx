@@ -26,7 +26,7 @@ interface NftMetadata {
 	badges: string[];
 }
 
-async function fetchNftMetadata(client: SuiClient, nftId: string): Promise<NftMetadata | null> {
+export async function fetchNftMetadata(client: SuiClient, nftId: string): Promise<NftMetadata | null> {
 	try {
 		const nftObject = await client.getObject({
 			id: nftId,
