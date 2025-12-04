@@ -88,7 +88,10 @@ function NativeApp({ children }: { children: React.ReactNode }) {
 			// Update network if pathname changes and no saved preference
 			if (!storage.getSuiNetwork()) {
 				const defaultNet =
-					isProductionMode() && pathname === "/beelievers-auction" ? "mainnet" : "testnet";
+					(isProductionMode() && pathname === "/beelievers-auction") ||
+					pathname === "/your-beelievers"
+						? "mainnet"
+						: "testnet";
 				setSuiNetwork(defaultNet);
 			}
 		}
