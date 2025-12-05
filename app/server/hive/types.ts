@@ -1,4 +1,4 @@
-interface ClaimedSbt {
+interface SocialClaimedSbt {
 	level: number;
 	sbtId: number;
 	title: string;
@@ -6,11 +6,24 @@ interface ClaimedSbt {
 	points: number;
 }
 
-interface User {
+interface ReferralClaimedSbt extends SocialClaimedSbt {
+	invitesRequired: number;
+	claimed: boolean;
+}
+
+interface Invitee {
+	suiAddress: string;
+	inviteDate: string;
+}
+
+export interface UserSbtData {
 	suiAddress: string;
 	sbtCount: number;
 	totalRawPoints: number;
-	claimedSbts: ClaimedSbt[];
+	inviteeCount: number;
+	claimedSocialSbts: SocialClaimedSbt[];
+	claimedReferralSbts: ReferralClaimedSbt[];
+	invitees: Invitee[];
 }
 
 interface Pagination {
@@ -27,13 +40,6 @@ export interface Response<T> {
 }
 
 export interface Data {
-	users: User[];
+	users: UserSbtData[];
 	pagination: Pagination;
-}
-
-export interface UserSbtData {
-	suiAddress: string;
-	claimedSbts: ClaimedSbt[];
-	totalRawPoints: number;
-	sbtCount: number;
 }
