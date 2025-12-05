@@ -38,9 +38,9 @@ function Header() {
 function NBTCReserveTabContent() {
 	const {
 		nbtc: { pkgId, contractId },
+		graphqlURL,
 	} = useNetworkVariables();
 	const { network } = useXverseWallet();
-	const { graphqlURL } = useNetworkVariables();
 	const lockedBTCFetcher = useFetcher<QueryLockedNBTCResp>();
 	const lockedBTCData: QueryLockedNBTCResp = lockedBTCFetcher.data ?? null;
 

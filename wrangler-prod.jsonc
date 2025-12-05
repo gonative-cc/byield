@@ -28,6 +28,7 @@
 	"vars": {
 		"TRADEPORT_API_USER": "",
 		"TRADEPORT_API_KEY": "",
+		"TBOOK_AUTH_TOKEN": "",
 	},
 
 	"kv_namespaces": [
