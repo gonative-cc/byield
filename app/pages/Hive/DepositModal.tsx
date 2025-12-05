@@ -157,6 +157,12 @@ export function DepositModal({ open, onClose }: DepositModalProps) {
 					return `Entered SUI is too big. Leave at-least ${formatSUI(DEPOSIT_GAS)} SUI to cover the gas fee.`;
 				}
 			},
+			greaterThanZero: (value: string) => {
+				if (parseSUI(value) > 0n) {
+					return true;
+				}
+				return "SUI amount must be greater than 0";
+			},
 		},
 	};
 
