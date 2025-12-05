@@ -211,18 +211,26 @@ function createLockdropDepositTxn(
 	suiAmountInMist: bigint,
 	lockdropCfg: LockdropCfg,
 ): Transaction {
+	if (!lockdropCfg.lockdropId) {
+		throw new Error("Lockdrop ID is not found");
+	}
+	if (!lockdropCfg.pkgId) {
+		throw new Error("Lockdrop package ID is not found");
+	}
+
 	const txn = new Transaction();
 	txn.setSender(senderAddress);
+	const clockObj = "0x6";
 
 	const [coins] = txn.splitCoins(txn.gas, [txn.pure.u64(suiAmountInMist)]);
 
 	txn.moveCall({
 		target: moveCallTarget(lockdropCfg, "deposit"),
 		// TODO: support other type of coins
-		typeArguments: ["0x02::sui::SUI"],
+		typeArguments: ["0x2::sui::SUI"],
 		arguments: [
 			txn.object(lockdropCfg.lockdropId),
-			txn.object("0x6"), // Clock object
+			txn.object(clockObj), // Clock object
 			coins,
 		],
 	});
