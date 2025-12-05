@@ -1,6 +1,6 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { CircleCheck, CirclePlus, Share2, Shield, Users, Wallet } from "lucide-react";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useFetcher } from "react-router";
 import { CopyButton } from "~/components/ui/CopyButton";
 import { DashboardSkeletonLoader } from "~/pages/Hive/SkeletonLoader";
@@ -29,12 +29,6 @@ function HiveScoreHeader({ totalHiveScore }: HiveScoreHeaderProps) {
 						<div className="badge badge-primary badge-outline">
 							<CircleCheck size={16} /> Beeliever NFT Active
 						</div>
-					</div>
-					<div className="badge badge-lg ml-auto flex items-center gap-2 text-sm">
-						<span className="text-base-content/70">Referral Link:</span>
-						{/* TODO: tbook is not sending this currently */}
-						<code className="text-xs">native.cc/r/hive-bee-123</code>
-						<CopyButton text={"native.cc/r/hive-bee-123"} />
 					</div>
 				</div>
 			</div>
@@ -102,8 +96,8 @@ interface MemberCardProps {
 	claimedSocialSbts?: UserSbtData["claimedSocialSbts"];
 }
 
-function MemberCard({ claimedSocialSbts }: MemberCardProps) {
-	const claimedSocialSbtsLength = claimedSocialSbts?.length || -1;
+function MemberCard({ claimedSocialSbts = [] }: MemberCardProps) {
+	const claimedSocialSbtsLength = claimedSocialSbts.length;
 	const currentLevel = claimedSocialSbtsLength;
 	const nextLevel = currentLevel + 1;
 	const isNextLevelAvailable = nextLevel <= 10;
@@ -122,8 +116,6 @@ function MemberCard({ claimedSocialSbts }: MemberCardProps) {
 					<div className="text-info mb-2 font-bold">
 						{currentTier?.tier} - {currentTier?.name}
 					</div>
-					<div className="text-base-content/70 mb-1 text-sm">Tasks Completed</div>
-					<div className="text-xl font-bold text-white sm:text-2xl">5</div>
 				</div>
 				{nextTier && (
 					<div>
@@ -143,8 +135,8 @@ interface SpreaderCardProps {
 	inviteeCount?: UserSbtData["inviteeCount"];
 }
 
-function SpreaderCard({ claimedReferralSbts, inviteeCount }: SpreaderCardProps) {
-	const claimedReferralSbtsLength = claimedReferralSbts?.length || -1;
+function SpreaderCard({ claimedReferralSbts = [], inviteeCount }: SpreaderCardProps) {
+	const claimedReferralSbtsLength = claimedReferralSbts.length;
 	const currentLevel = claimedReferralSbtsLength;
 	const nextLevel = currentLevel + 1;
 	const isNextLevelAvailable = nextLevel <= 10;
@@ -166,8 +158,6 @@ function SpreaderCard({ claimedReferralSbts, inviteeCount }: SpreaderCardProps) 
 					<div className="text-success mb-2 font-bold">
 						{currentTier?.tier} - {currentTier?.name}
 					</div>
-					<div className="text-base-content/70 text-sm">Verified Referrals</div>
-					<div className="text-xl font-bold text-white sm:text-2xl">{inviteeCount}</div>
 				</div>
 				<div className="mb-4">
 					<div className="text-base-content/70 mb-2 text-sm">Your Invite Link</div>
@@ -184,7 +174,11 @@ function SpreaderCard({ claimedReferralSbts, inviteeCount }: SpreaderCardProps) 
 						<div className="text-base-content/70 mb-2 text-sm">
 							Next Tier: {nextTier.tier} - {nextTier.name}
 						</div>
-						<progress className="progress progress-success mb-1" value={55} max="100" />
+						<progress
+							className="progress progress-success mb-1"
+							value={inviteeCount}
+							max={nextTier.requirement}
+						/>
 						<div className="text-base-content/70 text-sm">Req: {nextTier.requirement}</div>
 					</div>
 				)}
@@ -198,21 +192,29 @@ export function Dashboard() {
 	const isSuiConnected = !!suiAccount;
 	const userHiveDashboardFetcher = useFetcher<QueryUserDataResp>();
 	const hiveUserDashboardData: QueryUserDataResp = userHiveDashboardFetcher.data ?? null;
+	const hiveUserDashboardError =
+		userHiveDashboardFetcher?.state === "idle" && userHiveDashboardFetcher.data === undefined;
 	const isPageLoading = userHiveDashboardFetcher.state !== "idle";
+
+	const fetchHiveUserData = useCallback(() => {
+		if (suiAccount) {
+			makeReq<QueryUserDataResp>(userHiveDashboardFetcher, {
+				method: "queryHiveUserData",
+				params: [suiAccount.address!],
+			});
+		}
+	}, [suiAccount, userHiveDashboardFetcher]);
 
 	useEffect(() => {
 		if (userHiveDashboardFetcher.state === "idle" && !hiveUserDashboardData && suiAccount) {
-			makeReq<QueryUserDataResp>(userHiveDashboardFetcher, {
-				method: "queryHiveUserData",
-				params: [suiAccount.address],
-			});
+			fetchHiveUserData();
 		}
-	}, [hiveUserDashboardData, userHiveDashboardFetcher, suiAccount]);
+	}, [hiveUserDashboardData, userHiveDashboardFetcher, suiAccount, fetchHiveUserData]);
 
-	const totalRawPoints = hiveUserDashboardData?.data.totalRawPoints;
-	const claimedReferralSbts = hiveUserDashboardData?.data.claimedReferralSbts;
-	const claimedSocialSbts = hiveUserDashboardData?.data.claimedSocialSbts;
-	const inviteeCount = hiveUserDashboardData?.data.inviteeCount;
+	const totalRawPoints = hiveUserDashboardData?.data?.totalRawPoints;
+	const claimedReferralSbts = hiveUserDashboardData?.data?.claimedReferralSbts;
+	const claimedSocialSbts = hiveUserDashboardData?.data?.claimedSocialSbts;
+	const inviteeCount = hiveUserDashboardData?.data?.inviteeCount;
 
 	if (!isSuiConnected) {
 		return (
@@ -233,6 +235,25 @@ export function Dashboard() {
 
 	if (isPageLoading) {
 		return <DashboardSkeletonLoader />;
+	}
+
+	if (hiveUserDashboardError) {
+		return (
+			<div className="flex items-center justify-center">
+				<div className="card max-w-md">
+					<div className="card-body text-center">
+						<div className="text-error mx-auto mb-4 text-6xl">⚠️</div>
+						<h2 className="card-title justify-center">Unable to Load Dashboard</h2>
+						<p className="text-base-content/70 mb-4">
+							There was an error loading your Hive Dashboard. Please try again.
+						</p>
+						<button className="btn btn-primary" onClick={fetchHiveUserData}>
+							Retry
+						</button>
+					</div>
+				</div>
+			</div>
+		);
 	}
 
 	return (
