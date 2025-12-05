@@ -289,7 +289,7 @@ function SuiNetworkOptions() {
 
 	const isDevMode = !isProductionMode();
 	const isAuctionPathname = pathname === "/beelievers-auction" && !isDevMode;
-	const isHivePathname = pathname === "/hive";
+	const isHivePathname = pathname === "/hive" && !isDevMode;
 	const isMainnetOnlyRoute = isAuctionPathname || isHivePathname;
 
 	const networks = useMemo(() => {
