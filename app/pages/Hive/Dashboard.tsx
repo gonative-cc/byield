@@ -1,16 +1,34 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { CircleCheck, CirclePlus, Share2, Shield, Users, Wallet } from "lucide-react";
+import { CircleCheck, CirclePlus, Info, Share2, Shield, Users, Wallet } from "lucide-react";
+import { useCallback, useEffect } from "react";
+import { useFetcher } from "react-router";
 import { CopyButton } from "~/components/ui/CopyButton";
+import { DashboardSkeletonLoader } from "~/pages/Hive/SkeletonLoader";
 import { SuiConnectModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import { LockDropSbt, ReferralSbt, SocialSbt } from "./constant";
+import { makeReq, type QueryUserDataResp } from "~/server/hive/jsonrpc";
+import type { UserSbtData } from "~/server/hive/types";
 
-function HiveScoreHeader() {
+function InfoCard({ msg }: { msg: string }) {
+	return (
+		<div role="alert" className="alert alert-info">
+			<Info />
+			<span>{msg}</span>
+		</div>
+	);
+}
+
+interface HiveScoreHeaderProps {
+	totalHiveScore?: number;
+}
+
+function HiveScoreHeader({ totalHiveScore }: HiveScoreHeaderProps) {
 	return (
 		<div className="card">
 			<div className="card-body flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
 				<div>
 					<div className="text-base-content/70 mb-1 text-sm">Total Hive Score ⚡</div>
-					<div className="text-3xl font-bold text-white sm:text-5xl">4,250</div>
+					<div className="text-3xl font-bold text-white sm:text-5xl">{totalHiveScore}</div>
 				</div>
 				<div className="flex flex-col gap-4 lg:items-end">
 					<div className="flex flex-wrap justify-start gap-2 lg:justify-end">
@@ -20,11 +38,6 @@ function HiveScoreHeader() {
 						<div className="badge badge-primary badge-outline">
 							<CircleCheck size={16} /> Beeliever NFT Active
 						</div>
-					</div>
-					<div className="badge badge-lg ml-auto flex items-center gap-2 text-sm">
-						<span className="text-base-content/70">Referral Link:</span>
-						<code className="text-xs">native.cc/r/hive-bee-123</code>
-						<CopyButton text={"native.cc/r/hive-bee-123"} />
 					</div>
 				</div>
 			</div>
@@ -88,9 +101,14 @@ function ContributorCard() {
 	);
 }
 
-function MemberCard() {
-	// TODO: Get current level and next level from API
-	const currentLevel = 6;
+interface MemberCardProps {
+	claimedSocialSbts?: UserSbtData["claimedSocialSbts"];
+}
+
+function MemberCard({ claimedSocialSbts = [] }: MemberCardProps) {
+	const claimedSocialSbtsLength = claimedSocialSbts.length;
+	const isSocialSbtClaimed = claimedSocialSbtsLength >= 1;
+	const currentLevel = claimedSocialSbtsLength;
 	const nextLevel = currentLevel + 1;
 	const isNextLevelAvailable = nextLevel <= 10;
 	const currentTier = SocialSbt.tiers[currentLevel - 1];
@@ -103,30 +121,40 @@ function MemberCard() {
 					<Users className="text-info shrink-0" />
 					<h3 className="font-bold">Member</h3>
 				</div>
-				<div className="mb-4">
-					<div className="text-base-content/70 mb-1 text-sm">Current Tier</div>
-					<div className="text-info mb-2 font-bold">
-						{currentTier.tier} - {currentTier.name}
-					</div>
-					<div className="text-base-content/70 mb-1 text-sm">Tasks Completed</div>
-					<div className="text-xl font-bold text-white sm:text-2xl">5</div>
-				</div>
-				{nextTier && (
-					<div>
-						<div className="text-base-content/70 mb-2 text-sm">
-							Next Tier: {nextTier.tier} - {nextTier.name}
+				{isSocialSbtClaimed ? (
+					<>
+						<div className="mb-4">
+							<div className="text-base-content/70 mb-1 text-sm">Current Tier</div>
+							<div className="text-info mb-2 font-bold">
+								{currentTier?.tier} - {currentTier?.name}
+							</div>
 						</div>
-						<div className="text-sm">Req: {nextTier.requirement}</div>
-					</div>
+						{nextTier && (
+							<div>
+								<div className="text-base-content/70 mb-2 text-sm">
+									Next Tier: {nextTier.tier} - {nextTier.name}
+								</div>
+								<div className="text-sm">Req: {nextTier.requirement}</div>
+							</div>
+						)}
+					</>
+				) : (
+					<InfoCard msg={"There are no Social SBT claimed"} />
 				)}
 			</div>
 		</div>
 	);
 }
 
-function SpreaderCard() {
-	// TODO: Get current level and next level from API
-	const currentLevel = 9;
+interface SpreaderCardProps {
+	claimedReferralSbts?: UserSbtData["claimedReferralSbts"];
+	inviteeCount?: UserSbtData["inviteeCount"];
+}
+
+function SpreaderCard({ claimedReferralSbts = [], inviteeCount }: SpreaderCardProps) {
+	const claimedReferralSbtsLength = claimedReferralSbts.length;
+	const isReferralSbtClaimed = claimedReferralSbtsLength >= 1;
+	const currentLevel = claimedReferralSbtsLength;
 	const nextLevel = currentLevel + 1;
 	const isNextLevelAvailable = nextLevel <= 10;
 	const currentTier = ReferralSbt.tiers[currentLevel - 1];
@@ -142,31 +170,42 @@ function SpreaderCard() {
 					</div>
 					<button className="btn btn-success btn-sm">Refer & Earn</button>
 				</div>
-				<div className="mb-4">
-					<div className="text-base-content/70 mb-1 text-sm">Current Tier</div>
-					<div className="text-success mb-2 font-bold">
-						{currentTier.tier} - {currentTier.name}
-					</div>
-					<div className="text-base-content/70 text-sm">Verified Referrals</div>
-					<div className="text-xl font-bold text-white sm:text-2xl">4</div>
-				</div>
-				<div className="mb-4">
-					<div className="text-base-content/70 mb-2 text-sm">Your Invite Link</div>
-					<div className="flex items-center gap-2">
-						<code className="bg-base-100 flex-1 rounded px-2 py-1 text-xs break-words">
-							https://native.cc/r/hive-bee-123
-						</code>
-						<CopyButton text="https://native.cc/r/hive-bee-123" />
-					</div>
-				</div>
-				{nextTier && (
-					<div>
-						<div className="text-base-content/70 mb-2 text-sm">
-							Next Tier: {nextTier.tier} - {nextTier.name}
+				{isReferralSbtClaimed ? (
+					<>
+						<div className="mb-4">
+							<div className="text-base-content/70 mb-1 text-sm">Current Tier</div>
+							<div className="text-success mb-2 font-bold">
+								{currentTier?.tier} - {currentTier?.name}
+							</div>
 						</div>
-						<progress className="progress progress-success mb-1" value={55} max="100" />
-						<div className="text-base-content/70 text-sm">Req: {nextTier.requirement}</div>
-					</div>
+						<div className="mb-4">
+							<div className="text-base-content/70 mb-2 text-sm">Your Invite Link</div>
+							<div className="flex items-center gap-2">
+								<code className="bg-base-100 flex-1 rounded px-2 py-1 text-xs break-words">
+									{/* TODO: not send by tbook currently */}
+									https://native.cc/r/hive-bee-123
+								</code>
+								<CopyButton text="https://native.cc/r/hive-bee-123" />
+							</div>
+						</div>
+						{nextTier && (
+							<div>
+								<div className="text-base-content/70 mb-2 text-sm">
+									Next Tier: {nextTier.tier} - {nextTier.name}
+								</div>
+								<progress
+									className="progress progress-success mb-1"
+									value={inviteeCount}
+									max={nextTier.requirement}
+								/>
+								<div className="text-base-content/70 text-sm">
+									Req: {nextTier.requirement}
+								</div>
+							</div>
+						)}
+					</>
+				) : (
+					<InfoCard msg={"There are no Referral SBT claimed"} />
 				)}
 			</div>
 		</div>
@@ -176,6 +215,31 @@ function SpreaderCard() {
 export function Dashboard() {
 	const suiAccount = useCurrentAccount();
 	const isSuiConnected = !!suiAccount;
+	const userHiveDashboardFetcher = useFetcher<QueryUserDataResp>();
+	const hiveUserDashboardData: QueryUserDataResp = userHiveDashboardFetcher.data ?? null;
+	const hiveUserDashboardError =
+		userHiveDashboardFetcher?.state === "idle" && userHiveDashboardFetcher.data === undefined;
+	const isPageLoading = userHiveDashboardFetcher.state !== "idle";
+
+	const fetchHiveUserData = useCallback(() => {
+		if (suiAccount) {
+			makeReq<QueryUserDataResp>(userHiveDashboardFetcher, {
+				method: "queryHiveUserData",
+				params: [suiAccount.address!],
+			});
+		}
+	}, [suiAccount, userHiveDashboardFetcher]);
+
+	useEffect(() => {
+		if (userHiveDashboardFetcher.state === "idle" && !hiveUserDashboardData && suiAccount) {
+			fetchHiveUserData();
+		}
+	}, [hiveUserDashboardData, userHiveDashboardFetcher, suiAccount, fetchHiveUserData]);
+
+	const totalRawPoints = hiveUserDashboardData?.data?.totalRawPoints;
+	const claimedReferralSbts = hiveUserDashboardData?.data?.claimedReferralSbts;
+	const claimedSocialSbts = hiveUserDashboardData?.data?.claimedSocialSbts;
+	const inviteeCount = hiveUserDashboardData?.data?.inviteeCount;
 
 	if (!isSuiConnected) {
 		return (
@@ -194,15 +258,36 @@ export function Dashboard() {
 		);
 	}
 
+	if (isPageLoading) return <DashboardSkeletonLoader />;
+
+	if (hiveUserDashboardError) {
+		return (
+			<div className="flex items-center justify-center">
+				<div className="card max-w-md">
+					<div className="card-body text-center">
+						<div className="text-error mx-auto mb-4 text-6xl">⚠️</div>
+						<h2 className="card-title justify-center">Unable to Load Dashboard</h2>
+						<p className="text-base-content/70 mb-4">
+							There was an error loading your Hive Dashboard. Please try again.
+						</p>
+						<button className="btn btn-primary" onClick={fetchHiveUserData}>
+							Retry
+						</button>
+					</div>
+				</div>
+			</div>
+		);
+	}
+
 	return (
 		<div className="space-y-6">
-			<HiveScoreHeader />
+			<HiveScoreHeader totalHiveScore={totalRawPoints} />
 			<div>
 				<h2 className="mb-4 text-xl font-bold">Category Breakdown</h2>
 				<ContributorCard />
-				<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-					<MemberCard />
-					<SpreaderCard />
+				<div className="grid grid-cols-1 gap-4">
+					<MemberCard claimedSocialSbts={claimedSocialSbts} />
+					<SpreaderCard claimedReferralSbts={claimedReferralSbts} inviteeCount={inviteeCount} />
 				</div>
 			</div>
 		</div>
