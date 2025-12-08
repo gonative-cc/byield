@@ -77,7 +77,7 @@ export function NftDisplay({ nftId }: NftDisplayProps) {
 	const mythicName = getAttributeValue(metadata.attributes, "Mythic Name");
 	const background = getAttributeValue(metadata.attributes, "Background");
 
-	const name = (nftType === "Mythic" ? "✨ " : "🐝 ") + nftType + ": " + (mythicName || metadata.name);
+	const name = formatBeelieverName(nftType, mythicName, metadata.name);
 	const nameCls = "font-bold my-2 text-base " + (nftType === "Mythic" ? "text-warning" : "text-primary");
 
 	return (
@@ -149,9 +149,13 @@ export function NftDisplay({ nftId }: NftDisplayProps) {
 	);
 }
 
-function getAttributeValue(attributes: NftMetadata["attributes"], key: string): string {
+export function getAttributeValue(attributes: NftMetadata["attributes"], key: string): string {
 	const attr = attributes.fields.contents.find((item) => item.fields.key === key);
 	return attr?.fields.value || "";
+}
+
+export function formatBeelieverName(type: string, mythicName: string, fallbackName: string): string {
+	return (type === "Mythic" ? "✨ " : "🐝 ") + type + ": " + (mythicName || fallbackName);
 }
 
 function nFTType(pkgId: string): string {

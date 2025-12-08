@@ -5,6 +5,7 @@ import { useNetworkVariables } from "~/networkConfig";
 import { mkWalrusImageUrl } from "~/lib/suienv";
 import { trimAddress } from "~/components/Wallet/walletHelper";
 import { LoadingSpinner } from "~/components/LoadingSpinner";
+import { getAttributeValue, formatBeelieverName } from "~/pages/BeelieversAuction/nft";
 import { useYourBeelievers, useClaimBadges, type NftWithKiosk } from "./useYourBeelievers";
 import { NftBadgesModal } from "./NftBadgesModal";
 
@@ -96,10 +97,9 @@ function NFTCard({
 	});
 
 	const imageUrl = mkWalrusImageUrl(nft.image_id);
-	const attr = (key: string) =>
-		nft.attributes.fields.contents.find((i) => i.fields.key === key)?.fields.value || "";
-	const type = attr("Type");
-	const name = (type === "Mythic" ? "✨ " : "🐝 ") + type + ": " + (attr("Mythic Name") || nft.name);
+	const type = getAttributeValue(nft.attributes, "Type");
+	const mythicName = getAttributeValue(nft.attributes, "Mythic Name");
+	const name = formatBeelieverName(type, mythicName, nft.name);
 
 	return (
 		<>

@@ -68,17 +68,20 @@ export function useYourBeelievers() {
 	const [nfts, setNfts] = useState<NftWithKiosk[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const lastAddr = useRef<string | null>(null);
+	const lastNetwork = useRef<string | null>(null);
 
 	const fetchNFTs = useCallback(
 		async (force = false, silent = false) => {
 			if (!addr || !client || !beelieversMint.pkgId) {
 				setNfts([]);
+				lastAddr.current = null;
 				return;
 			}
 
-			if (!force && addr === lastAddr.current) return;
+			if (!force && addr === lastAddr.current && network === lastNetwork.current) return;
 
 			lastAddr.current = addr;
+			lastNetwork.current = network;
 			if (!silent) setIsLoading(true);
 
 			try {
