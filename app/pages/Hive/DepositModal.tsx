@@ -80,6 +80,7 @@ export function DepositModal({ open, onClose }: DepositModalProps) {
 			}
 
 			try {
+				// TODO: support multiple coins
 				const transaction = createLockdropDepositTxn(account.address, amount, lockdrop);
 				const result = await signAndExecTx(transaction, client, signTransaction, {
 					showObjectChanges: true,
