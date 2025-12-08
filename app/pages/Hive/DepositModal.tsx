@@ -158,10 +158,10 @@ export function DepositModal({ open, onClose }: DepositModalProps) {
 				}
 			},
 			greaterThanZero: (value: string) => {
-				if (parseSUI(value) > 0n) {
+				if (parseSUI(value) >= 1n) {
 					return true;
 				}
-				return "SUI amount must be greater than 0";
+				return "SUI amount must be greater than or equal to 1";
 			},
 		},
 	};
