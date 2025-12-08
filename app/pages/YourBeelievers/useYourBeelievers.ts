@@ -86,21 +86,39 @@ export function useYourBeelievers() {
 				const kioskClient = new KioskClient({ client, network: network as Network });
 				const kioskMap = await getKioskNFTs(addr, kioskClient, nftType);
 
+				// TODO: Remove .slice(0, 10) limit before deployment - for testing only
+				const nftIds = Array.from(kioskMap.keys()).slice(0, 10);
 				const data: NftWithKiosk[] = [];
-				for (const id of Array.from(kioskMap.keys())) {
-					const metadata = await fetchNftMetadata(client, id);
-					if (!metadata) continue;
+				const BATCH_SIZE = 10;
 
-					const obj = await client.getObject({ id, options: { showType: true } });
-					const kiosk = kioskMap.get(id);
+				for (let i = 0; i < nftIds.length; i += BATCH_SIZE) {
+					const batch = nftIds.slice(i, i + BATCH_SIZE);
+					const batchResults = await Promise.all(
+						batch.map(async (id) => {
+							const [metadata, obj] = await Promise.all([
+								fetchNftMetadata(client, id),
+								client.getObject({ id, options: { showType: true } }),
+							]);
 
-					data.push({
-						...metadata,
-						actualType: obj.data?.type || nftType,
-						isInKiosk: !!kiosk,
-						kioskId: kiosk?.kioskId,
-						kioskCapId: kiosk?.kioskCapId,
-					});
+							if (!metadata) return null;
+
+							const kiosk = kioskMap.get(id);
+							const nftData: NftWithKiosk = {
+								...metadata,
+								actualType: obj.data?.type || nftType,
+								isInKiosk: !!kiosk,
+								kioskId: kiosk?.kioskId,
+								kioskCapId: kiosk?.kioskCapId,
+							};
+							return nftData;
+						}),
+					);
+
+					data.push(...(batchResults.filter((nft) => nft !== null) as NftWithKiosk[]));
+
+					if (i + BATCH_SIZE < nftIds.length) {
+						await new Promise((resolve) => setTimeout(resolve, 500));
+					}
 				}
 
 				setNfts(data);

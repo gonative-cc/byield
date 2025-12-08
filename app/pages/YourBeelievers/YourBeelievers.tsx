@@ -4,6 +4,7 @@ import { SuiConnectModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import { useNetworkVariables } from "~/networkConfig";
 import { mkWalrusImageUrl } from "~/lib/suienv";
 import { trimAddress } from "~/components/Wallet/walletHelper";
+import { LoadingSpinner } from "~/components/LoadingSpinner";
 import { useYourBeelievers, useClaimBadges, type NftWithKiosk } from "./useYourBeelievers";
 import { NftBadgesModal } from "./NftBadgesModal";
 
@@ -11,7 +12,7 @@ export function YourBeelievers() {
 	const { nfts, isLoading, userAddress, updateBadges } = useYourBeelievers();
 
 	return (
-		<div className="relative flex w-full flex-col items-center gap-6 sm:gap-8 lg:gap-10">
+		<div className="flex w-full flex-col items-center gap-6 sm:gap-8 lg:gap-10">
 			<h1 className={heroTitle + " text-primary-foreground"}>🐝 Your Beelievers</h1>
 
 			{!userAddress ? (
@@ -24,7 +25,7 @@ export function YourBeelievers() {
 			) : isLoading ? (
 				<div className="flex w-full flex-col items-center gap-4">
 					<p className="text-base-content/75 text-lg">Loading your NFTs...</p>
-					<div className="loading loading-spinner loading-lg text-primary"></div>
+					<LoadingSpinner isLoading={true} />
 				</div>
 			) : nfts.length === 0 ? (
 				<div className="flex w-full flex-col items-center gap-4">
@@ -102,41 +103,32 @@ function NFTCard({
 
 	return (
 		<>
-			<div
-				className="card bg-base-200 hover:bg-base-300 cursor-pointer transition-colors"
-				onClick={() => setIsModalOpen(true)}
-				onKeyDown={(e) => {
-					if (e.key === "Enter" || e.key === " ") {
-						e.preventDefault();
-						setIsModalOpen(true);
-					}
-				}}
-				role="button"
-				tabIndex={0}
-			>
-				<figure className="aspect-square">
-					{imageUrl ? (
-						<img src={imageUrl} alt={nft.name} className="h-full w-full object-cover" />
-					) : (
-						<div
-							className={`${GRADIENTS.primaryNft} flex h-full w-full items-center justify-center text-6xl`}
-						>
-							🐝
-						</div>
-					)}
-				</figure>
-				<div className="card-body gap-2 p-4">
-					<h3 className="card-title text-primary text-lg">{name}</h3>
-					<p className="text-base-content/75 text-sm">Beeliever #{nft.token_id}</p>
-					<p className="text-base-content/75 truncate text-xs">ID: {trimAddress(nft.id)}</p>
-					<div className="card-actions mt-2">
+			<div className="card hover:bg-base-300 transition-colors">
+				<button className="w-full text-left" onClick={() => setIsModalOpen(true)} type="button">
+					<figure className="aspect-square">
+						{imageUrl ? (
+							<img src={imageUrl} alt={nft.name} className="h-full w-full object-cover" />
+						) : (
+							<div
+								className={`${GRADIENTS.primaryNft} flex h-full w-full items-center justify-center text-6xl`}
+							>
+								🐝
+							</div>
+						)}
+					</figure>
+					<div className="card-body gap-2 p-4">
+						<h3 className="card-title text-primary text-lg">{name}</h3>
+						<p className="text-base-content/75 text-sm">Beeliever #{nft.token_id}</p>
+						<p className="text-base-content/75 truncate text-xs">ID: {trimAddress(nft.id)}</p>
+					</div>
+				</button>
+				<div className="card-body gap-2 p-4 pt-0">
+					<div className="card-actions">
 						<button
-							onClick={(e) => {
-								e.stopPropagation();
-								claim();
-							}}
+							onClick={claim}
 							disabled={isPending}
 							className="btn btn-primary btn-sm w-full"
+							type="button"
 						>
 							{isPending ? "Claiming..." : "Claim Badges"}
 						</button>
