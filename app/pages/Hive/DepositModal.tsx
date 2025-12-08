@@ -83,9 +83,7 @@ export function DepositModal({ open, onClose }: DepositModalProps) {
 				// TODO: support multiple coins
 				const transaction = createLockdropDepositTxn(account.address, amount, lockdrop);
 				const result = await signAndExecTx(transaction, client, signTransaction, {
-					showObjectChanges: true,
 					showEffects: true,
-					showRawEffects: true,
 				});
 				logger.info({ msg: "Deposit tx:", method: "DepositModal", digest: result.digest });
 				if (result.effects?.status?.status === "success") {
