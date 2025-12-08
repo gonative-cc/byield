@@ -77,9 +77,9 @@ export const testnetCfg: ContractsCfg = {
 		module: "auction",
 	},
 	beelieversMint: {
-		pkgId: "0x55be1b4afbbb00a24ac3a6353f1dadf28c5ab756db6e54d7d3ae5a0b7e88d5e9",
-		collectionId: "0xe007c02191ef3a3022adda1ad18dca149bcf676db5112746ed40e8de12bde718",
-		transferPolicyId: "0x7daca888ce6a93d0b24f685e1f652b587faefb8e80d9badcbf19cf09bf844941",
+		pkgId: "0x5fd844048b810820390dd57af340b09cb6bf93a5b6f856fb4a5e8645011a342b",
+		collectionId: "0x8d3c4ff21afc01584cbc04ee899d97e719734cc49721f08893506404730cd190",
+		transferPolicyId: "0xa701e8257bdd1847462708c5c8d517c7975d57376e801789159af3ed5ae31083",
 		mintStart: 1756899768721,
 	},
 	nbtc: {

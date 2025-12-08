@@ -20,6 +20,10 @@ export const routes: Record<string, WalletVisibility> = {
 		bitcoin: false,
 		sui: true,
 	},
+	"/your-beelievers": {
+		bitcoin: false,
+		sui: true,
+	},
 	"/hive": {
 		bitcoin: false,
 		sui: true,
