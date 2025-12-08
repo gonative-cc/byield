@@ -233,9 +233,7 @@ export function Dashboard() {
 		);
 	}
 
-	if (isPageLoading) {
-		return <DashboardSkeletonLoader />;
-	}
+	if (isPageLoading) return <DashboardSkeletonLoader />;
 
 	if (hiveUserDashboardError) {
 		return (

@@ -1,10 +1,10 @@
 import { useDisconnectWallet, useSuiClientContext } from "@mysten/dapp-kit";
 import { isProductionMode } from "~/lib/appenv";
-import { HivePage } from "~/pages/Hive/Hive";
 import { toast } from "~/hooks/use-toast";
 import { useEffect } from "react";
 import type { Route } from "./+types/hive";
 import { HiveController } from "~/server/hive/controller.server";
+import { ControlledHiveTabs } from "~/pages/Hive/ControlledHiveTabs";
 
 // This is a server hive to post data to server (data mutations)
 export async function action({ request, context }: Route.ActionArgs) {
@@ -26,8 +26,8 @@ export default function Hive() {
 	}, [disconnect, isMainnet, network]);
 
 	return (
-		<div className="flex justify-center py-4 md:px-10">
-			<HivePage />
+		<div className="flex justify-center px-4 py-4 md:px-15">
+			<ControlledHiveTabs />
 		</div>
 	);
 }
