@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Modal } from "~/components/ui/dialog";
 import { FormNumericInput } from "~/components/form/FormNumericInput";
@@ -8,12 +8,11 @@ import { SUIIcon } from "~/components/icons";
 import { classNames } from "~/util/tailwind";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { useCurrentAccount, useSignTransaction, useSuiClient } from "@mysten/dapp-kit";
-import { Transaction } from "@mysten/sui/transactions";
 import { toast } from "~/hooks/use-toast";
 import { useNetworkVariables } from "~/networkConfig";
-import { moveCallTarget, type LockdropCfg } from "~/config/sui/contracts-config";
 import { logger } from "~/lib/log";
 import { signAndExecTx } from "~/lib/suienv";
+import { createLockdropDepositTxn } from "./lockdrop-transactions";
 
 const DEPOSIT_GAS = parseSUI("0.003");
 
@@ -51,21 +50,23 @@ interface DepositForm {
 }
 
 interface DepositModalProps {
+	id: string;
 	open: boolean;
 	onClose: () => void;
 }
 
-export function DepositModal({ open, onClose }: DepositModalProps) {
+export function DepositModal({ id, open, onClose }: DepositModalProps) {
 	const suiBalanceRes = useCoinBalance("SUI");
 	const { mutateAsync: signTransaction } = useSignTransaction();
 	const account = useCurrentAccount();
 	const client = useSuiClient();
 	const { lockdrop } = useNetworkVariables();
 	const isSuiWalletConnected = !!account;
-	const [isDepositing, startTransition] = useTransition();
+	const [isDepositing, setIsDepositing] = useState<boolean>(false);
 
 	const handleDeposit = useCallback(
 		async (amount: bigint) => {
+			setIsDepositing(true);
 			if (!account) {
 				logger.error({
 					msg: "Account is not available. Cannot proceed with the deposit",
@@ -109,6 +110,7 @@ export function DepositModal({ open, onClose }: DepositModalProps) {
 			} finally {
 				suiBalanceRes.refetch();
 				onClose();
+				setIsDepositing(false);
 			}
 		},
 		[account, lockdrop, client, signTransaction, suiBalanceRes, onClose],
@@ -153,10 +155,10 @@ export function DepositModal({ open, onClose }: DepositModalProps) {
 					if (parseSUI(value) + DEPOSIT_GAS <= suiBalance) {
 						return true;
 					}
-					return `Entered SUI is too big. Leave at-least ${formatSUI(DEPOSIT_GAS)} SUI to cover the gas fee.`;
+					return `Entered SUI is too big. Leave at least ${formatSUI(DEPOSIT_GAS)} SUI to cover the gas fee.`;
 				}
 			},
-			greaterThanZero: (value: string) => {
+			atLeastOne: (value: string) => {
 				if (parseSUI(value) >= 1n) {
 					return true;
 				}
@@ -166,17 +168,10 @@ export function DepositModal({ open, onClose }: DepositModalProps) {
 	};
 
 	return (
-		<Modal
-			id="deposit-assets-modal"
-			title="Deposit Assets to Lockdrop"
-			open={open}
-			handleClose={handleClose}
-		>
+		<Modal id={id} title="Deposit Assets to Lockdrop" open={open} handleClose={handleClose}>
 			<FormProvider {...depositForm}>
 				<form
-					onSubmit={(e) => {
-						startTransition(() => handleSubmit(() => handleDeposit(mistAmount))(e));
-					}}
+					onSubmit={(e) => handleSubmit(() => handleDeposit(mistAmount))(e)}
 					className="flex w-full flex-col gap-4"
 				>
 					<FormNumericInput
@@ -209,36 +204,4 @@ export function DepositModal({ open, onClose }: DepositModalProps) {
 			</FormProvider>
 		</Modal>
 	);
-}
-
-function createLockdropDepositTxn(
-	senderAddress: string,
-	suiAmountInMist: bigint,
-	lockdropCfg: LockdropCfg,
-): Transaction {
-	if (!lockdropCfg.lockdropId) {
-		throw new Error("Lockdrop ID is not found");
-	}
-	if (!lockdropCfg.pkgId) {
-		throw new Error("Lockdrop package ID is not found");
-	}
-
-	const txn = new Transaction();
-	txn.setSender(senderAddress);
-	const clockObj = "0x6";
-
-	const [coins] = txn.splitCoins(txn.gas, [txn.pure.u64(suiAmountInMist)]);
-
-	txn.moveCall({
-		target: moveCallTarget(lockdropCfg, "deposit"),
-		// TODO: support other type of coins
-		typeArguments: ["0x2::sui::SUI"],
-		arguments: [
-			txn.object(lockdropCfg.lockdropId),
-			txn.object(clockObj), // Clock object
-			coins,
-		],
-	});
-
-	return txn;
 }

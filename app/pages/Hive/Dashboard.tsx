@@ -102,7 +102,11 @@ function ContributorCard() {
 					)}
 				</div>
 			</div>
-			<DepositModal open={isDepositModalOpen} onClose={() => setIsDepositModalOpen(false)} />
+			<DepositModal
+				id="deposit-assets-modal"
+				open={isDepositModalOpen}
+				onClose={() => setIsDepositModalOpen(false)}
+			/>
 		</div>
 	);
 }
