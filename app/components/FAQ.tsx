@@ -10,9 +10,7 @@ interface FAQ {
 interface FAQProps {
 	faqs: FAQ[];
 	description?: string;
-	className?: {
-		container?: string;
-	};
+	className?: string;
 }
 
 export function FAQ({ faqs, description = "", className }: FAQProps) {
@@ -30,7 +28,7 @@ export function FAQ({ faqs, description = "", className }: FAQProps) {
 
 	return (
 		<div
-			className={`border-primary/20 w-full max-w-5xl rounded-2xl border p-4 shadow-2xl lg:p-8 ${className?.container}`}
+			className={`border-primary/20 w-full max-w-5xl rounded-2xl border p-4 shadow-2xl lg:p-8 ${className}`}
 		>
 			<div className="mb-6 text-center">
 				<h2 className="text-primary-foreground mb-3 text-3xl font-bold">

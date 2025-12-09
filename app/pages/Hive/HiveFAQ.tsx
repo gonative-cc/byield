@@ -72,7 +72,7 @@ export function HiveFAQ() {
 	return (
 		<div className="mt-8">
 			<TransparencySection />
-			<SocialSBTFAQ faqs={FAQS} className={{ container: "max-w-full" }} />
+			<SocialSBTFAQ faqs={FAQS} className="max-w-full" />
 		</div>
 	);
 }

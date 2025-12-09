@@ -3,6 +3,8 @@ import { heroTitle } from "~/util/tailwind";
 import type { TabType } from "./types";
 import { ChevronDown, ChevronUp, Info, Share2, Shield, Users } from "lucide-react";
 import { useState } from "react";
+import { Table } from "~/components/ui/table";
+import type { Column } from "react-table";
 
 interface SBTToken {
 	src: string;
@@ -31,17 +33,19 @@ const SBT_TOKENS: SBTToken[] = [
 	},
 ];
 
+interface MultiplierItem {
+	id: string;
+	label: string;
+	value: string;
+	description: string;
+}
+
 interface MultiplierRule {
 	title: string;
 	badge: string;
 	badgeColor: string;
 	description: string;
-	items: {
-		id: string;
-		label: string;
-		value: string;
-		description: string;
-	}[];
+	items: MultiplierItem[];
 }
 
 const MULTIPLIER_RULES: MultiplierRule[] = [
@@ -87,6 +91,12 @@ const MULTIPLIER_RULES: MultiplierRule[] = [
 	},
 ];
 
+export const columns: Column<MultiplierItem>[] = [
+	{ Header: "Multiplier", accessor: "label" },
+	{ Header: "Value", accessor: "value" },
+	{ Header: "Requirement", accessor: "description" },
+];
+
 const MultiplierGroup = ({ group }: { group: MultiplierRule }) => {
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -120,29 +130,7 @@ const MultiplierGroup = ({ group }: { group: MultiplierRule }) => {
 							</span>
 						)}
 					</p>
-
-					<div className="overflow-x-auto">
-						<table className="w-full text-left text-sm">
-							<thead className="text-base-content/70 border-b text-xs uppercase">
-								<tr>
-									<th className="px-4 py-3">Multiplier</th>
-									<th className="px-4 py-3">Value</th>
-									<th className="px-4 py-3">Requirement</th>
-								</tr>
-							</thead>
-							<tbody className="divide-y">
-								{group.items.map((item) => (
-									<tr key={item.id}>
-										<td className="px-4 py-3 font-medium">{item.label}</td>
-										<td className="text-primary-foreground px-4 py-3 font-bold">
-											{item.value}
-										</td>
-										<td className="text-base-content/50 px-4 py-3">{item.description}</td>
-									</tr>
-								))}
-							</tbody>
-						</table>
-					</div>
+					<Table columns={columns} data={group.items} />
 				</div>
 			</div>
 		</div>
