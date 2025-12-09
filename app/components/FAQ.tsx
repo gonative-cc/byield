@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { orangeInfoCardClasses } from "~/util/tailwind";
+import { FAQClassContainer, orangeInfoCardClasses } from "~/util/tailwind";
 
 interface FAQ {
 	id: string;
@@ -27,9 +27,7 @@ export function FAQ({ faqs, description = "", className }: FAQProps) {
 	};
 
 	return (
-		<div
-			className={`border-primary/20 w-full max-w-5xl rounded-2xl border p-4 shadow-2xl lg:p-8 ${className}`}
-		>
+		<div className={`${FAQClassContainer} ${className}`}>
 			<div className="mb-6 text-center">
 				<h2 className="text-primary-foreground mb-3 text-3xl font-bold">
 					🤔 Frequently Asked Questions
