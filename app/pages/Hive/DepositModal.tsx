@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Modal } from "~/components/ui/dialog";
 import { FormNumericInput } from "~/components/form/FormNumericInput";
@@ -60,7 +60,7 @@ export function DepositModal({ id, open, onClose }: DepositModalProps) {
 	const { mutateAsync: signTransaction } = useSignTransaction();
 	const account = useCurrentAccount();
 	const client = useSuiClient();
-	const { lockdrop } = useNetworkVariables();
+	const { lockdrop, suiscan } = useNetworkVariables();
 	const isSuiWalletConnected = !!account;
 	const [isDepositing, setIsDepositing] = useState<boolean>(false);
 
@@ -87,16 +87,17 @@ export function DepositModal({ id, open, onClose }: DepositModalProps) {
 					showEffects: true,
 				});
 				logger.info({ msg: "Deposit tx:", method: "DepositModal", digest: result.digest });
+				const txnLink = `${suiscan}/tx/${result.digest}`;
 				if (result.effects?.status?.status === "success") {
 					toast({
 						title: "Deposit Successful",
-						description: `Successfully deposited ${formatSUI(amount)} SUI to lockdrop`,
+						description: `Successfully deposited ${formatSUI(amount)} SUI to lockdrop. Txn: ${txnLink}`,
 					});
 				} else {
 					logger.error({ msg: "Deposit FAILED", method: "DepositModal", errors: result.errors });
 					toast({
 						title: "Deposit Failed",
-						description: "Transaction failed. Please try again.",
+						description: `Transaction failed. Please try again. Txn: ${txnLink}`,
 						variant: "destructive",
 					});
 				}
@@ -113,7 +114,7 @@ export function DepositModal({ id, open, onClose }: DepositModalProps) {
 				setIsDepositing(false);
 			}
 		},
-		[account, lockdrop, client, signTransaction, suiBalanceRes, onClose],
+		[account, lockdrop, client, signTransaction, suiscan, suiBalanceRes, onClose],
 	);
 
 	const depositForm = useForm<DepositForm>({
@@ -159,7 +160,7 @@ export function DepositModal({ id, open, onClose }: DepositModalProps) {
 				}
 			},
 			atLeastOne: (value: string) => {
-				if (parseSUI(value) >= 1n) {
+				if (parseSUI(value) >= 1_000_000_000n) {
 					return true;
 				}
 				return "SUI amount must be greater than or equal to 1";

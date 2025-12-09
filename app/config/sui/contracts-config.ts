@@ -35,6 +35,7 @@ export interface ContractsCfg {
 	explorer: string;
 	accountExplorer: string;
 	graphqlURL: string;
+	suiscan: string;
 	nbtcOTC: NbtcOtcCfg;
 	beelieversAuction: BeelieversAuctionCfg;
 	beelieversMint: BeelieversMintCfg;
@@ -45,6 +46,7 @@ export interface ContractsCfg {
 export const mainnetCfg: ContractsCfg = {
 	explorer: "https://suivision.xyz",
 	accountExplorer: "https://suiscan.xyz/mainnet/account/",
+	suiscan: "https://suiscan.xyz/mainnet",
 	graphqlURL: "https://graphql.mainnet.sui.io/graphql",
 	nbtcOTC: {
 		pkgId: "",
@@ -78,6 +80,7 @@ export const testnetCfg: ContractsCfg = {
 	explorer: "https://testnet.suivision.xyz",
 	accountExplorer: "https://suiscan.xyz/testnet/account/",
 	graphqlURL: "https://graphql.testnet.sui.io/graphql",
+	suiscan: "https://suiscan.xyz/testnet",
 	nbtcOTC: {
 		pkgId: "0xac799dd8708c2882fcbe2191cfb27bdc9f7654d997ffaa9b530009349f698f3b",
 		vaultId: "0x148a3a004f19aeea0b5df7ffc82a23935ff6cccca433e8e9c14c0f55595425e8",
@@ -115,6 +118,7 @@ export const localnetCfg: ContractsCfg = {
 	explorer: "http://localhost:9123",
 	accountExplorer: "http://localhost:9123/account/",
 	graphqlURL: "",
+	suiscan: "",
 	nbtcOTC: {
 		pkgId: "",
 		vaultId: "",

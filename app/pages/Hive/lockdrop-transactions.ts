@@ -15,7 +15,6 @@ export function createLockdropDepositTxn(
 
 	const txn = new Transaction();
 	txn.setSender(senderAddress);
-	const clockObj = "0x6";
 
 	const [coins] = txn.splitCoins(txn.gas, [txn.pure.u64(suiAmountInMist)]);
 
@@ -25,7 +24,7 @@ export function createLockdropDepositTxn(
 		typeArguments: ["0x2::sui::SUI"],
 		arguments: [
 			txn.object(lockdropCfg.lockdropId),
-			txn.object(clockObj), // Clock object
+			txn.object(txn.object.clock()), // Clock object
 			coins,
 		],
 	});
