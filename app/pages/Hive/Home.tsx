@@ -124,15 +124,15 @@ function SBTTokenCard({ token, tiers }: { token: SBTToken; tiers: SBTToken["tier
 			</figure>
 			<div className="card-body">
 				<h3 className="card-title justify-center">{token.title}</h3>
-				<p className="text-base-content/70 min-h-28">{token.description}</p>
+				<p className="text-muted-foreground min-h-28">{token.description}</p>
 				<div className="space-y-3 border-t pt-6">
-					<div className="text-base-content/70 text-xs font-medium tracking-wider uppercase">
+					<div className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
 						Example Tiers
 					</div>
 					{tiers.map((tier, i) => (
 						<div key={i} className="flex justify-between text-sm">
 							<span>{tier.name}</span>
-							<span className="text-base-content/70 font-mono">{tier.req}</span>
+							<span className="text-muted-foreground font-mono">{tier.req}</span>
 						</div>
 					))}
 				</div>
@@ -161,7 +161,7 @@ function GlobalMultipliersSection() {
 			<div className="flex flex-col items-start gap-12 md:flex-row">
 				<div className="md:w-1/3">
 					<h2 className="mb-4 text-2xl font-bold">Score Multipliers</h2>
-					<p className="text-base-content/70 leading-relaxed">
+					<p className="text-muted-foreground leading-relaxed">
 						Certain attributes amplify your base Hive Score. Review the rules below to understand
 						how multipliers stack.
 					</p>
@@ -181,7 +181,7 @@ function GlobalMultipliersSection() {
 								</div>
 							}
 						>
-							<p className="text-base-content/70 mt-4 mb-4 flex items-start gap-2 text-sm">
+							<p className="text-muted-foreground mt-4 mb-4 flex items-start gap-2 text-sm">
 								<Info className="mt-0.5 h-4 w-4 shrink-0" />
 								{group.description}
 								{group.badge === "Highest Applies" && (
@@ -219,7 +219,7 @@ export function Home({ redirectTab }: HomeProps) {
 				</p>
 				<div className="card">
 					<div className="card-body">
-						<div className="text-base-content/70 mx-auto max-w-4xl space-y-4 text-lg">
+						<div className="text-muted-foreground mx-auto max-w-4xl space-y-4 text-lg">
 							<p>The Native Hive Program is the canonical ledger of your contributions.</p>
 							<p>
 								Mint SBTs by securing liquidity, building the community, and verifying your

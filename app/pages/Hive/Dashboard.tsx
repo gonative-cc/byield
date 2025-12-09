@@ -19,7 +19,7 @@ function HiveScoreHeader({ totalHiveScore }: HiveScoreHeaderProps) {
 		<div className="card">
 			<div className="card-body flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
 				<div>
-					<div className="text-base-content/70 mb-1 text-sm">Total Hive Score ⚡</div>
+					<div className="text-muted-foreground mb-1 text-sm">Total Hive Score ⚡</div>
 					<div className="text-3xl font-bold text-white sm:text-5xl">{totalHiveScore}</div>
 				</div>
 				<div className="flex flex-col gap-4 lg:items-end">
@@ -56,7 +56,7 @@ function ContributorCard() {
 						</div>
 						<div>
 							<h3 className="font-bold">Lockdrop SBTs</h3>
-							<p className="text-base-content/70 text-sm">
+							<p className="text-muted-foreground text-sm">
 								Lock liquidity to earn the highest tier SBTs.
 							</p>
 						</div>
@@ -64,22 +64,22 @@ function ContributorCard() {
 				</div>
 				<div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
 					<div>
-						<div className="text-base-content/70 mb-1 text-sm">Current Tier</div>
+						<div className="text-muted-foreground mb-1 text-sm">Current Tier</div>
 						<div className="text-primary-foreground mb-1 font-bold">
 							{currentTier.tier} - {currentTier.name}
 						</div>
-						<div className="text-base-content/70 mb-4 text-sm">{currentTier.description}</div>
+						<div className="text-muted-foreground mb-4 text-sm">{currentTier.description}</div>
 						<div className="mb-1 text-xl font-bold text-white sm:text-2xl">$2,750</div>
-						<div className="text-base-content/70 text-sm">Locked Liquidity</div>
+						<div className="text-muted-foreground text-sm">Locked Liquidity</div>
 					</div>
 					{nextTier && (
 						<div className="card card-body bg-base-100">
 							<div className="flex w-full justify-between">
-								<span className="text-base-content/70 mb-2 text-sm">
+								<span className="text-muted-foreground mb-2 text-sm">
 									Next Tier: {nextTier.tier} - {nextTier.name}
 								</span>
 								{/* TODO: use data from tbook */}
-								<span className="text-base-content/70 mb-2 text-sm">$2750 / $5000</span>
+								<span className="text-muted-foreground mb-2 text-sm">$2750 / $5000</span>
 							</div>
 							<progress className="progress progress-primary mb-1" value={55} max="100" />
 							<div className="text-sm">{nextTier.requirement}</div>
@@ -126,13 +126,13 @@ function MemberCard({ claimedSocialSbts = [] }: MemberCardProps) {
 				</div>
 				<div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
 					<div>
-						<div className="text-base-content/70 mb-1 text-sm">Current Tier</div>
+						<div className="text-muted-foreground mb-1 text-sm">Current Tier</div>
 						{isSocialSbtClaimed ? (
 							<>
 								<div className="text-info mb-2 font-bold">
 									{currentTier.tier} - {currentTier.name}
 								</div>
-								<div className="text-base-content/70 text-sm">{currentTier.description}</div>
+								<div className="text-muted-foreground text-sm">{currentTier.description}</div>
 							</>
 						) : (
 							<span>No Social SBTs claimed</span>
@@ -140,7 +140,7 @@ function MemberCard({ claimedSocialSbts = [] }: MemberCardProps) {
 					</div>
 					{nextTier && (
 						<div className="card card-body bg-base-100">
-							<div className="text-base-content/70 mb-2 text-sm">
+							<div className="text-muted-foreground mb-2 text-sm">
 								Next Tier: {nextTier.tier} - {nextTier.name}
 							</div>
 							<div className="text-sm">Req: {nextTier.requirement}</div>
@@ -177,7 +177,7 @@ function SpreaderCard({ claimedReferralSbts = [], inviteeCount = 0 }: SpreaderCa
 				</div>
 				<div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
 					<div className="mb-4">
-						<div className="text-base-content/70 mb-1 text-sm">Current Tier</div>
+						<div className="text-muted-foreground mb-1 text-sm">Current Tier</div>
 						{isReferralSbtClaimed ? (
 							<div className="text-success mb-2 font-bold">
 								{currentTier?.tier} - {currentTier?.name}
@@ -189,10 +189,10 @@ function SpreaderCard({ claimedReferralSbts = [], inviteeCount = 0 }: SpreaderCa
 					{nextTier && (
 						<div className="card card-body bg-base-100">
 							<div className="flex w-full justify-between">
-								<span className="text-base-content/70 mb-2 text-sm">
+								<span className="text-muted-foreground mb-2 text-sm">
 									Next Tier: {nextTier.tier} - {nextTier.name}
 								</span>
-								<span className="text-base-content/70 mb-2 text-sm">
+								<span className="text-muted-foreground mb-2 text-sm">
 									{inviteeCount} / {nextTier.requirement}
 								</span>
 							</div>
@@ -206,7 +206,7 @@ function SpreaderCard({ claimedReferralSbts = [], inviteeCount = 0 }: SpreaderCa
 					)}
 				</div>
 				<div className="card card-body bg-base-100 mb-4 w-fit">
-					<div className="text-base-content/70 mb-2 text-sm">Your Invite Link</div>
+					<div className="text-muted-foreground mb-2 text-sm">Your Invite Link</div>
 					<div className="flex w-fit items-center gap-2">
 						<code className="bg-base-100 flex-1 rounded px-2 py-1 text-xs break-words">
 							{/* TODO: not send by tbook currently */}
@@ -256,7 +256,7 @@ export function Dashboard() {
 					<div className="card-body text-center">
 						<Wallet className="text-primary-foreground mx-auto mb-4 h-16 w-16" />
 						<h2 className="card-title justify-center">Connect Your SUI Wallet</h2>
-						<p className="text-base-content/70 mb-4">
+						<p className="text-muted-foreground mb-4">
 							Connect your SUI wallet to access your Hive Dashboard and track your rewards.
 						</p>
 						<SuiConnectModal />
@@ -275,7 +275,7 @@ export function Dashboard() {
 					<div className="card-body text-center">
 						<div className="text-error mx-auto mb-4 text-6xl">⚠️</div>
 						<h2 className="card-title justify-center">Unable to Load Dashboard</h2>
-						<p className="text-base-content/70 mb-4">
+						<p className="text-muted-foreground mb-4">
 							There was an error loading your Hive Dashboard. Please try again.
 						</p>
 						<button className="btn btn-primary" onClick={fetchHiveUserData}>
