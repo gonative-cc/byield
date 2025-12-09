@@ -1,7 +1,7 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { heroTitle } from "~/util/tailwind";
 import type { TabType } from "./types";
-import { ChevronDown, ChevronUp, Info, Share2, Shield, Users } from "lucide-react";
+import { ChevronDown, ChevronUp, Info } from "lucide-react";
 import { useState } from "react";
 import { Table } from "~/components/ui/table";
 import type { Column } from "react-table";
@@ -10,6 +10,10 @@ interface SBTToken {
 	src: string;
 	title: string;
 	description: string;
+	tiers: {
+		name: string;
+		req: string;
+	}[];
 }
 
 const SBT_TOKENS: SBTToken[] = [
@@ -18,18 +22,33 @@ const SBT_TOKENS: SBTToken[] = [
 		title: "Social SBTs",
 		description:
 			"Verify your identity and social accounts. This proves your role as an active, verified member of the Native community.",
+		tiers: [
+			{ name: "Seed Locker", req: "$100" },
+			{ name: "Vault Keeper", req: "$5,000" },
+			{ name: "Master of the Vault", req: "$100,000" },
+		],
 	},
 	{
 		src: "/assets/lockdrop/LockdropSBT.svg",
 		title: "Lockdrop SBTs",
 		description:
-			"Commit USDC, SUI, or WBTC to the pre-mainnet lockdrop. This verifies you as a foundational liquidity provider.",
+			"Commit USDC to the pre-mainnet lockdrop. This verifies you as a foundational liquidity provider.",
+		tiers: [
+			{ name: "Verified Visitor", req: "Discord OAuth" },
+			{ name: "BYield Profile", req: "Create Profile" },
+			{ name: "Hive Master", req: "Top Tier Role" },
+		],
 	},
 	{
 		src: "/assets/lockdrop/ReferralSBT.svg",
 		title: "Referral SBTs",
 		description:
 			"Refer high-quality, verified users who also contribute. This proves your impact on growing a secure and active user base.",
+		tiers: [
+			{ name: "First Invite", req: "1 Referral" },
+			{ name: "Growth Operator", req: "25 Referrals" },
+			{ name: "Swarm Architect", req: "130 Referrals" },
+		],
 	},
 ];
 
@@ -138,7 +157,7 @@ const MultiplierGroup = ({ group }: { group: MultiplierRule }) => {
 };
 
 // Reusable Components
-function SBTTokenCard({ token }: { token: SBTToken }) {
+function SBTTokenCard({ token, tiers }: { token: SBTToken; tiers: SBTToken["tiers"] }) {
 	return (
 		<div className="card bg-base-200 shadow-lg transition-shadow hover:shadow-xl">
 			<figure className="pt-6">
@@ -146,7 +165,18 @@ function SBTTokenCard({ token }: { token: SBTToken }) {
 			</figure>
 			<div className="card-body">
 				<h3 className="card-title justify-center">{token.title}</h3>
-				<p className="text-base-content/70">{token.description}</p>
+				<p className="text-base-content/70 min-h-28">{token.description}</p>
+				<div className="space-y-3 border-t pt-6">
+					<div className="text-base-content/70 text-xs font-medium tracking-wider uppercase">
+						Example Tiers
+					</div>
+					{tiers.map((tier, i) => (
+						<div key={i} className="flex justify-between text-sm">
+							<span>{tier.name}</span>
+							<span className="text-base-content/70 font-mono">{tier.req}</span>
+						</div>
+					))}
+				</div>
 			</div>
 		</div>
 	);
@@ -156,9 +186,10 @@ function SBTTokensSection() {
 	return (
 		<div className="space-y-8">
 			<h2 className="text-center text-3xl font-bold">How to earn Soul Bound Tokens (SBTs)</h2>
+			<div className="bg-primary-foreground mx-auto h-1 w-20 rounded-full" />
 			<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 				{SBT_TOKENS.map((token) => (
-					<SBTTokenCard key={token.title} token={token} />
+					<SBTTokenCard key={token.title} token={token} tiers={token.tiers} />
 				))}
 			</div>
 		</div>
@@ -181,82 +212,6 @@ function GlobalMultipliersSection() {
 						<MultiplierGroup key={idx} group={group} />
 					))}
 				</div>
-			</div>
-		</section>
-	);
-}
-
-function SBTEarnSection() {
-	const CATEGORIES = [
-		{
-			id: "contributor",
-			title: "Hive Contributor",
-			icon: <Shield className="h-6 w-6 text-orange-500" />,
-			description:
-				"Commit liquidity to the Genesis Lockdrop. Verify your role as a foundational provider.",
-			metrics: "Asset Value Locked",
-			tiers: [
-				{ name: "Seed Locker", req: "$100" },
-				{ name: "Vault Keeper", req: "$5,000" },
-				{ name: "Master of the Vault", req: "$100,000" },
-			],
-		},
-		{
-			id: "member",
-			title: "Hive Member",
-			icon: <Users className="h-6 w-6 text-blue-500" />,
-			description:
-				"Link identities and verify social presence. Ensure network security and Sybil-resistance.",
-			metrics: "Social Verification",
-			tiers: [
-				{ name: "Verified Visitor", req: "Discord OAuth" },
-				{ name: "BYield Profile", req: "Create Profile" },
-				{ name: "Hive Master", req: "Top Tier Role" },
-			],
-		},
-		{
-			id: "spreader",
-			title: "Hive Spreader",
-			icon: <Share2 className="h-6 w-6 text-green-500" />,
-			description:
-				"Refer high-quality users. Referrals count only upon identity verification of the referee.",
-			metrics: "Verified Referrals",
-			tiers: [
-				{ name: "First Invite", req: "1 Referral" },
-				{ name: "Growth Operator", req: "25 Referrals" },
-				{ name: "Swarm Architect", req: "130 Referrals" },
-			],
-		},
-	];
-
-	return (
-		<section className="mx-auto">
-			<div className="mb-12 text-center">
-				<h2 className="text-3xl font-bold md:text-4xl">How to Earn SBTs</h2>
-				<div className="bg-primary-foreground mx-auto mt-4 h-1 w-20 rounded-full" />
-			</div>
-
-			<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-				{CATEGORIES.map((cat) => (
-					<div key={cat.id} className="card card-body overflow-hidden">
-						<div className="bg-base-100 mb-6 w-fit rounded-lg border p-3">{cat.icon}</div>
-						<h3 className="mb-3 text-xl font-semibold">{cat.title}</h3>
-						<p className="mb-6 min-h-[60px] text-sm leading-relaxed text-slate-400">
-							{cat.description}
-						</p>
-						<div className="space-y-3 border-t pt-6">
-							<div className="text-base-content/70 text-xs font-medium tracking-wider uppercase">
-								Example Tiers
-							</div>
-							{cat.tiers.map((tier, i) => (
-								<div key={i} className="flex justify-between text-sm">
-									<span>{tier.name}</span>
-									<span className="text-base-content/70 font-mono">{tier.req}</span>
-								</div>
-							))}
-						</div>
-					</div>
-				))}
 			</div>
 		</section>
 	);
@@ -308,7 +263,6 @@ export function Home({ redirectTab }: HomeProps) {
 			</div>
 
 			<SBTTokensSection />
-			<SBTEarnSection />
 
 			{/* SBT Tiers Section */}
 			<div className="space-y-6 text-center">
@@ -316,19 +270,19 @@ export function Home({ redirectTab }: HomeProps) {
 					<span className="text-primary-foreground font-semibold">
 						Each SBT Category contains 10 tiers.
 					</span>{" "}
-					Mint higher tiers to prove deeper contributions and earn more Provenance Score.
+					Mint higher tiers to prove deeper contributions and earn more Hive Score.
 				</p>
 				<div className="flex justify-center">
 					<img src="/assets/lockdrop/SBTTiers.svg" alt="SBT Tiers" />
 				</div>
 			</div>
 
-			{/* Provenance Score Section */}
+			{/* Hive Score Section */}
 			<div className="bg-base-200 space-y-6 rounded-2xl p-8">
-				<h2 className="text-center text-3xl font-bold">What is my Provenance Score?</h2>
+				<h2 className="text-center text-3xl font-bold">What is my Hive Score?</h2>
 				<p className="text-base-content/80 mx-auto max-w-2xl text-center text-lg">
-					Your Provenance Score is the total sum of the points from every SBT tier you have claimed
-					and minted. It quantifies your on-chain impact.
+					Your Hive Score is the total sum of the points from every SBT tier you have claimed and
+					minted. It quantifies your on-chain impact.
 				</p>
 			</div>
 

@@ -1,5 +1,5 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { CircleCheck, CirclePlus, Info, Share2, Shield, Users, Wallet } from "lucide-react";
+import { CircleCheck, CirclePlus, Share2, Shield, Users, Wallet } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useFetcher } from "react-router";
 import { CopyButton } from "~/components/ui/CopyButton";
@@ -9,15 +9,6 @@ import { LockDropSbt, ReferralSbt, SocialSbt } from "./constant";
 import { makeReq, type QueryUserDataResp } from "~/server/hive/jsonrpc";
 import type { UserSbtData } from "~/server/hive/types";
 import { DepositModal } from "./DepositModal";
-
-function InfoCard({ msg }: { msg: string }) {
-	return (
-		<div role="alert" className="alert alert-info">
-			<Info />
-			<span>{msg}</span>
-		</div>
-	);
-}
 
 interface HiveScoreHeaderProps {
 	totalHiveScore?: number;
@@ -64,7 +55,7 @@ function ContributorCard() {
 							<Shield />
 						</div>
 						<div>
-							<h3 className="font-bold">Contributor (Primary)</h3>
+							<h3 className="font-bold">Lockdrop SBTs</h3>
 							<p className="text-base-content/70 text-sm">
 								Lock liquidity to earn the highest tier SBTs.
 							</p>
@@ -131,29 +122,31 @@ function MemberCard({ claimedSocialSbts = [] }: MemberCardProps) {
 			<div className="card-body">
 				<div className="mb-4 flex items-start gap-3">
 					<Users className="text-info shrink-0" />
-					<h3 className="font-bold">Member</h3>
+					<h3 className="font-bold">Social SBTs</h3>
 				</div>
-				{isSocialSbtClaimed ? (
-					<div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-						<div>
-							<div className="text-base-content/70 mb-1 text-sm">Current Tier</div>
-							<div className="text-info mb-2 font-bold">
-								{currentTier.tier} - {currentTier.name}
-							</div>
-							<div className="text-base-content/70 text-sm">{currentTier.description}</div>
-						</div>
-						{nextTier && (
-							<div className="card card-body bg-base-100">
-								<div className="text-base-content/70 mb-2 text-sm">
-									Next Tier: {nextTier.tier} - {nextTier.name}
+				<div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+					<div>
+						<div className="text-base-content/70 mb-1 text-sm">Current Tier</div>
+						{isSocialSbtClaimed ? (
+							<>
+								<div className="text-info mb-2 font-bold">
+									{currentTier.tier} - {currentTier.name}
 								</div>
-								<div className="text-sm">Req: {nextTier.requirement}</div>
-							</div>
+								<div className="text-base-content/70 text-sm">{currentTier.description}</div>
+							</>
+						) : (
+							<span>No Social SBTs claimed</span>
 						)}
 					</div>
-				) : (
-					<InfoCard msg={"There are no Social SBT claimed"} />
-				)}
+					{nextTier && (
+						<div className="card card-body bg-base-100">
+							<div className="text-base-content/70 mb-2 text-sm">
+								Next Tier: {nextTier.tier} - {nextTier.name}
+							</div>
+							<div className="text-sm">Req: {nextTier.requirement}</div>
+						</div>
+					)}
+				</div>
 			</div>
 		</div>
 	);
@@ -164,7 +157,7 @@ interface SpreaderCardProps {
 	inviteeCount?: UserSbtData["inviteeCount"];
 }
 
-function SpreaderCard({ claimedReferralSbts = [], inviteeCount }: SpreaderCardProps) {
+function SpreaderCard({ claimedReferralSbts = [], inviteeCount = 0 }: SpreaderCardProps) {
 	const claimedReferralSbtsLength = claimedReferralSbts.length;
 	const isReferralSbtClaimed = claimedReferralSbtsLength >= 1;
 	const currentLevel = claimedReferralSbtsLength;
@@ -179,50 +172,49 @@ function SpreaderCard({ claimedReferralSbts = [], inviteeCount }: SpreaderCardPr
 				<div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
 					<div className="flex items-start gap-3">
 						<Share2 className="text-success shrink-0" />
-						<h3 className="font-bold">Spreader</h3>
+						<h3 className="font-bold">Referral SBTs</h3>
 					</div>
-					<button className="btn btn-success btn-sm">Refer & Earn</button>
 				</div>
-				{isReferralSbtClaimed ? (
-					<>
-						<div className="mb-4">
-							<div className="text-base-content/70 mb-1 text-sm">Current Tier</div>
+				<div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+					<div className="mb-4">
+						<div className="text-base-content/70 mb-1 text-sm">Current Tier</div>
+						{isReferralSbtClaimed ? (
 							<div className="text-success mb-2 font-bold">
 								{currentTier?.tier} - {currentTier?.name}
 							</div>
-						</div>
-						<div className="card card-body bg-base-100 mb-4">
-							<div className="text-base-content/70 mb-2 text-sm">Your Invite Link</div>
-							<div className="flex w-fit items-center gap-2">
-								<code className="bg-base-100 flex-1 rounded px-2 py-1 text-xs break-words">
-									{/* TODO: not send by tbook currently */}
-									https://native.cc/r/hive-bee-123
-								</code>
-								<CopyButton text="https://native.cc/r/hive-bee-123" />
-							</div>
-						</div>
-						{nextTier && (
-							<div className="card card-body bg-base-100">
-								<div className="flex w-full justify-between">
-									<span className="text-base-content/70 mb-2 text-sm">
-										Next Tier: {nextTier.tier} - {nextTier.name}
-									</span>
-									<span className="text-base-content/70 mb-2 text-sm">
-										{inviteeCount} / {nextTier.requirement}
-									</span>
-								</div>
-								<progress
-									className="progress progress-success mb-1"
-									value={inviteeCount}
-									max={nextTier.requirement}
-								/>
-								<div className="text-sm">Req: {nextTier.requirement}</div>
-							</div>
+						) : (
+							<span>No Referral SBTs claimed</span>
 						)}
-					</>
-				) : (
-					<InfoCard msg={"There are no Referral SBT claimed"} />
-				)}
+					</div>
+					{nextTier && (
+						<div className="card card-body bg-base-100">
+							<div className="flex w-full justify-between">
+								<span className="text-base-content/70 mb-2 text-sm">
+									Next Tier: {nextTier.tier} - {nextTier.name}
+								</span>
+								<span className="text-base-content/70 mb-2 text-sm">
+									{inviteeCount} / {nextTier.requirement}
+								</span>
+							</div>
+							<progress
+								className="progress progress-success mb-1"
+								value={inviteeCount}
+								max={nextTier.requirement}
+							/>
+							<div className="text-sm">Req: {nextTier.requirement}</div>
+						</div>
+					)}
+				</div>
+				<div className="card card-body bg-base-100 mb-4 w-fit">
+					<div className="text-base-content/70 mb-2 text-sm">Your Invite Link</div>
+					<div className="flex w-fit items-center gap-2">
+						<code className="bg-base-100 flex-1 rounded px-2 py-1 text-xs break-words">
+							{/* TODO: not send by tbook currently */}
+							https://native.cc/r/hive-bee-123
+						</code>
+						<CopyButton text="https://native.cc/r/hive-bee-123" />
+					</div>
+				</div>
 			</div>
 		</div>
 	);
