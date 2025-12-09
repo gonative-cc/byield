@@ -1,6 +1,6 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { CircleCheck, CirclePlus, Info, Share2, Shield, Users, Wallet } from "lucide-react";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useFetcher } from "react-router";
 import { CopyButton } from "~/components/ui/CopyButton";
 import { DashboardSkeletonLoader } from "~/pages/Hive/SkeletonLoader";
@@ -8,6 +8,7 @@ import { SuiConnectModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import { LockDropSbt, ReferralSbt, SocialSbt } from "./constant";
 import { makeReq, type QueryUserDataResp } from "~/server/hive/jsonrpc";
 import type { UserSbtData } from "~/server/hive/types";
+import { DepositModal } from "./DepositModal";
 
 function InfoCard({ msg }: { msg: string }) {
 	return (
@@ -46,6 +47,7 @@ function HiveScoreHeader({ totalHiveScore }: HiveScoreHeaderProps) {
 }
 
 function ContributorCard() {
+	const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
 	// TODO: Get current level and next level from API
 	const currentLevel = 2;
 	const nextLevel = currentLevel + 1;
@@ -69,7 +71,10 @@ function ContributorCard() {
 						</div>
 					</div>
 					<div className="flex flex-col gap-2 sm:items-end">
-						<button className="btn btn-primary btn-sm sm:btn-lg">
+						<button
+							className="btn btn-primary btn-sm sm:btn-lg"
+							onClick={() => setIsDepositModalOpen(true)}
+						>
 							<CirclePlus /> Deposit Assets
 						</button>
 						<div className="text-base-content/50 text-center text-xs sm:text-right">
@@ -97,6 +102,11 @@ function ContributorCard() {
 					)}
 				</div>
 			</div>
+			<DepositModal
+				id="deposit-assets-modal"
+				open={isDepositModalOpen}
+				onClose={() => setIsDepositModalOpen(false)}
+			/>
 		</div>
 	);
 }
