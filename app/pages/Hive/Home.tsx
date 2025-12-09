@@ -1,10 +1,10 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { heroTitle } from "~/util/tailwind";
 import type { TabType } from "./types";
-import { ChevronDown, ChevronUp, Info } from "lucide-react";
-import { useState } from "react";
+import { Info } from "lucide-react";
 import { Table } from "~/components/ui/table";
 import type { Column } from "react-table";
+import { Collapse } from "~/components/ui/collapse";
 
 interface SBTToken {
 	src: string;
@@ -71,7 +71,7 @@ const MULTIPLIER_RULES: MultiplierRule[] = [
 	{
 		title: "Global Multipliers",
 		badge: "Stackable",
-		badgeColor: "bg-success/10 text-success border-success-500/20",
+		badgeColor: "badge-success",
 		description: "These bonuses add up on top of your base score.",
 		items: [
 			{
@@ -85,7 +85,7 @@ const MULTIPLIER_RULES: MultiplierRule[] = [
 	{
 		title: "Beeliever Status",
 		badge: "Highest Applies",
-		badgeColor: "bg-primary/10 text-primary border-primary/20",
+		badgeColor: "badge-primary-foreground",
 		description: "Based on the rarity of your NFT. These do not stack (highest takes priority).",
 		items: [
 			{
@@ -100,7 +100,7 @@ const MULTIPLIER_RULES: MultiplierRule[] = [
 	{
 		title: "Whale Bonus",
 		badge: "Highest Applies",
-		badgeColor: "bg-info/10 text-info border-info/20",
+		badgeColor: "badge-info",
 		description: "Based on the quantity of NFTs held. These do not stack (highest takes priority).",
 		items: [
 			{ id: "qty_5", label: "Hive 5", value: "+5%", description: "Hold ≥ 5 NFTs" },
@@ -116,47 +116,6 @@ export const columns: Column<MultiplierItem>[] = [
 	{ Header: "Requirement", accessor: "description" },
 ];
 
-const MultiplierGroup = ({ group }: { group: MultiplierRule }) => {
-	const [isOpen, setIsOpen] = useState<boolean>(false);
-
-	return (
-		<div className="overflow-hidden rounded-xl border">
-			<button
-				onClick={() => setIsOpen(!isOpen)}
-				className="hover:bg-base-100/50 flex w-full items-center justify-between p-4 transition-colors"
-			>
-				<div className="flex items-center gap-3">
-					<h3 className="text-lg font-semibold">{group.title}</h3>
-					<span
-						className={`rounded border px-2 py-0.5 text-[10px] font-bold uppercase ${group.badgeColor}`}
-					>
-						{group.badge}
-					</span>
-				</div>
-				{isOpen ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
-			</button>
-
-			<div
-				className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"}`}
-			>
-				<div className="border-base-100/50 border-t p-4 pt-0">
-					<p className="text-base-content/70 mt-4 mb-4 flex items-start gap-2 text-sm">
-						<Info className="mt-0.5 h-4 w-4 shrink-0" />
-						{group.description}
-						{group.badge === "Highest Applies" && (
-							<span className="text-primary-foreground ml-1">
-								*These do not stack, the highest takes priority.
-							</span>
-						)}
-					</p>
-					<Table columns={columns} data={group.items} />
-				</div>
-			</div>
-		</div>
-	);
-};
-
-// Reusable Components
 function SBTTokenCard({ token, tiers }: { token: SBTToken; tiers: SBTToken["tiers"] }) {
 	return (
 		<div className="card bg-base-200 shadow-lg transition-shadow hover:shadow-xl">
@@ -208,8 +167,31 @@ function GlobalMultipliersSection() {
 					</p>
 				</div>
 				<div className="grid w-full grid-cols-1 gap-6 md:w-2/3">
-					{MULTIPLIER_RULES.map((group, idx) => (
-						<MultiplierGroup key={idx} group={group} />
+					{MULTIPLIER_RULES.map((group) => (
+						<Collapse
+							key={group.title}
+							title={
+								<div className="flex items-center gap-3">
+									<h3 className="text-lg font-semibold">{group.title}</h3>
+									<span
+										className={`badge badge-outline badge-sm uppercase ${group.badgeColor}`}
+									>
+										{group.badge}
+									</span>
+								</div>
+							}
+						>
+							<p className="text-base-content/70 mt-4 mb-4 flex items-start gap-2 text-sm">
+								<Info className="mt-0.5 h-4 w-4 shrink-0" />
+								{group.description}
+								{group.badge === "Highest Applies" && (
+									<span className="text-primary-foreground ml-1">
+										*These do not stack, the highest takes priority.
+									</span>
+								)}
+							</p>
+							<Table columns={columns} data={group.items} />
+						</Collapse>
 					))}
 				</div>
 			</div>
