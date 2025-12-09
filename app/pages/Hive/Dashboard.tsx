@@ -70,36 +70,38 @@ function ContributorCard() {
 							</p>
 						</div>
 					</div>
-					<div className="flex flex-col gap-2 sm:items-end">
-						<button
-							className="btn btn-primary btn-sm sm:btn-lg"
-							onClick={() => setIsDepositModalOpen(true)}
-						>
-							<CirclePlus /> Deposit Assets
-						</button>
-						<div className="text-base-content/50 text-center text-xs sm:text-right">
-							Deposits go to the Lockdrop Escrow.
-						</div>
-					</div>
 				</div>
 				<div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
 					<div>
 						<div className="text-base-content/70 mb-1 text-sm">Current Tier</div>
-						<div className="text-primary-foreground mb-2 font-bold">
+						<div className="text-primary-foreground mb-1 font-bold">
 							{currentTier.tier} - {currentTier.name}
 						</div>
+						<div className="text-base-content/70 mb-4 text-sm">{currentTier.description}</div>
 						<div className="mb-1 text-xl font-bold text-white sm:text-2xl">$2,750</div>
 						<div className="text-base-content/70 text-sm">Locked Liquidity</div>
 					</div>
 					{nextTier && (
-						<div>
-							<div className="text-base-content/70 mb-2 text-sm">
-								Next Tier: {nextTier.tier} - {nextTier.name}
+						<div className="card card-body bg-base-100">
+							<div className="flex w-full justify-between">
+								<span className="text-base-content/70 mb-2 text-sm">
+									Next Tier: {nextTier.tier} - {nextTier.name}
+								</span>
+								{/* TODO: use data from tbook */}
+								<span className="text-base-content/70 mb-2 text-sm">$2750 / $5000</span>
 							</div>
 							<progress className="progress progress-primary mb-1" value={55} max="100" />
-							<div className="text-base-content/70 text-sm">{nextTier.requirement}</div>
+							<div className="text-sm">{nextTier.requirement}</div>
 						</div>
 					)}
+				</div>
+				<div className="mt-4 flex flex-col items-center gap-2">
+					<button className="btn btn-primary btn-xl btn-block lg:w-1/2">
+						<CirclePlus /> Deposit Assets
+					</button>
+					<div className="text-base-content/50 text-center text-xs sm:text-right">
+						Deposits go to the Lockdrop Escrow.
+					</div>
 				</div>
 			</div>
 			<DepositModal
@@ -132,22 +134,23 @@ function MemberCard({ claimedSocialSbts = [] }: MemberCardProps) {
 					<h3 className="font-bold">Member</h3>
 				</div>
 				{isSocialSbtClaimed ? (
-					<>
-						<div className="mb-4">
+					<div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+						<div>
 							<div className="text-base-content/70 mb-1 text-sm">Current Tier</div>
 							<div className="text-info mb-2 font-bold">
-								{currentTier?.tier} - {currentTier?.name}
+								{currentTier.tier} - {currentTier.name}
 							</div>
+							<div className="text-base-content/70 text-sm">{currentTier.description}</div>
 						</div>
 						{nextTier && (
-							<div>
+							<div className="card card-body bg-base-100">
 								<div className="text-base-content/70 mb-2 text-sm">
 									Next Tier: {nextTier.tier} - {nextTier.name}
 								</div>
 								<div className="text-sm">Req: {nextTier.requirement}</div>
 							</div>
 						)}
-					</>
+					</div>
 				) : (
 					<InfoCard msg={"There are no Social SBT claimed"} />
 				)}
@@ -188,9 +191,9 @@ function SpreaderCard({ claimedReferralSbts = [], inviteeCount }: SpreaderCardPr
 								{currentTier?.tier} - {currentTier?.name}
 							</div>
 						</div>
-						<div className="mb-4">
+						<div className="card card-body bg-base-100 mb-4">
 							<div className="text-base-content/70 mb-2 text-sm">Your Invite Link</div>
-							<div className="flex items-center gap-2">
+							<div className="flex w-fit items-center gap-2">
 								<code className="bg-base-100 flex-1 rounded px-2 py-1 text-xs break-words">
 									{/* TODO: not send by tbook currently */}
 									https://native.cc/r/hive-bee-123
@@ -199,18 +202,21 @@ function SpreaderCard({ claimedReferralSbts = [], inviteeCount }: SpreaderCardPr
 							</div>
 						</div>
 						{nextTier && (
-							<div>
-								<div className="text-base-content/70 mb-2 text-sm">
-									Next Tier: {nextTier.tier} - {nextTier.name}
+							<div className="card card-body bg-base-100">
+								<div className="flex w-full justify-between">
+									<span className="text-base-content/70 mb-2 text-sm">
+										Next Tier: {nextTier.tier} - {nextTier.name}
+									</span>
+									<span className="text-base-content/70 mb-2 text-sm">
+										{inviteeCount} / {nextTier.requirement}
+									</span>
 								</div>
 								<progress
 									className="progress progress-success mb-1"
 									value={inviteeCount}
 									max={nextTier.requirement}
 								/>
-								<div className="text-base-content/70 text-sm">
-									Req: {nextTier.requirement}
-								</div>
+								<div className="text-sm">Req: {nextTier.requirement}</div>
 							</div>
 						)}
 					</>
