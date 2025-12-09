@@ -1,17 +1,19 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { heroTitle } from "~/util/tailwind";
 import type { TabType } from "./types";
+import { Info } from "lucide-react";
+import { Table } from "~/components/ui/table";
+import type { Column } from "react-table";
+import { Collapse } from "~/components/ui/collapse";
 
 interface SBTToken {
 	src: string;
 	title: string;
 	description: string;
-}
-
-interface Multiplier {
-	id: string;
-	label: string;
-	bonus: string;
+	tiers: {
+		name: string;
+		req: string;
+	}[];
 }
 
 const SBT_TOKENS: SBTToken[] = [
@@ -20,32 +22,101 @@ const SBT_TOKENS: SBTToken[] = [
 		title: "Social SBTs",
 		description:
 			"Verify your identity and social accounts. This proves your role as an active, verified member of the Native community.",
+		tiers: [
+			{ name: "Seed Locker", req: "$100" },
+			{ name: "Vault Keeper", req: "$5,000" },
+			{ name: "Master of the Vault", req: "$100,000" },
+		],
 	},
 	{
 		src: "/assets/lockdrop/LockdropSBT.svg",
 		title: "Lockdrop SBTs",
 		description:
-			"Commit USDC, SUI, or WBTC to the pre-mainnet lockdrop. This verifies you as a foundational liquidity provider.",
+			"Commit USDC to the pre-mainnet lockdrop. This verifies you as a foundational liquidity provider.",
+		tiers: [
+			{ name: "Verified Visitor", req: "Discord OAuth" },
+			{ name: "BYield Profile", req: "Create Profile" },
+			{ name: "Hive Master", req: "Top Tier Role" },
+		],
 	},
 	{
 		src: "/assets/lockdrop/ReferralSBT.svg",
 		title: "Referral SBTs",
 		description:
 			"Refer high-quality, verified users who also contribute. This proves your impact on growing a secure and active user base.",
+		tiers: [
+			{ name: "First Invite", req: "1 Referral" },
+			{ name: "Growth Operator", req: "25 Referrals" },
+			{ name: "Swarm Architect", req: "130 Referrals" },
+		],
 	},
 ];
 
-const GLOBAL_MULTIPLIERS: Multiplier[] = [
-	{ id: "gb-1", label: "Early Bee (first 2,000 eligible wallets)", bonus: "+20%" },
-	{ id: "gb-2", label: "Beelievers Normal NFT holder", bonus: "+15%" },
-	{ id: "gb-3", label: "Beelievers Mythics NFT holder", bonus: "+30%" },
-	{ id: "gb-4", label: "Holding >=5 Beelievers", bonus: "+5%" },
-	{ id: "gb-5", label: "Holding >=10 Beelievers", bonus: "+10%" },
-	{ id: "gb-6", label: "Holding >=20 Beelievers", bonus: "+15%" },
+interface MultiplierItem {
+	id: string;
+	label: string;
+	value: string;
+	description: string;
+}
+
+interface MultiplierRule {
+	title: string;
+	badge: string;
+	badgeColor: string;
+	description: string;
+	items: MultiplierItem[];
+}
+
+const MULTIPLIER_RULES: MultiplierRule[] = [
+	{
+		title: "Global Multipliers",
+		badge: "Stackable",
+		badgeColor: "badge-success",
+		description: "These bonuses add up on top of your base score.",
+		items: [
+			{
+				id: "early_bee",
+				label: "Early Bee",
+				value: "+20%",
+				description: "First 2,000 eligible wallets.",
+			},
+		],
+	},
+	{
+		title: "Beeliever Status",
+		badge: "Highest Applies",
+		badgeColor: "badge-primary-foreground",
+		description: "Based on the rarity of your NFT. These do not stack (highest takes priority).",
+		items: [
+			{
+				id: "nft_normal",
+				label: "Standard Holder",
+				value: "+15%",
+				description: "Hold a Beeliever NFT",
+			},
+			{ id: "nft_mythic", label: "Mythic Holder", value: "+30%", description: "Hold a Mythic NFT" },
+		],
+	},
+	{
+		title: "Whale Bonus",
+		badge: "Highest Applies",
+		badgeColor: "badge-info",
+		description: "Based on the quantity of NFTs held. These do not stack (highest takes priority).",
+		items: [
+			{ id: "qty_5", label: "Hive 5", value: "+5%", description: "Hold ≥ 5 NFTs" },
+			{ id: "qty_10", label: "Hive 10", value: "+10%", description: "Hold ≥ 10 NFTs" },
+			{ id: "qty_20", label: "Hive 20", value: "+15%", description: "Hold ≥ 20 NFTs" },
+		],
+	},
 ];
 
-// Reusable Components
-function SBTTokenCard({ token }: { token: SBTToken }) {
+export const columns: Column<MultiplierItem>[] = [
+	{ Header: "Multiplier", accessor: "label" },
+	{ Header: "Value", accessor: "value" },
+	{ Header: "Requirement", accessor: "description" },
+];
+
+function SBTTokenCard({ token, tiers }: { token: SBTToken; tiers: SBTToken["tiers"] }) {
 	return (
 		<div className="card bg-base-200 shadow-lg transition-shadow hover:shadow-xl">
 			<figure className="pt-6">
@@ -53,7 +124,18 @@ function SBTTokenCard({ token }: { token: SBTToken }) {
 			</figure>
 			<div className="card-body">
 				<h3 className="card-title justify-center">{token.title}</h3>
-				<p className="text-base-content/70">{token.description}</p>
+				<p className="text-muted-foreground min-h-28">{token.description}</p>
+				<div className="space-y-3 border-t pt-6">
+					<div className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
+						Example Tiers
+					</div>
+					{tiers.map((tier, i) => (
+						<div key={i} className="flex justify-between text-sm">
+							<span>{tier.name}</span>
+							<span className="text-muted-foreground font-mono">{tier.req}</span>
+						</div>
+					))}
+				</div>
 			</div>
 		</div>
 	);
@@ -63,9 +145,10 @@ function SBTTokensSection() {
 	return (
 		<div className="space-y-8">
 			<h2 className="text-center text-3xl font-bold">How to earn Soul Bound Tokens (SBTs)</h2>
+			<div className="bg-primary-foreground mx-auto h-1 w-20 rounded-full" />
 			<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 				{SBT_TOKENS.map((token) => (
-					<SBTTokenCard key={token.title} token={token} />
+					<SBTTokenCard key={token.title} token={token} tiers={token.tiers} />
 				))}
 			</div>
 		</div>
@@ -74,22 +157,45 @@ function SBTTokensSection() {
 
 function GlobalMultipliersSection() {
 	return (
-		<div className="card shadow-lg">
-			<div className="card-body">
-				<h2 className="card-title mb-6 text-center text-2xl font-bold">Global Multipliers</h2>
-				<ul className="space-y-3">
-					{GLOBAL_MULTIPLIERS.map(({ label, id, bonus }) => (
-						<li
-							key={id}
-							className="bg-base-100 flex items-center justify-between rounded-lg px-4 py-2"
+		<section className="card card-body">
+			<div className="flex flex-col items-start gap-12 md:flex-row">
+				<div className="md:w-1/3">
+					<h2 className="mb-4 text-2xl font-bold">Score Multipliers</h2>
+					<p className="text-muted-foreground leading-relaxed">
+						Certain attributes amplify your base Hive Score. Review the rules below to understand
+						how multipliers stack.
+					</p>
+				</div>
+				<div className="grid w-full grid-cols-1 gap-6 md:w-2/3">
+					{MULTIPLIER_RULES.map((group) => (
+						<Collapse
+							key={group.title}
+							title={
+								<div className="flex items-center gap-3">
+									<h3 className="text-lg font-semibold">{group.title}</h3>
+									<span
+										className={`badge badge-outline badge-sm uppercase ${group.badgeColor}`}
+									>
+										{group.badge}
+									</span>
+								</div>
+							}
 						>
-							<span className="text-sm md:text-base">{label}</span>
-							{bonus && <span className="badge badge-primary font-semibold">{bonus}</span>}
-						</li>
+							<p className="text-muted-foreground mt-4 mb-4 flex items-start gap-2 text-sm">
+								<Info className="mt-0.5 h-4 w-4 shrink-0" />
+								{group.description}
+								{group.badge === "Highest Applies" && (
+									<span className="text-primary-foreground ml-1">
+										*These do not stack, the highest takes priority.
+									</span>
+								)}
+							</p>
+							<Table columns={columns} data={group.items} />
+						</Collapse>
 					))}
-				</ul>
+				</div>
 			</div>
-		</div>
+		</section>
 	);
 }
 
@@ -105,21 +211,26 @@ export function Home({ redirectTab }: HomeProps) {
 		<div className="space-y-12">
 			{/* Hero Section */}
 			<div className="space-y-6 text-center">
-				<h1 className={`${heroTitle} text-4xl md:text-5xl`}>
+				<h1 className={`${heroTitle} text-4xl uppercase md:text-5xl`}>
 					<span className="text-primary-foreground">Native</span> Hive Program
 				</h1>
 				<p className="text-base-content/80 text-xl font-medium md:text-2xl">
 					Build the Hive. Earn Your Swarm.
 				</p>
-				<div className="text-base-content/70 mx-auto max-w-4xl space-y-4 text-lg">
-					<p>The Native Hive Program is the canonical ledger of your contributions.</p>
-					<p>
-						Mint SBTs by securing liquidity, building the community, and verifying your role in
-						the genesis of the BYield hub.
-					</p>
-					<p className="text-primary-foreground text-xl font-semibold">
-						Your Hive SBTs are the verifiable record of your impact.
-					</p>
+				<div className="card">
+					<div className="card-body">
+						<div className="text-muted-foreground mx-auto max-w-4xl space-y-4 text-lg">
+							<p>The Native Hive Program is the canonical ledger of your contributions.</p>
+							<p>
+								Mint SBTs by securing liquidity, building the community, and verifying your
+								role in the genesis of the BYield hub.
+							</p>
+							<span className="divider" />
+							<p className="text-primary-foreground text-xl font-semibold">
+								Your Hive SBTs are the verifiable record of your impact.
+							</p>
+						</div>
+					</div>
 				</div>
 				{!isSuiWalletConnected && (
 					<div className="space-y-4">
@@ -141,19 +252,19 @@ export function Home({ redirectTab }: HomeProps) {
 					<span className="text-primary-foreground font-semibold">
 						Each SBT Category contains 10 tiers.
 					</span>{" "}
-					Mint higher tiers to prove deeper contributions and earn more Provenance Score.
+					Mint higher tiers to prove deeper contributions and earn more Hive Score.
 				</p>
 				<div className="flex justify-center">
 					<img src="/assets/lockdrop/SBTTiers.svg" alt="SBT Tiers" />
 				</div>
 			</div>
 
-			{/* Provenance Score Section */}
+			{/* Hive Score Section */}
 			<div className="bg-base-200 space-y-6 rounded-2xl p-8">
-				<h2 className="text-center text-3xl font-bold">What is my Provenance Score?</h2>
+				<h2 className="text-center text-3xl font-bold">What is my Hive Score?</h2>
 				<p className="text-base-content/80 mx-auto max-w-2xl text-center text-lg">
-					Your Provenance Score is the total sum of the points from every SBT tier you have claimed
-					and minted. It quantifies your on-chain impact.
+					Your Hive Score is the total sum of the points from every SBT tier you have claimed and
+					minted. It quantifies your on-chain impact.
 				</p>
 			</div>
 

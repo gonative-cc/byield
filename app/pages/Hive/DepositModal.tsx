@@ -194,7 +194,7 @@ export function DepositModal({ id, open, onClose }: DepositModalProps) {
 						}
 						rules={suiAmountInputRules}
 					/>
-					<div className="text-base-content/70 text-sm">
+					<div className="text-muted-foreground text-sm">
 						Your SUI will be locked in the lockdrop escrow until the lockdrop period ends.
 					</div>
 					<button className="btn btn-primary" type="submit" disabled={isDepositing}>
