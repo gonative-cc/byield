@@ -10,9 +10,12 @@ interface FAQ {
 interface FAQProps {
 	faqs: FAQ[];
 	description?: string;
+	className?: {
+		container?: string;
+	};
 }
 
-export function FAQ({ faqs, description = "" }: FAQProps) {
+export function FAQ({ faqs, description = "", className }: FAQProps) {
 	const renderQuestion = (faq: FAQ) => {
 		return (
 			<div key={faq.id} className={`${orangeInfoCardClasses} collapse-plus collapse`}>
@@ -26,7 +29,9 @@ export function FAQ({ faqs, description = "" }: FAQProps) {
 	};
 
 	return (
-		<div className="border-primary/20 w-full max-w-5xl rounded-2xl border p-4 shadow-2xl lg:p-8">
+		<div
+			className={`border-primary/20 w-full max-w-5xl rounded-2xl border p-4 shadow-2xl lg:p-8 ${className?.container}`}
+		>
 			<div className="mb-6 text-center">
 				<h2 className="text-primary-foreground mb-3 text-3xl font-bold">
 					🤔 Frequently Asked Questions
