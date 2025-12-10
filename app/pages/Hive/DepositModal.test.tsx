@@ -22,7 +22,7 @@ vi.mock("@mysten/dapp-kit", () => ({
 }));
 
 vi.mock("~/networkConfig", () => ({
-	useNetworkVariables: vi.fn(() => ({ lockdrop: {} })),
+	useNetworkVariables: vi.fn(() => ({ lockdrop: {}, usdc: {} })),
 }));
 
 vi.mock("~/hooks/use-toast", () => ({
@@ -62,9 +62,9 @@ describe("DepositModal", () => {
 		expect(screen.queryByText("Deposit Assets to Lockdrop")).not.toBeVisible();
 	});
 
-	it("should display SUI input field", () => {
+	it("should display USDC input field", () => {
 		render(<DepositModal id="deposit-assets-modal" open={true} onClose={mockOnClose} />);
-		expect(screen.getByPlaceholderText("Enter SUI amount")).toBeInTheDocument();
+		expect(screen.getByPlaceholderText("Enter USDC amount")).toBeInTheDocument();
 	});
 
 	it("should show max button", () => {
@@ -75,11 +75,11 @@ describe("DepositModal", () => {
 
 	it("should show deposit button", () => {
 		render(<DepositModal id="deposit-assets-modal" open={true} onClose={mockOnClose} />);
-		expect(screen.getAllByText(/Deposit Assets/i)).toHaveLength(2);
+		expect(screen.getByText(/Deposit Assets/i)).toBeInTheDocument();
 	});
 
 	it("should show lockdrop info text", () => {
 		render(<DepositModal id="deposit-assets-modal" open={true} onClose={mockOnClose} />);
-		expect(screen.getByText(/Your SUI will be locked in the lockdrop escrow/)).toBeInTheDocument();
+		expect(screen.getByText(/Your USDC will be locked in the lockdrop escrow/)).toBeInTheDocument();
 	});
 });

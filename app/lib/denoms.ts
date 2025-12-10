@@ -5,7 +5,7 @@ import { parseUnits, formatUnits } from "@ethersproject/units";
 export const BTC = 8; // BTC -> sats decimals
 export const SUI = 9; // SUI -> mist decimals
 export const NBTC = 8; // NBTC decimals
-export const USDC = 6;
+export const USDC = 6; // USDC decimals
 
 // throws error when amount decimals are bigger then `decimals` or when amount is not a proper
 // numeric string
@@ -40,4 +40,12 @@ export function parseNBTC(amount: string): bigint {
 
 export function formatNBTC(amount: number | bigint): string {
 	return formatUnits(amount, NBTC);
+}
+
+export function formatUSDC(amount: number | bigint | string): string {
+	return formatUnits(amount, USDC);
+}
+
+export function parseUSDC(amount: string): bigint {
+	return parse(amount, USDC);
 }
