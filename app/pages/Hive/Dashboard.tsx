@@ -12,6 +12,7 @@ import { DepositModal } from "./DepositModal";
 import { getUserDeposits } from "./lockdrop-transactions";
 import { useNetworkVariables } from "~/networkConfig";
 import { formatUSDC } from "~/lib/denoms";
+import type { TabType } from "./types";
 
 interface HiveScoreHeaderProps {
 	totalHiveScore?: number;
@@ -40,7 +41,11 @@ function HiveScoreHeader({ totalHiveScore }: HiveScoreHeaderProps) {
 	);
 }
 
-function ContributorCard() {
+interface ContributorCardProps {
+	redirectTab: (redirectTab: TabType) => void;
+}
+
+function ContributorCard({ redirectTab }: ContributorCardProps) {
 	const account = useCurrentAccount();
 	const client = useSuiClient();
 	const { lockdrop } = useNetworkVariables();
@@ -119,7 +124,7 @@ function ContributorCard() {
 						className="btn btn-primary btn-xl btn-block lg:w-1/2"
 						onClick={() => setIsDepositModalOpen(true)}
 					>
-						<CirclePlus /> Deposit Assets
+						<CirclePlus /> Deposit USDC
 					</button>
 					<div className="text-base-content/50 text-center text-xs sm:text-right">
 						Deposits go to the Lockdrop Escrow.
@@ -131,6 +136,7 @@ function ContributorCard() {
 				open={isDepositModalOpen}
 				onClose={() => setIsDepositModalOpen(false)}
 				refetchDeposit={() => setRefetchDeposit((prev) => !prev)}
+				redirectTab={redirectTab}
 			/>
 		</div>
 	);
@@ -254,7 +260,11 @@ function SpreaderCard({ claimedReferralSbts = [], inviteeCount = 0, referralLink
 	);
 }
 
-export function Dashboard() {
+interface DashboardProps {
+	redirectTab: (redirectTab: TabType) => void;
+}
+
+export function Dashboard({ redirectTab }: DashboardProps) {
 	const suiAccount = useCurrentAccount();
 	const isSuiConnected = !!suiAccount;
 	const userHiveDashboardFetcher = useFetcher<QueryUserDataResp>();
@@ -327,7 +337,7 @@ export function Dashboard() {
 			<HiveScoreHeader totalHiveScore={totalRawPoints} />
 			<div>
 				<h2 className="mb-4 text-xl font-bold">Category Breakdown</h2>
-				<ContributorCard />
+				<ContributorCard redirectTab={redirectTab} />
 				<div className="grid grid-cols-1 gap-4">
 					<MemberCard claimedSocialSbts={claimedSocialSbts} />
 					<SpreaderCard
