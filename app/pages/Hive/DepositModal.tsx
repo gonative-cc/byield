@@ -11,9 +11,10 @@ import { useNetworkVariables } from "~/networkConfig";
 import { logger } from "~/lib/log";
 import { signAndExecTx } from "~/lib/suienv";
 import { createLockdropDepositTxn } from "./lockdrop-transactions";
-import { Check, CircleX } from "lucide-react";
+import { Check, CircleX, Info } from "lucide-react";
 import { Link } from "react-router";
 import { toast } from "~/hooks/use-toast";
+import type { TabType } from "./types";
 
 interface CoinRightAdornmentProps {
 	maxAmount: string;
@@ -49,9 +50,10 @@ interface DepositModalProps {
 	open: boolean;
 	onClose: () => void;
 	refetchDeposit: () => void;
+	redirectTab: (redirectTab: TabType) => void;
 }
 
-export function DepositModal({ id, open, onClose, refetchDeposit }: DepositModalProps) {
+export function DepositModal({ id, open, onClose, refetchDeposit, redirectTab }: DepositModalProps) {
 	const { mutateAsync: signTransaction } = useSignTransaction();
 	const account = useCurrentAccount();
 	const client = useSuiClient();
@@ -71,7 +73,7 @@ export function DepositModal({ id, open, onClose, refetchDeposit }: DepositModal
 					method: "DepositModal",
 				});
 				toast({
-					title: "Deposit Assets",
+					title: "Deposit USDC",
 					description: "Account is not available. Cannot proceed with the deposit.",
 					variant: "destructive",
 				});
@@ -158,7 +160,7 @@ export function DepositModal({ id, open, onClose, refetchDeposit }: DepositModal
 	};
 
 	return (
-		<Modal id={id} title="Deposit Assets to Lockdrop" open={open} handleClose={handleClose}>
+		<Modal id={id} title="Deposit USDC to Lockdrop" open={open} handleClose={handleClose}>
 			{txStatus ? (
 				<div className="flex flex-col gap-4 rounded-lg p-4 text-white">
 					<div className="flex flex-col items-center gap-2">
@@ -207,9 +209,10 @@ export function DepositModal({ id, open, onClose, refetchDeposit }: DepositModal
 							}
 							rules={amountInputRules}
 						/>
-						<div className="text-base-content/70 text-sm">
+						<button className="alert alert-info link" onClick={() => redirectTab("faq")}>
+							<Info />
 							Your USDC will be locked in the lockdrop escrow until the lockdrop period ends.
-						</div>
+						</button>
 						<button className="btn btn-primary" type="submit" disabled={isDepositing}>
 							<LoadingSpinner isLoading={isDepositing} />
 							Deposit USDC
