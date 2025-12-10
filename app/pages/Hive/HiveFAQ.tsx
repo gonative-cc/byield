@@ -48,9 +48,9 @@ const TransparencySection = () => (
 			</div>
 			<div className="space-y-4 text-sm leading-relaxed md:text-base">
 				<p>
-					<strong>1. Funds are Locked Until Mainnet:</strong> By depositing assets (SUI, USDC, WBTC)
-					into the Lockdrop Escrow, you acknowledge that these funds are strictly locked until the
-					Native nBTC Mainnet launch. There is no early withdrawal function.
+					<strong>1. Funds are Locked Until Mainnet:</strong> By depositing assets (USDC) into the
+					Lockdrop Escrow, you acknowledge that these funds are strictly locked until the Native
+					nBTC Mainnet launch. There is no early withdrawal function.
 				</p>
 				<p>
 					<strong>2. Conversion & Valuation Mechanism:</strong> Your deposit is a liquidity

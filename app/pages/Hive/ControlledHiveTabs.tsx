@@ -33,7 +33,7 @@ export const ControlledHiveTabs = () => {
 			</div>
 
 			{activeTab === "home" && <Home redirectTab={redirectTab} />}
-			{activeTab === "dashboard" && <Dashboard />}
+			{activeTab === "dashboard" && <Dashboard redirectTab={redirectTab} />}
 			{activeTab === "faq" && <HiveFAQ />}
 		</div>
 	);
