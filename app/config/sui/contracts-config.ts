@@ -31,6 +31,11 @@ export interface LockdropCfg {
 	module: string;
 }
 
+export interface Coin {
+	name: string;
+	type: string;
+}
+
 export interface ContractsCfg {
 	explorer: string;
 	accountExplorer: string;
@@ -41,6 +46,7 @@ export interface ContractsCfg {
 	beelieversMint: BeelieversMintCfg;
 	nbtc: NbtcCfg;
 	lockdrop: LockdropCfg;
+	usdc: Coin;
 }
 
 export const mainnetCfg: ContractsCfg = {
@@ -74,6 +80,10 @@ export const mainnetCfg: ContractsCfg = {
 		lockdropId: "",
 		module: "lockdrop",
 	},
+	usdc: {
+		name: "USDC",
+		type: "",
+	},
 };
 
 export const testnetCfg: ContractsCfg = {
@@ -104,8 +114,12 @@ export const testnetCfg: ContractsCfg = {
 	},
 	lockdrop: {
 		pkgId: "0xfdd5779ce1f081b940c23070c7268edecaf9df2904fbda76f201816c3fef8f4d",
-		lockdropId: "0x11613fb91149e1f36a6c0f013f60c5d9e1150431f7e874c09cbf85b803bc4fc3",
+		lockdropId: "0x2e1f5ebf89440afc4592765c1cc82b6bd872dc67f9e3ad9f229a3e3528de35a5",
 		module: "lockdrop",
+	},
+	usdc: {
+		name: "USDC",
+		type: "0xa1ec7fc00a6f40db9693ad1415d0c193ad3906494428cf252621037bd7117e29::usdc::USDC",
 	},
 };
 
@@ -144,6 +158,10 @@ export const localnetCfg: ContractsCfg = {
 		pkgId: "",
 		lockdropId: "",
 		module: "lockdrop",
+	},
+	usdc: {
+		name: "USDC",
+		type: "",
 	},
 };
 
