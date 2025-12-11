@@ -1,14 +1,14 @@
 import { BitcoinNetworkType } from "sats-connect";
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { useEffect, useRef, useCallback, useMemo } from "react";
+import { useEffect, useRef, useCallback, useMemo, useState } from "react";
 import { useFetcher } from "react-router";
 import { RefreshCw } from "lucide-react";
 import type { BtcIndexerRpcI } from "@gonative-cc/btcindexer/rpc-interface";
-
 import type { Route } from "./+types/mint";
 import { RegtestInstructions } from "~/pages/nbtc-mint/RegtestInstructions";
-import { MintBTC } from "~/pages/nbtc-mint/MintBTC";
 import { MintBTCTable } from "~/pages/nbtc-mint/MintBTCTable";
+import { RedeemBTCTable } from "~/pages/nbtc-mint/RedeemBTCTable";
+import { ControlledNBTCTabs, type TabType } from "~/pages/nbtc-mint/ControlledNBTCTabs";
 import { Collapse } from "~/components/ui/collapse";
 import Controller from "~/server/nbtc/controller.server";
 import { makeReq, type QueryMintTxResp } from "~/server/nbtc/jsonrpc";
@@ -164,7 +164,9 @@ export default function Mint() {
 	const prevAddrRef = useRef<string | null>(null);
 	const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
+	const [activeTab, setActiveTab] = useState<TabType>("mint");
 	const mintTxs = useMemo(() => mintTxFetcher.data || [], [mintTxFetcher.data]);
+	const redeemTxs = useMemo(() => [], []); // TODO: Implement redeem transactions fetching
 	const isLoading = mintTxFetcher.state !== "idle";
 	const hasTxFetcherError =
 		mintTxFetcher.state === "idle" && mintTxFetcher.data === undefined && activeAddr;
@@ -180,6 +182,12 @@ export default function Mint() {
 			refetch();
 		}
 	}, [activeAddr, btcAddr, mintTxFetcher, network, refetch, suiAddr]);
+
+	// Function to fetch redeem transactions
+	const fetchRedeemTxs = useCallback(async () => {
+		// TODO: Implement redeem transactions fetching
+		console.log("Fetching redeem transactions...");
+	}, []);
 
 	// Handle address changes, interval setup, and initial fetch
 	useEffect(() => {
@@ -207,14 +215,18 @@ export default function Mint() {
 		<div className="mx-auto max-w-7xl space-y-6 px-4 py-4">
 			{isMobile && !isXverseInstalled && <InstallXverseWallet mobileOS={mobileOS} />}
 			<h1 className={heroTitle + " text-center"}>
-				Mint<span className="text-primary-foreground"> nBTC</span>
+				<span className="text-primary-foreground">Mint & Redeem</span> nBTC
 			</h1>
 
 			{/* Main Content Grid */}
 			<div className="grid gap-4 lg:grid-cols-[1fr_400px]">
 				{/* Left Column */}
 				<div className="space-y-6">
-					<MintBTC fetchMintTxs={fetchMintTxs} />
+					<ControlledNBTCTabs
+						fetchMintTxs={fetchMintTxs}
+						fetchRedeemTxs={fetchRedeemTxs}
+						onTabChange={setActiveTab}
+					/>
 
 					{/* Transaction Table Section */}
 					{activeAddr && (
@@ -242,7 +254,12 @@ export default function Mint() {
 								</button>
 							)}
 
-							<MintBTCTable data={mintTxs || []} isLoading={isLoading} />
+							{activeTab === "mint" && (
+								<MintBTCTable data={mintTxs || []} isLoading={isLoading} />
+							)}
+							{activeTab === "redeem" && (
+								<RedeemBTCTable data={redeemTxs || []} isLoading={false} />
+							)}
 						</>
 					)}
 

@@ -3,7 +3,7 @@ import { FormInput } from "../../components/form/FormInput";
 import { useXverseWallet } from "../../components/Wallet/XverseWallet/useWallet";
 import { useEffect, useState } from "react";
 import { FormNumericInput } from "../../components/form/FormNumericInput";
-import { BTC, formatBTC, formatNBTC, parseBTC } from "~/lib/denoms";
+import { BTC, formatBTC, parseBTC } from "~/lib/denoms";
 import { nBTCMintTx } from "~/lib/nbtc";
 import { BitcoinIcon, Info } from "lucide-react";
 import { buttonEffectClasses, classNames } from "~/util/tailwind";
@@ -15,74 +15,16 @@ import { makeReq } from "~/server/nbtc/jsonrpc";
 import { useFetcher } from "react-router";
 import type { UTXO } from "~/server/nbtc/types";
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
-import { BitCoinIcon, NBTCIcon } from "~/components/icons";
-import { TrimmedNumber } from "~/components/TrimmedNumber";
+import { BitCoinIcon } from "~/components/icons";
 import { logError, logger } from "~/lib/log";
-
-function BalanceCard() {
-	const { balance } = useXverseWallet();
-	const nbtcBalanceRes = useCoinBalance("NBTC");
-
-	if (!nbtcBalanceRes || !balance) return null;
-
-	return (
-		<div className="mx-auto flex min-w-1/2 flex-col space-y-2">
-			<span className="mb-4 text-center">Your balance</span>
-			<div className="flex w-full items-center justify-between">
-				<div className="flex items-center gap-2">
-					<BitCoinIcon /> BTC
-				</div>
-				<div className="flex flex-col gap-1">
-					<TrimmedNumber
-						displayType="text"
-						value={formatBTC(BigInt(balance))}
-						className="text-base-content/75"
-						readOnly
-					/>
-				</div>
-			</div>
-			<div className="divider" />
-			<div className="flex w-full items-center justify-between">
-				<div className="flex items-center gap-2">
-					<NBTCIcon prefix="" /> nBTC
-				</div>
-				<div className="flex flex-col gap-1">
-					<TrimmedNumber
-						displayType="text"
-						value={formatNBTC(BigInt(nbtcBalanceRes.balance))}
-						className="text-base-content/75"
-						readOnly
-					/>
-				</div>
-			</div>
-		</div>
-	);
-}
+import { Percentage } from "./Percentage";
+import { BalanceCard } from "./BalanceCard";
 
 function formatSuiAddress(suiAddress: string) {
 	if (!suiAddress.toLowerCase().startsWith("0x")) {
 		return "0x" + suiAddress;
 	}
 	return suiAddress;
-}
-
-function Percentage({ onChange }: { onChange: (value: number) => void }) {
-	const PERCENTAGES = [25, 50, 75, 100];
-	return (
-		<div className="grid grid-cols-4 gap-2">
-			{PERCENTAGES.map((v) => (
-				<button
-					type="button"
-					key={v}
-					onClick={() => onChange(v)}
-					className="btn btn-sm btn-secondary btn-outline"
-				>
-					{v}%
-				</button>
-			))}
-		</div>
-	);
 }
 
 interface MintNBTCForm {
