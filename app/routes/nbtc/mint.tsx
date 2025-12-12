@@ -258,7 +258,7 @@ export default function Mint() {
 								<MintBTCTable data={mintTxs || []} isLoading={isLoading} />
 							)}
 							{activeTab === "redeem" && (
-								<RedeemBTCTable data={redeemTxs || []} isLoading={false} />
+								<RedeemBTCTable data={redeemTxs || []} isLoading={isLoading} />
 							)}
 						</>
 					)}
