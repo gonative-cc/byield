@@ -9,7 +9,7 @@ import { toast } from "~/hooks/use-toast";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { NBTCIcon } from "~/components/icons";
-import { Percentage } from "./Percentage";
+import { Percentage } from "../../components/Percentage";
 import { BalanceCard } from "./BalanceCard";
 import { SuiConnectModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import { isValidBitcoinAddress } from "~/lib/bitcoin.client";
@@ -91,6 +91,8 @@ export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
 										return "Amount must be greater than 0";
 									},
 									enoughBalance: (value: string) => {
+										if (!nbtcBalanceRes)
+											return "Unable to check nBTC balance. Please try again later.";
 										if (nbtcBalanceRes) {
 											if (parseNBTC(value) <= BigInt(nbtcBalanceRes.balance)) {
 												return true;

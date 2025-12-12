@@ -17,7 +17,7 @@ import type { UTXO } from "~/server/nbtc/types";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { BitCoinIcon } from "~/components/icons";
 import { logError, logger } from "~/lib/log";
-import { Percentage } from "./Percentage";
+import { Percentage } from "../../components/Percentage";
 import { BalanceCard } from "./BalanceCard";
 
 function formatSuiAddress(suiAddress: string) {

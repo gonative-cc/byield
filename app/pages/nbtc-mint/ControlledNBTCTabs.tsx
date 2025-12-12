@@ -2,7 +2,7 @@ import { useState } from "react";
 import { MintBTC } from "./MintBTC";
 import { RedeemBTC } from "./RedeemBTC";
 
-type TabType = "mint" | "redeem";
+export type TabType = "mint" | "redeem";
 
 interface ControlledNBTCTabsProps {
 	fetchMintTxs: () => void;
@@ -36,7 +36,7 @@ export const ControlledNBTCTabs = ({
 	return (
 		<div className="w-full">
 			<div className="mb-8 flex justify-center">
-				<div className="tabs tabs-boxed bg-base-200 rounded-full shadow-lg">
+				<div className="tabs tabs-box bg-base-200 rounded-full shadow-lg">
 					{renderTabButton("mint")}
 					{renderTabButton("redeem")}
 				</div>
@@ -47,5 +47,3 @@ export const ControlledNBTCTabs = ({
 		</div>
 	);
 };
-
-export type { TabType };
