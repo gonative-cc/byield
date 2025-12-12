@@ -7,7 +7,7 @@ describe("isValidBitcoinAddress", () => {
 		expect(await isValidBitcoinAddress("invalid", BitcoinNetworkType.Regtest)).toBe(false);
 	});
 
-	test("should return true on invalid addres", async () => {
+	test("should return true on valid address", async () => {
 		expect(
 			await isValidBitcoinAddress(
 				"bcrt1qseh0z29yzveh02snqn6ztg956puernf36rgh4z",
