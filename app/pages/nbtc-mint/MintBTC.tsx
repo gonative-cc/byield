@@ -20,6 +20,31 @@ import { logError, logger } from "~/lib/log";
 import { Percentage } from "../../components/Percentage";
 import { BalanceCard } from "./BalanceCard";
 
+interface BTCRightAdornmentProps {
+	maxBTCAmount: string;
+	onMaxClick: (val: string) => void;
+}
+
+function BTCRightAdornment({ maxBTCAmount, onMaxClick }: BTCRightAdornmentProps) {
+	return (
+		<div className="flex flex-col items-center gap-2 py-2">
+			{maxBTCAmount && (
+				<div className="flex items-center gap-2">
+					<p className="text-xs whitespace-nowrap">Balance: {maxBTCAmount.substring(0, 8)} BTC</p>
+					<button
+						type="button"
+						onClick={() => onMaxClick(maxBTCAmount)}
+						className="btn btn-primary btn-link h-fit w-fit p-0 text-xs"
+					>
+						Max
+					</button>
+				</div>
+			)}
+			<BitCoinIcon className="mr-1 flex justify-end" containerClassName="w-full justify-end" />
+		</div>
+	);
+}
+
 function formatSuiAddress(suiAddress: string) {
 	if (!suiAddress.toLowerCase().startsWith("0x")) {
 		return "0x" + suiAddress;
@@ -60,6 +85,8 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 	});
 
 	const { handleSubmit, setValue } = mintNBTCForm;
+
+	const maxBTCAmount = walletBalance ? formatBTC(BigInt(walletBalance)) : "";
 
 	useEffect(() => setValue("suiAddress", suiAddr || ""), [setValue, suiAddr]);
 
@@ -147,7 +174,12 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 							inputMode="decimal"
 							decimalScale={BTC}
 							allowNegative={false}
-							rightAdornments={<BitCoinIcon />}
+							rightAdornments={
+								<BTCRightAdornment
+									onMaxClick={(val: string) => setValue("numberOfBTC", val)}
+									maxBTCAmount={maxBTCAmount}
+								/>
+							}
 							rules={{
 								validate: {
 									isWalletConnected: () =>
