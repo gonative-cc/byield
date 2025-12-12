@@ -28,8 +28,8 @@ export function SUIIcon(props: IconProps) {
 	);
 }
 
-export function BitCoinIcon() {
-	return <Icon src="/assets/coins/bitcoin.svg" alt="bitcoin" />;
+export function BitCoinIcon(props: IconProps) {
+	return <Icon src="/assets/coins/bitcoin.svg" alt="bitcoin" {...props} />;
 }
 
 export function NBTCIcon(props: IconProps) {

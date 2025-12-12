@@ -24,6 +24,24 @@ export interface MintTransaction {
 	errorMessage?: string;
 }
 
+export enum RedeemNBTCStatus {
+	PENDING = "pending",
+	SIGNING = "signing",
+	SIGNED = "signed",
+	CONFIRMING = "confirming",
+	CONFIRMED = "confirmed",
+	COMPLETED = "completed",
+}
+
+export interface RedeemTransaction {
+	suiTxId: string;
+	bitcoinTxId?: string;
+	amountInSatoshi: string;
+	bitcoinAddress: string;
+	status: RedeemNBTCStatus;
+	suiExplorerUrl?: string;
+}
+
 export interface LoaderData {
 	mintTxs: MintTransaction[];
 }
