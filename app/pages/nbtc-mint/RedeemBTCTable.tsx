@@ -21,16 +21,6 @@ function RedeemTableTooltip({ tooltip, label }: { tooltip: string; label: string
 	);
 }
 
-function buildSuiTransactionUrl(txId: string, explorerUrl?: string, configExplorerUrl?: string): string {
-	if (explorerUrl) {
-		return explorerUrl;
-	}
-	if (configExplorerUrl) {
-		return `${configExplorerUrl}/txblock/${txId}`;
-	}
-	return `https://testnet.suivision.xyz/txblock/${txId}`;
-}
-
 const getStatusDisplay = (status: RedeemTransaction["status"]) => {
 	const isActive = status !== RedeemNBTCStatus.COMPLETED;
 	return (
@@ -56,7 +46,7 @@ const createColumns = (
 		accessor: "suiTxId",
 		Cell: ({ value }: CellProps<RedeemTransaction>) => (
 			<Tooltip tooltip={value}>
-				<div className="flex cursor-pointer items-center gap-2 font-mono">
+				<div className="link flex items-center gap-2 font-mono">
 					<span className="text-sm">{trimAddress(value)}</span>
 					<CopyButton text={value} />
 				</div>
@@ -80,7 +70,7 @@ const createColumns = (
 		accessor: "bitcoinAddress",
 		Cell: ({ row }: CellProps<RedeemTransaction>) => (
 			<Tooltip tooltip={row.original.bitcoinAddress}>
-				<div className="flex cursor-pointer items-center gap-2 font-mono">
+				<div className="link flex items-center gap-2 font-mono">
 					<span className="text-sm">{trimAddress(row.original.bitcoinAddress)}</span>
 					<CopyButton text={row.original.bitcoinAddress} />
 				</div>

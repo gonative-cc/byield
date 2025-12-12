@@ -28,6 +28,7 @@ export enum RedeemNBTCStatus {
 	PENDING = "pending",
 	SIGNING = "signing",
 	SIGNED = "signed",
+	CONFIRMING = "confirming",
 	CONFIRMED = "confirmed",
 	COMPLETED = "completed",
 }
