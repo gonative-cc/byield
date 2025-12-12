@@ -14,6 +14,31 @@ import { BalanceCard } from "./BalanceCard";
 import { SuiConnectModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import { isValidBitcoinAddress } from "~/lib/bitcoin.client";
 
+interface NBTCRightAdornmentProps {
+	maxNBTCAmount: string;
+	onMaxClick: (val: string) => void;
+}
+
+function NBTCRightAdornment({ maxNBTCAmount, onMaxClick }: NBTCRightAdornmentProps) {
+	return (
+		<div className="flex flex-col items-center gap-2 py-2">
+			{maxNBTCAmount && (
+				<div className="flex items-center gap-2">
+					<p className="text-xs whitespace-nowrap">Balance: {maxNBTCAmount} nBTC</p>
+					<button
+						type="button"
+						onClick={() => onMaxClick(maxNBTCAmount)}
+						className="btn btn-primary btn-link h-fit w-fit p-0 pr-2 text-xs"
+					>
+						Max
+					</button>
+				</div>
+			)}
+			<NBTCIcon className="mr-1 flex justify-end" containerClassName="w-full justify-end" />
+		</div>
+	);
+}
+
 interface RedeemNBTCForm {
 	numberOfNBTC: string;
 	bitcoinAddress: string;
@@ -40,6 +65,8 @@ export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
 	});
 
 	const { handleSubmit, setValue } = redeemNBTCForm;
+
+	const maxNBTCAmount = nbtcBalanceRes ? formatNBTC(BigInt(nbtcBalanceRes.balance)) : "";
 
 	const handleRedeemTx = async ({ numberOfNBTC, bitcoinAddress }: RedeemNBTCForm) => {
 		if (!currentAccount || !nbtcBalanceRes) return;
@@ -80,7 +107,12 @@ export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
 							inputMode="decimal"
 							decimalScale={8}
 							allowNegative={false}
-							rightAdornments={<NBTCIcon prefix="" />}
+							rightAdornments={
+								<NBTCRightAdornment
+									onMaxClick={(val: string) => setValue("numberOfNBTC", val)}
+									maxNBTCAmount={maxNBTCAmount}
+								/>
+							}
 							rules={{
 								validate: {
 									isSuiConnected: () => isSuiConnected || "Please connect Sui wallet",
