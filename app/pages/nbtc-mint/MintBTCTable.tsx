@@ -9,7 +9,6 @@ import { CopyButton } from "~/components/ui/CopyButton";
 import { ExpandableTransactionDetails } from "~/pages/nbtc-mint/ExpandableTransactionDetails";
 import { AnimatedHourglass } from "~/components/ui/AnimatedHourglass";
 import { useState, useMemo, useCallback } from "react";
-import { useNetworkVariable } from "~/networkConfig";
 import { BTCIndexerLib } from "~/lib/btcindexer.client";
 import { TableTooltip } from "./TableTooltip";
 import { SuiTxLink } from "./SuiTxLink";
@@ -27,7 +26,6 @@ const getStatusDisplay = (status: import("@gonative-cc/btcindexer/models").MintT
 const createColumns = (
 	expandedRows: Set<string>,
 	toggleExpanded: (txId: string) => void,
-	configExplorerUrl?: string,
 ): Column<MintTransaction>[] => [
 	{
 		Header: () => (
@@ -88,13 +86,7 @@ const createColumns = (
 				return <span className="text-base-content/40">-</span>;
 			}
 
-			return (
-				<SuiTxLink
-					suiTxId={suiTxId}
-					explorerUrl={suiExplorerUrl}
-					configExplorerUrl={configExplorerUrl}
-				/>
-			);
+			return <SuiTxLink suiTxId={suiTxId} explorerUrl={suiExplorerUrl} />;
 		},
 	},
 	{
@@ -125,7 +117,6 @@ interface MintBTCTableProps {
 
 export function MintBTCTable({ data, isLoading = false }: MintBTCTableProps) {
 	const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
-	const explorerUrl = useNetworkVariable("explorer");
 
 	const toggleExpanded = useCallback((txId: string) => {
 		setExpandedRows((prev) => {
@@ -144,8 +135,8 @@ export function MintBTCTable({ data, isLoading = false }: MintBTCTableProps) {
 	}, []);
 
 	const columns = useMemo(
-		() => createColumns(expandedRows, toggleExpanded, explorerUrl),
-		[expandedRows, toggleExpanded, explorerUrl],
+		() => createColumns(expandedRows, toggleExpanded),
+		[expandedRows, toggleExpanded],
 	);
 
 	return (

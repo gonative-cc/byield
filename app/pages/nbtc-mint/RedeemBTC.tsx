@@ -53,6 +53,12 @@ export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
 	const currentAccount = useCurrentAccount();
 	const isSuiConnected = !!currentAccount;
 	const nbtcBalanceRes = useCoinBalance("NBTC");
+	let nbtcBalance: bigint | null = null;
+	let nbtcBalanceStr = "";
+	if (nbtcBalanceRes) {
+		nbtcBalance = BigInt(nbtcBalanceRes.balance);
+		nbtcBalanceStr = formatNBTC(nbtcBalance);
+	}
 
 	const redeemNBTCForm = useForm<RedeemNBTCForm>({
 		mode: "all",
@@ -65,7 +71,7 @@ export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
 
 	const { handleSubmit, setValue } = redeemNBTCForm;
 
-	const maxNBTCAmount = nbtcBalanceRes ? formatNBTC(BigInt(nbtcBalanceRes.balance)) : "";
+	const maxNBTCAmount = nbtcBalanceStr || "";
 
 	useEffect(() => setValue("bitcoinAddress", currentAddress?.address || ""), [setValue, currentAddress]);
 
@@ -125,8 +131,8 @@ export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
 									enoughBalance: (value: string) => {
 										if (!nbtcBalanceRes)
 											return "Unable to check nBTC balance. Please try again later.";
-										if (nbtcBalanceRes) {
-											if (parseNBTC(value) <= BigInt(nbtcBalanceRes.balance)) {
+										if (nbtcBalance !== null) {
+											if (parseNBTC(value) <= nbtcBalance) {
 												return true;
 											}
 											return "Not enough nBTC balance";
@@ -137,8 +143,8 @@ export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
 						/>
 						<Percentage
 							onChange={(value: number) => {
-								if (nbtcBalanceRes) {
-									const val = (BigInt(nbtcBalanceRes.balance) * BigInt(value)) / 100n;
+								if (nbtcBalance !== null) {
+									const val = (nbtcBalance * BigInt(value)) / 100n;
 									setValue("numberOfNBTC", formatNBTC(val));
 								}
 							}}

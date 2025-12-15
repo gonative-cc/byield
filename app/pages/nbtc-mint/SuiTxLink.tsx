@@ -6,14 +6,12 @@ import { useNetworkVariables } from "~/networkConfig";
 interface SuiTxLinkProps {
 	suiTxId: string;
 	explorerUrl?: string;
-	configExplorerUrl?: string;
 }
 
-export function SuiTxLink({ suiTxId, explorerUrl, configExplorerUrl }: SuiTxLinkProps) {
+export function SuiTxLink({ suiTxId, explorerUrl }: SuiTxLinkProps) {
 	const { explorer } = useNetworkVariables();
-	const href =
-		explorerUrl ||
-		(configExplorerUrl ? `${configExplorerUrl}/txblock/${suiTxId}` : `${explorer}/txblock/${suiTxId}`);
+	const href = explorerUrl || `${explorer}/txblock/${suiTxId}`;
+
 	return (
 		<Tooltip tooltip={suiTxId}>
 			<div className="flex items-center gap-2 font-mono">

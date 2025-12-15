@@ -7,7 +7,6 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { CopyButton } from "~/components/ui/CopyButton";
 import { AnimatedHourglass } from "~/components/ui/AnimatedHourglass";
 import { useState, useMemo, useCallback } from "react";
-import { useNetworkVariable } from "~/networkConfig";
 import { RedeemNBTCStatus, type RedeemTransaction } from "~/server/nbtc/types";
 import { TableTooltip } from "./TableTooltip";
 import { SuiTxLink } from "./SuiTxLink";
@@ -25,7 +24,6 @@ const getStatusDisplay = (status: RedeemTransaction["status"]) => {
 const createColumns = (
 	expandedRows: Set<string>,
 	toggleExpanded: (txId: string) => void,
-	configExplorerUrl?: string,
 ): Column<RedeemTransaction>[] => [
 	{
 		Header: () => (
@@ -40,13 +38,7 @@ const createColumns = (
 				return <span className="text-base-content/40">-</span>;
 			}
 
-			return (
-				<SuiTxLink
-					suiTxId={suiTxId}
-					explorerUrl={suiExplorerUrl}
-					configExplorerUrl={configExplorerUrl}
-				/>
-			);
+			return <SuiTxLink suiTxId={suiTxId} explorerUrl={suiExplorerUrl} />;
 		},
 	},
 	{
@@ -126,7 +118,6 @@ interface RedeemBTCTableProps {
 
 export function RedeemBTCTable({ data, isLoading = false }: RedeemBTCTableProps) {
 	const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
-	const explorerUrl = useNetworkVariable("explorer");
 
 	const toggleExpanded = useCallback((txId: string) => {
 		setExpandedRows((prev) => {
@@ -147,8 +138,8 @@ export function RedeemBTCTable({ data, isLoading = false }: RedeemBTCTableProps)
 	}, []);
 
 	const columns = useMemo(
-		() => createColumns(expandedRows, toggleExpanded, explorerUrl),
-		[expandedRows, toggleExpanded, explorerUrl],
+		() => createColumns(expandedRows, toggleExpanded),
+		[expandedRows, toggleExpanded],
 	);
 
 	return (
