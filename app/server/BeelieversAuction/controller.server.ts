@@ -213,6 +213,12 @@ export default class Controller {
 	async checkNftOwnership(userAddress: string, _network: Network): Promise<boolean> {
 		const beelieverCollectionId = "6496c047-dcdd-44e2-b8ca-13c27ac0478a";
 
+		const cacheKey = `nft_owner_${userAddress}_${_network}`;
+		const cached = await this.kv.get(cacheKey);
+		if (cached !== null) {
+			return cached === "true";
+		}
+
 		try {
 			const query = `
 				query CheckBeelieverOwnership($owner: String!, $collectionId: uuid!) {
@@ -253,7 +259,10 @@ export default class Controller {
 
 			if (result.errors) return false;
 
-			return (result.data?.sui?.nfts || []).length > 0;
+			const ownsNft = (result.data?.sui?.nfts || []).length > 0;
+			await this.kv.put(cacheKey, ownsNft.toString(), { expirationTtl: 86400 }); // 24 hours
+
+			return ownsNft;
 		} catch (error) {
 			logError({ msg: "Failed to check NFT ownership", method: "checkNftOwnership" }, error);
 			return false;
