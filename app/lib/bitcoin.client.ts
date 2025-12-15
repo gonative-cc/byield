@@ -57,8 +57,10 @@ export async function isValidBitcoinAddress(
 	network: BitcoinNetworkType,
 ): Promise<boolean> {
 	try {
-		const bitcoinjs = await getBitcoinLib();
-		const networkConfig = await getBitcoinNetworkConfig(network);
+		const [bitcoinjs, networkConfig] = await Promise.all([
+			getBitcoinLib(),
+			getBitcoinNetworkConfig(network),
+		]);
 		if (!networkConfig) return false;
 
 		bitcoinjs.address.toOutputScript(address, networkConfig);
