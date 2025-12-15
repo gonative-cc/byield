@@ -3,7 +3,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { Modal } from "~/components/ui/dialog";
 import { FormNumericInput } from "~/components/form/FormNumericInput";
 import { LoadingSpinner } from "~/components/LoadingSpinner";
-import { formatUSDC, parseUSDC } from "~/lib/denoms";
+import { formatUSDC, parseUSDC, USDC } from "~/lib/denoms";
 import { USDCIcon } from "~/components/icons";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { useCurrentAccount, useSignTransaction, useSuiClient } from "@mysten/dapp-kit";
@@ -195,7 +195,7 @@ export function DepositModal({ id, open, onClose, refetchDeposit, redirectTab }:
 							placeholder="Enter USDC amount"
 							className={coinBalance > 0 ? "h-16 pt-8" : "h-16"}
 							inputMode="decimal"
-							decimalScale={6}
+							decimalScale={USDC}
 							allowNegative={false}
 							rightAdornments={
 								<CoinRightAdornment
@@ -205,7 +205,7 @@ export function DepositModal({ id, open, onClose, refetchDeposit, redirectTab }:
 							}
 							rules={amountInputRules}
 						/>
-						<button className="alert alert-info link" onClick={() => redirectTab("faq")}>
+						<button className="btn btn-info py-6 underline" onClick={() => redirectTab("faq")}>
 							<Info />
 							Your USDC will be locked in the lockdrop escrow until the lockdrop period ends.
 						</button>

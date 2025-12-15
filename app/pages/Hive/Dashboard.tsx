@@ -63,6 +63,8 @@ function ContributorCard({ redirectTab }: ContributorCardProps) {
 		async function fetchUserTotalDeposit() {
 			if (account?.address) {
 				const totalDeposit = await getUserDeposits(account.address, lockdrop, client);
+				// index 0: it is 0
+				// index 1: it has the actual commulative deposit.
 				setUserTotalDeposit(formatUSDC(totalDeposit?.[1] || "0"));
 			}
 		}
@@ -106,9 +108,11 @@ function ContributorCard({ redirectTab }: ContributorCardProps) {
 								<span className="text-muted-foreground mb-2 text-sm">
 									Next Tier: {nextTier.tier} - {nextTier.name}
 								</span>
-								<span className="text-muted-foreground mb-2 text-sm">
-									${userTotalDeposit} / ${NEXT_TIER_DEPOSIT}
-								</span>
+								{userTotalDeposit !== null && (
+									<span className="text-muted-foreground mb-2 text-sm">
+										${userTotalDeposit} / ${NEXT_TIER_DEPOSIT}
+									</span>
+								)}
 							</div>
 							{userTotalDeposit !== null && (
 								<progress

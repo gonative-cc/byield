@@ -57,14 +57,11 @@ export async function getUserDeposits(
 		if (!returnValues || returnValues.length === 0) {
 			throw new Error("No return values from devInspectTransactionBlock");
 		}
-		const firstReturnValue = returnValues[0];
+		const firstReturnValue = returnValues?.[0];
 		if (!firstReturnValue) {
-			throw new Error("No return values from devInspectTransactionBlock");
+			throw new Error("No first return value from return values");
 		}
-		const bytes = new Uint8Array(firstReturnValue[0]);
-		if (!bytes) {
-			throw new Error("No return values from devInspectTransactionBlock");
-		}
+		const bytes = new Uint8Array(firstReturnValue?.[0]);
 		const vectorSchema = bcs.vector(bcs.u64());
 		const decoded = vectorSchema.parse(bytes);
 		return decoded;
