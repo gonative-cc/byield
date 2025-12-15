@@ -10,7 +10,6 @@ import { useCurrentAccount } from "@mysten/dapp-kit";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { NBTCIcon } from "~/components/icons";
 import { Percentage } from "../../components/Percentage";
-import { BalanceCard } from "./BalanceCard";
 import { SuiConnectModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import { isValidBitcoinAddress } from "~/lib/bitcoin.client";
 
@@ -100,7 +99,6 @@ export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
 				<div className="card">
 					<div className="card-body flex flex-col space-y-4">
 						<h2 className="text-center text-lg">Redeem nBTC to BTC</h2>
-						<BalanceCard />
 						<FormNumericInput
 							required
 							name="numberOfNBTC"

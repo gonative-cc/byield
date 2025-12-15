@@ -18,7 +18,6 @@ import { useCurrentAccount } from "@mysten/dapp-kit";
 import { BitCoinIcon } from "~/components/icons";
 import { logError, logger } from "~/lib/log";
 import { Percentage } from "../../components/Percentage";
-import { BalanceCard } from "./BalanceCard";
 
 interface BTCRightAdornmentProps {
 	maxBTCAmount: string;
@@ -165,7 +164,6 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 				<div className="card">
 					<div className="card-body flex flex-col space-y-4">
 						<h2 className="text-center text-lg">Deposit BTC and mint nBTC on Sui</h2>
-						<BalanceCard />
 						<FormNumericInput
 							required
 							name="numberOfBTC"
