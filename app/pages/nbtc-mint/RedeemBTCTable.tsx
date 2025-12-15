@@ -10,7 +10,7 @@ import { useState, useMemo, useCallback } from "react";
 import { useNetworkVariable } from "~/networkConfig";
 import { RedeemNBTCStatus, type RedeemTransaction } from "~/server/nbtc/types";
 import { TableTooltip } from "./TableTooltip";
-import { BuildSuiTransactionUrl } from "./BuildSuiTransactionUrl";
+import { SuiTxLink } from "./SuiTxLink";
 
 const getStatusDisplay = (status: RedeemTransaction["status"]) => {
 	const isActive = status !== RedeemNBTCStatus.COMPLETED;
@@ -41,7 +41,7 @@ const createColumns = (
 			}
 
 			return (
-				<BuildSuiTransactionUrl
+				<SuiTxLink
 					suiTxId={suiTxId}
 					explorerUrl={suiExplorerUrl}
 					configExplorerUrl={configExplorerUrl}

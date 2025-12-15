@@ -12,7 +12,7 @@ import { useState, useMemo, useCallback } from "react";
 import { useNetworkVariable } from "~/networkConfig";
 import { BTCIndexerLib } from "~/lib/btcindexer.client";
 import { TableTooltip } from "./TableTooltip";
-import { BuildSuiTransactionUrl } from "./BuildSuiTransactionUrl";
+import { SuiTxLink } from "./SuiTxLink";
 
 const getStatusDisplay = (status: import("@gonative-cc/btcindexer/models").MintTxStatus) => {
 	const isActive = status != BTCIndexerLib?.MintTxStatus.Minted;
@@ -89,7 +89,7 @@ const createColumns = (
 			}
 
 			return (
-				<BuildSuiTransactionUrl
+				<SuiTxLink
 					suiTxId={suiTxId}
 					explorerUrl={suiExplorerUrl}
 					configExplorerUrl={configExplorerUrl}

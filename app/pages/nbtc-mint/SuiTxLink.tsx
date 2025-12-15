@@ -3,17 +3,13 @@ import { Tooltip } from "~/components/ui/tooltip";
 import { trimAddress } from "~/components/Wallet/walletHelper";
 import { useNetworkVariables } from "~/networkConfig";
 
-interface BuildSuiTransactionUrlProps {
+interface SuiTxLinkProps {
 	suiTxId: string;
 	explorerUrl?: string;
 	configExplorerUrl?: string;
 }
 
-export function BuildSuiTransactionUrl({
-	suiTxId,
-	explorerUrl,
-	configExplorerUrl,
-}: BuildSuiTransactionUrlProps) {
+export function SuiTxLink({ suiTxId, explorerUrl, configExplorerUrl }: SuiTxLinkProps) {
 	const { explorer } = useNetworkVariables();
 	const href =
 		explorerUrl ||
