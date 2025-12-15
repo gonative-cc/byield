@@ -6,27 +6,35 @@ import { primaryHeadingClasses, avatarGradientClasses, GRADIENTS } from "~/util/
 
 const TableHead = <T extends object>({ headerGroups }: { headerGroups: HeaderGroup<T>[] }) => (
 	<thead className="sticky top-0">
-		{headerGroups.map((headerGroup) => (
-			<tr
-				{...headerGroup.getHeaderGroupProps()}
-				key={headerGroup.getHeaderGroupProps().key}
-				className={`text-foreground/80 ${GRADIENTS.azureTableHeader} text-sm font-semibold backdrop-blur-sm`}
-			>
-				{headerGroup.headers.map((column, index) => (
-					<th
-						{...column.getHeaderProps()}
-						key={column.getHeaderProps().key}
-						className={twMerge(
-							"border-primary/20 hover:text-primary border-b p-4 text-left transition-colors",
-							index === 0 && "rounded-tl-2xl",
-							index === headerGroup.headers.length - 1 && "rounded-tr-2xl",
-						)}
-					>
-						<div className="flex items-center gap-2">{column.render("Header")}</div>
-					</th>
-				))}
-			</tr>
-		))}
+		{headerGroups.map((headerGroup) => {
+			const { key, style, ...headerGroupProps } = headerGroup.getHeaderGroupProps();
+			return (
+				<tr
+					{...headerGroupProps}
+					key={key}
+					style={style as React.CSSProperties}
+					className={`text-foreground/80 ${GRADIENTS.azureTableHeader} text-sm font-semibold backdrop-blur-sm`}
+				>
+					{headerGroup.headers.map((column, index) => {
+						const { key: colKey, style: colStyle, ...columnProps } = column.getHeaderProps();
+						return (
+							<th
+								{...columnProps}
+								key={colKey}
+								style={colStyle as React.CSSProperties}
+								className={twMerge(
+									"border-primary/20 hover:text-primary border-b p-4 text-left transition-colors",
+									index === 0 && "rounded-tl-2xl",
+									index === headerGroup.headers.length - 1 && "rounded-tr-2xl",
+								)}
+							>
+								<div className="flex items-center gap-2">{column.render("Header")}</div>
+							</th>
+						);
+					})}
+				</tr>
+			);
+		})}
 	</thead>
 );
 
@@ -53,12 +61,13 @@ const TableRows = <T extends object>({
 			const isLastRow = index === rows.length - 1;
 
 			const rowProps = row.getRowProps();
-			const { key, ...restRowProps } = rowProps;
+			const { key, style: rowStyle, ...restRowProps } = rowProps;
 
 			return (
 				<React.Fragment key={key}>
 					<tr
 						{...restRowProps}
+						style={rowStyle as React.CSSProperties}
 						className={twMerge(
 							"hover:bg-primary/5 group border-t border-gray-700/30 text-sm transition-colors",
 							customRowProps.className,
@@ -66,11 +75,12 @@ const TableRows = <T extends object>({
 					>
 						{row.cells.map((cell, cellIndex) => {
 							const cellProps = cell.getCellProps();
-							const { key: cellKey, ...restCellProps } = cellProps;
+							const { key: cellKey, style: cellStyle, ...restCellProps } = cellProps;
 							return (
 								<td
 									{...restCellProps}
 									key={cellKey}
+									style={cellStyle as React.CSSProperties}
 									className={twMerge(
 										"group-hover:text-foreground p-4 transition-colors",
 										cellIndex === 0 && isLastRow && !isExpanded && "rounded-bl-2xl",
@@ -198,28 +208,35 @@ export const Table = <T extends object>({
 				)}
 			>
 				<div className="overflow-x-auto">
-					<table
-						{...getTableProps()}
-						className={`${GRADIENTS.azureTable} w-full min-w-[600px] text-left`}
-					>
-						<TableHead headerGroups={headerGroups} />
-						<tbody {...getTableBodyProps()}>
-							{isLoading ? (
-								renderLoadingMessage
-							) : isTableEmpty ? (
-								renderNoDataMessage
-							) : (
-								<TableRows
-									rows={rows}
-									prepareRow={prepareRow}
-									getRowProps={getRowProps}
-									expandedRows={expandedRows}
-									renderExpandedRow={renderExpandedRow}
-									columns={columns}
-								/>
-							)}
-						</tbody>
-					</table>
+					{(() => {
+						const { style: tableStyle, ...tableProps } = getTableProps();
+						const { style: bodyStyle, ...bodyProps } = getTableBodyProps();
+						return (
+							<table
+								{...tableProps}
+								style={tableStyle as React.CSSProperties}
+								className={`${GRADIENTS.azureTable} w-full min-w-[600px] text-left`}
+							>
+								<TableHead headerGroups={headerGroups} />
+								<tbody {...bodyProps} style={bodyStyle as React.CSSProperties}>
+									{isLoading ? (
+										renderLoadingMessage
+									) : isTableEmpty ? (
+										renderNoDataMessage
+									) : (
+										<TableRows
+											rows={rows}
+											prepareRow={prepareRow}
+											getRowProps={getRowProps}
+											expandedRows={expandedRows}
+											renderExpandedRow={renderExpandedRow}
+											columns={columns}
+										/>
+									)}
+								</tbody>
+							</table>
+						);
+					})()}
 				</div>
 			</div>
 		</>
