@@ -3,23 +3,14 @@ import { Table } from "~/components/ui/table";
 import { Tooltip } from "~/components/ui/tooltip";
 import { trimAddress } from "~/components/Wallet/walletHelper";
 import { formatNBTC } from "~/lib/denoms";
-import { Info, ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { CopyButton } from "~/components/ui/CopyButton";
 import { AnimatedHourglass } from "~/components/ui/AnimatedHourglass";
 import { useState, useMemo, useCallback } from "react";
 import { useNetworkVariable } from "~/networkConfig";
 import { RedeemNBTCStatus, type RedeemTransaction } from "~/server/nbtc/types";
-
-function RedeemTableTooltip({ tooltip, label }: { tooltip: string; label: string }) {
-	return (
-		<Tooltip tooltip={tooltip}>
-			<div className="flex items-center gap-2">
-				{label}
-				<Info size="16" className="text-primary-foreground hover:text-primary transition-colors" />
-			</div>
-		</Tooltip>
-	);
-}
+import { TableTooltip } from "./TableTooltip";
+import { BuildSuiTransactionUrl } from "./BuildSuiTransactionUrl";
 
 const getStatusDisplay = (status: RedeemTransaction["status"]) => {
 	const isActive = status !== RedeemNBTCStatus.COMPLETED;
@@ -38,23 +29,28 @@ const createColumns = (
 ): Column<RedeemTransaction>[] => [
 	{
 		Header: () => (
-			<RedeemTableTooltip
-				label="Sui TX"
-				tooltip="The Sui transaction ID that initiated the redeem process"
-			/>
+			<TableTooltip label="Sui TX" tooltip="The Sui transaction ID that initiated the redeem process" />
 		),
 		accessor: "suiTxId",
-		Cell: ({ value }: CellProps<RedeemTransaction>) => (
-			<Tooltip tooltip={value}>
-				<div className="link flex items-center gap-2 font-mono">
-					<span className="text-sm">{trimAddress(value)}</span>
-					<CopyButton text={value} />
-				</div>
-			</Tooltip>
-		),
+		Cell: ({ row }: CellProps<RedeemTransaction>) => {
+			const suiTxId = row.original.suiTxId;
+			const suiExplorerUrl = row.original.suiExplorerUrl;
+
+			if (!suiTxId) {
+				return <span className="text-base-content/40">-</span>;
+			}
+
+			return (
+				<BuildSuiTransactionUrl
+					suiTxId={suiTxId}
+					explorerUrl={suiExplorerUrl}
+					configExplorerUrl={configExplorerUrl}
+				/>
+			);
+		},
 	},
 	{
-		Header: () => <RedeemTableTooltip label="Amount" tooltip="The amount of nBTC being redeemed" />,
+		Header: () => <TableTooltip label="Amount" tooltip="The amount of nBTC being redeemed" />,
 		accessor: "amountInSatoshi",
 		Cell: ({ row }: CellProps<RedeemTransaction>) => (
 			<div className="flex items-center gap-2 font-semibold">
@@ -64,9 +60,7 @@ const createColumns = (
 		),
 	},
 	{
-		Header: () => (
-			<RedeemTableTooltip label="Recipient" tooltip="The Bitcoin address where BTC will be sent" />
-		),
+		Header: () => <TableTooltip label="Recipient" tooltip="The Bitcoin address where BTC will be sent" />,
 		accessor: "bitcoinAddress",
 		Cell: ({ row }: CellProps<RedeemTransaction>) => (
 			<Tooltip tooltip={row.original.bitcoinAddress}>
@@ -78,18 +72,13 @@ const createColumns = (
 		),
 	},
 	{
-		Header: () => (
-			<RedeemTableTooltip label="Status" tooltip="Current status of the redeem transaction" />
-		),
+		Header: () => <TableTooltip label="Status" tooltip="Current status of the redeem transaction" />,
 		accessor: "status",
 		Cell: ({ row }: CellProps<RedeemTransaction>) => getStatusDisplay(row.original.status),
 	},
 	{
 		Header: () => (
-			<RedeemTableTooltip
-				label="Bitcoin TX"
-				tooltip="The Bitcoin transaction ID for the redeemed BTC"
-			/>
+			<TableTooltip label="Bitcoin TX" tooltip="The Bitcoin transaction ID for the redeemed BTC" />
 		),
 		accessor: "bitcoinTxId",
 		Cell: ({ row }: CellProps<RedeemTransaction>) => {

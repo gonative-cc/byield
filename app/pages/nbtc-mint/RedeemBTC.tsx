@@ -1,7 +1,7 @@
 import { FormProvider, useForm } from "react-hook-form";
 import { FormInput } from "../../components/form/FormInput";
-import { useXverseWallet } from "../../components/Wallet/XverseWallet/useWallet";
-import { useState } from "react";
+import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
+import { useState, useEffect } from "react";
 import { FormNumericInput } from "../../components/form/FormNumericInput";
 import { formatNBTC, parseNBTC } from "~/lib/denoms";
 import { buttonEffectClasses, classNames } from "~/util/tailwind";
@@ -67,6 +67,8 @@ export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
 	const { handleSubmit, setValue } = redeemNBTCForm;
 
 	const maxNBTCAmount = nbtcBalanceRes ? formatNBTC(BigInt(nbtcBalanceRes.balance)) : "";
+
+	useEffect(() => setValue("bitcoinAddress", currentAddress?.address || ""), [setValue, currentAddress]);
 
 	const handleRedeemTx = async ({ numberOfNBTC, bitcoinAddress }: RedeemNBTCForm) => {
 		if (!currentAccount || !nbtcBalanceRes) return;

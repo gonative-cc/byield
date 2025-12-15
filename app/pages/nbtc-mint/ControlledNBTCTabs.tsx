@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { MintBTC } from "./MintBTC";
 import { RedeemBTC } from "./RedeemBTC";
 
@@ -7,19 +6,18 @@ export type TabType = "mint" | "redeem";
 interface ControlledNBTCTabsProps {
 	fetchMintTxs: () => void;
 	fetchRedeemTxs: () => void;
-	onTabChange?: (tab: TabType) => void;
+	activeTab: TabType;
+	onTabChange: (tab: TabType) => void;
 }
 
 export const ControlledNBTCTabs = ({
 	fetchMintTxs,
 	fetchRedeemTxs,
+	activeTab,
 	onTabChange,
 }: ControlledNBTCTabsProps) => {
-	const [activeTab, setActiveTab] = useState<TabType>("mint");
-
 	const handleTabChange = (newTab: TabType) => {
-		setActiveTab(newTab);
-		onTabChange?.(newTab);
+		onTabChange(newTab);
 	};
 
 	const renderTabButton = (newTab: TabType) => {

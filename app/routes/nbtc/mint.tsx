@@ -225,6 +225,7 @@ export default function Mint() {
 					<ControlledNBTCTabs
 						fetchMintTxs={fetchMintTxs}
 						fetchRedeemTxs={fetchRedeemTxs}
+						activeTab={activeTab}
 						onTabChange={setActiveTab}
 					/>
 

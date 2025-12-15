@@ -15,4 +15,13 @@ describe("isValidBitcoinAddress", () => {
 			),
 		).toBe(true);
 	});
+
+	test("should return false on invalid address", async () => {
+		expect(
+			await isValidBitcoinAddress(
+				"bcrt1qseh0z29yzveh02snqn6ztg956puerna36rgh4z",
+				BitcoinNetworkType.Regtest,
+			),
+		).toBe(false);
+	});
 });
