@@ -91,12 +91,12 @@ export function DepositModal({ id, open, onClose, refetchDeposit, redirectTab }:
 				if (!success) {
 					logger.error({ msg: "Deposit FAILED", method: "DepositModal", errors: result.errors });
 				}
+				coinBalanceRes.refetch();
+				refetchDeposit();
 			} catch (error) {
 				logger.error({ msg: "Error depositing", method: "DepositModal", errors: error });
 				setTxStatus({ success: false });
 			} finally {
-				coinBalanceRes.refetch();
-				refetchDeposit();
 				setIsDepositing(false);
 			}
 		},
@@ -130,10 +130,6 @@ export function DepositModal({ id, open, onClose, refetchDeposit, redirectTab }:
 			trigger();
 		}
 	}, [isSuiWalletConnected, amount, trigger]);
-
-	useEffect(() => {
-		resetForm();
-	}, [resetForm]);
 
 	const coinBalance = coinBalanceRes.balance;
 	const maxAmount = coinBalance > 0 ? formatUSDC(coinBalance) : "";

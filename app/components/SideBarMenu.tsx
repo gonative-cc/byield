@@ -116,14 +116,13 @@ function navMenuItems(): MenuItem[] {
 			link: "/beelievers-auction",
 			subNavItems: [],
 		},
-		// hiding the end point for now. Will be enabled when the hive program is live.
-		// {
-		// 	icon: "/assets/navigation/hive.svg",
-		// 	id: "navigation-5",
-		// 	title: "Hive",
-		// 	link: "/hive",
-		// 	subNavItems: [],
-		// },
+		{
+			icon: "/assets/navigation/hive.svg",
+			id: "navigation-5",
+			title: "Hive",
+			link: "/hive",
+			subNavItems: [],
+		},
 	];
 }
 

@@ -69,6 +69,9 @@ function ContributorCard({ redirectTab }: ContributorCardProps) {
 		fetchUserTotalDeposit();
 	}, [account, client, lockdrop, refetchDeposit]);
 
+	// TODO: use data from tbook for NEXT_TIER_DEPOSIT
+	const NEXT_TIER_DEPOSIT = 5000;
+
 	return (
 		<div className="card mb-4">
 			<div className="card-body">
@@ -103,16 +106,15 @@ function ContributorCard({ redirectTab }: ContributorCardProps) {
 								<span className="text-muted-foreground mb-2 text-sm">
 									Next Tier: {nextTier.tier} - {nextTier.name}
 								</span>
-								{/* TODO: use data from tbook */}
 								<span className="text-muted-foreground mb-2 text-sm">
-									${userTotalDeposit} / $5000
+									${userTotalDeposit} / ${NEXT_TIER_DEPOSIT}
 								</span>
 							</div>
 							{userTotalDeposit !== null && (
 								<progress
 									className="progress progress-primary mb-1"
 									value={userTotalDeposit}
-									max="100"
+									max={NEXT_TIER_DEPOSIT}
 								/>
 							)}
 							<div className="text-sm">{nextTier.requirement}</div>

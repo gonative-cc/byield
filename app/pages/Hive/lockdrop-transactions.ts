@@ -2,6 +2,7 @@ import { bcs } from "@mysten/sui/bcs";
 import type { SuiClient } from "@mysten/sui/client";
 import { coinWithBalance, Transaction } from "@mysten/sui/transactions";
 import { type Coin, type LockdropCfg, moveCallTarget } from "~/config/sui/contracts-config";
+import { logger } from "~/lib/log";
 
 export function createLockdropDepositTxn(
 	senderAddress: string,
@@ -68,7 +69,7 @@ export async function getUserDeposits(
 		const decoded = vectorSchema.parse(bytes);
 		return decoded;
 	} catch (err) {
-		console.error("Failed to fetch deposits:", err);
+		logger.error({ msg: "Failed to fetch deposits:", error: err });
 		return [];
 	}
 }
