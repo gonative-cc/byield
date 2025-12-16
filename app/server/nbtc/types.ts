@@ -24,6 +24,7 @@ export interface MintTransaction {
 	errorMessage?: string;
 }
 
+// TODO: https://github.com/gonative-cc/byield/issues/739
 export enum RedeemNBTCStatus {
 	PENDING = "pending",
 	SIGNING = "signing",
@@ -33,6 +34,7 @@ export enum RedeemNBTCStatus {
 	COMPLETED = "completed",
 }
 
+// TODO: https://github.com/gonative-cc/byield/issues/739
 export interface RedeemTransaction {
 	suiTxId: string;
 	bitcoinTxId?: string;
