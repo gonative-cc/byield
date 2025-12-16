@@ -8,12 +8,18 @@ interface FAQ {
 }
 
 interface FAQProps {
+	title?: string;
 	faqs: FAQ[];
 	description?: string;
 	className?: string;
 }
 
-export function FAQ({ faqs, description = "", className }: FAQProps) {
+export function FAQ({
+	title = "🤔 Frequently Asked Questions",
+	faqs,
+	description = "",
+	className,
+}: FAQProps) {
 	const renderQuestion = (faq: FAQ) => {
 		return (
 			<div key={faq.id} className={`${orangeInfoCardClasses} collapse-plus collapse`}>
@@ -29,9 +35,7 @@ export function FAQ({ faqs, description = "", className }: FAQProps) {
 	return (
 		<div className={`${FAQClassContainer} ${className}`}>
 			<div className="mb-6 text-center">
-				<h2 className="text-primary-foreground mb-3 text-3xl font-bold">
-					🤔 Frequently Asked Questions
-				</h2>
+				<h2 className="text-primary-foreground mb-3 text-3xl font-bold">{title}</h2>
 				{description && <p className="text-base-content/75">{description}</p>}
 			</div>
 			<div className="text-base-content space-y-4">{faqs.map(renderQuestion)}</div>
