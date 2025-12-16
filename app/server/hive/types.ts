@@ -18,6 +18,7 @@ interface Invitee {
 
 export interface UserSbtData {
 	suiAddress: string;
+	referralLink: string;
 	sbtCount: number;
 	totalRawPoints: number;
 	inviteeCount: number;
