@@ -224,7 +224,8 @@ export default class Controller {
 
 		const now = Date.now();
 
-		if (cached && now - cached.updated_at < 24 * 60 * 60 * 1000) {
+		if (cached && now - cached.updated_at < 2 * 60 * 60 * 1000) {
+			// cache is valid for 2h
 			const nftIds = JSON.parse(cached.nfts) as string[];
 			return nftIds.length > 0;
 		}
