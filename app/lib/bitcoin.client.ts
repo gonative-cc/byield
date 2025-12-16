@@ -51,3 +51,21 @@ export async function getOpReturnOpcode() {
 	const bitcoinjs = await getBitcoinLib();
 	return bitcoinjs.opcodes.OP_RETURN;
 }
+
+export async function isValidBitcoinAddress(
+	address: string,
+	network: BitcoinNetworkType,
+): Promise<boolean> {
+	try {
+		const [bitcoinjs, networkConfig] = await Promise.all([
+			getBitcoinLib(),
+			getBitcoinNetworkConfig(network),
+		]);
+		if (!networkConfig) return false;
+
+		bitcoinjs.address.toOutputScript(address, networkConfig);
+		return true;
+	} catch {
+		return false;
+	}
+}

@@ -3,6 +3,7 @@ import Controller from "./controller.server";
 import type { BtcIndexerRpcI } from "@gonative-cc/btcindexer/rpc-interface";
 import { MintTxStatus, type NbtcTxResp } from "@gonative-cc/btcindexer/models";
 import { BitcoinNetworkType } from "sats-connect";
+import { BtcNet } from "@gonative-cc/lib/nbtc";
 
 // Mock the useBitcoinConfig module
 vi.mock("~/hooks/useBitcoinConfig", () => ({
@@ -24,13 +25,12 @@ const mockIndexer: BtcIndexerRpcI = {
 	nbtcMintTxsBySuiAddr: vi.fn(),
 	depositsBySender: vi.fn(),
 	putNbtcTx: vi.fn(),
-	putBlocks: vi.fn(),
 	latestHeight: vi.fn(),
 	nbtcMintTx: vi.fn(),
 };
 
 const mockNbtcTxResp: NbtcTxResp = {
-	btc_tx_id: "abc123",
+	btcTxId: "abc123",
 	amount_sats: 100000,
 	status: MintTxStatus.Confirming,
 	sui_recipient: "0x123",
@@ -44,7 +44,7 @@ const mockNbtcTxResp: NbtcTxResp = {
 	retry_count: 2,
 	nbtc_pkg: "0x54321",
 	sui_network: "testnet",
-	btc_network: "regtest",
+	btc_network: BtcNet.REGTEST,
 };
 
 describe("Controller getMintTxs", () => {

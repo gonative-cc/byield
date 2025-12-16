@@ -1,5 +1,5 @@
 import { isValidSuiAddress } from "@mysten/sui/utils";
-import type { BitcoinNetworkType } from "sats-connect";
+import { BitcoinNetworkType } from "sats-connect";
 import type { BtcIndexerRpcI } from "@gonative-cc/btcindexer/rpc-interface";
 import type { QueryMintTxResp, Req } from "./jsonrpc";
 import { mustGetBitcoinConfig } from "~/hooks/useBitcoinConfig";
@@ -11,16 +11,18 @@ import {
 	badRequest,
 } from "../http-resp";
 import { protectedBitcoinRPC } from "./btc-proxy.server";
-import { nbtcMintTxRespToMintTx } from "./convert";
+import { BitcoinNetworkTypeMap, nbtcMintTxRespToMintTx } from "./convert";
 import { logError, logger } from "~/lib/log";
 import type { NbtcTxResp } from "@gonative-cc/btcindexer/models";
 
 export default class Controller {
 	btcRPCUrl: string;
 	btcindexer: BtcIndexerRpcI;
+	network: BitcoinNetworkType;
 
 	constructor(network: BitcoinNetworkType, indexerRpc: BtcIndexerRpcI) {
 		this.btcindexer = indexerRpc;
+		this.network = network;
 		const networkConfig = mustGetBitcoinConfig(network);
 		this.btcRPCUrl = networkConfig.btcRPCUrl;
 	}
@@ -110,7 +112,10 @@ export default class Controller {
 			if (!txHex) {
 				throw new Error(`Error fetching tx hex: ${txId}`);
 			}
-			const result = await this.btcindexer.putNbtcTx(txHex);
+			const result = await this.btcindexer.putNbtcTx(
+				txHex,
+				BitcoinNetworkTypeMap[this.network],
+			);
 			return new Response(JSON.stringify(result), {
 				status: 200,
 				headers: jsonHeader,
