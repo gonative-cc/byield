@@ -155,9 +155,10 @@ function MemberCard({ claimedSocialSbts = [] }: MemberCardProps) {
 interface SpreaderCardProps {
 	claimedReferralSbts?: UserSbtData["claimedReferralSbts"];
 	inviteeCount?: UserSbtData["inviteeCount"];
+	referralLink?: UserSbtData["referralLink"];
 }
 
-function SpreaderCard({ claimedReferralSbts = [], inviteeCount = 0 }: SpreaderCardProps) {
+function SpreaderCard({ claimedReferralSbts = [], inviteeCount = 0, referralLink }: SpreaderCardProps) {
 	const claimedReferralSbtsLength = claimedReferralSbts.length;
 	const isReferralSbtClaimed = claimedReferralSbtsLength >= 1;
 	const currentLevel = claimedReferralSbtsLength;
@@ -205,16 +206,17 @@ function SpreaderCard({ claimedReferralSbts = [], inviteeCount = 0 }: SpreaderCa
 						</div>
 					)}
 				</div>
-				<div className="card card-body bg-base-100 mb-4 w-fit">
-					<div className="text-muted-foreground mb-2 text-sm">Your Invite Link</div>
-					<div className="flex w-fit items-center gap-2">
-						<code className="bg-base-100 flex-1 rounded px-2 py-1 text-xs break-words">
-							{/* TODO: not send by tbook currently */}
-							https://native.cc/r/hive-bee-123
-						</code>
-						<CopyButton text="https://native.cc/r/hive-bee-123" />
+				{referralLink && (
+					<div className="card card-body bg-base-100 mb-4 w-fit">
+						<div className="text-muted-foreground mb-2 text-sm">Your Invite Link</div>
+						<div className="flex w-fit items-center gap-2">
+							<code className="bg-base-100 flex-1 rounded px-2 py-1 text-xs break-words">
+								{referralLink}
+							</code>
+							<CopyButton text={referralLink} />
+						</div>
 					</div>
-				</div>
+				)}
 			</div>
 		</div>
 	);
@@ -248,6 +250,7 @@ export function Dashboard() {
 	const claimedReferralSbts = hiveUserDashboardData?.data?.claimedReferralSbts;
 	const claimedSocialSbts = hiveUserDashboardData?.data?.claimedSocialSbts;
 	const inviteeCount = hiveUserDashboardData?.data?.inviteeCount;
+	const referralLink = hiveUserDashboardData?.data?.referralLink;
 
 	if (!isSuiConnected) {
 		return (
@@ -295,7 +298,11 @@ export function Dashboard() {
 				<ContributorCard />
 				<div className="grid grid-cols-1 gap-4">
 					<MemberCard claimedSocialSbts={claimedSocialSbts} />
-					<SpreaderCard claimedReferralSbts={claimedReferralSbts} inviteeCount={inviteeCount} />
+					<SpreaderCard
+						claimedReferralSbts={claimedReferralSbts}
+						inviteeCount={inviteeCount}
+						referralLink={referralLink}
+					/>
 				</div>
 			</div>
 		</div>
