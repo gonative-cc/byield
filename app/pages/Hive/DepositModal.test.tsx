@@ -43,6 +43,7 @@ describe("DepositModal", () => {
 	const mockOnClose = vi.fn();
 	const mockRefetchDeposit = vi.fn();
 	const mockRedirectTab = vi.fn();
+	const mockUpdateDeposit = vi.fn();
 
 	const mockDepositModalProps = {
 		id: "deposit-assets-modal",
@@ -50,6 +51,7 @@ describe("DepositModal", () => {
 		onClose: mockOnClose,
 		refetchDeposit: mockRefetchDeposit,
 		redirectTab: mockRedirectTab,
+		updateDeposit: mockUpdateDeposit,
 	};
 
 	beforeEach(() => {
