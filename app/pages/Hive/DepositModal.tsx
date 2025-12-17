@@ -49,11 +49,11 @@ interface DepositModalProps {
 	id: string;
 	open: boolean;
 	onClose: () => void;
-	refetchDeposit: () => void;
 	redirectTab: (redirectTab: TabType) => void;
+	updateDeposit: (newDeposit: bigint) => void;
 }
 
-export function DepositModal({ id, open, onClose, refetchDeposit, redirectTab }: DepositModalProps) {
+export function DepositModal({ id, open, onClose, redirectTab, updateDeposit }: DepositModalProps) {
 	const { mutateAsync: signTransaction } = useSignTransaction();
 	const account = useCurrentAccount();
 	const client = useSuiClient();
@@ -88,11 +88,12 @@ export function DepositModal({ id, open, onClose, refetchDeposit, redirectTab }:
 				logger.info({ msg: "Deposit tx:", method: "DepositModal", digest: result.digest });
 				const success = result.effects?.status?.status === "success";
 				setTxStatus({ success, digest: result.digest });
-				if (!success) {
+				if (success) {
+					coinBalanceRes.refetch();
+					updateDeposit(amount);
+				} else {
 					logger.error({ msg: "Deposit FAILED", method: "DepositModal", errors: result.errors });
 				}
-				coinBalanceRes.refetch();
-				refetchDeposit();
 			} catch (error) {
 				logger.error({ msg: "Error depositing", method: "DepositModal", errors: error });
 				setTxStatus({ success: false });
@@ -100,7 +101,7 @@ export function DepositModal({ id, open, onClose, refetchDeposit, redirectTab }:
 				setIsDepositing(false);
 			}
 		},
-		[account, lockdrop, usdc, client, signTransaction, coinBalanceRes, refetchDeposit],
+		[account, lockdrop, usdc, client, signTransaction, coinBalanceRes, updateDeposit],
 	);
 
 	const depositForm = useForm<DepositForm>({

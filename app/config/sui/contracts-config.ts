@@ -113,8 +113,8 @@ export const testnetCfg: ContractsCfg = {
 		contractId: "0x5905e0c452bb5f237fb106ec2ecff962fbc60cd180090fb07a79d14d9d628a96",
 	},
 	lockdrop: {
-		pkgId: "0xfdd5779ce1f081b940c23070c7268edecaf9df2904fbda76f201816c3fef8f4d",
-		lockdropId: "0x2e1f5ebf89440afc4592765c1cc82b6bd872dc67f9e3ad9f229a3e3528de35a5",
+		pkgId: "0xd244750dc02f917b2d539c5b68e14afbfc4e58920f04a0587692f8c6920e94ea",
+		lockdropId: "0xb4b2841c611936bebb2aa0a8ba77dbbdf65ca8752e4326de6b948c384a0b4335",
 		module: "lockdrop",
 	},
 	usdc: {

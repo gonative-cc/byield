@@ -39,7 +39,7 @@ export async function getUserDeposits(
 	userAddress: string,
 	lockdropCfg: LockdropCfg,
 	client: SuiClient,
-): Promise<string[]> {
+): Promise<string | null> {
 	try {
 		const txn = new Transaction();
 		txn.moveCall({
@@ -64,9 +64,10 @@ export async function getUserDeposits(
 		const bytes = new Uint8Array(firstReturnValue?.[0]);
 		const vectorSchema = bcs.vector(bcs.u64());
 		const decoded = vectorSchema.parse(bytes);
-		return decoded;
+		// index: 0 -> it is always USDC cumulative
+		return decoded?.[0];
 	} catch (err) {
 		logger.error({ msg: "Failed to fetch deposits:", error: err });
-		return [];
+		return null;
 	}
 }

@@ -11,7 +11,7 @@ import type { UserSbtData } from "~/server/hive/types";
 import { DepositModal } from "./DepositModal";
 import { getUserDeposits } from "./lockdrop-transactions";
 import { useNetworkVariables } from "~/networkConfig";
-import { formatUSDC } from "~/lib/denoms";
+import { formatUSDC, parseUSDC } from "~/lib/denoms";
 import type { TabType } from "./types";
 
 interface HiveScoreHeaderProps {
@@ -50,7 +50,6 @@ function ContributorCard({ redirectTab }: ContributorCardProps) {
 	const client = useSuiClient();
 	const { lockdrop } = useNetworkVariables();
 	const [isDepositModalOpen, setIsDepositModalOpen] = useState<boolean>(false);
-	const [refetchDeposit, setRefetchDeposit] = useState<boolean>(false);
 	const [userTotalDeposit, setUserTotalDeposit] = useState<string | null>(null);
 	// TODO: Get current level and next level from API
 	const currentLevel = 2;
@@ -63,13 +62,11 @@ function ContributorCard({ redirectTab }: ContributorCardProps) {
 		async function fetchUserTotalDeposit() {
 			if (account?.address) {
 				const totalDeposit = await getUserDeposits(account.address, lockdrop, client);
-				// index 0: it is 0
-				// index 1: it has the actual commulative deposit.
-				setUserTotalDeposit(formatUSDC(totalDeposit?.[1] || "0"));
+				if (totalDeposit) setUserTotalDeposit(formatUSDC(totalDeposit || "0"));
 			}
 		}
 		fetchUserTotalDeposit();
-	}, [account, client, lockdrop, refetchDeposit]);
+	}, [account, client, lockdrop]);
 
 	// TODO: use data from tbook for NEXT_TIER_DEPOSIT
 	const NEXT_TIER_DEPOSIT = 5000;
@@ -141,8 +138,16 @@ function ContributorCard({ redirectTab }: ContributorCardProps) {
 				id="deposit-assets-modal"
 				open={isDepositModalOpen}
 				onClose={() => setIsDepositModalOpen(false)}
-				refetchDeposit={() => setRefetchDeposit((prev) => !prev)}
 				redirectTab={redirectTab}
+				updateDeposit={(newDeposit: bigint) => {
+					setUserTotalDeposit((prev: string | null) => {
+						if (prev !== null) {
+							const total = parseUSDC(prev) + newDeposit;
+							return formatUSDC(total);
+						}
+						return formatUSDC(newDeposit);
+					});
+				}}
 			/>
 		</div>
 	);
