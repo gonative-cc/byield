@@ -1,4 +1,4 @@
-import { useCurrentAccount } from "@mysten/dapp-kit";
+import { useCurrentAccount, useSuiClient } from "@mysten/dapp-kit";
 import { CircleCheck, CirclePlus, Share2, Shield, Users, Wallet } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useFetcher } from "react-router";
@@ -9,6 +9,10 @@ import { LockDropSbt, ReferralSbt, SocialSbt } from "./constant";
 import { makeReq, type QueryUserDataResp } from "~/server/hive/jsonrpc";
 import type { UserSbtData } from "~/server/hive/types";
 import { DepositModal } from "./DepositModal";
+import { getUserDeposits } from "./lockdrop-transactions";
+import { useNetworkVariables } from "~/networkConfig";
+import { formatUSDC, parseUSDC } from "~/lib/denoms";
+import type { TabType } from "./types";
 
 interface HiveScoreHeaderProps {
 	totalHiveScore?: number;
@@ -37,14 +41,41 @@ function HiveScoreHeader({ totalHiveScore }: HiveScoreHeaderProps) {
 	);
 }
 
-function ContributorCard() {
-	const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
+interface ContributorCardProps {
+	redirectTab: (redirectTab: TabType) => void;
+}
+
+function ContributorCard({ redirectTab }: ContributorCardProps) {
+	const account = useCurrentAccount();
+	const client = useSuiClient();
+	const { lockdrop } = useNetworkVariables();
+	const [isDepositModalOpen, setIsDepositModalOpen] = useState<boolean>(false);
+	const [userTotalDeposit, setUserTotalDeposit] = useState<{
+		totalDeposit?: string | null;
+		isError?: boolean;
+	}>({ totalDeposit: null, isError: false });
+	const isUserDepositError = userTotalDeposit?.isError;
 	// TODO: Get current level and next level from API
 	const currentLevel = 2;
 	const nextLevel = currentLevel + 1;
 	const isNextLevelAvailable = nextLevel <= 10;
 	const currentTier = LockDropSbt.tiers[currentLevel - 1];
 	const nextTier = isNextLevelAvailable ? LockDropSbt.tiers[nextLevel - 1] : null;
+
+	useEffect(() => {
+		async function fetchUserTotalDeposit() {
+			if (account?.address) {
+				const totalDeposit = await getUserDeposits(account.address, lockdrop, client);
+				if (totalDeposit !== null)
+					setUserTotalDeposit({ totalDeposit: formatUSDC(totalDeposit || "0"), isError: false });
+				else setUserTotalDeposit({ totalDeposit: null, isError: true });
+			}
+		}
+		fetchUserTotalDeposit();
+	}, [account, client, lockdrop]);
+
+	// TODO: use data from tbook for NEXT_TIER_DEPOSIT
+	const NEXT_TIER_DEPOSIT = 5000;
 
 	return (
 		<div className="card mb-4">
@@ -69,7 +100,13 @@ function ContributorCard() {
 							{currentTier.tier} - {currentTier.name}
 						</div>
 						<div className="text-muted-foreground mb-4 text-sm">{currentTier.description}</div>
-						<div className="mb-1 text-xl font-bold text-white sm:text-2xl">$2,750</div>
+						{userTotalDeposit?.totalDeposit !== null && (
+							<div className="mb-1 text-xl font-bold text-white sm:text-2xl">
+								{isUserDepositError
+									? "Error fetching user deposit"
+									: `$${userTotalDeposit?.totalDeposit}`}
+							</div>
+						)}
 						<div className="text-muted-foreground text-sm">Locked Liquidity</div>
 					</div>
 					{nextTier && (
@@ -78,17 +115,29 @@ function ContributorCard() {
 								<span className="text-muted-foreground mb-2 text-sm">
 									Next Tier: {nextTier.tier} - {nextTier.name}
 								</span>
-								{/* TODO: use data from tbook */}
-								<span className="text-muted-foreground mb-2 text-sm">$2750 / $5000</span>
+								{userTotalDeposit?.totalDeposit !== null && (
+									<span className="text-muted-foreground mb-2 text-sm">
+										${userTotalDeposit?.totalDeposit} / ${NEXT_TIER_DEPOSIT}
+									</span>
+								)}
 							</div>
-							<progress className="progress progress-primary mb-1" value={55} max="100" />
+							{userTotalDeposit?.totalDeposit !== null && (
+								<progress
+									className="progress progress-primary mb-1"
+									value={userTotalDeposit?.totalDeposit}
+									max={NEXT_TIER_DEPOSIT}
+								/>
+							)}
 							<div className="text-sm">{nextTier.requirement}</div>
 						</div>
 					)}
 				</div>
 				<div className="mt-4 flex flex-col items-center gap-2">
-					<button className="btn btn-primary btn-xl btn-block lg:w-1/2">
-						<CirclePlus /> Deposit Assets
+					<button
+						className="btn btn-primary btn-xl btn-block lg:w-1/2"
+						onClick={() => setIsDepositModalOpen(true)}
+					>
+						<CirclePlus /> Deposit USDC
 					</button>
 					<div className="text-base-content/50 text-center text-xs sm:text-right">
 						Deposits go to the Lockdrop Escrow.
@@ -99,6 +148,16 @@ function ContributorCard() {
 				id="deposit-assets-modal"
 				open={isDepositModalOpen}
 				onClose={() => setIsDepositModalOpen(false)}
+				redirectTab={redirectTab}
+				updateDeposit={(newDeposit: bigint) => {
+					setUserTotalDeposit((prev) => {
+						if (prev?.totalDeposit) {
+							const total = parseUSDC(prev.totalDeposit) + newDeposit;
+							return { totalDeposit: formatUSDC(total), isError: false };
+						}
+						return { totalDeposit: formatUSDC(newDeposit), isError: false };
+					});
+				}}
 			/>
 		</div>
 	);
@@ -222,7 +281,11 @@ function SpreaderCard({ claimedReferralSbts = [], inviteeCount = 0, referralLink
 	);
 }
 
-export function Dashboard() {
+interface DashboardProps {
+	redirectTab: (redirectTab: TabType) => void;
+}
+
+export function Dashboard({ redirectTab }: DashboardProps) {
 	const suiAccount = useCurrentAccount();
 	const isSuiConnected = !!suiAccount;
 	const userHiveDashboardFetcher = useFetcher<QueryUserDataResp>();
@@ -295,7 +358,7 @@ export function Dashboard() {
 			<HiveScoreHeader totalHiveScore={totalRawPoints} />
 			<div>
 				<h2 className="mb-4 text-xl font-bold">Category Breakdown</h2>
-				<ContributorCard />
+				<ContributorCard redirectTab={redirectTab} />
 				<div className="grid grid-cols-1 gap-4">
 					<MemberCard claimedSocialSbts={claimedSocialSbts} />
 					<SpreaderCard

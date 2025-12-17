@@ -117,7 +117,7 @@ const TransparencySection = () => (
 
 export function HiveFAQ() {
 	return (
-		<div className="mt-8">
+		<div className="mt-8 space-y-8">
 			<TransparencySection />
 			<FAQ faqs={GENERAL_FAQS} title="General Program FAQ" className="max-w-full" />
 			<FAQ

@@ -22,7 +22,7 @@ vi.mock("@mysten/dapp-kit", () => ({
 }));
 
 vi.mock("~/networkConfig", () => ({
-	useNetworkVariables: vi.fn(() => ({ lockdrop: {} })),
+	useNetworkVariables: vi.fn(() => ({ lockdrop: {}, usdc: {} })),
 }));
 
 vi.mock("~/hooks/use-toast", () => ({
@@ -41,6 +41,18 @@ const getElementByIdSpy = vi.spyOn(document, "getElementById");
 
 describe("DepositModal", () => {
 	const mockOnClose = vi.fn();
+	const mockRefetchDeposit = vi.fn();
+	const mockRedirectTab = vi.fn();
+	const mockUpdateDeposit = vi.fn();
+
+	const mockDepositModalProps = {
+		id: "deposit-assets-modal",
+		open: true,
+		onClose: mockOnClose,
+		refetchDeposit: mockRefetchDeposit,
+		redirectTab: mockRedirectTab,
+		updateDeposit: mockUpdateDeposit,
+	};
 
 	beforeEach(() => {
 		getElementByIdSpy.mockImplementation((id) => {
@@ -53,33 +65,33 @@ describe("DepositModal", () => {
 	});
 
 	it("should render modal when open", () => {
-		render(<DepositModal id="deposit-assets-modal" open={true} onClose={mockOnClose} />);
-		expect(screen.getByText("Deposit Assets to Lockdrop")).toBeInTheDocument();
+		render(<DepositModal {...mockDepositModalProps} />);
+		expect(screen.getByText("Deposit USDC to Lockdrop")).toBeInTheDocument();
 	});
 
 	it("should not render modal when closed", () => {
-		render(<DepositModal id="deposit-assets-modal" open={false} onClose={mockOnClose} />);
-		expect(screen.queryByText("Deposit Assets to Lockdrop")).not.toBeVisible();
+		render(<DepositModal {...mockDepositModalProps} open={false} />);
+		expect(screen.queryByText("Deposit USDC to Lockdrop")).not.toBeVisible();
 	});
 
-	it("should display SUI input field", () => {
-		render(<DepositModal id="deposit-assets-modal" open={true} onClose={mockOnClose} />);
-		expect(screen.getByPlaceholderText("Enter SUI amount")).toBeInTheDocument();
+	it("should display USDC input field", () => {
+		render(<DepositModal {...mockDepositModalProps} />);
+		expect(screen.getByPlaceholderText("Enter USDC amount")).toBeInTheDocument();
 	});
 
 	it("should show max button", () => {
-		render(<DepositModal id="deposit-assets-modal" open={true} onClose={mockOnClose} />);
+		render(<DepositModal {...mockDepositModalProps} />);
 		expect(screen.getByText(/Balance:/)).toBeInTheDocument();
 		expect(screen.getByText(/Max/)).toBeInTheDocument();
 	});
 
 	it("should show deposit button", () => {
-		render(<DepositModal id="deposit-assets-modal" open={true} onClose={mockOnClose} />);
-		expect(screen.getAllByText(/Deposit Assets/i)).toHaveLength(2);
+		render(<DepositModal {...mockDepositModalProps} />);
+		expect(screen.getAllByText(/Deposit USDC/i)).toHaveLength(2);
 	});
 
 	it("should show lockdrop info text", () => {
-		render(<DepositModal id="deposit-assets-modal" open={true} onClose={mockOnClose} />);
-		expect(screen.getByText(/Your SUI will be locked in the lockdrop escrow/)).toBeInTheDocument();
+		render(<DepositModal {...mockDepositModalProps} />);
+		expect(screen.getByText(/Your USDC will be locked in the lockdrop escrow/)).toBeInTheDocument();
 	});
 });
