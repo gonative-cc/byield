@@ -86,11 +86,15 @@ export function DepositModal({ id, open, onClose, redirectTab, updateDeposit }: 
 					showEffects: true,
 				});
 				logger.info({ msg: "Deposit tx:", method: "DepositModal", digest: result.digest });
+				// Force wait for the transaction to be fully indexed by the specific RPC node
+				await client.waitForTransaction({
+					digest: result.digest,
+				});
 				const success = result.effects?.status?.status === "success";
 				setTxStatus({ success, digest: result.digest });
 				if (success) {
-					coinBalanceRes.refetch();
 					updateDeposit(amount);
+					coinBalanceRes.refetch();
 				} else {
 					logger.error({ msg: "Deposit FAILED", method: "DepositModal", errors: result.errors });
 				}
