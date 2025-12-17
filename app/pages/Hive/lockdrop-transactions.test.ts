@@ -15,7 +15,7 @@ const mockLockdropCfg: LockdropCfg = {
 };
 
 describe("getUserDeposits", () => {
-	it("should return empty array when transaction fails", async () => {
+	it("should return null when transaction fails", async () => {
 		mockSuiClient.devInspectTransactionBlock.mockResolvedValue({
 			effects: { status: { status: "failure", error: "Transaction failed" } },
 		});
@@ -26,10 +26,10 @@ describe("getUserDeposits", () => {
 			mockSuiClient as unknown as SuiClient,
 		);
 
-		expect(result).toEqual([]);
+		expect(result).toEqual(null);
 	});
 
-	it("should return empty array when no return values", async () => {
+	it("should return null when no return values", async () => {
 		mockSuiClient.devInspectTransactionBlock.mockResolvedValue({
 			effects: { status: { status: "success" } },
 			results: [{ returnValues: [] }],
@@ -41,10 +41,10 @@ describe("getUserDeposits", () => {
 			mockSuiClient as unknown as SuiClient,
 		);
 
-		expect(result).toEqual([]);
+		expect(result).toEqual(null);
 	});
 
-	it("should return empty array when client throws error", async () => {
+	it("should return null when client throws error", async () => {
 		mockSuiClient.devInspectTransactionBlock.mockRejectedValue(new Error("Network error"));
 
 		const result = await getUserDeposits(
@@ -53,10 +53,10 @@ describe("getUserDeposits", () => {
 			mockSuiClient as unknown as SuiClient,
 		);
 
-		expect(result).toEqual([]);
+		expect(result).toEqual(null);
 	});
 
-	it("should return empty array when no results", async () => {
+	it("should return null when no results", async () => {
 		mockSuiClient.devInspectTransactionBlock.mockResolvedValue({
 			effects: { status: { status: "success" } },
 			results: [],
@@ -68,6 +68,6 @@ describe("getUserDeposits", () => {
 			mockSuiClient as unknown as SuiClient,
 		);
 
-		expect(result).toEqual([]);
+		expect(result).toEqual(null);
 	});
 });
