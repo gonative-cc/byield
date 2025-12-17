@@ -32,6 +32,8 @@ export function useCoinBalance(coinOrVariant?: string) {
 		queryKey: ["coinBalance", userAddr, network, resolvedCoinAddr],
 		queryFn: () => suiClient.getBalance({ owner: userAddr!, coinType: resolvedCoinAddr }),
 		enabled: !!userAddr,
+		// cache the balance for 10 min
+		staleTime: 600000,
 	});
 
 	return {
