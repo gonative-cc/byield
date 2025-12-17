@@ -61,11 +61,7 @@
 	 * To add secrets use:
 	 * https://developers.cloudflare.com/workers/configuration/secrets/
 	 */
-	"vars": {
-		"TRADEPORT_API_USER": "TODO",
-		"TRADEPORT_API_KEY": "TODO",
-		"TBOOK_AUTH_TOKEN": "TODO",
-	},
+	"vars": {},
 
 	/**
 	 * Service Bindings (communicate between multiple Workers)
