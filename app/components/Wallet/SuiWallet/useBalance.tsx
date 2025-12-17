@@ -17,8 +17,8 @@ export function useCoinBalance(coinOrVariant?: string) {
 	const { network } = useSuiClientContext();
 
 	const resolvedCoinAddr =
-		coinOrVariant === undefined || coinOrVariant === "SUI"
-			? undefined
+		!coinOrVariant || coinOrVariant === "SUI"
+			? "0x2::sui::SUI"
 			: coinOrVariant === "NBTC"
 				? nbtc.pkgId + nbtc.coinType
 				: coinOrVariant;
@@ -30,10 +30,13 @@ export function useCoinBalance(coinOrVariant?: string) {
 		refetch,
 	} = useQuery({
 		queryKey: ["coinBalance", userAddr, network, resolvedCoinAddr],
-		queryFn: () => suiClient.getBalance({ owner: userAddr!, coinType: resolvedCoinAddr }),
+		queryFn: () => {
+			console.log(">>>>>> querying balance", resolvedCoinAddr);
+			return suiClient.getBalance({ owner: userAddr!, coinType: resolvedCoinAddr });
+		},
 		enabled: !!userAddr,
 		// cache the balance for 10 min
-		staleTime: 600000,
+		// staleTime: 600000,
 	});
 
 	return {
