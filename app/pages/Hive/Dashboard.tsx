@@ -50,7 +50,11 @@ function ContributorCard({ redirectTab }: ContributorCardProps) {
 	const client = useSuiClient();
 	const { lockdrop } = useNetworkVariables();
 	const [isDepositModalOpen, setIsDepositModalOpen] = useState<boolean>(false);
-	const [userTotalDeposit, setUserTotalDeposit] = useState<string | null>(null);
+	const [userTotalDeposit, setUserTotalDeposit] = useState<{
+		totalDeposit?: string | null;
+		isError?: boolean;
+	}>({ totalDeposit: null, isError: false });
+	const isUserDepositError = userTotalDeposit?.isError;
 	// TODO: Get current level and next level from API
 	const currentLevel = 2;
 	const nextLevel = currentLevel + 1;
@@ -62,7 +66,9 @@ function ContributorCard({ redirectTab }: ContributorCardProps) {
 		async function fetchUserTotalDeposit() {
 			if (account?.address) {
 				const totalDeposit = await getUserDeposits(account.address, lockdrop, client);
-				if (totalDeposit) setUserTotalDeposit(formatUSDC(totalDeposit || "0"));
+				if (totalDeposit !== null)
+					setUserTotalDeposit({ totalDeposit: formatUSDC(totalDeposit || "0"), isError: false });
+				else setUserTotalDeposit({ totalDeposit: null, isError: true });
 			}
 		}
 		fetchUserTotalDeposit();
@@ -94,9 +100,13 @@ function ContributorCard({ redirectTab }: ContributorCardProps) {
 							{currentTier.tier} - {currentTier.name}
 						</div>
 						<div className="text-muted-foreground mb-4 text-sm">{currentTier.description}</div>
-						<div className="mb-1 text-xl font-bold text-white sm:text-2xl">
-							${userTotalDeposit}
-						</div>
+						{userTotalDeposit?.totalDeposit !== null && (
+							<div className="mb-1 text-xl font-bold text-white sm:text-2xl">
+								{isUserDepositError
+									? "Error fetching user deposit"
+									: `$${userTotalDeposit?.totalDeposit}`}
+							</div>
+						)}
 						<div className="text-muted-foreground text-sm">Locked Liquidity</div>
 					</div>
 					{nextTier && (
@@ -105,16 +115,16 @@ function ContributorCard({ redirectTab }: ContributorCardProps) {
 								<span className="text-muted-foreground mb-2 text-sm">
 									Next Tier: {nextTier.tier} - {nextTier.name}
 								</span>
-								{userTotalDeposit !== null && (
+								{userTotalDeposit?.totalDeposit !== null && (
 									<span className="text-muted-foreground mb-2 text-sm">
-										${userTotalDeposit} / ${NEXT_TIER_DEPOSIT}
+										${userTotalDeposit?.totalDeposit} / ${NEXT_TIER_DEPOSIT}
 									</span>
 								)}
 							</div>
-							{userTotalDeposit !== null && (
+							{userTotalDeposit?.totalDeposit !== null && (
 								<progress
 									className="progress progress-primary mb-1"
-									value={userTotalDeposit}
+									value={userTotalDeposit?.totalDeposit}
 									max={NEXT_TIER_DEPOSIT}
 								/>
 							)}
@@ -140,12 +150,12 @@ function ContributorCard({ redirectTab }: ContributorCardProps) {
 				onClose={() => setIsDepositModalOpen(false)}
 				redirectTab={redirectTab}
 				updateDeposit={(newDeposit: bigint) => {
-					setUserTotalDeposit((prev: string | null) => {
-						if (prev !== null) {
-							const total = parseUSDC(prev) + newDeposit;
-							return formatUSDC(total);
+					setUserTotalDeposit((prev) => {
+						if (prev?.totalDeposit) {
+							const total = parseUSDC(prev.totalDeposit) + newDeposit;
+							return { totalDeposit: formatUSDC(total), isError: false };
 						}
-						return formatUSDC(newDeposit);
+						return { totalDeposit: formatUSDC(newDeposit), isError: false };
 					});
 				}}
 			/>
