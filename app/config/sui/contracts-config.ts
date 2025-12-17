@@ -161,7 +161,7 @@ export const localnetCfg: ContractsCfg = {
 	},
 	usdc: {
 		name: "USDC",
-		type: "",
+		type: "", // for local net - you can deploy any coin and call it usdc
 	},
 };
 
