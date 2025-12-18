@@ -5,7 +5,7 @@ import { FormNumericInput } from "~/components/form/FormNumericInput";
 import { LoadingSpinner } from "~/components/LoadingSpinner";
 import { formatUSDC, parseUSDC, USDC } from "~/lib/denoms";
 import { USDCIcon } from "~/components/icons";
-import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
+import { handleBalanceChanges, useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { useCurrentAccount, useSignTransaction, useSuiClient } from "@mysten/dapp-kit";
 import { useNetworkVariables } from "~/networkConfig";
 import { logger } from "~/lib/log";
@@ -84,17 +84,21 @@ export function DepositModal({ id, open, onClose, redirectTab, updateDeposit }: 
 				const transaction = createLockdropDepositTxn(account.address, amount, lockdrop, usdc);
 				const result = await signAndExecTx(transaction, client, signTransaction, {
 					showEffects: true,
+					showBalanceChanges: true,
 				});
 				logger.info({ msg: "Deposit tx:", method: "DepositModal", digest: result.digest });
-				// Force wait for the transaction to be fully indexed by the specific RPC node
-				await client.waitForTransaction({
-					digest: result.digest,
-				});
 				const success = result.effects?.status?.status === "success";
 				setTxStatus({ success, digest: result.digest });
 				if (success) {
 					updateDeposit(amount);
-					coinBalanceRes.refetch();
+					if (result.balanceChanges) {
+						handleBalanceChanges(
+							result.balanceChanges,
+							usdc.type,
+							coinBalanceRes.balance,
+							coinBalanceRes.updateCoinBalanceInCache,
+						);
+					}
 				} else {
 					logger.error({ msg: "Deposit FAILED", method: "DepositModal", errors: result.errors });
 				}
