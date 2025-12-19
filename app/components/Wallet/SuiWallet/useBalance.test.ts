@@ -1,17 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import type { BalanceChange, ObjectOwner } from "@mysten/sui/client";
 
 import { handleBalanceChanges } from "./useBalance";
-
-// Define the BalanceChange interface locally to avoid import issues
-interface BalanceChange {
-	coinType: string;
-	amount: string;
-}
 
 describe("handleBalanceChanges", () => {
 	// Mock function to track updates
 	let mockUpdateCoinBalanceInCache: (newBalance: string) => void;
 	let updateCalls: string[];
+
+	const owner: ObjectOwner = { AddressOwner: "" };
+	const coinType = "0x1::sui::SUI";
 
 	beforeEach(() => {
 		updateCalls = [];
@@ -21,7 +19,7 @@ describe("handleBalanceChanges", () => {
 	});
 
 	it("should update balance when there is a single balance change", () => {
-		const balanceChanges: BalanceChange[] = [{ coinType: "0x1::sui::SUI", amount: "1000" }];
+		const balanceChanges: BalanceChange[] = [{ coinType, amount: "1000", owner }];
 
 		const cached = [
 			{
@@ -39,8 +37,8 @@ describe("handleBalanceChanges", () => {
 
 	it("should aggregate multiple balance changes for the same coin type", () => {
 		const balanceChanges: BalanceChange[] = [
-			{ coinType: "0x1::sui::SUI", amount: "1000" },
-			{ coinType: "0x1::sui::SUI", amount: "2000" },
+			{ coinType, amount: "1000", owner },
+			{ coinType, amount: "2000", owner },
 		];
 
 		const cached = [
@@ -59,7 +57,7 @@ describe("handleBalanceChanges", () => {
 	});
 
 	it("should handle negative balance changes (decreases)", () => {
-		const balanceChanges: BalanceChange[] = [{ coinType: "0x1::sui::SUI", amount: "-1000" }];
+		const balanceChanges: BalanceChange[] = [{ coinType, amount: "-1000", owner }];
 
 		const cached = [
 			{
@@ -77,9 +75,9 @@ describe("handleBalanceChanges", () => {
 
 	it("should handle mixed positive and negative balance changes for same coin", () => {
 		const balanceChanges: BalanceChange[] = [
-			{ coinType: "0x1::sui::SUI", amount: "2000" },
-			{ coinType: "0x1::sui::SUI", amount: "-500" },
-			{ coinType: "0x1::sui::SUI", amount: "1000" },
+			{ coinType, amount: "2000", owner },
+			{ coinType, amount: "-500", owner },
+			{ coinType, amount: "1000", owner },
 		];
 
 		const cached = [
@@ -99,8 +97,8 @@ describe("handleBalanceChanges", () => {
 
 	it("should not update balance when total change is zero", () => {
 		const balanceChanges: BalanceChange[] = [
-			{ coinType: "0x1::sui::SUI", amount: "1000" },
-			{ coinType: "0x1::sui::SUI", amount: "-1000" },
+			{ coinType, amount: "1000", owner },
+			{ coinType, amount: "-1000", owner },
 		];
 
 		const cached = [
@@ -118,7 +116,9 @@ describe("handleBalanceChanges", () => {
 	});
 
 	it("should only update cached coins that match the balance change coin type", () => {
-		const balanceChanges: BalanceChange[] = [{ coinType: "0x2::coin::COIN1", amount: "1000" }];
+		const balanceChanges: BalanceChange[] = [
+			{ coinType: "0x2::coin::COIN1", amount: "1000", owner },
+		];
 
 		const cached = [
 			{
@@ -142,9 +142,9 @@ describe("handleBalanceChanges", () => {
 
 	it("should handle multiple different coin types with changes", () => {
 		const balanceChanges: BalanceChange[] = [
-			{ coinType: "0x1::sui::SUI", amount: "1000" },
-			{ coinType: "0x2::coin::COIN1", amount: "2000" },
-			{ coinType: "0x1::sui::SUI", amount: "500" },
+			{ coinType: "0x1::sui::SUI", amount: "1000", owner },
+			{ coinType: "0x2::coin::COIN1", amount: "2000", owner },
+			{ coinType: "0x1::sui::SUI", amount: "500", owner },
 		];
 
 		const cached = [
@@ -171,7 +171,7 @@ describe("handleBalanceChanges", () => {
 
 	it("should not update if no matching cached coin is found for balance change", () => {
 		const balanceChanges: BalanceChange[] = [
-			{ coinType: "0x3::coin::NOT_CACHED", amount: "1000" },
+			{ coinType: "0x3::coin::NOT_CACHED", amount: "1000", owner },
 		];
 
 		const cached = [
@@ -189,7 +189,7 @@ describe("handleBalanceChanges", () => {
 	});
 
 	it("should handle zero amount changes", () => {
-		const balanceChanges: BalanceChange[] = [{ coinType: "0x1::sui::SUI", amount: "0" }];
+		const balanceChanges: BalanceChange[] = [{ coinType, amount: "0", owner }];
 
 		const cached = [
 			{
@@ -208,7 +208,7 @@ describe("handleBalanceChanges", () => {
 	it("should handle large BigInt values correctly", () => {
 		const largeAmount = BigInt("1000000000000000000");
 		const balanceChanges: BalanceChange[] = [
-			{ coinType: "0x1::sui::SUI", amount: largeAmount.toString() },
+			{ coinType, amount: largeAmount.toString(), owner },
 		];
 
 		const cached = [
