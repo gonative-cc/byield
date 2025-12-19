@@ -85,7 +85,7 @@ export function handleBalanceChanges(
 		diffs.set(b.coinType, d + BigInt(b.amount));
 	}
 	for (const [coinType, diff] of diffs) {
-		if (diff != 0n) {
+		if (diff !== 0n) {
 			const c = cached.find((c) => c.coinType === coinType);
 			if (c) {
 				c.updateCoinBalanceInCache(String(diff + c.currentBalance));
