@@ -1,3 +1,5 @@
+import type { SuiNetwork } from "~/hooks/useSuiNetwork";
+
 const STORAGE_KEYS = {
 	XVERSE_NETWORK: "xverse_network",
 	SUI_NETWORK: "sui_network",
@@ -14,12 +16,12 @@ export const storage = {
 		localStorage.setItem(STORAGE_KEYS.XVERSE_NETWORK, network);
 	},
 
-	getSuiNetwork: (): string | null => {
+	getSuiNetwork: (): SuiNetwork | null => {
 		if (typeof window === "undefined") return null;
-		return localStorage.getItem(STORAGE_KEYS.SUI_NETWORK);
+		return localStorage.getItem(STORAGE_KEYS.SUI_NETWORK) as SuiNetwork | null;
 	},
 
-	setSuiNetwork: (network: "testnet" | "mainnet" | "localnet" | null) => {
+	setSuiNetwork: (network: SuiNetwork | null) => {
 		if (typeof window === "undefined" || !network) return;
 		localStorage.setItem(STORAGE_KEYS.SUI_NETWORK, network);
 	},
