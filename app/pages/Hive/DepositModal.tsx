@@ -62,7 +62,8 @@ export function DepositModal({ id, open, onClose, redirectTab, updateDeposit }: 
 	const [isDepositing, setIsDepositing] = useState<boolean>(false);
 	const [txStatus, setTxStatus] = useState<{ success: boolean; digest?: string } | null>(null);
 
-	const coinBalanceRes = useCoinBalance(usdc.type);
+	const usdcBalanceRes = useCoinBalance(usdc.type);
+	const suiBalanceRes = useCoinBalance("SUI");
 
 	const handleDeposit = useCallback(
 		async (amount: bigint) => {
@@ -92,12 +93,20 @@ export function DepositModal({ id, open, onClose, redirectTab, updateDeposit }: 
 				if (success) {
 					updateDeposit(amount);
 					if (result.balanceChanges) {
-						handleBalanceChanges(
-							result.balanceChanges,
-							usdc.type,
-							coinBalanceRes.balance,
-							coinBalanceRes.updateCoinBalanceInCache,
-						);
+						handleBalanceChanges(result.balanceChanges, [
+							// USDC
+							{
+								coinType: usdc.type,
+								currentBalance: usdcBalanceRes.balance,
+								updateCoinBalanceInCache: usdcBalanceRes.updateCoinBalanceInCache,
+							},
+							// SUI
+							{
+								coinType: suiBalanceRes.coinType!,
+								currentBalance: suiBalanceRes.balance,
+								updateCoinBalanceInCache: suiBalanceRes.updateCoinBalanceInCache,
+							},
+						]);
 					}
 				} else {
 					logger.error({ msg: "Deposit FAILED", method: "DepositModal", errors: result.errors });
@@ -109,7 +118,19 @@ export function DepositModal({ id, open, onClose, redirectTab, updateDeposit }: 
 				setIsDepositing(false);
 			}
 		},
-		[account, lockdrop, usdc, client, signTransaction, coinBalanceRes, updateDeposit],
+		[
+			account,
+			lockdrop,
+			usdc,
+			client,
+			signTransaction,
+			updateDeposit,
+			usdcBalanceRes.balance,
+			usdcBalanceRes.updateCoinBalanceInCache,
+			suiBalanceRes.coinType,
+			suiBalanceRes.balance,
+			suiBalanceRes.updateCoinBalanceInCache,
+		],
 	);
 
 	const depositForm = useForm<DepositForm>({
@@ -140,7 +161,7 @@ export function DepositModal({ id, open, onClose, redirectTab, updateDeposit }: 
 		}
 	}, [isSuiWalletConnected, amount, trigger]);
 
-	const coinBalance = coinBalanceRes.balance;
+	const coinBalance = usdcBalanceRes.balance;
 	const maxAmount = coinBalance > 0 ? formatUSDC(coinBalance) : "";
 
 	const amountInputRules = {

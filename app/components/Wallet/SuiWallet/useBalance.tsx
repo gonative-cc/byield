@@ -50,6 +50,7 @@ export function useCoinBalance(coinOrVariant?: string) {
 
 	return {
 		balance: balance ? BigInt(balance.totalBalance) : 0n,
+		coinType: balance?.coinType,
 		isLoading,
 		error,
 		refetch,
@@ -57,19 +58,28 @@ export function useCoinBalance(coinOrVariant?: string) {
 	};
 }
 
-// observe balance changes and update the cache for the corresponding coin tpye
+/**
+ * Observes a list of balance changes and updates the cache for any corresponding
+ * coins found in the provided configuration list.
+
+ *
+ * @param balanceChanges - An array of balance change events containing the coin type and the amount changed.
+ * @param coins - An array of coin objects, that user wish to update in the cache if corresponding coin balance changed.
+ */
 export function handleBalanceChanges(
 	balanceChanges: BalanceChange[],
-	coinType: string,
-	currentBalance: bigint,
-	updateCoinBalanceInCache: (newBalance: string) => void,
+	coins: {
+		coinType: string;
+		currentBalance: bigint;
+		updateCoinBalanceInCache: (newBalance: string) => void;
+	}[],
 ) {
 	for (const balanceChange of balanceChanges) {
-		if (balanceChange.coinType === coinType) {
-			const newBalance = String(currentBalance + BigInt(balanceChange.amount));
-			if (newBalance !== String(currentBalance)) {
-				updateCoinBalanceInCache(newBalance);
-				return;
+		const coin = coins.find((c) => c.coinType === balanceChange.coinType);
+		if (coin) {
+			const newBalance = String(coin.currentBalance + BigInt(balanceChange.amount));
+			if (newBalance !== String(coin.currentBalance)) {
+				coin.updateCoinBalanceInCache(newBalance);
 			}
 		}
 	}
