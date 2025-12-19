@@ -42,10 +42,14 @@ export function useCoinBalance(coinOrVariant?: string) {
 	});
 
 	const updateCoinBalanceInCache = (newBalance: string) => {
-		queryClient.setQueryData(coinCacheKey, (oldData: CoinBalance) => ({
-			...oldData,
-			totalBalance: newBalance,
-		}));
+		queryClient.setQueryData(coinCacheKey, (oldData: CoinBalance) =>
+			oldData
+				? {
+						...oldData,
+						totalBalance: newBalance,
+					}
+				: undefined,
+		);
 	};
 
 	return {
