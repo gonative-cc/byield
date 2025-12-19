@@ -67,7 +67,10 @@ export function handleBalanceChanges(
 	for (const balanceChange of balanceChanges) {
 		if (balanceChange.coinType === coinType) {
 			const newBalance = String(currentBalance + BigInt(balanceChange.amount));
-			updateCoinBalanceInCache(newBalance);
+			if (newBalance !== String(currentBalance)) {
+				updateCoinBalanceInCache(newBalance);
+				return;
+			}
 		}
 	}
 }
