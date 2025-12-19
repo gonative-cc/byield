@@ -16,7 +16,7 @@ jobs:
         with:
           fetch-depth: 0
       # lint only changed files
-      - uses: tj-actions/changed-files@v47
+      - uses: tj-actions/changed-files@v47.0.1
         id: changed-files
         with:
           files: "**/*.md"
