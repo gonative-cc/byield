@@ -306,25 +306,11 @@ const TransparencySection = () => (
 export function HiveFAQ() {
 	return (
 		<div className="mt-8 space-y-8">
-			<div id="transparency">
-				<TransparencySection />
-			</div>
-			<div id="general-faq">
-				<FAQ faqs={GENERAL_FAQS} title="General Program FAQ" className="max-w-full" />
-			</div>
-			<div id="contributor-faq">
-				<FAQ
-					faqs={HIVE_CONTRIBUTOR_FAQ}
-					title="Hive Contributor FAQ (Lockdrop)"
-					className="max-w-full"
-				/>
-			</div>
-			<div id="member-faq">
-				<FAQ faqs={MEMBER_FAQS} title="Hive Member FAQ (Social & Community)" className="max-w-full" />
-			</div>
-			<div id="social-faq">
-				<FAQ faqs={SOCIAL_FAQS} title="Hive Spreader FAQ (Referrals)" className="max-w-full" />
-			</div>
+			<TransparencySection />
+			<FAQ faqs={GENERAL_FAQS} title="General Program FAQ" className="max-w-full" />
+			<FAQ faqs={HIVE_CONTRIBUTOR_FAQ} title="Hive Contributor FAQ (Lockdrop)" className="max-w-full" />
+			<FAQ faqs={MEMBER_FAQS} title="Hive Member FAQ (Social & Community)" className="max-w-full" />
+			<FAQ faqs={SOCIAL_FAQS} title="Hive Spreader FAQ (Referrals)" className="max-w-full" />
 		</div>
 	);
 }

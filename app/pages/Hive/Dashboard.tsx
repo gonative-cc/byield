@@ -13,6 +13,7 @@ import { getUserDeposits } from "./lockdrop-transactions";
 import { useNetworkVariables } from "~/networkConfig";
 import { formatUSDC, parseUSDC } from "~/lib/denoms";
 import type { TabType } from "./types";
+import { ReadMoreFAQ } from "./Home";
 
 interface HiveScoreHeaderProps {
 	totalHiveScore?: number;
@@ -89,9 +90,9 @@ function ContributorCard({ redirectTab }: ContributorCardProps) {
 						/>
 						<div>
 							<h3 className="font-bold">Hive Contributor SBTs</h3>
-							<p className="text-muted-foreground text-sm">
-								Lock liquidity to earn the highest tier SBTs.
-							</p>
+							<span>
+								Commit USDC to the Genesis Lockdrop. <ReadMoreFAQ />
+							</span>
 						</div>
 					</div>
 				</div>
@@ -181,13 +182,18 @@ function MemberCard({ claimedSocialSbts = [] }: MemberCardProps) {
 	return (
 		<div className="card">
 			<div className="card-body">
-				<div className="mb-4 flex items-start gap-3">
+				<div className="flex items-start gap-3">
 					<img
 						src="/assets/lockdrop/LockdropSBT.svg"
 						alt="Hive Member SBTs"
 						className="h-10 w-10"
 					/>
-					<h3 className="font-bold">Hive Member SBTs</h3>
+					<div>
+						<h3 className="font-bold">Hive Member SBTs</h3>
+						<span>
+							Link your identities and verify your social presence. <ReadMoreFAQ />
+						</span>
+					</div>
 				</div>
 
 				<div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
@@ -243,7 +249,12 @@ function SpreaderCard({ claimedReferralSbts = [], inviteeCount = 0, referralLink
 							alt="Hive Spreader SBTs"
 							className="h-10 w-10"
 						/>
-						<h3 className="font-bold">Hive Spreader SBTs</h3>
+						<div>
+							<h3 className="font-bold">Hive Spreader SBTs</h3>
+							<span>
+								Refer high-quality, verified users who also contribute. <ReadMoreFAQ />
+							</span>
+						</div>
 					</div>
 				</div>
 				<div className="grid grid-cols-1 gap-6 sm:grid-cols-2">

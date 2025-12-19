@@ -144,8 +144,8 @@ export function DepositModal({ id, open, onClose, redirectTab, updateDeposit }: 
 					if (inputAmount <= coinBalance) {
 						return true;
 					}
-					return "Insufficient USDC balance";
 				}
+				return "Insufficient USDC balance";
 			},
 			atLeastOne: (value: string) => {
 				if (parseUSDC(value) >= parseUSDC("1")) {

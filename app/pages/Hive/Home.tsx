@@ -7,6 +7,14 @@ import type { Column } from "react-table";
 import { Collapse } from "~/components/ui/collapse";
 import type { ReactNode } from "react";
 
+export function ReadMoreFAQ() {
+	return (
+		<a href="#faq" target="_blank" className="link link-primary">
+			Read the FAQ to learn more.
+		</a>
+	);
+}
+
 interface SBTToken {
 	src: string;
 	title: string;
@@ -19,15 +27,12 @@ interface SBTToken {
 
 const SBT_TOKENS: SBTToken[] = [
 	{
-		src: "/assets/lockdrop/SocialSBT.svg",
-		title: "Hive Member SBTs",
+		src: "/assets/lockdrop/LockdropSBT.svg",
+		title: "Hive Contributor SBTs",
 		description: (
 			<span>
-				Link your identities and verify your social presence. These SBTs prove you are a verified,
-				active member of the Native community.{" "}
-				<a href="/hive#general-faq" target="_blank" className="link link-primary">
-					Read the FAQ to learn more.
-				</a>
+				Commit USDC to the Genesis Lockdrop. These SBTs verify your role as a foundational liquidity
+				provider for the nBTC protocol. <ReadMoreFAQ />
 			</span>
 		),
 		tiers: [
@@ -37,15 +42,12 @@ const SBT_TOKENS: SBTToken[] = [
 		],
 	},
 	{
-		src: "/assets/lockdrop/LockdropSBT.svg",
-		title: "Hive Contributor SBTs",
+		src: "/assets/lockdrop/SocialSBT.svg",
+		title: "Hive Member SBTs",
 		description: (
 			<span>
-				Commit USDC to the Genesis Lockdrop. These SBTs verify your role as a foundational liquidity
-				provider for the nBTC protocol.{" "}
-				<a href="/hive#contributor-faq" target="_blank" className="link link-primary">
-					Read the FAQ to learn more.
-				</a>
+				Link your identities and verify your social presence. These SBTs prove you are a verified,
+				active member of the Native community. <ReadMoreFAQ />
 			</span>
 		),
 		tiers: [
@@ -60,10 +62,7 @@ const SBT_TOKENS: SBTToken[] = [
 		description: (
 			<span>
 				Refer high-quality, verified users who also contribute. This proves your impact on growing a
-				secure and active user base.{" "}
-				<a href="/hive#social-faq" target="_blank" className="link link-primary">
-					Read the FAQ to learn more.
-				</a>
+				secure and active user base. <ReadMoreFAQ />
 			</span>
 		),
 		tiers: [
