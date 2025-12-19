@@ -5,6 +5,13 @@ const STORAGE_KEYS = {
 	SUI_NETWORK: "sui_network",
 };
 
+const ALLOWED_SUI_NETWORKS = ["testnet", "mainnet", "localnet"];
+
+const isValidSuiNetwork = (value: SuiNetwork): boolean => {
+	if (value === null) return false;
+	return ALLOWED_SUI_NETWORKS.includes(value);
+};
+
 export const storage = {
 	getXverseNetwork: (): string | null => {
 		if (typeof window === "undefined") return null;
@@ -18,7 +25,9 @@ export const storage = {
 
 	getSuiNetwork: (): SuiNetwork | null => {
 		if (typeof window === "undefined") return null;
-		return localStorage.getItem(STORAGE_KEYS.SUI_NETWORK) as SuiNetwork | null;
+		const cachedSuiNetwork = localStorage.getItem(STORAGE_KEYS.SUI_NETWORK) as SuiNetwork;
+		if (isValidSuiNetwork(cachedSuiNetwork)) return cachedSuiNetwork;
+		return null;
 	},
 
 	setSuiNetwork: (network: SuiNetwork | null) => {
