@@ -101,11 +101,15 @@ export function DepositModal({ id, open, onClose, redirectTab, updateDeposit }: 
 								updateCoinBalanceInCache: usdcBalanceRes.updateCoinBalanceInCache,
 							},
 							// SUI
-							{
-								coinType: suiBalanceRes.coinType!,
-								currentBalance: suiBalanceRes.balance,
-								updateCoinBalanceInCache: suiBalanceRes.updateCoinBalanceInCache,
-							},
+							...(suiBalanceRes?.coinType
+								? [
+										{
+											coinType: suiBalanceRes.coinType!,
+											currentBalance: suiBalanceRes.balance,
+											updateCoinBalanceInCache: suiBalanceRes.updateCoinBalanceInCache,
+										},
+									]
+								: []),
 						]);
 					}
 				} else {

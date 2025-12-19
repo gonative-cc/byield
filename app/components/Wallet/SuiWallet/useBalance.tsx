@@ -6,12 +6,14 @@ import type { BalanceChange } from "@mysten/sui/client";
 
 export interface UseCoinBalanceResult {
 	balance: bigint;
+	coinType?: string;
 	isLoading: boolean;
 	error: Error | null;
 	refetch: () => void;
+	updateCoinBalanceInCache: (newBalance: string) => void;
 }
 
-export function useCoinBalance(coinOrVariant?: string) {
+export function useCoinBalance(coinOrVariant?: string): UseCoinBalanceResult {
 	const suiClient = useSuiClient();
 	const account = useCurrentAccount();
 	const userAddr = account?.address || null;
