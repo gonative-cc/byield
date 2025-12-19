@@ -5,7 +5,7 @@ import { FormNumericInput } from "~/components/form/FormNumericInput";
 import { LoadingSpinner } from "~/components/LoadingSpinner";
 import { formatUSDC, parseUSDC, USDC } from "~/lib/denoms";
 import { USDCIcon } from "~/components/icons";
-import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
+import { handleBalanceChanges, useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { useCurrentAccount, useSignTransaction, useSuiClient } from "@mysten/dapp-kit";
 import { useNetworkVariables } from "~/networkConfig";
 import { logger } from "~/lib/log";
@@ -62,7 +62,8 @@ export function DepositModal({ id, open, onClose, redirectTab, updateDeposit }: 
 	const [isDepositing, setIsDepositing] = useState<boolean>(false);
 	const [txStatus, setTxStatus] = useState<{ success: boolean; digest?: string } | null>(null);
 
-	const coinBalanceRes = useCoinBalance(usdc.type);
+	const usdcBalanceRes = useCoinBalance(usdc.type);
+	const suiBalanceRes = useCoinBalance("SUI");
 
 	const handleDeposit = useCallback(
 		async (amount: bigint) => {
@@ -84,13 +85,33 @@ export function DepositModal({ id, open, onClose, redirectTab, updateDeposit }: 
 				const transaction = createLockdropDepositTxn(account.address, amount, lockdrop, usdc);
 				const result = await signAndExecTx(transaction, client, signTransaction, {
 					showEffects: true,
+					showBalanceChanges: true,
 				});
 				logger.info({ msg: "Deposit tx:", method: "DepositModal", digest: result.digest });
 				const success = result.effects?.status?.status === "success";
 				setTxStatus({ success, digest: result.digest });
 				if (success) {
-					coinBalanceRes.refetch();
 					updateDeposit(amount);
+					if (result.balanceChanges) {
+						handleBalanceChanges(result.balanceChanges, [
+							// USDC
+							{
+								coinType: usdc.type,
+								currentBalance: usdcBalanceRes.balance,
+								updateCoinBalanceInCache: usdcBalanceRes.updateCoinBalanceInCache,
+							},
+							// SUI
+							...(suiBalanceRes?.coinType
+								? [
+										{
+											coinType: suiBalanceRes.coinType!,
+											currentBalance: suiBalanceRes.balance,
+											updateCoinBalanceInCache: suiBalanceRes.updateCoinBalanceInCache,
+										},
+									]
+								: []),
+						]);
+					}
 				} else {
 					logger.error({ msg: "Deposit FAILED", method: "DepositModal", errors: result.errors });
 				}
@@ -101,7 +122,19 @@ export function DepositModal({ id, open, onClose, redirectTab, updateDeposit }: 
 				setIsDepositing(false);
 			}
 		},
-		[account, lockdrop, usdc, client, signTransaction, coinBalanceRes, updateDeposit],
+		[
+			account,
+			lockdrop,
+			usdc,
+			client,
+			signTransaction,
+			updateDeposit,
+			usdcBalanceRes.balance,
+			usdcBalanceRes.updateCoinBalanceInCache,
+			suiBalanceRes.coinType,
+			suiBalanceRes.balance,
+			suiBalanceRes.updateCoinBalanceInCache,
+		],
 	);
 
 	const depositForm = useForm<DepositForm>({
@@ -132,7 +165,7 @@ export function DepositModal({ id, open, onClose, redirectTab, updateDeposit }: 
 		}
 	}, [isSuiWalletConnected, amount, trigger]);
 
-	const coinBalance = coinBalanceRes.balance;
+	const coinBalance = usdcBalanceRes.balance;
 	const maxAmount = coinBalance > 0 ? formatUSDC(coinBalance) : "";
 
 	const amountInputRules = {
