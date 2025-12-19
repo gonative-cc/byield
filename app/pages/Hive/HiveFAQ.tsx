@@ -30,7 +30,7 @@ const GENERAL_FAQS = [
 				<ul className="list-inside list-disc space-y-2">
 					<li>
 						<strong>Global Multipliers: </strong>Boosts from holding Beelievers NFTs or being an
-						`Early Bee`` depositor.
+						&quot;Early Bee&quot; depositor.
 					</li>
 					<li>
 						<strong>Time-Lock Multipliers: </strong>Applied at Mainnet based on how long your
