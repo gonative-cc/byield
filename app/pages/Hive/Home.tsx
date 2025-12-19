@@ -5,11 +5,12 @@ import { Info } from "lucide-react";
 import { Table } from "~/components/ui/table";
 import type { Column } from "react-table";
 import { Collapse } from "~/components/ui/collapse";
+import type { ReactNode } from "react";
 
 interface SBTToken {
 	src: string;
 	title: string;
-	description: string;
+	description: string | ReactNode;
 	tiers: {
 		name: string;
 		req: string;
@@ -19,31 +20,52 @@ interface SBTToken {
 const SBT_TOKENS: SBTToken[] = [
 	{
 		src: "/assets/lockdrop/SocialSBT.svg",
-		title: "Social SBTs",
-		description:
-			"Verify your identity and social accounts. This proves your role as an active, verified member of the Native community.",
+		title: "Hive Member SBTs",
+		description: (
+			<span>
+				Link your identities and verify your social presence. These SBTs prove you are a verified,
+				active member of the Native community.{" "}
+				<a href="/hive#general-faq" target="_blank" className="link link-primary">
+					Read the FAQ to learn more.
+				</a>
+			</span>
+		),
 		tiers: [
-			{ name: "Seed Locker", req: "$100" },
+			{ name: "Seed Locker", req: "$21" },
 			{ name: "Vault Keeper", req: "$5,000" },
-			{ name: "Master of the Vault", req: "$100,000" },
+			{ name: "Sovereign Architect", req: "$100,000" },
 		],
 	},
 	{
 		src: "/assets/lockdrop/LockdropSBT.svg",
-		title: "Lockdrop SBTs",
-		description:
-			"Commit USDC to the pre-mainnet lockdrop. This verifies you as a foundational liquidity provider.",
+		title: "Hive Contributor SBTs",
+		description: (
+			<span>
+				Commit USDC to the Genesis Lockdrop. These SBTs verify your role as a foundational liquidity
+				provider for the nBTC protocol.{" "}
+				<a href="/hive#contributor-faq" target="_blank" className="link link-primary">
+					Read the FAQ to learn more.
+				</a>
+			</span>
+		),
 		tiers: [
 			{ name: "Verified Visitor", req: "Discord OAuth" },
 			{ name: "BYield Profile", req: "Create Profile" },
-			{ name: "Hive Master", req: "Top Tier Role" },
+			{ name: "Hive Master", req: "Obtain Hive Master role" },
 		],
 	},
 	{
 		src: "/assets/lockdrop/ReferralSBT.svg",
-		title: "Referral SBTs",
-		description:
-			"Refer high-quality, verified users who also contribute. This proves your impact on growing a secure and active user base.",
+		title: "Hive Spreader SBTs",
+		description: (
+			<span>
+				Refer high-quality, verified users who also contribute. This proves your impact on growing a
+				secure and active user base.{" "}
+				<a href="/hive#social-faq" target="_blank" className="link link-primary">
+					Read the FAQ to learn more.
+				</a>
+			</span>
+		),
 		tiers: [
 			{ name: "First Invite", req: "1 Referral" },
 			{ name: "Growth Operator", req: "25 Referrals" },

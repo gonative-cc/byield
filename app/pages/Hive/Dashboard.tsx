@@ -1,5 +1,5 @@
 import { useCurrentAccount, useSuiClient } from "@mysten/dapp-kit";
-import { CircleCheck, CirclePlus, Share2, Shield, Users, Wallet } from "lucide-react";
+import { CircleCheck, CirclePlus, Wallet } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useFetcher } from "react-router";
 import { CopyButton } from "~/components/ui/CopyButton";
@@ -82,11 +82,13 @@ function ContributorCard({ redirectTab }: ContributorCardProps) {
 			<div className="card-body">
 				<div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 					<div className="flex items-start gap-3">
-						<div className="bg-primary flex h-10 w-10 shrink-0 items-center justify-center rounded">
-							<Shield />
-						</div>
+						<img
+							src="/assets/lockdrop/SocialSBT.svg"
+							alt="Hive Contributor SBTs"
+							className="h-10 w-10"
+						/>
 						<div>
-							<h3 className="font-bold">Lockdrop SBTs</h3>
+							<h3 className="font-bold">Hive Contributor SBTs</h3>
 							<p className="text-muted-foreground text-sm">
 								Lock liquidity to earn the highest tier SBTs.
 							</p>
@@ -180,9 +182,14 @@ function MemberCard({ claimedSocialSbts = [] }: MemberCardProps) {
 		<div className="card">
 			<div className="card-body">
 				<div className="mb-4 flex items-start gap-3">
-					<Users className="text-info shrink-0" />
-					<h3 className="font-bold">Social SBTs</h3>
+					<img
+						src="/assets/lockdrop/LockdropSBT.svg"
+						alt="Hive Member SBTs"
+						className="h-10 w-10"
+					/>
+					<h3 className="font-bold">Hive Member SBTs</h3>
 				</div>
+
 				<div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
 					<div>
 						<div className="text-muted-foreground mb-1 text-sm">Current Tier</div>
@@ -202,7 +209,7 @@ function MemberCard({ claimedSocialSbts = [] }: MemberCardProps) {
 							<div className="text-muted-foreground mb-2 text-sm">
 								Next Tier: {nextTier.tier} - {nextTier.name}
 							</div>
-							<div className="text-sm">Req: {nextTier.requirement}</div>
+							<div className="text-sm">Requirement: {nextTier.requirement}</div>
 						</div>
 					)}
 				</div>
@@ -231,8 +238,12 @@ function SpreaderCard({ claimedReferralSbts = [], inviteeCount = 0, referralLink
 			<div className="card-body">
 				<div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
 					<div className="flex items-start gap-3">
-						<Share2 className="text-success shrink-0" />
-						<h3 className="font-bold">Referral SBTs</h3>
+						<img
+							src="/assets/lockdrop/ReferralSBT.svg"
+							alt="Hive Spreader SBTs"
+							className="h-10 w-10"
+						/>
+						<h3 className="font-bold">Hive Spreader SBTs</h3>
 					</div>
 				</div>
 				<div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
@@ -261,17 +272,17 @@ function SpreaderCard({ claimedReferralSbts = [], inviteeCount = 0, referralLink
 								value={inviteeCount}
 								max={nextTier.requirement}
 							/>
-							<div className="text-sm">Req: {nextTier.requirement}</div>
+							<div className="text-sm">Requirement: {nextTier.requirement}</div>
 						</div>
 					)}
 				</div>
 				{referralLink && (
 					<div className="card card-body bg-base-100 mb-4 w-fit">
-						<div className="text-muted-foreground mb-2 text-sm">Your Invite Link</div>
+						<div className="text-muted-foreground mb-2 text-sm">Your Invite Code</div>
 						<div className="flex w-fit items-center gap-2">
-							<code className="bg-base-100 flex-1 rounded px-2 py-1 text-xs break-words">
-								{referralLink}
-							</code>
+							<span className="bg-base-100 flex-1 rounded px-2 text-xl">
+								{new URL(referralLink).searchParams.get("code")}
+							</span>
 							<CopyButton text={referralLink} />
 						</div>
 					</div>
