@@ -6,12 +6,18 @@ import { FormNumericInput } from "../../components/form/FormNumericInput";
 import { formatNBTC, parseNBTC } from "~/lib/denoms";
 import { buttonEffectClasses, classNames } from "~/util/tailwind";
 import { toast } from "~/hooks/use-toast";
-import { useCurrentAccount } from "@mysten/dapp-kit";
-import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
+import { useCurrentAccount, useSignTransaction, useSuiClient } from "@mysten/dapp-kit";
+import { handleBalanceChanges, useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { NBTCIcon } from "~/components/icons";
 import { Percentage } from "../../components/Percentage";
 import { SuiConnectModal } from "~/components/Wallet/SuiWallet/SuiModal";
-import { isValidBitcoinAddress } from "~/lib/bitcoin.client";
+import { getBTCAddrOutputScript, isValidBitcoinAddress } from "~/lib/bitcoin.client";
+import { moveCallTarget, type RedeemCfg } from "~/config/sui/contracts-config";
+import { Transaction } from "@mysten/sui/transactions";
+import { useNetworkVariables } from "~/networkConfig";
+import { signAndExecTx } from "~/lib/suienv";
+import { logger } from "~/lib/log";
+import { BitcoinNetworkType } from "sats-connect";
 
 interface NBTCRightAdornmentProps {
 	maxNBTCAmount: string;
@@ -48,11 +54,14 @@ interface RedeemBTCProps {
 }
 
 export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
+	const { mutateAsync: signTransaction } = useSignTransaction();
 	const [isProcessing, setIsProcessing] = useState(false);
 	const { currentAddress, network } = useXverseWallet();
+	const { redeemBTC } = useNetworkVariables();
 	const currentAccount = useCurrentAccount();
 	const isSuiConnected = !!currentAccount;
 	const nbtcBalanceRes = useCoinBalance("NBTC");
+	const client = useSuiClient();
 	let nbtcBalance: bigint | null = null;
 	let nbtcBalanceStr = "";
 	if (nbtcBalanceRes) {
@@ -86,6 +95,29 @@ export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
 				title: "Redeem Initiated",
 				description: `Redeeming ${numberOfNBTC} nBTC to ${bitcoinAddress}`,
 			});
+
+			const transaction = await createRedeemBTCTxn(
+				currentAccount.address,
+				parseNBTC(numberOfNBTC),
+				bitcoinAddress,
+				redeemBTC,
+				network,
+			);
+			const result = await signAndExecTx(transaction, client, signTransaction, {
+				showEffects: true,
+				showBalanceChanges: true,
+			});
+			logger.info({ msg: "Deposit tx:", method: "DepositModal", digest: result.digest });
+			const success = result.effects?.status?.status === "success";
+			// setTxStatus({ success, digest: result.digest });
+			if (success) {
+				// updateDeposit(amount);
+				if (result.balanceChanges) {
+					handleBalanceChanges(result.balanceChanges, []);
+				}
+			} else {
+				logger.error({ msg: "Deposit FAILED", method: "DepositModal", errors: result.errors });
+			}
 
 			fetchRedeemTxs();
 		} catch (error) {
@@ -186,4 +218,38 @@ export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
 			</form>
 		</FormProvider>
 	);
+}
+
+async function createRedeemBTCTxn(
+	senderAddress: string,
+	amount: bigint,
+	recipientAddr: string,
+	redeemCfg: RedeemCfg,
+	network: BitcoinNetworkType,
+): Promise<Transaction> {
+	if (!redeemCfg.contractId) {
+		throw new Error("Contract ID is not found");
+	}
+	if (!redeemCfg.pkgId) {
+		throw new Error("Redeem BTC package ID is not found");
+	}
+	const txn = new Transaction();
+	txn.setSender(senderAddress);
+
+	const recipientScriptBuffer = await getBTCAddrOutputScript(recipientAddr, network);
+	if (!recipientScriptBuffer) throw Error("Invalid recipient address");
+
+	const inputCoin = txn.object(redeemCfg.nbtcCoinId);
+	const [redeemCoin] = txn.splitCoins(inputCoin, [amount]);
+
+	txn.moveCall({
+		target: moveCallTarget(redeemCfg, "redeem"),
+		arguments: [
+			txn.object(redeemCfg.contractId),
+			redeemCoin,
+			txn.pure.vector("u8", recipientScriptBuffer),
+			txn.object(txn.object.clock()),
+		],
+	});
+	return txn;
 }
