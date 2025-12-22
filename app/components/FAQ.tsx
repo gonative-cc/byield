@@ -10,7 +10,7 @@ interface FAQ {
 interface FAQProps {
 	title?: string;
 	faqs: FAQ[];
-	description?: string;
+	description?: string | ReactNode;
 	className?: string;
 }
 

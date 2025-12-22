@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { storage } from "~/lib/storage";
 
-type SuiNetwork = "testnet" | "mainnet" | "localnet";
+export type SuiNetwork = "testnet" | "mainnet" | "localnet";
 
 export const useSuiNetwork = () => {
 	const [network, setNetworkState] = useState<SuiNetwork>(() => {

@@ -112,7 +112,7 @@ Use `bun` rather than `npm` and `bunx` rather than `npx`.
 - Configure theme in the tailwind.css file
 - Avoid unnecessary wrapper components; DaisyUI with a properly configured theme should be sufficient
 - Strongly prefer to use Daisy UI classes over granular tailwindcss styling.
-- Daisy UI instructions: @daisy-ui-llms.txt
+- Daisy UI instructions: @daisy-ui-llms.md
 
 
 ### Code Quality
