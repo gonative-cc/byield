@@ -69,7 +69,7 @@ export function useCoinBalance(coinOrVariant?: string): UseCoinBalanceResult {
  * coins found in the provided configuration list.
  *
  * @param balanceChanges - An array of balance change events containing the coin type and the amount changed.
- * @param cached - An array of coin objects, that user wish to update in the cache if corresponding coin balance changed.
+ * @param cached - An array of coin objects, that user wishes to update in the cache if corresponding coin balance changed.
  */
 export function handleBalanceChanges(
 	balanceChanges: BalanceChange[],
