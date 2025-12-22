@@ -18,6 +18,7 @@ import { useNetworkVariables } from "~/networkConfig";
 import { signAndExecTx } from "~/lib/suienv";
 import { logger } from "~/lib/log";
 import { BitcoinNetworkType } from "sats-connect";
+import type { SuiClient } from "@mysten/sui/client";
 
 interface NBTCRightAdornmentProps {
 	maxNBTCAmount: string;
@@ -101,6 +102,7 @@ export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
 				parseNBTC(numberOfNBTC),
 				bitcoinAddress,
 				redeemBTC,
+				client,
 				network,
 			);
 			const result = await signAndExecTx(transaction, client, signTransaction, {
@@ -220,11 +222,20 @@ export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
 	);
 }
 
+async function getUserNbtcCoins(client: SuiClient, owner: string) {
+	const { data } = await client.getCoins({
+		owner,
+		coinType: `0x50be08b805766cc1a2901b925d3fb80b6362fcb25f269cb78067429237e222ec::nbtc::NBTC`,
+	});
+	return data.map((coin) => coin.coinObjectId);
+}
+
 async function createRedeemBTCTxn(
 	senderAddress: string,
 	amount: bigint,
 	recipientAddr: string,
 	redeemCfg: RedeemCfg,
+	client: SuiClient,
 	network: BitcoinNetworkType,
 ): Promise<Transaction> {
 	if (!redeemCfg.contractId) {
@@ -237,10 +248,20 @@ async function createRedeemBTCTxn(
 	txn.setSender(senderAddress);
 
 	const recipientScriptBuffer = await getBTCAddrOutputScript(recipientAddr, network);
+	console.log(recipientScriptBuffer);
 	if (!recipientScriptBuffer) throw Error("Invalid recipient address");
 
-	const inputCoin = txn.object(redeemCfg.nbtcCoinId);
-	const [redeemCoin] = txn.splitCoins(inputCoin, [amount]);
+	const nbtcCoinIds = await getUserNbtcCoins(client, senderAddress);
+
+	// merge all coins
+	const primaryCoin = txn.object(nbtcCoinIds[0]);
+	if (nbtcCoinIds.length > 1) {
+		const otherCoins = nbtcCoinIds.slice(1).map((id) => txn.object(id));
+		txn.mergeCoins(primaryCoin, otherCoins);
+	}
+
+	// Split exactly the desired amount for redemption
+	const [redeemCoin] = txn.splitCoins(primaryCoin, [amount]);
 
 	txn.moveCall({
 		target: moveCallTarget(redeemCfg, "redeem"),
