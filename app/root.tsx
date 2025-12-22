@@ -93,6 +93,7 @@ function NativeApp({ children }: { children: React.ReactNode }) {
 			// current user selected Sui network
 			const currentNetwork = storage.getSuiNetwork();
 			if (currentNetwork) {
+				// force user to be on mainnet on auction page
 				if (isProductionMode() && isMainnetOnlyRoute) {
 					setSuiNetwork("mainnet");
 					return;
