@@ -76,6 +76,8 @@ export const selectedRowGradientClasses = `${GRADIENTS.primarySelectedRow} borde
 
 export const orangeInfoCardClasses = `${GRADIENTS.primaryInfoCard} rounded-2xl border border-primary/20 hover:border-primary/40 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10`;
 
+export const FAQClassContainer = `border-primary/20 w-full max-w-5xl rounded-2xl border p-4 shadow-2xl lg:p-8 `;
+
 export const heroTitle = "text-center text-2xl font-semibold md:text-3xl";
 
 export function classNames(

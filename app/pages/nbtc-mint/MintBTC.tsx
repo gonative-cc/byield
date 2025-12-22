@@ -3,7 +3,7 @@ import { FormInput } from "../../components/form/FormInput";
 import { useXverseWallet } from "../../components/Wallet/XverseWallet/useWallet";
 import { useEffect, useState } from "react";
 import { FormNumericInput } from "../../components/form/FormNumericInput";
-import { BTC, formatBTC, formatNBTC, parseBTC } from "~/lib/denoms";
+import { BTC, formatBTC, parseBTC } from "~/lib/denoms";
 import { nBTCMintTx } from "~/lib/nbtc";
 import { BitcoinIcon, Info } from "lucide-react";
 import { buttonEffectClasses, classNames } from "~/util/tailwind";
@@ -15,47 +15,31 @@ import { makeReq } from "~/server/nbtc/jsonrpc";
 import { useFetcher } from "react-router";
 import type { UTXO } from "~/server/nbtc/types";
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
-import { BitCoinIcon, NBTCIcon } from "~/components/icons";
-import { TrimmedNumber } from "~/components/TrimmedNumber";
+import { BitCoinIcon } from "~/components/icons";
 import { logError, logger } from "~/lib/log";
+import { Percentage } from "../../components/Percentage";
 
-function BalanceCard() {
-	const { balance } = useXverseWallet();
-	const nbtcBalanceRes = useCoinBalance("NBTC");
+interface BTCRightAdornmentProps {
+	maxBTCAmount: string;
+	onMaxClick: (val: string) => void;
+}
 
-	if (!nbtcBalanceRes || !balance) return null;
-
+function BTCRightAdornment({ maxBTCAmount, onMaxClick }: BTCRightAdornmentProps) {
 	return (
-		<div className="mx-auto flex min-w-1/2 flex-col space-y-2">
-			<span className="mb-4 text-center">Your balance</span>
-			<div className="flex w-full items-center justify-between">
+		<div className="flex flex-col items-center gap-2 py-2">
+			{maxBTCAmount && (
 				<div className="flex items-center gap-2">
-					<BitCoinIcon /> BTC
+					<p className="text-xs whitespace-nowrap">Balance: {maxBTCAmount.substring(0, 8)} BTC</p>
+					<button
+						type="button"
+						onClick={() => onMaxClick(maxBTCAmount)}
+						className="btn btn-primary btn-link h-fit w-fit p-0 text-xs"
+					>
+						Max
+					</button>
 				</div>
-				<div className="flex flex-col gap-1">
-					<TrimmedNumber
-						displayType="text"
-						value={formatBTC(BigInt(balance))}
-						className="text-base-content/75"
-						readOnly
-					/>
-				</div>
-			</div>
-			<div className="divider" />
-			<div className="flex w-full items-center justify-between">
-				<div className="flex items-center gap-2">
-					<NBTCIcon prefix="" /> nBTC
-				</div>
-				<div className="flex flex-col gap-1">
-					<TrimmedNumber
-						displayType="text"
-						value={formatNBTC(BigInt(nbtcBalanceRes.balance))}
-						className="text-base-content/75"
-						readOnly
-					/>
-				</div>
-			</div>
+			)}
+			<BitCoinIcon className="mr-1 flex justify-end" containerClassName="w-full justify-end" />
 		</div>
 	);
 }
@@ -65,24 +49,6 @@ function formatSuiAddress(suiAddress: string) {
 		return "0x" + suiAddress;
 	}
 	return suiAddress;
-}
-
-function Percentage({ onChange }: { onChange: (value: number) => void }) {
-	const PERCENTAGES = [25, 50, 75, 100];
-	return (
-		<div className="grid grid-cols-4 gap-2">
-			{PERCENTAGES.map((v) => (
-				<button
-					type="button"
-					key={v}
-					onClick={() => onChange(v)}
-					className="btn btn-sm btn-secondary btn-outline"
-				>
-					{v}%
-				</button>
-			))}
-		</div>
-	);
 }
 
 interface MintNBTCForm {
@@ -118,6 +84,8 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 	});
 
 	const { handleSubmit, setValue } = mintNBTCForm;
+
+	const maxBTCAmount = walletBalance ? formatBTC(BigInt(walletBalance)) : "";
 
 	useEffect(() => setValue("suiAddress", suiAddr || ""), [setValue, suiAddr]);
 
@@ -196,7 +164,6 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 				<div className="card">
 					<div className="card-body flex flex-col space-y-4">
 						<h2 className="text-center text-lg">Deposit BTC and mint nBTC on Sui</h2>
-						<BalanceCard />
 						<FormNumericInput
 							required
 							name="numberOfBTC"
@@ -205,7 +172,12 @@ export function MintBTC({ fetchMintTxs }: MintBTCProps) {
 							inputMode="decimal"
 							decimalScale={BTC}
 							allowNegative={false}
-							rightAdornments={<BitCoinIcon />}
+							rightAdornments={
+								<BTCRightAdornment
+									onMaxClick={(val: string) => setValue("numberOfBTC", val)}
+									maxBTCAmount={maxBTCAmount}
+								/>
+							}
 							rules={{
 								validate: {
 									isWalletConnected: () =>

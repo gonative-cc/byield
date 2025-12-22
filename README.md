@@ -63,6 +63,20 @@ You will need to rerun typegen whenever you make changes to `wrangler.toml`.
 bun run cf-typegen
 ```
 
+### Updating submodules / workers dependencies
+
+If you want to sync latest workers repo, run:
+
+```sh
+bun run submodule:update
+```
+
+Then commit changes and ask others to run:
+
+```sh
+bun submodule update
+```
+
 ### Styling
 
 We are using [Tailwind CSS](https://tailwindcss.com/) and [DaisyUI](https://daisyui.com):

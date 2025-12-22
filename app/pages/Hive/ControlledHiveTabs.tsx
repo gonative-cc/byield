@@ -3,9 +3,18 @@ import { Home } from "./Home";
 import type { TabType } from "./types";
 import { HiveFAQ } from "./HiveFAQ";
 import { Dashboard } from "./Dashboard";
+import { useLocation } from "react-router";
 
 export const ControlledHiveTabs = () => {
-	const [activeTab, setActiveTab] = useState<TabType>("home");
+	const location = useLocation();
+	const pathnameHash = location.hash;
+
+	const [activeTab, setActiveTab] = useState<TabType>(() => {
+		if (pathnameHash) {
+			return "faq";
+		}
+		return "home";
+	});
 
 	const redirectTab = (tab: TabType) => {
 		setActiveTab(tab);
@@ -17,7 +26,7 @@ export const ControlledHiveTabs = () => {
 				onClick={() => setActiveTab(newTab)}
 				className={`tab font-medium capitalize ${activeTab === newTab ? "bg-primary text-primary-content rounded-full" : ""}`}
 			>
-				{newTab}
+				{newTab === "faq" ? "FAQ & Transparency" : newTab}
 			</button>
 		);
 	};
@@ -33,7 +42,7 @@ export const ControlledHiveTabs = () => {
 			</div>
 
 			{activeTab === "home" && <Home redirectTab={redirectTab} />}
-			{activeTab === "dashboard" && <Dashboard />}
+			{activeTab === "dashboard" && <Dashboard redirectTab={redirectTab} />}
 			{activeTab === "faq" && <HiveFAQ />}
 		</div>
 	);

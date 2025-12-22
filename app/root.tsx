@@ -13,6 +13,7 @@ import { SideBarProvider } from "./providers/SiderBarProvider";
 import { SideBar } from "~/components/SideBarMenu";
 import { ErrorBoundary } from "~/components/ErrorBoundary";
 import { storage } from "~/lib/storage";
+import type { SuiNetwork } from "./hooks/useSuiNetwork";
 
 const queryClient = new QueryClient();
 
@@ -75,7 +76,7 @@ function NativeApp({ children }: { children: React.ReactNode }) {
 	const location = useLocation();
 	const pathname = location.pathname;
 
-	const [suiNetwork, setSuiNetwork] = useState<"testnet" | "mainnet" | "localnet">();
+	const [suiNetwork, setSuiNetwork] = useState<SuiNetwork>();
 
 	useEffect(() => {
 		if (!isProductionMode()) {
@@ -85,13 +86,21 @@ function NativeApp({ children }: { children: React.ReactNode }) {
 
 	useEffect(() => {
 		function getSuiNetwork() {
-			// Update network if pathname changes and no saved preference
-			if (!storage.getSuiNetwork()) {
-				const defaultNet =
-					isProductionMode() &&
-					(pathname === "/beelievers-auction" || pathname === "/your-beelievers")
-						? "mainnet"
-						: "testnet";
+			const isAuctionPathname = pathname === "/beelievers-auction";
+			const isYourBeelieversPathname = pathname === "/your-beelievers";
+			const isMainnetOnlyRoute = isAuctionPathname || isYourBeelieversPathname;
+
+			// current user selected Sui network
+			const currentNetwork = storage.getSuiNetwork();
+			if (currentNetwork) {
+				if (isProductionMode() && isMainnetOnlyRoute) {
+					setSuiNetwork("mainnet");
+					return;
+				}
+				setSuiNetwork(currentNetwork);
+			} else {
+				// defaults to testnet
+				const defaultNet = isProductionMode() && isMainnetOnlyRoute ? "mainnet" : "testnet";
 				setSuiNetwork(defaultNet);
 			}
 		}
@@ -102,7 +111,7 @@ function NativeApp({ children }: { children: React.ReactNode }) {
 		<>
 			<div className="flex min-h-screen w-full flex-col gap-4">
 				<QueryClientProvider client={queryClient}>
-					<SuiClientProvider networks={networkConfig} defaultNetwork={suiNetwork}>
+					<SuiClientProvider networks={networkConfig} network={suiNetwork}>
 						<SuiWalletProvider autoConnect>
 							<main className="flex-1">{children}</main>
 							<Footer />

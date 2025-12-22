@@ -289,16 +289,16 @@ function SuiNetworkOptions() {
 
 	const isDevMode = !isProductionMode();
 	const isAuctionPathname = pathname === "/beelievers-auction" && !isDevMode;
-	const isHivePathname = pathname === "/hive";
 	const isYourBeelieversPathname = pathname === "/your-beelievers";
-	const isMainnetOnlyRoute = isAuctionPathname || isHivePathname || isYourBeelieversPathname;
+	const isMainnetOnlyRoute = isAuctionPathname || isYourBeelieversPathname;
 
 	const networks = useMemo(() => {
+		const mainnetNetwork = [{ label: "Mainnet", value: "mainnet" }];
 		if (isMainnetOnlyRoute) {
-			return [{ label: "Mainnet", value: "mainnet" }];
+			return mainnetNetwork;
 		}
 
-		const baseNetworks = [{ label: "Testnet", value: "testnet" }];
+		const baseNetworks = [...mainnetNetwork, { label: "Testnet", value: "testnet" }];
 
 		// Add localnet option in dev mode
 		if (isDevMode) {

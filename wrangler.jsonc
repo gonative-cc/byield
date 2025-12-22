@@ -61,7 +61,7 @@
 	 * To add secrets use:
 	 * https://developers.cloudflare.com/workers/configuration/secrets/
 	 */
-	// "vars": { }
+	"vars": {},
 
 	/**
 	 * Service Bindings (communicate between multiple Workers)

@@ -24,6 +24,26 @@ export interface MintTransaction {
 	errorMessage?: string;
 }
 
+// TODO: https://github.com/gonative-cc/byield/issues/739
+export enum RedeemNBTCStatus {
+	PENDING = "pending",
+	SIGNING = "signing",
+	SIGNED = "signed",
+	CONFIRMING = "confirming",
+	CONFIRMED = "confirmed",
+	COMPLETED = "completed",
+}
+
+// TODO: https://github.com/gonative-cc/byield/issues/739
+export interface RedeemTransaction {
+	suiTxId: string;
+	bitcoinTxId?: string;
+	amountInSatoshi: string;
+	bitcoinAddress: string;
+	status: RedeemNBTCStatus;
+	suiExplorerUrl?: string;
+}
+
 export interface LoaderData {
 	mintTxs: MintTransaction[];
 }

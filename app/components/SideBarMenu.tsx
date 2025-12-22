@@ -76,13 +76,14 @@ function navMenuItems(): MenuItem[] {
 					},
 				],
 			},
-			{
-				icon: "/assets/navigation/hive.svg",
-				id: "navigation-3",
-				title: "Hive",
-				link: "/hive",
-				subNavItems: [],
-			},
+			// hiding the end point for now. Will be enabled when the hive program is live.
+			// {
+			// 	icon: "/assets/navigation/hive.svg",
+			// 	id: "navigation-3",
+			// 	title: "Hive",
+			// 	link: "/hive",
+			// 	subNavItems: [],
+			// },
 		];
 	}
 

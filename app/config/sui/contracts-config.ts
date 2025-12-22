@@ -25,19 +25,34 @@ export interface NbtcCfg {
 	contractId: string;
 }
 
+export interface LockdropCfg {
+	pkgId: string;
+	lockdropId: string;
+	module: string;
+}
+
+export interface Coin {
+	name: string;
+	type: string;
+}
+
 export interface ContractsCfg {
 	explorer: string;
 	accountExplorer: string;
 	graphqlURL: string;
+	suiscan: string;
 	nbtcOTC: NbtcOtcCfg;
 	beelieversAuction: BeelieversAuctionCfg;
 	beelieversMint: BeelieversMintCfg;
 	nbtc: NbtcCfg;
+	lockdrop: LockdropCfg;
+	usdc: Coin;
 }
 
 export const mainnetCfg: ContractsCfg = {
 	explorer: "https://suivision.xyz",
 	accountExplorer: "https://suiscan.xyz/mainnet/account/",
+	suiscan: "https://suiscan.xyz/mainnet",
 	graphqlURL: "https://graphql.mainnet.sui.io/graphql",
 	nbtcOTC: {
 		pkgId: "",
@@ -60,12 +75,22 @@ export const mainnetCfg: ContractsCfg = {
 		pkgId: "",
 		contractId: "",
 	},
+	lockdrop: {
+		pkgId: "",
+		lockdropId: "",
+		module: "lockdrop",
+	},
+	usdc: {
+		name: "USDC",
+		type: "",
+	},
 };
 
 export const testnetCfg: ContractsCfg = {
 	explorer: "https://testnet.suivision.xyz",
 	accountExplorer: "https://suiscan.xyz/testnet/account/",
 	graphqlURL: "https://graphql.testnet.sui.io/graphql",
+	suiscan: "https://suiscan.xyz/testnet",
 	nbtcOTC: {
 		pkgId: "0xac799dd8708c2882fcbe2191cfb27bdc9f7654d997ffaa9b530009349f698f3b",
 		vaultId: "0x148a3a004f19aeea0b5df7ffc82a23935ff6cccca433e8e9c14c0f55595425e8",
@@ -87,6 +112,15 @@ export const testnetCfg: ContractsCfg = {
 		pkgId: "0x50be08b805766cc1a2901b925d3fb80b6362fcb25f269cb78067429237e222ec",
 		contractId: "0x5905e0c452bb5f237fb106ec2ecff962fbc60cd180090fb07a79d14d9d628a96",
 	},
+	lockdrop: {
+		pkgId: "0xd244750dc02f917b2d539c5b68e14afbfc4e58920f04a0587692f8c6920e94ea",
+		lockdropId: "0xb4b2841c611936bebb2aa0a8ba77dbbdf65ca8752e4326de6b948c384a0b4335",
+		module: "lockdrop",
+	},
+	usdc: {
+		name: "USDC",
+		type: "0xa1ec7fc00a6f40db9693ad1415d0c193ad3906494428cf252621037bd7117e29::usdc::USDC",
+	},
 };
 
 // Localnet configuration for development
@@ -98,6 +132,7 @@ export const localnetCfg: ContractsCfg = {
 	explorer: "http://localhost:9123",
 	accountExplorer: "http://localhost:9123/account/",
 	graphqlURL: "",
+	suiscan: "",
 	nbtcOTC: {
 		pkgId: "",
 		vaultId: "",
@@ -118,6 +153,15 @@ export const localnetCfg: ContractsCfg = {
 		coinType: "::nbtc::NBTC",
 		pkgId: "",
 		contractId: "",
+	},
+	lockdrop: {
+		pkgId: "",
+		lockdropId: "",
+		module: "lockdrop",
+	},
+	usdc: {
+		name: "USDC",
+		type: "", // for local net - you can deploy any coin and call it usdc
 	},
 };
 
