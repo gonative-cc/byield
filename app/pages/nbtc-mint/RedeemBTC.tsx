@@ -18,7 +18,7 @@ import { useNetworkVariables } from "~/networkConfig";
 import { signAndExecTx } from "~/lib/suienv";
 import { logger } from "~/lib/log";
 import { BitcoinNetworkType } from "sats-connect";
-import type { SuiClient } from "@mysten/sui/client";
+import type { SuiClient, PaginatedCoins } from "@mysten/sui/client";
 
 interface NBTCRightAdornmentProps {
 	maxNBTCAmount: string;
@@ -58,7 +58,7 @@ export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
 	const { mutateAsync: signTransaction } = useSignTransaction();
 	const [isProcessing, setIsProcessing] = useState(false);
 	const { currentAddress, network } = useXverseWallet();
-	const { redeemBTC } = useNetworkVariables();
+	const { redeemBTC, nbtc } = useNetworkVariables();
 	const currentAccount = useCurrentAccount();
 	const isSuiConnected = !!currentAccount;
 	const nbtcBalanceRes = useCoinBalance("NBTC");
@@ -96,7 +96,7 @@ export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
 				title: "Redeem Initiated",
 				description: `Redeeming ${numberOfNBTC} nBTC to ${bitcoinAddress}`,
 			});
-
+			const nbtcCoin = nbtc.pkgId + nbtc.coinType;
 			const transaction = await createRedeemBTCTxn(
 				currentAccount.address,
 				parseNBTC(numberOfNBTC),
@@ -104,6 +104,7 @@ export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
 				redeemBTC,
 				client,
 				network,
+				nbtcCoin,
 			);
 			const result = await signAndExecTx(transaction, client, signTransaction, {
 				showEffects: true,
@@ -222,12 +223,11 @@ export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
 	);
 }
 
-async function getUserNbtcCoins(client: SuiClient, owner: string) {
-	const { data } = await client.getCoins({
+async function getNBTCCoins(owner: string, client: SuiClient, nbtcCoin: string): Promise<PaginatedCoins> {
+	return client.getCoins({
 		owner,
-		coinType: `0x50be08b805766cc1a2901b925d3fb80b6362fcb25f269cb78067429237e222ec::nbtc::NBTC`,
+		coinType: nbtcCoin,
 	});
-	return data.map((coin) => coin.coinObjectId);
 }
 
 async function createRedeemBTCTxn(
@@ -237,6 +237,7 @@ async function createRedeemBTCTxn(
 	redeemCfg: RedeemCfg,
 	client: SuiClient,
 	network: BitcoinNetworkType,
+	nbtcCoin: string,
 ): Promise<Transaction> {
 	if (!redeemCfg.contractId) {
 		throw new Error("Contract ID is not found");
@@ -247,21 +248,20 @@ async function createRedeemBTCTxn(
 	const txn = new Transaction();
 	txn.setSender(senderAddress);
 
-	const recipientScriptBuffer = await getBTCAddrOutputScript(recipientAddr, network);
-	console.log(recipientScriptBuffer);
+	const recipientScriptBuffer: Uint8Array | null = await getBTCAddrOutputScript(recipientAddr, network);
 	if (!recipientScriptBuffer) throw Error("Invalid recipient address");
 
-	const nbtcCoinIds = await getUserNbtcCoins(client, senderAddress);
+	const { data } = await getNBTCCoins(senderAddress, client, nbtcCoin);
 
 	// merge all coins
-	const primaryCoin = txn.object(nbtcCoinIds[0]);
-	if (nbtcCoinIds.length > 1) {
-		const otherCoins = nbtcCoinIds.slice(1).map((id) => txn.object(id));
+	const primaryCoin = txn.object(data[0].coinObjectId);
+	if (data.length > 1) {
+		const otherCoins = data.slice(1).map(({ coinObjectId }) => txn.object(coinObjectId));
 		txn.mergeCoins(primaryCoin, otherCoins);
 	}
 
 	// Split exactly the desired amount for redemption
-	const [redeemCoin] = txn.splitCoins(primaryCoin, [amount]);
+	const [redeemCoin] = txn.splitCoins(primaryCoin, [txn.pure.u64(amount)]);
 
 	txn.moveCall({
 		target: moveCallTarget(redeemCfg, "redeem"),
