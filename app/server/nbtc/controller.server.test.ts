@@ -78,7 +78,7 @@ describe("Controller getMintTxs", () => {
 
 		const result = await controller["getMintTxs"](btcAddr, null);
 
-		expect(mockIndexer.depositsBySender).toHaveBeenCalledWith(btcAddr);
+		expect(mockIndexer.depositsBySender).toHaveBeenCalledWith(btcAddr, "testnet");
 		expect(Array.isArray(result)).toBe(true);
 	});
 
@@ -91,7 +91,7 @@ describe("Controller getMintTxs", () => {
 
 		const result = await controller["getMintTxs"](btcAddr, suiAddr);
 
-		expect(mockIndexer.depositsBySender).toHaveBeenCalledWith(btcAddr);
+		expect(mockIndexer.depositsBySender).toHaveBeenCalledWith(btcAddr, "testnet");
 		expect(mockIndexer.nbtcMintTxsBySuiAddr).toHaveBeenCalledWith(suiAddr);
 		expect(Array.isArray(result)).toBe(true);
 	});
@@ -115,6 +115,6 @@ describe("Controller getMintTxs", () => {
 		await controller["getMintTxs"](btcAddr, invalidSuiAddr);
 
 		expect(mockIndexer.nbtcMintTxsBySuiAddr).not.toHaveBeenCalled();
-		expect(mockIndexer.depositsBySender).toHaveBeenCalledWith(btcAddr);
+		expect(mockIndexer.depositsBySender).toHaveBeenCalledWith(btcAddr, "testnet");
 	});
 });
