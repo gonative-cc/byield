@@ -14,15 +14,53 @@ import { logger } from "~/lib/log";
 const buyNBTCFunction = "buy_nbtc";
 const sellNBTCFunction = "sell_nbtc";
 
-export async function getNBTCCoins(
+async function getNBTCCoins(
 	owner: string,
 	client: SuiClient,
 	nbtcCoin: string,
+	cursor?: string | null,
 ): Promise<PaginatedCoins> {
 	return client.getCoins({
 		owner,
 		coinType: nbtcCoin,
+		cursor,
 	});
+}
+
+export async function getEnoughNBTCCoinsWithAmount(
+	senderAddress: string,
+	client: SuiClient,
+	nbtcCoin: string,
+	requiredAmount: bigint,
+) {
+	const allCoins: Array<{
+		coinObjectId: string;
+		balance: string | number | bigint;
+	}> = [];
+	let hasNextPage = true;
+	let cursor: string | null | undefined = null;
+	let totalBalance = 0n;
+
+	while (hasNextPage && totalBalance < requiredAmount) {
+		const page = await getNBTCCoins(senderAddress, client, nbtcCoin, cursor);
+		const pageCoins = page.data ?? [];
+
+		if (!pageCoins.length) {
+			break;
+		}
+
+		for (const coin of pageCoins) {
+			allCoins.push(coin);
+			totalBalance += BigInt(coin.balance);
+			if (totalBalance >= requiredAmount) {
+				break;
+			}
+		}
+
+		hasNextPage = page.hasNextPage;
+		cursor = page.nextCursor;
+	}
+	return allCoins;
 }
 
 async function createNBTCTxn(

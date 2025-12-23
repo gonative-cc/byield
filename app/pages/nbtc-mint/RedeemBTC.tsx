@@ -11,15 +11,11 @@ import { handleBalanceChanges, useCoinBalance } from "~/components/Wallet/SuiWal
 import { NBTCIcon } from "~/components/icons";
 import { Percentage } from "../../components/Percentage";
 import { SuiConnectModal } from "~/components/Wallet/SuiWallet/SuiModal";
-import { getBTCAddrOutputScript, isValidBitcoinAddress } from "~/lib/bitcoin.client";
-import { moveCallTarget, type RedeemCfg } from "~/config/sui/contracts-config";
-import { Transaction } from "@mysten/sui/transactions";
+import { isValidBitcoinAddress } from "~/lib/bitcoin.client";
 import { useNetworkVariables } from "~/networkConfig";
 import { signAndExecTx } from "~/lib/suienv";
 import { logger } from "~/lib/log";
-import { BitcoinNetworkType } from "sats-connect";
-import type { SuiClient } from "@mysten/sui/client";
-import { getNBTCCoins } from "../BuyNBTC/useNBTC";
+import { createRedeemBTCTxn } from "./nbtcMintRedeemTxn";
 
 interface NBTCRightAdornmentProps {
 	maxNBTCAmount: string;
@@ -243,51 +239,4 @@ export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
 			</form>
 		</FormProvider>
 	);
-}
-
-async function createRedeemBTCTxn(
-	senderAddress: string,
-	amount: bigint,
-	recipientAddr: string,
-	redeemCfg: RedeemCfg,
-	client: SuiClient,
-	network: BitcoinNetworkType,
-	nbtcCoin: string,
-): Promise<Transaction> {
-	if (!redeemCfg.contractId) {
-		throw new Error("Contract ID is not found");
-	}
-	if (!redeemCfg.pkgId) {
-		throw new Error("Redeem BTC package ID is not found");
-	}
-	const txn = new Transaction();
-	txn.setSender(senderAddress);
-
-	const recipientScriptBuffer: Uint8Array | null = await getBTCAddrOutputScript(recipientAddr, network);
-	if (!recipientScriptBuffer) throw Error("Invalid recipient address");
-
-	const { data } = await getNBTCCoins(senderAddress, client, nbtcCoin);
-
-	if (!data.length) throw Error("No nBTC coins available");
-
-	const primaryCoin = txn.object(data[0].coinObjectId);
-	if (data.length > 1) {
-		const otherCoins = data.slice(1).map(({ coinObjectId }) => txn.object(coinObjectId));
-		// merge all coins
-		txn.mergeCoins(primaryCoin, otherCoins);
-	}
-
-	// Split exactly the desired amount for redemption
-	const [redeemCoin] = txn.splitCoins(primaryCoin, [txn.pure.u64(amount)]);
-
-	txn.moveCall({
-		target: moveCallTarget(redeemCfg, "redeem"),
-		arguments: [
-			txn.object(redeemCfg.contractId),
-			redeemCoin,
-			txn.pure.vector("u8", recipientScriptBuffer),
-			txn.object(txn.object.clock()),
-		],
-	});
-	return txn;
 }
