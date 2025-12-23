@@ -1,7 +1,7 @@
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import { Transaction } from "@mysten/sui/transactions";
 import { BitcoinNetworkType } from "sats-connect";
-import { createRedeemTxn } from "./nbtcMintRedeemTxn";
+import { createRedeemTxn } from "./mintRedeemTxn";
 import type { RedeemCfg } from "~/config/sui/contracts-config";
 import * as bitcoinClient from "~/lib/bitcoin.client";
 import * as useNBTC from "../BuyNBTC/useNBTC";

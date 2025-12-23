@@ -14,7 +14,7 @@ import { SuiConnectModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import { isValidBitcoinAddress } from "~/lib/bitcoin.client";
 import { useNetworkVariables } from "~/networkConfig";
 import { signAndExecTx } from "~/lib/suienv";
-import { createRedeemTxn } from "./nbtcMintRedeemTxn";
+import { createRedeemTxn } from "./mintRedeemTxn";
 import { logError, logger } from "~/lib/log";
 
 interface NBTCRightAdornmentProps {
@@ -109,7 +109,7 @@ export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
 			const success = result.effects?.status?.status === "success";
 			if (success) {
 				if (result.balanceChanges) {
-					handleBalanceChanges(result.balanceChanges, [
+					const cachedCoins = [
 						// nBTC
 						{
 							coinType: nbtcBalanceRes.coinType,
@@ -126,11 +126,12 @@ export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
 									},
 								]
 							: []),
-					]);
+					];
+					handleBalanceChanges(result.balanceChanges, cachedCoins);
 				}
 				toast({
 					title: "Redeem nBTC success",
-					description: `Redeeming ${numberOfNBTC} nBTC to ${bitcoinAddress} successful`,
+					description: `Redeem ${numberOfNBTC} nBTC to ${bitcoinAddress} successful`,
 				});
 				fetchRedeemTxs();
 			} else {
