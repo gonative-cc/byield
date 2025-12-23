@@ -14,8 +14,8 @@ import { SuiConnectModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import { isValidBitcoinAddress } from "~/lib/bitcoin.client";
 import { useNetworkVariables } from "~/networkConfig";
 import { signAndExecTx } from "~/lib/suienv";
-import { logger } from "~/lib/log";
-import { createRedeemBTCTxn } from "./nbtcMintRedeemTxn";
+import { createRedeemTxn } from "./nbtcMintRedeemTxn";
+import { logError, logger } from "~/lib/log";
 
 interface NBTCRightAdornmentProps {
 	maxNBTCAmount: string;
@@ -92,7 +92,7 @@ export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
 				description: `Redeeming ${numberOfNBTC} nBTC to ${bitcoinAddress}`,
 				variant: "info",
 			});
-			const transaction = await createRedeemBTCTxn(
+			const transaction = await createRedeemTxn(
 				currentAccount.address,
 				parseNBTC(numberOfNBTC),
 				bitcoinAddress,
@@ -134,7 +134,7 @@ export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
 				});
 				fetchRedeemTxs();
 			} else {
-				logger.error({ msg: "Redeem nBTC FAILED", method: "handleRedeemTx", errors: result.errors });
+				logError({ msg: "Redeem nBTC FAILED", method: "handleRedeemTx", errors: result.errors });
 				toast({
 					title: "Redeem nBTC failed",
 					description: `Redeeming ${numberOfNBTC} nBTC to ${bitcoinAddress} failed`,

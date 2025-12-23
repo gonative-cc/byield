@@ -14,7 +14,7 @@ import { logger } from "~/lib/log";
 const buyNBTCFunction = "buy_nbtc";
 const sellNBTCFunction = "sell_nbtc";
 
-async function getNBTCCoins(
+async function getNbtcCoins(
 	owner: string,
 	client: SuiClient,
 	nbtcCoin: string,
@@ -27,7 +27,8 @@ async function getNBTCCoins(
 	});
 }
 
-export async function getEnoughNBTCCoinsWithAmount(
+// Returns the enough  nBTC coin array that has balance >= required amount
+export async function getEnoughNbtcCoinsWithAmount(
 	senderAddress: string,
 	client: SuiClient,
 	nbtcCoin: string,
@@ -42,7 +43,7 @@ export async function getEnoughNBTCCoinsWithAmount(
 	let totalBalance = 0n;
 
 	while (hasNextPage && totalBalance < requiredAmount) {
-		const page = await getNBTCCoins(senderAddress, client, nbtcCoin, cursor);
+		const page = await getNbtcCoins(senderAddress, client, nbtcCoin, cursor);
 		const pageCoins = page.data ?? [];
 
 		if (!pageCoins.length) {
@@ -83,7 +84,7 @@ async function createNBTCTxn(
 			arguments: [txn.object(nbtcOtcCfg.vaultId), coins],
 		});
 		// merge nbtc coins with the result coin
-		const nbtcCoins = await getNBTCCoins(senderAddress, client, nbtcCoin);
+		const nbtcCoins = await getNbtcCoins(senderAddress, client, nbtcCoin);
 		const remainingCoins = nbtcCoins.data.map(({ coinObjectId }) => txn.object(coinObjectId));
 		if (remainingCoins.length > 0) txn.mergeCoins(resultCoin, remainingCoins);
 		// Check user have nBTC here, if yes, then we try to merge,

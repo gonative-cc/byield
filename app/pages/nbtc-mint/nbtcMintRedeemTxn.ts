@@ -2,10 +2,11 @@ import type { SuiClient } from "@mysten/sui/client";
 import { Transaction } from "@mysten/sui/transactions";
 import type { BitcoinNetworkType } from "sats-connect";
 import { type RedeemCfg, moveCallTarget } from "~/config/sui/contracts-config";
-import { getBTCAddrOutputScript } from "~/lib/bitcoin.client";
-import { getEnoughNBTCCoinsWithAmount } from "../BuyNBTC/useNBTC";
+import { getBtcAddrOutputScript } from "~/lib/bitcoin.client";
+import { getEnoughNbtcCoinsWithAmount } from "../BuyNBTC/useNBTC";
 
-export async function createRedeemBTCTxn(
+// create a redeem BTC txn
+export async function createRedeemTxn(
 	senderAddress: string,
 	amount: bigint,
 	recipientAddr: string,
@@ -23,7 +24,7 @@ export async function createRedeemBTCTxn(
 	const txn = new Transaction();
 	txn.setSender(senderAddress);
 
-	const recipientScriptBuffer: Uint8Array | null = await getBTCAddrOutputScript(
+	const recipientScriptBuffer: Uint8Array | null = await getBtcAddrOutputScript(
 		recipientAddr,
 		network,
 	);
@@ -31,25 +32,25 @@ export async function createRedeemBTCTxn(
 
 	// Collect enough nBTC coins across pages to cover the requested amount.
 	// This avoids failures when the balance is fragmented across many small coins.
-	const allCoins = await getEnoughNBTCCoinsWithAmount(senderAddress, client, nbtcCoin, amount);
+	const nbtcCoins = await getEnoughNbtcCoinsWithAmount(senderAddress, client, nbtcCoin, amount);
 
-	if (!allCoins.length) throw Error("No nBTC coins available");
+	if (!nbtcCoins.length) throw Error("No nBTC coins available");
 
-	const primaryCoin = txn.object(allCoins[0].coinObjectId);
-	if (allCoins.length > 1) {
-		const otherCoins = allCoins.slice(1).map(({ coinObjectId }) => txn.object(coinObjectId));
+	const primaryCoin = txn.object(nbtcCoins[0].coinObjectId);
+	if (nbtcCoins.length > 1) {
+		const otherCoins = nbtcCoins.slice(1).map(({ coinObjectId }) => txn.object(coinObjectId));
 		// merge all coins
 		txn.mergeCoins(primaryCoin, otherCoins);
 	}
 
 	// Split exactly the desired amount for redemption
-	const [redeemCoin] = txn.splitCoins(primaryCoin, [txn.pure.u64(amount)]);
+	const [coins] = txn.splitCoins(primaryCoin, [txn.pure.u64(amount)]);
 
 	txn.moveCall({
 		target: moveCallTarget(redeemCfg, "redeem"),
 		arguments: [
 			txn.object(redeemCfg.contractId),
-			redeemCoin,
+			coins,
 			txn.pure.vector("u8", recipientScriptBuffer),
 			txn.object(txn.object.clock()),
 		],
