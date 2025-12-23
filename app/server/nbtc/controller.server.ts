@@ -42,7 +42,9 @@ export default class Controller {
 			fetchPromises.push(this.btcindexer.nbtcMintTxsBySuiAddr(suiAddr));
 		}
 		if (btcAddr) {
-			fetchPromises.push(this.btcindexer.depositsBySender(btcAddr));
+			fetchPromises.push(
+				this.btcindexer.depositsBySender(btcAddr, BitcoinNetworkTypeMap[this.network]),
+			);
 		}
 
 		if (fetchPromises.length === 0) return badRequest();
