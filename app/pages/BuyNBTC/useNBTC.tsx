@@ -14,7 +14,11 @@ import { logger } from "~/lib/log";
 const buyNBTCFunction = "buy_nbtc";
 const sellNBTCFunction = "sell_nbtc";
 
-async function getNBTCCoins(owner: string, client: SuiClient, nbtcCoin: string): Promise<PaginatedCoins> {
+export async function getNBTCCoins(
+	owner: string,
+	client: SuiClient,
+	nbtcCoin: string,
+): Promise<PaginatedCoins> {
 	return client.getCoins({
 		owner,
 		coinType: nbtcCoin,

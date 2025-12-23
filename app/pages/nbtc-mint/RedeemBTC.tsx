@@ -18,7 +18,8 @@ import { useNetworkVariables } from "~/networkConfig";
 import { signAndExecTx } from "~/lib/suienv";
 import { logger } from "~/lib/log";
 import { BitcoinNetworkType } from "sats-connect";
-import type { SuiClient, PaginatedCoins } from "@mysten/sui/client";
+import type { SuiClient } from "@mysten/sui/client";
+import { getNBTCCoins } from "../BuyNBTC/useNBTC";
 
 interface NBTCRightAdornmentProps {
 	maxNBTCAmount: string;
@@ -58,10 +59,11 @@ export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
 	const { mutateAsync: signTransaction } = useSignTransaction();
 	const [isProcessing, setIsProcessing] = useState(false);
 	const { currentAddress, network } = useXverseWallet();
-	const { redeemBTC, nbtc } = useNetworkVariables();
+	const { redeemBTC } = useNetworkVariables();
 	const currentAccount = useCurrentAccount();
 	const isSuiConnected = !!currentAccount;
 	const nbtcBalanceRes = useCoinBalance("NBTC");
+	const suiBalanceRes = useCoinBalance("SUI");
 	const client = useSuiClient();
 	let nbtcBalance: bigint | null = null;
 	let nbtcBalanceStr = "";
@@ -86,17 +88,14 @@ export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
 	useEffect(() => setValue("bitcoinAddress", currentAddress?.address || ""), [setValue, currentAddress]);
 
 	const handleRedeemTx = async ({ numberOfNBTC, bitcoinAddress }: RedeemNBTCForm) => {
-		if (!currentAccount || !nbtcBalanceRes) return;
-
+		if (!currentAccount || !nbtcBalanceRes || !nbtcBalanceRes.coinType) return;
 		setIsProcessing(true);
-
 		try {
-			// TODO: Implement redeem transaction logic
 			toast({
 				title: "Redeem Initiated",
 				description: `Redeeming ${numberOfNBTC} nBTC to ${bitcoinAddress}`,
+				variant: "info",
 			});
-			const nbtcCoin = nbtc.pkgId + nbtc.coinType;
 			const transaction = await createRedeemBTCTxn(
 				currentAccount.address,
 				parseNBTC(numberOfNBTC),
@@ -104,25 +103,48 @@ export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
 				redeemBTC,
 				client,
 				network,
-				nbtcCoin,
+				nbtcBalanceRes.coinType,
 			);
 			const result = await signAndExecTx(transaction, client, signTransaction, {
 				showEffects: true,
 				showBalanceChanges: true,
 			});
-			logger.info({ msg: "Deposit tx:", method: "DepositModal", digest: result.digest });
+			logger.info({ msg: "Redeem tx:", method: "handleRedeemTx", digest: result.digest });
 			const success = result.effects?.status?.status === "success";
-			// setTxStatus({ success, digest: result.digest });
 			if (success) {
-				// updateDeposit(amount);
 				if (result.balanceChanges) {
-					handleBalanceChanges(result.balanceChanges, []);
+					handleBalanceChanges(result.balanceChanges, [
+						// nBTC
+						{
+							coinType: nbtcBalanceRes.coinType,
+							currentBalance: nbtcBalanceRes.balance,
+							updateCoinBalanceInCache: nbtcBalanceRes.updateCoinBalanceInCache,
+						},
+						// SUI
+						...(suiBalanceRes?.coinType
+							? [
+									{
+										coinType: suiBalanceRes.coinType!,
+										currentBalance: suiBalanceRes.balance,
+										updateCoinBalanceInCache: suiBalanceRes.updateCoinBalanceInCache,
+									},
+								]
+							: []),
+					]);
 				}
+				toast({
+					title: "Redeem nBTC success",
+					description: `Redeeming ${numberOfNBTC} nBTC to ${bitcoinAddress} successful`,
+				});
+				fetchRedeemTxs();
 			} else {
-				logger.error({ msg: "Deposit FAILED", method: "DepositModal", errors: result.errors });
+				logger.error({ msg: "Redeem nBTC FAILED", method: "handleRedeemTx", errors: result.errors });
+				toast({
+					title: "Redeem nBTC failed",
+					description: `Redeeming ${numberOfNBTC} nBTC to ${bitcoinAddress} failed`,
+					variant: "destructive",
+				});
 			}
-
-			fetchRedeemTxs();
 		} catch (error) {
 			toast({
 				title: "Transaction Failed",
@@ -223,13 +245,6 @@ export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
 	);
 }
 
-async function getNBTCCoins(owner: string, client: SuiClient, nbtcCoin: string): Promise<PaginatedCoins> {
-	return client.getCoins({
-		owner,
-		coinType: nbtcCoin,
-	});
-}
-
 async function createRedeemBTCTxn(
 	senderAddress: string,
 	amount: bigint,
@@ -253,10 +268,12 @@ async function createRedeemBTCTxn(
 
 	const { data } = await getNBTCCoins(senderAddress, client, nbtcCoin);
 
-	// merge all coins
+	if (!data.length) throw Error("No nBTC coins available");
+
 	const primaryCoin = txn.object(data[0].coinObjectId);
 	if (data.length > 1) {
 		const otherCoins = data.slice(1).map(({ coinObjectId }) => txn.object(coinObjectId));
+		// merge all coins
 		txn.mergeCoins(primaryCoin, otherCoins);
 	}
 
