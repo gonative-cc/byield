@@ -32,7 +32,7 @@ export const ControlledHiveTabs = () => {
 	};
 
 	return (
-		<div className="w-full">
+		<div className="w-full max-w-7xl">
 			<div className="mb-12 flex justify-center">
 				<div className="tabs tabs-boxed bg-base-200 rounded-full shadow-lg">
 					{renderTabButton("home")}
