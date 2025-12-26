@@ -27,7 +27,7 @@ const createColumns = (
 ): Column<RedeemRequestResp>[] => [
 	{
 		Header: () => (
-			<TableTooltip label="Sui TX" tooltip="The Sui transaction ID that initiated the redeem process" />
+			<TableTooltip label="Sui TX" tooltip="The Redeem ID ID that initiated the redeem process" />
 		),
 		accessor: "redeem_id",
 		Cell: ({ row }: CellProps<RedeemRequestResp>) => {
@@ -146,7 +146,7 @@ export function RedeemBTCTable({ data, isLoading = false }: RedeemBTCTableProps)
 				data={data}
 				expandedRows={expandedRows}
 				renderExpandedRow={renderExpandedRow}
-				getRowId={(row) => row.recipient_script}
+				getRowId={(row) => String(row.redeem_id)}
 				isLoading={isLoading}
 				loadingMessage="Loading nBTC redeem transactions..."
 			/>
