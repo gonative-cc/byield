@@ -220,14 +220,17 @@ export default function Mint() {
 		}
 
 		// Set up interval for automatic refetching
-		intervalRef.current = setInterval(fetchMintTxs, 120000);
+		intervalRef.current = setInterval(() => {
+			fetchMintTxs();
+			fetchRedeemTxs();
+		}, 120000);
 
 		return () => {
 			if (intervalRef.current) {
 				clearInterval(intervalRef.current);
 			}
 		};
-	}, [activeAddr, fetchMintTxs, mintTxFetcher.state, mintTxs, mintTxFetcher]);
+	}, [activeAddr, fetchMintTxs, mintTxFetcher.state, mintTxs, mintTxFetcher, fetchRedeemTxs]);
 
 	return (
 		<div className="mx-auto max-w-7xl space-y-6 px-4 py-4">
