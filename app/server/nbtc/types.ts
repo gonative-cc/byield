@@ -25,14 +25,6 @@ export interface MintTransaction {
 	errorMessage?: string;
 }
 
-export interface LoaderData {
-	mintTxs: MintTransaction[];
-}
-
-export interface LoaderDataResp extends LoaderData {
-	error?: Error;
-}
-
 // worker don't have this interface as the moment
 // TODO: We should get it from the worker.
 export interface RedeemSolverRPCI {
