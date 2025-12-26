@@ -33,6 +33,8 @@ export interface LoaderDataResp extends LoaderData {
 	error?: Error;
 }
 
+// worker don't have this interface as the moment
+// TODO: We should get it from the worker.
 export interface RedeemSolverRPCI {
 	proposeRedeemUtxos(): Promise<void>;
 	redeemsBySuiAddr(suiAddress: string, setupId: number): Promise<RedeemRequestResp[]>;
