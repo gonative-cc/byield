@@ -73,6 +73,11 @@
 			"service": "btcindexer",
 			"entrypoint": "BtcIndexerRpc",
 		},
+		{
+			"binding": "RedeemSolver",
+			"service": "redeem_solver",
+			"entrypoint": "RPC",
+		},
 	],
 
 	// NOTE: build is done by vite, not wrangler, so we need to use vite cloudflare plugin to manage
@@ -105,6 +110,11 @@
 					"binding": "BTCINDEXER",
 					"service": "btcindexer",
 					"entrypoint": "BtcIndexerRpcMock",
+				},
+				{
+					"binding": "RedeemSolver",
+					"service": "redeem_solver",
+					"entrypoint": "RPC",
 				},
 			],
 		},
@@ -139,6 +149,11 @@
 					"binding": "BTCINDEXER",
 					"service": "btcindexer-prod",
 					"entrypoint": "BtcIndexerRpc",
+				},
+				{
+					"binding": "RedeemSolver",
+					"service": "redeem_solver",
+					"entrypoint": "RPC",
 				},
 			],
 		},

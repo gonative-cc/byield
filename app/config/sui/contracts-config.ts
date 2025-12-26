@@ -47,6 +47,9 @@ export interface ContractsCfg {
 	nbtc: NbtcCfg;
 	lockdrop: LockdropCfg;
 	usdc: Coin;
+	redeem: {
+		setupId: number;
+	};
 }
 
 export const mainnetCfg: ContractsCfg = {
@@ -84,6 +87,10 @@ export const mainnetCfg: ContractsCfg = {
 		name: "USDC",
 		type: "",
 	},
+	redeem: {
+		// TODO: update it when setup ID is available for redeem
+		setupId: 1,
+	},
 };
 
 export const testnetCfg: ContractsCfg = {
@@ -120,6 +127,10 @@ export const testnetCfg: ContractsCfg = {
 	usdc: {
 		name: "USDC",
 		type: "0xa1ec7fc00a6f40db9693ad1415d0c193ad3906494428cf252621037bd7117e29::usdc::USDC",
+	},
+	redeem: {
+		// TODO: update it when setup ID is available for redeem
+		setupId: 1,
 	},
 };
 
@@ -162,6 +173,9 @@ export const localnetCfg: ContractsCfg = {
 	usdc: {
 		name: "USDC",
 		type: "", // for local net - you can deploy any coin and call it usdc
+	},
+	redeem: {
+		setupId: 0,
 	},
 };
 

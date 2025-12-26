@@ -4,6 +4,7 @@ import type { BtcIndexerRpcI } from "@gonative-cc/btcindexer/rpc-interface";
 import { MintTxStatus, type NbtcTxResp } from "@gonative-cc/btcindexer/models";
 import { BitcoinNetworkType } from "sats-connect";
 import { BtcNet } from "@gonative-cc/lib/nbtc";
+import type { RedeemSolverRPCI } from "./types";
 
 // Mock the useBitcoinConfig module
 vi.mock("~/hooks/useBitcoinConfig", () => ({
@@ -29,6 +30,11 @@ const mockIndexer: BtcIndexerRpcI = {
 	nbtcMintTx: vi.fn(),
 };
 
+const mockSuiIndexer: RedeemSolverRPCI = {
+	proposeRedeemUtxos: vi.fn(),
+	redeemsBySuiAddr: vi.fn(),
+};
+
 const mockNbtcTxResp: NbtcTxResp = {
 	btcTxId: "abc123",
 	amount_sats: 100000,
@@ -52,7 +58,7 @@ describe("Controller getMintTxs", () => {
 
 	beforeEach(() => {
 		vi.clearAllMocks();
-		controller = new Controller(BitcoinNetworkType.Testnet, mockIndexer);
+		controller = new Controller(BitcoinNetworkType.Testnet, mockIndexer, mockSuiIndexer);
 	});
 
 	it("should return badRequest when both addresses are null", async () => {
