@@ -11,15 +11,35 @@ interface ExpandableRedeemDetailsProps {
 export function ExpandableRedeemDetails({ transaction }: ExpandableRedeemDetailsProps) {
 	const operationDate = new Date(transaction.created_at);
 
-	const isPending = transaction.status === RedeemRequestStatus.Pending;
-	const isProposed = transaction.status === RedeemRequestStatus.Proposed;
-	const isSigned = transaction.status === RedeemRequestStatus.Signed;
-	const isBroadcasted = transaction.status === RedeemRequestStatus.Broadcasted;
-	const isSolved = transaction.status === RedeemRequestStatus.Solved;
+	const steps = [
+		{ status: RedeemRequestStatus.Pending, activeMsg: "Redeem request pending" },
+		{ status: RedeemRequestStatus.Proposed, activeMsg: "Transaction proposed" },
+		{ status: RedeemRequestStatus.Solved, activeMsg: "Transaction solved" },
+		{ status: RedeemRequestStatus.Signed, activeMsg: "Transaction signed" },
+		{ status: RedeemRequestStatus.Broadcasted, activeMsg: "Bitcoin transaction broadcasted" },
+	];
 
-	const isUTXOSelectionProposed = isProposed || isSigned || isBroadcasted || isSolved;
-	const isTxnSigned = isSigned || isBroadcasted || isSolved;
-	const isBitCoinTxBroadcasted = isBroadcasted || isSolved;
+	const currentStepIndex = steps.findIndex((step) => step.status === transaction.status);
+
+	const renderStep = (step: (typeof steps)[0], index: number) => {
+		const isCompleted = index < currentStepIndex;
+		const isCurrent = index === currentStepIndex;
+		const isLastStep = index === steps.length - 1;
+		const shouldShow = isCompleted || isCurrent;
+
+		if (!shouldShow) return null;
+
+		return (
+			<div key={step.status} className="flex items-center gap-2 text-sm">
+				{isCurrent && !isLastStep ? (
+					<AnimatedHourglass size="md" />
+				) : (
+					<CheckCircle size={16} className="text-success shrink-0" />
+				)}
+				<span>{step.activeMsg}</span>
+			</div>
+		);
+	};
 
 	return (
 		<div className="bg-base-100 border-base-300 p-6">
@@ -31,57 +51,7 @@ export function ExpandableRedeemDetails({ transaction }: ExpandableRedeemDetails
 
 				<div className="divider my-2"></div>
 
-				<div className="flex items-center gap-2 text-sm">
-					{isPending ? (
-						<AnimatedHourglass size="md" />
-					) : (
-						<CheckCircle size={16} className="text-success shrink-0" />
-					)}
-					<span>{isPending ? "Redeem request pending" : "Redeem request created"}</span>
-				</div>
-
-				<div className="flex items-center gap-2 text-sm">
-					{isUTXOSelectionProposed ? (
-						<CheckCircle size={16} className="text-success shrink-0" />
-					) : isPending ? (
-						<AnimatedHourglass size="md" />
-					) : null}
-					<span>
-						{isUTXOSelectionProposed ? "UTXO selection proposed" : "Awaiting UTXO selection"}
-					</span>
-				</div>
-
-				<div className="flex items-center gap-2 text-sm">
-					{isTxnSigned ? (
-						<CheckCircle size={16} className="text-success shrink-0" />
-					) : isProposed ? (
-						<AnimatedHourglass size="md" />
-					) : null}
-					<span>{isTxnSigned ? "Transaction signed" : "Awaiting transaction signing"}</span>
-				</div>
-
-				<div className="flex items-center gap-2 text-sm">
-					{isBitCoinTxBroadcasted ? (
-						<CheckCircle size={16} className="text-success shrink-0" />
-					) : isSigned ? (
-						<AnimatedHourglass size="md" />
-					) : null}
-					<span>
-						{isBitCoinTxBroadcasted
-							? "Bitcoin transaction broadcasted"
-							: "Awaiting Bitcoin broadcast"}
-					</span>
-				</div>
-
-				<div className="flex items-center gap-2 text-sm">
-					{isSolved ? (
-						<CheckCircle size={16} className="text-success shrink-0" />
-					) : isBroadcasted ? (
-						<AnimatedHourglass size="md" />
-					) : null}
-					<span>{isSolved ? "BTC sent to recipient" : "Awaiting Bitcoin confirmation"}</span>
-					<RedeemTooltip />
-				</div>
+				<div className="space-y-3">{steps.map((step, index) => renderStep(step, index))}</div>
 
 				<div className="divider my-2"></div>
 
@@ -93,6 +63,7 @@ export function ExpandableRedeemDetails({ transaction }: ExpandableRedeemDetails
 				<div className="text-base-content/70 text-sm">
 					<span className="font-semibold">Recipient:</span>
 					<span className="ml-2 font-mono">{transaction.recipient_script}</span>
+					<RedeemTooltip />
 				</div>
 			</div>
 		</div>

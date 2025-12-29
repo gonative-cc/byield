@@ -12,7 +12,7 @@ import { RedeemRequestStatus, type RedeemRequestResp } from "@gonative-cc/sui-in
 import { ExpandableRedeemDetails } from "./ExpandableRedeemDetails";
 
 const getStatusDisplay = (status: RedeemRequestResp["status"]) => {
-	const isActive = status !== RedeemRequestStatus.Solved;
+	const isActive = status !== RedeemRequestStatus.Broadcasted;
 	return (
 		<div className="flex items-center gap-2">
 			{isActive && <AnimatedHourglass size="md" />}

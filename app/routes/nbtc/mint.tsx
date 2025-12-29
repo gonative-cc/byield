@@ -221,8 +221,7 @@ export default function Mint() {
 
 		// Set up interval for automatic refetching
 		intervalRef.current = setInterval(() => {
-			fetchMintTxs();
-			fetchRedeemTxs();
+			Promise.all([fetchMintTxs(), fetchRedeemTxs()]);
 		}, 120000);
 
 		return () => {
