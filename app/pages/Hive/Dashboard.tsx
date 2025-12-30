@@ -44,9 +44,10 @@ function HiveScoreHeader({ totalHiveScore }: HiveScoreHeaderProps) {
 
 interface ContributorCardProps {
 	redirectTab: (redirectTab: TabType) => void;
+	lockdropClaimedSbt?: UserSbtData["claimedLockdropSbts"];
 }
 
-function ContributorCard({ redirectTab }: ContributorCardProps) {
+function ContributorCard({ redirectTab, lockdropClaimedSbt = [] }: ContributorCardProps) {
 	const account = useCurrentAccount();
 	const client = useSuiClient();
 	const { lockdrop } = useNetworkVariables();
@@ -56,8 +57,10 @@ function ContributorCard({ redirectTab }: ContributorCardProps) {
 		isError?: boolean;
 	}>({ totalDeposit: null, isError: false });
 	const isUserDepositError = userTotalDeposit?.isError;
-	// TODO: Get current level and next level from API
-	const currentLevel = 2;
+
+	const claimedLockdropSbtsLength = lockdropClaimedSbt.length;
+	const isLockdropSbtClaimed = claimedLockdropSbtsLength >= 1;
+	const currentLevel = claimedLockdropSbtsLength;
 	const nextLevel = currentLevel + 1;
 	const isNextLevelAvailable = nextLevel <= 10;
 	const currentTier = LockDropSbt.tiers[currentLevel - 1];
@@ -74,9 +77,6 @@ function ContributorCard({ redirectTab }: ContributorCardProps) {
 		}
 		fetchUserTotalDeposit();
 	}, [account, client, lockdrop]);
-
-	// TODO: use data from tbook for NEXT_TIER_DEPOSIT
-	const NEXT_TIER_DEPOSIT = 5000;
 
 	return (
 		<div className="card mb-4">
@@ -99,18 +99,36 @@ function ContributorCard({ redirectTab }: ContributorCardProps) {
 				<div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
 					<div>
 						<div className="text-muted-foreground mb-1 text-sm">Current Tier</div>
-						<div className="text-primary-foreground mb-1 font-bold">
-							{currentTier.tier} - {currentTier.name}
-						</div>
-						<div className="text-muted-foreground mb-4 text-sm">{currentTier.description}</div>
-						{userTotalDeposit?.totalDeposit !== null && (
-							<div className="mb-1 text-xl font-bold text-white sm:text-2xl">
-								{isUserDepositError
-									? "Error fetching user deposit"
-									: `$${userTotalDeposit?.totalDeposit}`}
-							</div>
+						{isLockdropSbtClaimed ? (
+							<>
+								<div className="text-info mb-2 font-bold">
+									{currentTier.tier} - {currentTier.name}
+								</div>
+								<div className="text-muted-foreground text-sm">{currentTier.description}</div>
+							</>
+						) : (
+							<span>No Lockdrop SBTs claimed</span>
 						)}
-						<div className="text-muted-foreground text-sm">Locked Liquidity</div>
+						{currentTier && (
+							<>
+								<div className="text-primary-foreground mb-1 font-bold">
+									{currentTier.tier} - {currentTier.name}
+								</div>
+								<div className="text-muted-foreground mb-4 text-sm">
+									{currentTier.description}
+								</div>
+							</>
+						)}
+						{userTotalDeposit?.totalDeposit !== null && (
+							<>
+								<div className="mt-4 mb-1 text-xl font-bold text-white sm:text-2xl">
+									{isUserDepositError
+										? "Error fetching user deposit"
+										: `$${userTotalDeposit?.totalDeposit}`}
+								</div>
+								<div className="text-muted-foreground text-sm">Locked Liquidity</div>
+							</>
+						)}
 					</div>
 					{nextTier && (
 						<div className="card card-body bg-base-100">
@@ -120,7 +138,7 @@ function ContributorCard({ redirectTab }: ContributorCardProps) {
 								</span>
 								{userTotalDeposit?.totalDeposit !== null && (
 									<span className="text-muted-foreground mb-2 text-sm">
-										${userTotalDeposit?.totalDeposit} / ${NEXT_TIER_DEPOSIT}
+										${userTotalDeposit?.totalDeposit} / ${nextTier.usdRequired}
 									</span>
 								)}
 							</div>
@@ -128,7 +146,7 @@ function ContributorCard({ redirectTab }: ContributorCardProps) {
 								<progress
 									className="progress progress-primary mb-1"
 									value={userTotalDeposit?.totalDeposit}
-									max={NEXT_TIER_DEPOSIT}
+									max={nextTier.usdRequired}
 								/>
 							)}
 							<div className="text-sm">{nextTier.requirement}</div>
@@ -334,6 +352,7 @@ export function Dashboard({ redirectTab }: DashboardProps) {
 	const totalRawPoints = hiveUserDashboardData?.data?.totalRawPoints;
 	const claimedReferralSbts = hiveUserDashboardData?.data?.claimedReferralSbts;
 	const claimedSocialSbts = hiveUserDashboardData?.data?.claimedSocialSbts;
+	const claimedLockdropSbts = hiveUserDashboardData?.data?.claimedLockdropSbts;
 	const inviteeCount = hiveUserDashboardData?.data?.inviteeCount;
 	const referralLink = hiveUserDashboardData?.data?.referralLink;
 
@@ -380,7 +399,7 @@ export function Dashboard({ redirectTab }: DashboardProps) {
 			<HiveScoreHeader totalHiveScore={totalRawPoints} />
 			<div>
 				<h2 className="mb-4 text-xl font-bold">Category Breakdown</h2>
-				<ContributorCard redirectTab={redirectTab} />
+				<ContributorCard redirectTab={redirectTab} lockdropClaimedSbt={claimedLockdropSbts} />
 				<div className="grid grid-cols-1 gap-4">
 					<MemberCard claimedSocialSbts={claimedSocialSbts} />
 					<SpreaderCard

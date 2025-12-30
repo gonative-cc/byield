@@ -14,6 +14,7 @@ const LockDropSbt: SBTTier = {
 			bonusPercentage: 0,
 			points: 21,
 			totalPointsCumulative: 21,
+			usdRequired: 21,
 		},
 		{
 			tier: "II",
@@ -23,6 +24,7 @@ const LockDropSbt: SBTTier = {
 			bonusPercentage: 5,
 			points: 105,
 			totalPointsCumulative: 126,
+			usdRequired: 100,
 		},
 		{
 			tier: "III",
@@ -32,6 +34,7 @@ const LockDropSbt: SBTTier = {
 			bonusPercentage: 10,
 			points: 550,
 			totalPointsCumulative: 676,
+			usdRequired: 500,
 		},
 		{
 			tier: "IV",
@@ -41,6 +44,7 @@ const LockDropSbt: SBTTier = {
 			bonusPercentage: 15,
 			points: 2415,
 			totalPointsCumulative: 3091,
+			usdRequired: 2100,
 		},
 		{
 			tier: "V",
@@ -50,6 +54,7 @@ const LockDropSbt: SBTTier = {
 			bonusPercentage: 20,
 			points: 6000,
 			totalPointsCumulative: 9091,
+			usdRequired: 5000,
 		},
 		{
 			tier: "VI",
@@ -59,6 +64,7 @@ const LockDropSbt: SBTTier = {
 			bonusPercentage: 25,
 			points: 12500,
 			totalPointsCumulative: 21591,
+			usdRequired: 10000,
 		},
 		{
 			tier: "VII",
@@ -68,6 +74,7 @@ const LockDropSbt: SBTTier = {
 			bonusPercentage: 30,
 			points: 27300,
 			totalPointsCumulative: 48891,
+			usdRequired: 21000,
 		},
 		{
 			tier: "VIII",
@@ -77,6 +84,7 @@ const LockDropSbt: SBTTier = {
 			bonusPercentage: 35,
 			points: 67500,
 			totalPointsCumulative: 116391,
+			usdRequired: 50000,
 		},
 		{
 			tier: "IX",
@@ -86,6 +94,7 @@ const LockDropSbt: SBTTier = {
 			bonusPercentage: 45,
 			points: 145000,
 			totalPointsCumulative: 261391,
+			usdRequired: 100000,
 		},
 		{
 			tier: "X",
@@ -95,6 +104,7 @@ const LockDropSbt: SBTTier = {
 			bonusPercentage: 55,
 			points: 325500,
 			totalPointsCumulative: 586891,
+			usdRequired: 210000,
 		},
 	],
 };

@@ -8,6 +8,7 @@ interface Tier {
 	points: number;
 	totalPointsCumulative: number;
 	requirement: string | number;
+	usdRequired?: number;
 }
 
 export interface SBTTier {

@@ -11,6 +11,10 @@ interface ReferralClaimedSbt extends SocialClaimedSbt {
 	claimed: boolean;
 }
 
+interface LockdropClaimedSbt extends SocialClaimedSbt {
+	usdRequired: number;
+}
+
 interface Invitee {
 	suiAddress: string;
 	inviteDate: string;
@@ -24,6 +28,7 @@ export interface UserSbtData {
 	inviteeCount: number;
 	claimedSocialSbts: SocialClaimedSbt[];
 	claimedReferralSbts: ReferralClaimedSbt[];
+	claimedLockdropSbts: LockdropClaimedSbt[];
 	invitees: Invitee[];
 }
 
