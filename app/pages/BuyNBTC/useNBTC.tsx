@@ -34,7 +34,7 @@ export async function getEnoughNbtcCoinsWithAmount(
 	nbtcCoin: string,
 	requiredAmount: bigint,
 ) {
-	const allCoins: Array<{
+	const nbtcCoins: Array<{
 		coinObjectId: string;
 		balance: string | number | bigint;
 	}> = [];
@@ -51,7 +51,7 @@ export async function getEnoughNbtcCoinsWithAmount(
 		}
 
 		for (const coin of pageCoins) {
-			allCoins.push(coin);
+			nbtcCoins.push(coin);
 			totalBalance += BigInt(coin.balance);
 			if (totalBalance >= requiredAmount) {
 				break;
@@ -61,7 +61,7 @@ export async function getEnoughNbtcCoinsWithAmount(
 		hasNextPage = page.hasNextPage;
 		cursor = page.nextCursor;
 	}
-	return allCoins;
+	return { nbtcCoins, isEnoughBalance: totalBalance >= requiredAmount };
 }
 
 async function createNBTCTxn(
