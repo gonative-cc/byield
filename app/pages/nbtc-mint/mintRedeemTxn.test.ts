@@ -82,7 +82,10 @@ describe("createRedeemBTCTxn", () => {
 	test("should throw error when no nBTC coins available", async () => {
 		const mockScriptBuffer = new Uint8Array([0x76, 0xa9, 0x14]);
 		vi.mocked(bitcoinClient.getBtcAddrOutputScript).mockResolvedValue(mockScriptBuffer);
-		vi.mocked(useNBTC.getEnoughNbtcCoinsWithAmount).mockResolvedValue([]);
+		vi.mocked(useNBTC.getEnoughNbtcCoinsWithAmount).mockResolvedValue({
+			nbtcCoins: [],
+			isEnoughBalance: false,
+		});
 
 		await expect(
 			createRedeemTxn(
@@ -94,13 +97,16 @@ describe("createRedeemBTCTxn", () => {
 				BitcoinNetworkType.Regtest,
 				"0xnbtc",
 			),
-		).rejects.toThrow("No nBTC coins available");
+		).rejects.toThrow("Not enough nBTC coins available");
 	});
 
 	test("should create transaction with single coin", async () => {
 		const mockScriptBuffer = new Uint8Array([0x76, 0xa9, 0x14]);
 		vi.mocked(bitcoinClient.getBtcAddrOutputScript).mockResolvedValue(mockScriptBuffer);
-		vi.mocked(useNBTC.getEnoughNbtcCoinsWithAmount).mockResolvedValue([mockCoinData[0]]);
+		vi.mocked(useNBTC.getEnoughNbtcCoinsWithAmount).mockResolvedValue({
+			nbtcCoins: [mockCoinData[0]],
+			isEnoughBalance: true,
+		});
 
 		const result = await createRedeemTxn(
 			"0xsender",
@@ -128,7 +134,10 @@ describe("createRedeemBTCTxn", () => {
 	test("should create transaction with multiple coins and merge them", async () => {
 		const mockScriptBuffer = new Uint8Array([0x76, 0xa9, 0x14]);
 		vi.mocked(bitcoinClient.getBtcAddrOutputScript).mockResolvedValue(mockScriptBuffer);
-		vi.mocked(useNBTC.getEnoughNbtcCoinsWithAmount).mockResolvedValue(mockCoinData);
+		vi.mocked(useNBTC.getEnoughNbtcCoinsWithAmount).mockResolvedValue({
+			nbtcCoins: mockCoinData,
+			isEnoughBalance: true,
+		});
 
 		const result = await createRedeemTxn(
 			"0xsender",
@@ -152,7 +161,10 @@ describe("createRedeemBTCTxn", () => {
 	test("should handle mainnet bitcoin addresses", async () => {
 		const mockScriptBuffer = new Uint8Array([0x76, 0xa9, 0x14]);
 		vi.mocked(bitcoinClient.getBtcAddrOutputScript).mockResolvedValue(mockScriptBuffer);
-		vi.mocked(useNBTC.getEnoughNbtcCoinsWithAmount).mockResolvedValue([mockCoinData[0]]);
+		vi.mocked(useNBTC.getEnoughNbtcCoinsWithAmount).mockResolvedValue({
+			nbtcCoins: [mockCoinData[0]],
+			isEnoughBalance: true,
+		});
 
 		const result = await createRedeemTxn(
 			"0xsender",
@@ -174,7 +186,10 @@ describe("createRedeemBTCTxn", () => {
 	test("should handle testnet bitcoin addresses", async () => {
 		const mockScriptBuffer = new Uint8Array([0x76, 0xa9, 0x14]);
 		vi.mocked(bitcoinClient.getBtcAddrOutputScript).mockResolvedValue(mockScriptBuffer);
-		vi.mocked(useNBTC.getEnoughNbtcCoinsWithAmount).mockResolvedValue([mockCoinData[0]]);
+		vi.mocked(useNBTC.getEnoughNbtcCoinsWithAmount).mockResolvedValue({
+			nbtcCoins: [mockCoinData[0]],
+			isEnoughBalance: true,
+		});
 
 		const result = await createRedeemTxn(
 			"0xsender",
@@ -196,7 +211,10 @@ describe("createRedeemBTCTxn", () => {
 	test("should handle different redemption amounts", async () => {
 		const mockScriptBuffer = new Uint8Array([0x76, 0xa9, 0x14]);
 		vi.mocked(bitcoinClient.getBtcAddrOutputScript).mockResolvedValue(mockScriptBuffer);
-		vi.mocked(useNBTC.getEnoughNbtcCoinsWithAmount).mockResolvedValue([mockCoinData[0]]);
+		vi.mocked(useNBTC.getEnoughNbtcCoinsWithAmount).mockResolvedValue({
+			nbtcCoins: [mockCoinData[0]],
+			isEnoughBalance: true,
+		});
 
 		const smallAmount = 100000n; // 0.001 BTC
 		const result = await createRedeemTxn(
