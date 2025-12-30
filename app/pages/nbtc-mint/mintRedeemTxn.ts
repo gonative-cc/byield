@@ -32,9 +32,14 @@ export async function createRedeemTxn(
 
 	// Collect enough nBTC coins across pages to cover the requested amount.
 	// This avoids failures when the balance is fragmented across many small coins.
-	const nbtcCoins = await getEnoughNbtcCoinsWithAmount(senderAddress, client, nbtcCoin, amount);
+	const { nbtcCoins, isEnoughBalance } = await getEnoughNbtcCoinsWithAmount(
+		senderAddress,
+		client,
+		nbtcCoin,
+		amount,
+	);
 
-	if (!nbtcCoins.length) throw Error("No nBTC coins available");
+	if (!nbtcCoins.length || !isEnoughBalance) throw Error("Not enough nBTC coins available");
 
 	const primaryCoin = txn.object(nbtcCoins[0].coinObjectId);
 	if (nbtcCoins.length > 1) {
