@@ -101,16 +101,6 @@ function ContributorCard({ redirectTab, lockdropClaimedSbt = [] }: ContributorCa
 						<div className="text-muted-foreground mb-1 text-sm">Current Tier</div>
 						{isLockdropSbtClaimed ? (
 							<>
-								<div className="text-info mb-2 font-bold">
-									{currentTier.tier} - {currentTier.name}
-								</div>
-								<div className="text-muted-foreground text-sm">{currentTier.description}</div>
-							</>
-						) : (
-							<span>No Lockdrop SBTs claimed</span>
-						)}
-						{currentTier && (
-							<>
 								<div className="text-primary-foreground mb-1 font-bold">
 									{currentTier.tier} - {currentTier.name}
 								</div>
@@ -118,6 +108,8 @@ function ContributorCard({ redirectTab, lockdropClaimedSbt = [] }: ContributorCa
 									{currentTier.description}
 								</div>
 							</>
+						) : (
+							<span>No Lockdrop SBTs claimed</span>
 						)}
 						{userTotalDeposit?.totalDeposit !== null && (
 							<>

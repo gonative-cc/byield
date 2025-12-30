@@ -1,6 +1,6 @@
-import type { SBTTier } from "./types";
+import type { SBTTier, LockdropTier } from "./types";
 
-const LockDropSbt: SBTTier = {
+const LockDropSbt: LockdropTier = {
 	operationTitle: "Contribute to the Hive. Claim Your Place in the Future of BTCFi.",
 	campaignTitle: "Hive Contributor",
 	purpose:
