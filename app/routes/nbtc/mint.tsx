@@ -192,9 +192,9 @@ export default function Mint() {
 
 	const isRedeemTxsLoading = redeemTxsFetcher.state !== "idle";
 
-	const fetchRedeemTxs = useCallback(() => {
+	const fetchRedeemTxs = useCallback(async () => {
 		if (currentAccount) {
-			makeReq<QueryRedeemTxsResp>(redeemTxsFetcher, {
+			await makeReq<QueryRedeemTxsResp>(redeemTxsFetcher, {
 				method: "fetchRedeemTxs",
 				params: [network, currentAccount.address, redeem.setupId],
 			});

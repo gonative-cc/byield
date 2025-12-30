@@ -27,7 +27,7 @@ const createColumns = (
 ): Column<RedeemRequestResp>[] => [
 	{
 		Header: () => (
-			<TableTooltip label="Sui TX" tooltip="The Redeem ID ID that initiated the redeem process" />
+			<TableTooltip label="Sui TX" tooltip="The Redeem ID that initiated the redeem process" />
 		),
 		accessor: "redeem_id",
 		Cell: ({ row }: CellProps<RedeemRequestResp>) => {
