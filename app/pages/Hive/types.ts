@@ -16,3 +16,7 @@ export interface SBTTier {
 	purpose: string;
 	tiers: Tier[];
 }
+
+export interface LockdropTier extends Omit<SBTTier, "tiers"> {
+	tiers: (Tier & { usdRequired: number })[];
+}
