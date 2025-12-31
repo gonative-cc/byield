@@ -52,7 +52,7 @@ export async function getOpReturnOpcode() {
 	return bitcoinjs.opcodes.OP_RETURN;
 }
 
-export async function getBtcAddrOutputScript(
+export async function scriptPubKeyFromAddress(
 	address: string,
 	network: BitcoinNetworkType,
 ): Promise<Uint8Array | null> {
@@ -69,9 +69,8 @@ export async function isValidBitcoinAddress(
 	network: BitcoinNetworkType,
 ): Promise<boolean> {
 	try {
-		const outputScript = await getBtcAddrOutputScript(address, network);
-		if (outputScript) return true;
-		return false;
+		const outputScript = await scriptPubKeyFromAddress(address, network);
+		return outputScript ? true : false;
 	} catch {
 		return false;
 	}

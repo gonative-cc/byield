@@ -2,8 +2,8 @@ import type { SuiClient } from "@mysten/sui/client";
 import { Transaction } from "@mysten/sui/transactions";
 import type { BitcoinNetworkType } from "sats-connect";
 import { type RedeemCfg, moveCallTarget } from "~/config/sui/contracts-config";
-import { getBtcAddrOutputScript } from "~/lib/bitcoin.client";
-import { getEnoughNbtcCoinsWithAmount } from "../BuyNBTC/useNBTC";
+import { scriptPubKeyFromAddress } from "~/lib/bitcoin.client";
+import { getCoinsForAmount } from "../BuyNBTC/useNBTC";
 
 // create a redeem BTC txn
 export async function createRedeemTxn(
@@ -24,7 +24,7 @@ export async function createRedeemTxn(
 	const txn = new Transaction();
 	txn.setSender(senderAddress);
 
-	const recipientScriptBuffer: Uint8Array | null = await getBtcAddrOutputScript(
+	const recipientScriptBuffer: Uint8Array | null = await scriptPubKeyFromAddress(
 		recipientAddr,
 		network,
 	);
@@ -32,7 +32,7 @@ export async function createRedeemTxn(
 
 	// Collect enough nBTC coins across pages to cover the requested amount.
 	// This avoids failures when the balance is fragmented across many small coins.
-	const { nbtcCoins, isEnoughBalance } = await getEnoughNbtcCoinsWithAmount(
+	const { coins: nbtcCoins, isEnoughBalance } = await getCoinsForAmount(
 		senderAddress,
 		client,
 		nbtcCoin,
