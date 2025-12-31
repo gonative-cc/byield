@@ -1,6 +1,7 @@
 import type { FetcherWithComponents } from "react-router";
 import type { MintTransaction } from "./types";
 import type { BitcoinNetworkType } from "sats-connect";
+import type { RedeemRequestResp } from "@gonative-cc/sui-indexer/models";
 
 export type Req =
 	| {
@@ -18,6 +19,11 @@ export type Req =
 			method: "queryUTXOs";
 			// network, address
 			params: [BitcoinNetworkType, string];
+	  }
+	| {
+			method: "fetchRedeemTxs";
+			// network, sui address, setup id
+			params: [BitcoinNetworkType, string, number];
 	  };
 
 export async function makeReq<T>(
@@ -29,3 +35,4 @@ export async function makeReq<T>(
 }
 
 export type QueryMintTxResp = MintTransaction[] | null;
+export type QueryRedeemTxsResp = RedeemRequestResp[] | null;

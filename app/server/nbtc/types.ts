@@ -1,4 +1,5 @@
 import type { MintTxStatus } from "@gonative-cc/btcindexer/models";
+import type { RedeemRequestResp } from "@gonative-cc/sui-indexer/models";
 
 // scriptPubKey hex of the locking script (NOT a public key)
 export type UTXO = {
@@ -24,30 +25,9 @@ export interface MintTransaction {
 	errorMessage?: string;
 }
 
-// TODO: https://github.com/gonative-cc/byield/issues/739
-export enum RedeemNBTCStatus {
-	PENDING = "pending",
-	SIGNING = "signing",
-	SIGNED = "signed",
-	CONFIRMING = "confirming",
-	CONFIRMED = "confirmed",
-	COMPLETED = "completed",
-}
-
-// TODO: https://github.com/gonative-cc/byield/issues/739
-export interface RedeemTransaction {
-	suiTxId: string;
-	bitcoinTxId?: string;
-	amountInSatoshi: string;
-	bitcoinAddress: string;
-	status: RedeemNBTCStatus;
-	suiExplorerUrl?: string;
-}
-
-export interface LoaderData {
-	mintTxs: MintTransaction[];
-}
-
-export interface LoaderDataResp extends LoaderData {
-	error?: Error;
+// worker don't have this interface as the moment
+// TODO: We should get it from the worker.
+export interface RedeemSolverRPCI {
+	proposeRedeemUtxos(): Promise<void>;
+	redeemsBySuiAddr(suiAddress: string, setupId: number): Promise<RedeemRequestResp[]>;
 }

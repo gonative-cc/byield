@@ -7,12 +7,12 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { CopyButton } from "~/components/ui/CopyButton";
 import { AnimatedHourglass } from "~/components/ui/AnimatedHourglass";
 import { useState, useMemo, useCallback } from "react";
-import { RedeemNBTCStatus, type RedeemTransaction } from "~/server/nbtc/types";
 import { TableTooltip } from "./TableTooltip";
-import { SuiTxLink } from "./SuiTxLink";
+import { RedeemRequestStatus, type RedeemRequestResp } from "@gonative-cc/sui-indexer/models";
+import { ExpandableRedeemDetails } from "./ExpandableRedeemDetails";
 
-const getStatusDisplay = (status: RedeemTransaction["status"]) => {
-	const isActive = status !== RedeemNBTCStatus.COMPLETED;
+const getStatusDisplay = (status: RedeemRequestResp["status"]) => {
+	const isActive = status !== RedeemRequestStatus.Broadcasted;
 	return (
 		<div className="flex items-center gap-2">
 			{isActive && <AnimatedHourglass size="md" />}
@@ -24,41 +24,35 @@ const getStatusDisplay = (status: RedeemTransaction["status"]) => {
 const createColumns = (
 	expandedRows: Set<string>,
 	toggleExpanded: (txId: string) => void,
-): Column<RedeemTransaction>[] => [
+): Column<RedeemRequestResp>[] => [
 	{
 		Header: () => (
-			<TableTooltip label="Sui TX" tooltip="The Sui transaction ID that initiated the redeem process" />
+			<TableTooltip label="Sui TX" tooltip="The Redeem ID that initiated the redeem process" />
 		),
-		accessor: "suiTxId",
-		Cell: ({ row }: CellProps<RedeemTransaction>) => {
-			const suiTxId = row.original.suiTxId;
-			const suiExplorerUrl = row.original.suiExplorerUrl;
-
-			if (!suiTxId) {
-				return <span className="text-base-content/40">-</span>;
-			}
-
-			return <SuiTxLink suiTxId={suiTxId} explorerUrl={suiExplorerUrl} />;
+		accessor: "redeem_id",
+		Cell: ({ row }: CellProps<RedeemRequestResp>) => {
+			const redeemId = row.original.redeem_id;
+			return <span className="text-base-content/40">{redeemId}</span>;
 		},
 	},
 	{
 		Header: () => <TableTooltip label="Amount" tooltip="The amount of nBTC being redeemed" />,
-		accessor: "amountInSatoshi",
-		Cell: ({ row }: CellProps<RedeemTransaction>) => (
+		accessor: "amount_sats",
+		Cell: ({ row }: CellProps<RedeemRequestResp>) => (
 			<div className="flex items-center gap-2 font-semibold">
-				<span className="text-primary">{formatNBTC(BigInt(row.original.amountInSatoshi || 0))}</span>
+				<span className="text-primary">{formatNBTC(BigInt(row.original.amount_sats || 0))}</span>
 				<span className="text-base-content/60 text-sm">nBTC</span>
 			</div>
 		),
 	},
 	{
 		Header: () => <TableTooltip label="Recipient" tooltip="The Bitcoin address where BTC will be sent" />,
-		accessor: "bitcoinAddress",
-		Cell: ({ row }: CellProps<RedeemTransaction>) => (
-			<Tooltip tooltip={row.original.bitcoinAddress}>
+		accessor: "recipient_script",
+		Cell: ({ row }: CellProps<RedeemRequestResp>) => (
+			<Tooltip tooltip={row.original.recipient_script}>
 				<div className="link flex items-center gap-2 font-mono">
-					<span className="text-sm">{trimAddress(row.original.bitcoinAddress)}</span>
-					<CopyButton text={row.original.bitcoinAddress} />
+					<span className="text-sm">{trimAddress(row.original.recipient_script)}</span>
+					<CopyButton text={row.original.recipient_script} />
 				</div>
 			</Tooltip>
 		),
@@ -66,35 +60,36 @@ const createColumns = (
 	{
 		Header: () => <TableTooltip label="Status" tooltip="Current status of the redeem transaction" />,
 		accessor: "status",
-		Cell: ({ row }: CellProps<RedeemTransaction>) => getStatusDisplay(row.original.status),
+		Cell: ({ row }: CellProps<RedeemRequestResp>) => getStatusDisplay(row.original.status),
 	},
-	{
-		Header: () => (
-			<TableTooltip label="Bitcoin TX" tooltip="The Bitcoin transaction ID for the redeemed BTC" />
-		),
-		accessor: "bitcoinTxId",
-		Cell: ({ row }: CellProps<RedeemTransaction>) => {
-			const bitcoinTxId = row.original.bitcoinTxId;
+	// TODO: API is not sending bitcoin tx id at the moment
+	// {
+	// 	Header: () => (
+	// 		<TableTooltip label="Bitcoin TX" tooltip="The Bitcoin transaction ID for the redeemed BTC" />
+	// 	),
+	// 	accessor: "bitcoinTxId",
+	// 	Cell: ({ row }: CellProps<RedeemRequestResp>) => {
+	// 		const bitcoinTxId = row.original.bitcoinTxId;
 
-			if (!bitcoinTxId) {
-				return <span className="text-base-content/40">-</span>;
-			}
+	// 		if (!bitcoinTxId) {
+	// 			return <span className="text-base-content/40">-</span>;
+	// 		}
 
-			return (
-				<Tooltip tooltip={bitcoinTxId}>
-					<div className="flex items-center gap-2 font-mono">
-						<span className="text-sm">{trimAddress(bitcoinTxId)}</span>
-						<CopyButton text={bitcoinTxId} />
-					</div>
-				</Tooltip>
-			);
-		},
-	},
+	// 		return (
+	// 			<Tooltip tooltip={bitcoinTxId}>
+	// 				<div className="flex items-center gap-2 font-mono">
+	// 					<span className="text-sm">{trimAddress(bitcoinTxId)}</span>
+	// 					<CopyButton text={bitcoinTxId} />
+	// 				</div>
+	// 			</Tooltip>
+	// 		);
+	// 	},
+	// },
 	{
 		Header: "Details",
 		id: "details",
 		accessor: () => "details",
-		Cell: ({ row }: CellProps<RedeemTransaction>) => {
+		Cell: ({ row }: CellProps<RedeemRequestResp>) => {
 			const isExpanded = expandedRows.has(row.id);
 			return (
 				<button
@@ -112,7 +107,7 @@ const createColumns = (
 ];
 
 interface RedeemBTCTableProps {
-	data: RedeemTransaction[];
+	data: RedeemRequestResp[];
 	isLoading?: boolean;
 }
 
@@ -131,10 +126,8 @@ export function RedeemBTCTable({ data, isLoading = false }: RedeemBTCTableProps)
 		});
 	}, []);
 
-	const renderExpandedRow = useCallback((row: Row<RedeemTransaction>) => {
-		// TODO: For now, use the same expandable details component
-		// In the future, create a specific one for redeem transactions
-		return <div className="p-4 text-sm">Redeem transaction details coming soon...</div>;
+	const renderExpandedRow = useCallback((row: Row<RedeemRequestResp>) => {
+		return <ExpandableRedeemDetails transaction={row.original} />;
 	}, []);
 
 	const columns = useMemo(
@@ -153,7 +146,7 @@ export function RedeemBTCTable({ data, isLoading = false }: RedeemBTCTableProps)
 				data={data}
 				expandedRows={expandedRows}
 				renderExpandedRow={renderExpandedRow}
-				getRowId={(row) => row.suiTxId}
+				getRowId={(row) => String(row.redeem_id)}
 				isLoading={isLoading}
 				loadingMessage="Loading nBTC redeem transactions..."
 			/>
