@@ -19,6 +19,7 @@ const mockRedeemCfg: RedeemCfg = {
 	pkgId: "0x123",
 	contractId: "0x456",
 	module: "nbtc",
+	setupId: 0,
 };
 
 const mockCoinData = [
