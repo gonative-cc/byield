@@ -32,20 +32,27 @@ export interface UserSbtData {
 	invitees: Invitee[];
 }
 
-interface Pagination {
-	currentPage: number;
-	pageSize: number;
-	totalUsers: number;
-	totalPages: number;
-}
-
 export interface Response<T> {
 	code: number;
 	message: string;
 	data: T;
+	isError: boolean;
 }
 
-export interface Data {
-	users: UserSbtData[];
-	pagination: Pagination;
+interface UserUSDCTotalDepositNode {
+	contents: {
+		json: {
+			total_amount: string;
+			user: string;
+			coin_type: {
+				name: string;
+			};
+		};
+	};
+}
+
+export interface UserUSDCTotalDeposit {
+	events: {
+		nodes: UserUSDCTotalDepositNode[];
+	};
 }
