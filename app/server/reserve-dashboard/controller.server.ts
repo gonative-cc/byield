@@ -1,7 +1,8 @@
 import type { BitcoinNetworkType } from "sats-connect";
 import { badRequest, handleNonSuccessResp, notFound, serverError } from "../http-resp";
 import type { QueryLockedNBTCResp, QueryLockedNCBTCResp, Req } from "./jsonrpc";
-import type { GraphQLResponse, NCBTCData, TotalBTCRes, TotalSupplyResponse } from "./types";
+import type { NCBTCData, TotalBTCRes, TotalSupplyResponse } from "./types";
+import type { GraphQLResponse } from "../common/types";
 import { mustGetBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import { logError } from "~/lib/log";
 

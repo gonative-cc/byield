@@ -1,8 +1,5 @@
-import { bcs } from "@mysten/sui/bcs";
-import type { SuiClient } from "@mysten/sui/client";
 import { coinWithBalance, Transaction } from "@mysten/sui/transactions";
 import { type Coin, type LockdropCfg, moveCallTarget } from "~/config/sui/contracts-config";
-import { logger } from "~/lib/log";
 
 export function createLockdropDepositTxn(
 	senderAddress: string,
@@ -33,41 +30,4 @@ export function createLockdropDepositTxn(
 	});
 
 	return txn;
-}
-
-export async function getUserDeposits(
-	userAddress: string,
-	lockdropCfg: LockdropCfg,
-	client: SuiClient,
-): Promise<string | null> {
-	try {
-		const txn = new Transaction();
-		txn.moveCall({
-			target: moveCallTarget(lockdropCfg, "get_user_deposits"),
-			arguments: [txn.object(lockdropCfg.lockdropId), txn.pure.address(userAddress)],
-		});
-		const result = await client.devInspectTransactionBlock({
-			sender: userAddress,
-			transactionBlock: txn,
-		});
-		if (result.effects.status.status !== "success") {
-			throw new Error(`Transaction failed: ${result.effects.status.error}`);
-		}
-		const returnValues = result.results?.[0]?.returnValues;
-		if (!returnValues || returnValues.length === 0) {
-			throw new Error("No return values from devInspectTransactionBlock");
-		}
-		const firstReturnValue = returnValues?.[0];
-		if (!firstReturnValue) {
-			throw new Error("No first return value from return values");
-		}
-		const bytes = new Uint8Array(firstReturnValue?.[0]);
-		const vectorSchema = bcs.vector(bcs.u64());
-		const decoded = vectorSchema.parse(bytes);
-		// index: 0 -> it is always USDC cumulative
-		return decoded?.[0];
-	} catch (err) {
-		logger.error({ msg: "Failed to fetch deposits:", error: err });
-		return null;
-	}
 }
