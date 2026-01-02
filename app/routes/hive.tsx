@@ -9,7 +9,11 @@ import { useSuiNetwork } from "~/hooks/useSuiNetwork";
 // This is a server hive to post data to server (data mutations)
 export async function action({ request, context }: Route.ActionArgs) {
 	const TBOOK_AUTH_TOKEN = context.cloudflare.env.TBOOK_AUTH_TOKEN;
-	const ctrl = new HiveController(TBOOK_AUTH_TOKEN);
+	const reqData = await request.clone().json();
+	const { params } = reqData as { params: [string, string] };
+	const graphqlURl = params[0];
+
+	const ctrl = new HiveController(TBOOK_AUTH_TOKEN, graphqlURl);
 	return ctrl.handleJsonRPC(request);
 }
 
