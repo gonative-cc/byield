@@ -52,19 +52,25 @@ export async function getOpReturnOpcode() {
 	return bitcoinjs.opcodes.OP_RETURN;
 }
 
+export async function scriptPubKeyFromAddress(
+	address: string,
+	network: BitcoinNetworkType,
+): Promise<Uint8Array | null> {
+	const [bitcoinjs, networkConfig] = await Promise.all([
+		getBitcoinLib(),
+		getBitcoinNetworkConfig(network),
+	]);
+	if (!networkConfig) return null;
+	return bitcoinjs.address.toOutputScript(address, networkConfig);
+}
+
 export async function isValidBitcoinAddress(
 	address: string,
 	network: BitcoinNetworkType,
 ): Promise<boolean> {
 	try {
-		const [bitcoinjs, networkConfig] = await Promise.all([
-			getBitcoinLib(),
-			getBitcoinNetworkConfig(network),
-		]);
-		if (!networkConfig) return false;
-
-		bitcoinjs.address.toOutputScript(address, networkConfig);
-		return true;
+		const outputScript = await scriptPubKeyFromAddress(address, network);
+		return outputScript ? true : false;
 	} catch {
 		return false;
 	}

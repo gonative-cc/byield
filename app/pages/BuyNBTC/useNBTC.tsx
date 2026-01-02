@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
-import type { SuiClient, PaginatedCoins } from "@mysten/sui/client";
+import type { SuiClient } from "@mysten/sui/client";
 import { coinWithBalance, Transaction } from "@mysten/sui/transactions";
 import type { TransactionResult } from "@mysten/sui/transactions";
 import { toast } from "~/hooks/use-toast";
@@ -14,11 +14,50 @@ import { logger } from "~/lib/log";
 const buyNBTCFunction = "buy_nbtc";
 const sellNBTCFunction = "sell_nbtc";
 
-async function getNBTCCoins(owner: string, client: SuiClient, nbtcCoin: string): Promise<PaginatedCoins> {
-	return client.getCoins({
-		owner,
-		coinType: nbtcCoin,
-	});
+interface GetCoinForAmountI {
+	coins: {
+		coinObjectId: string;
+		balance: string | number | bigint;
+	}[];
+	isEnoughBalance: boolean;
+}
+
+// Returns the enough  coin coin array that has balance >= required amount
+export async function getCoinsForAmount(
+	senderAddress: string,
+	client: SuiClient,
+	coinType: string,
+	requiredAmount: bigint,
+): Promise<GetCoinForAmountI> {
+	const coins: GetCoinForAmountI["coins"] = [];
+	let hasNextPage = true;
+	let cursor: string | null | undefined = null;
+	let totalBalance = 0n;
+
+	while (hasNextPage && totalBalance < requiredAmount) {
+		const page = await client.getCoins({
+			owner: senderAddress,
+			coinType,
+			cursor,
+		});
+		const pageCoins = page.data ?? [];
+
+		if (!pageCoins.length) {
+			break;
+		}
+
+		for (const coin of pageCoins) {
+			coins.push(coin);
+			totalBalance += BigInt(coin.balance);
+			if (totalBalance >= requiredAmount) {
+				break;
+			}
+		}
+
+		hasNextPage = page.hasNextPage;
+		cursor = page.nextCursor;
+	}
+	return { coins, isEnoughBalance: totalBalance >= requiredAmount };
 }
 
 async function createNBTCTxn(
@@ -41,7 +80,10 @@ async function createNBTCTxn(
 			arguments: [txn.object(nbtcOtcCfg.vaultId), coins],
 		});
 		// merge nbtc coins with the result coin
-		const nbtcCoins = await getNBTCCoins(senderAddress, client, nbtcCoin);
+		const nbtcCoins = await client.getCoins({
+			owner: senderAddress,
+			coinType: nbtcCoin,
+		});
 		const remainingCoins = nbtcCoins.data.map(({ coinObjectId }) => txn.object(coinObjectId));
 		if (remainingCoins.length > 0) txn.mergeCoins(resultCoin, remainingCoins);
 		// Check user have nBTC here, if yes, then we try to merge,
