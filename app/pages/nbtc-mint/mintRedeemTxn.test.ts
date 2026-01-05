@@ -2,7 +2,7 @@ import { describe, test, expect, vi, beforeEach } from "vitest";
 import { Transaction } from "@mysten/sui/transactions";
 import { BitcoinNetworkType } from "sats-connect";
 import { createRedeemTxn } from "./mintRedeemTxn";
-import type { RedeemCfg } from "~/config/sui/contracts-config";
+import type { NbtcCfg } from "~/config/sui/contracts-config";
 import * as bitcoinClient from "~/lib/bitcoin.client";
 import * as useNBTC from "../BuyNBTC/useNBTC";
 import type { SuiClient } from "@mysten/sui/client";
@@ -15,11 +15,14 @@ const mockClient = {
 	getCoins: vi.fn(),
 } as unknown as SuiClient;
 
-const mockRedeemCfg: RedeemCfg = {
+const mockRedeemCfg: NbtcCfg = {
 	pkgId: "0x123",
+	coinType: "",
 	contractId: "0x456",
 	module: "nbtc",
 	setupId: 0,
+	redeemPkgId: "0x123",
+	redeemContractId: "0x123",
 };
 
 const mockCoinData = [
@@ -33,7 +36,7 @@ describe("createRedeemBTCTxn", () => {
 	});
 
 	test("should throw error when contractId or pkg is missing", async () => {
-		let invalidCfg = { ...mockRedeemCfg, contractId: "" };
+		let invalidCfg = { ...mockRedeemCfg, redeemContractId: "" };
 
 		await expect(
 			createRedeemTxn(
@@ -47,7 +50,7 @@ describe("createRedeemBTCTxn", () => {
 			),
 		).rejects.toThrow("Contract ID is not found");
 
-		invalidCfg = { ...mockRedeemCfg, pkgId: "" };
+		invalidCfg = { ...mockRedeemCfg, redeemPkgId: "" };
 
 		await expect(
 			createRedeemTxn(

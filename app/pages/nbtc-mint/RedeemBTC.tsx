@@ -55,7 +55,7 @@ export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
 	const { mutateAsync: signTransaction } = useSignTransaction();
 	const [isProcessing, setIsProcessing] = useState(false);
 	const { currentAddress, network } = useXverseWallet();
-	const { redeemBTC } = useNetworkVariables();
+	const { nbtc } = useNetworkVariables();
 	const currentAccount = useCurrentAccount();
 	const isSuiConnected = !!currentAccount;
 	const nbtcBalanceRes = useCoinBalance("NBTC");
@@ -96,7 +96,7 @@ export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
 				currentAccount.address,
 				parseNBTC(numberOfNBTC),
 				bitcoinAddress,
-				redeemBTC,
+				nbtc,
 				client,
 				network,
 				nbtcBalanceRes.coinType,

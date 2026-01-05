@@ -1,7 +1,7 @@
 import type { SuiClient } from "@mysten/sui/client";
 import { Transaction } from "@mysten/sui/transactions";
 import type { BitcoinNetworkType } from "sats-connect";
-import { type RedeemCfg, moveCallTarget } from "~/config/sui/contracts-config";
+import { type NbtcCfg } from "~/config/sui/contracts-config";
 import { scriptPubKeyFromAddress } from "~/lib/bitcoin.client";
 import { getCoinsForAmount } from "../BuyNBTC/useNBTC";
 
@@ -10,15 +10,15 @@ export async function createRedeemTxn(
 	senderAddress: string,
 	amount: bigint,
 	recipientAddr: string,
-	redeemCfg: RedeemCfg,
+	redeemCfg: NbtcCfg,
 	client: SuiClient,
 	network: BitcoinNetworkType,
 	nbtcCoin: string,
 ): Promise<Transaction> {
-	if (!redeemCfg.contractId) {
+	if (!redeemCfg.redeemContractId) {
 		throw new Error("Contract ID is not found");
 	}
-	if (!redeemCfg.pkgId) {
+	if (!redeemCfg.redeemPkgId) {
 		throw new Error("Redeem BTC package ID is not found");
 	}
 	const txn = new Transaction();
@@ -52,9 +52,9 @@ export async function createRedeemTxn(
 	const [coins] = txn.splitCoins(primaryCoin, [txn.pure.u64(amount)]);
 
 	txn.moveCall({
-		target: moveCallTarget(redeemCfg, "redeem"),
+		target: `${redeemCfg.redeemPkgId}::${redeemCfg.module}::redeem`,
 		arguments: [
-			txn.object(redeemCfg.contractId),
+			txn.object(redeemCfg.redeemContractId),
 			coins,
 			txn.pure.vector("u8", recipientScriptBuffer),
 			txn.object(txn.object.clock()),
