@@ -19,6 +19,7 @@ const maxTxIdSize = 44;
 
 export default class Controller {
 	kv: KVNamespace;
+	d1: D1Database;
 	kvKeyTxPrefix = "tx_";
 	kvKeyTxPrefixNotAuthorized = "txNA_";
 
@@ -59,6 +60,7 @@ export default class Controller {
 		}
 
 		this.kv = kv;
+		this.d1 = d1;
 		this.tradeportApiUser = tradeportApiUser;
 		this.tradeportApiKey = tradeportApiKey;
 
@@ -213,12 +215,27 @@ export default class Controller {
 	async checkNftOwnership(userAddress: string, _network: Network): Promise<boolean> {
 		const beelieverCollectionId = "6496c047-dcdd-44e2-b8ca-13c27ac0478a";
 
+		const cached = await this.d1
+			.prepare(
+				"SELECT nfts, updated_at FROM nft_ownership WHERE collection_id = ?1 AND user_address = ?2",
+			)
+			.bind(beelieverCollectionId, userAddress)
+			.first<{ nfts: string; updated_at: number }>();
+
+		const now = Date.now();
+
+		if (cached && now - cached.updated_at < 2 * 60 * 60 * 1000) {
+			// cache is valid for 2h
+			const nftIds = JSON.parse(cached.nfts) as string[];
+			return nftIds.length > 0;
+		}
+
 		try {
 			const query = `
 				query CheckBeelieverOwnership($owner: String!, $collectionId: uuid!) {
 					sui {
 						nfts(
-							where: { 
+							where: {
 								owner: { _eq: $owner }
 								collection_id: { _eq: $collectionId }
 								burned: { _eq: false }
@@ -253,7 +270,16 @@ export default class Controller {
 
 			if (result.errors) return false;
 
-			return (result.data?.sui?.nfts || []).length > 0;
+			const nftIds = (result.data?.sui?.nfts || []).map((nft) => nft.id);
+
+			await this.d1
+				.prepare(
+					"INSERT OR REPLACE INTO nft_ownership (collection_id, user_address, nfts, updated_at) VALUES (?1, ?2, ?3, ?4)",
+				)
+				.bind(beelieverCollectionId, userAddress, JSON.stringify(nftIds), now)
+				.run();
+
+			return nftIds.length > 0;
 		} catch (error) {
 			logError({ msg: "Failed to check NFT ownership", method: "checkNftOwnership" }, error);
 			return false;

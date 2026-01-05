@@ -98,8 +98,8 @@ const MULTIPLIER_RULES: MultiplierRule[] = [
 			{
 				id: "early_bee",
 				label: "Early Bee",
-				value: "+20%",
-				description: "First 2,000 eligible wallets.",
+				value: "+5%",
+				description: "First 1,000 eligible wallets.",
 			},
 		],
 	},
@@ -111,11 +111,16 @@ const MULTIPLIER_RULES: MultiplierRule[] = [
 		items: [
 			{
 				id: "nft_normal",
-				label: "Standard Holder",
-				value: "+15%",
+				label: "Beelievers Normal NFT Holder",
+				value: "+5%",
 				description: "Hold a Beeliever NFT",
 			},
-			{ id: "nft_mythic", label: "Mythic Holder", value: "+30%", description: "Hold a Mythic NFT" },
+			{
+				id: "nft_mythic",
+				label: "Beelievers Mythic NFT Holder",
+				value: "+10%",
+				description: "Hold a Mythic NFT",
+			},
 		],
 	},
 	{
@@ -124,9 +129,9 @@ const MULTIPLIER_RULES: MultiplierRule[] = [
 		badgeColor: "badge-info",
 		description: "Based on the quantity of NFTs held. These do not stack (highest takes priority).",
 		items: [
-			{ id: "qty_5", label: "Hive 5", value: "+5%", description: "Hold ≥ 5 NFTs" },
-			{ id: "qty_10", label: "Hive 10", value: "+10%", description: "Hold ≥ 10 NFTs" },
-			{ id: "qty_20", label: "Hive 20", value: "+15%", description: "Hold ≥ 20 NFTs" },
+			{ id: "qty_5", label: "Hive 5", value: "+5%", description: "Holding ≥ 5 Beelievers NFTs" },
+			{ id: "qty_10", label: "Hive 10", value: "+8%", description: "Holding ≥ 10 Beelievers NFTs" },
+			{ id: "qty_20", label: "Hive 20", value: "+10%", description: "Holding ≥ 20 Beelievers NFTs" },
 		],
 	},
 ];
@@ -193,9 +198,9 @@ function GlobalMultipliersSection() {
 							key={group.title}
 							title={
 								<div className="flex items-center gap-3">
-									<h3 className="text-lg font-semibold">{group.title}</h3>
+									<h3 className="text-sm font-semibold md:text-lg">{group.title}</h3>
 									<span
-										className={`badge badge-outline badge-sm uppercase ${group.badgeColor}`}
+										className={`badge badge-outline badge-xs md:badge-sm uppercase ${group.badgeColor}`}
 									>
 										{group.badge}
 									</span>

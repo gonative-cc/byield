@@ -1,7 +1,7 @@
 import { isValidSuiAddress } from "@mysten/sui/utils";
 import { BitcoinNetworkType } from "sats-connect";
 import type { BtcIndexerRpcI } from "@gonative-cc/btcindexer/rpc-interface";
-import type { QueryMintTxResp, Req } from "./jsonrpc";
+import type { QueryMintTxResp, QueryRedeemTxsResp, Req } from "./jsonrpc";
 import { mustGetBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import {
 	serverError,
@@ -14,17 +14,24 @@ import { protectedBitcoinRPC } from "./btc-proxy.server";
 import { BitcoinNetworkTypeMap, nbtcMintTxRespToMintTx } from "./convert";
 import { logError, logger } from "~/lib/log";
 import type { NbtcTxResp } from "@gonative-cc/btcindexer/models";
+import type { RedeemSolverRPCI } from "./types";
 
 export default class Controller {
 	btcRPCUrl: string;
 	btcindexer: BtcIndexerRpcI;
+	redeemSolver: RedeemSolverRPCI;
 	network: BitcoinNetworkType;
 
-	constructor(network: BitcoinNetworkType, indexerRpc: BtcIndexerRpcI) {
+	constructor(
+		network: BitcoinNetworkType,
+		indexerRpc: BtcIndexerRpcI,
+		redeemSolver: RedeemSolverRPCI,
+	) {
 		this.btcindexer = indexerRpc;
 		this.network = network;
 		const networkConfig = mustGetBitcoinConfig(network);
 		this.btcRPCUrl = networkConfig.btcRPCUrl;
+		this.redeemSolver = redeemSolver;
 	}
 
 	private async getMintTxs(
@@ -42,7 +49,9 @@ export default class Controller {
 			fetchPromises.push(this.btcindexer.nbtcMintTxsBySuiAddr(suiAddr));
 		}
 		if (btcAddr) {
-			fetchPromises.push(this.btcindexer.depositsBySender(btcAddr));
+			fetchPromises.push(
+				this.btcindexer.depositsBySender(btcAddr, BitcoinNetworkTypeMap[this.network]),
+			);
 		}
 
 		if (fetchPromises.length === 0) return badRequest();
@@ -125,6 +134,19 @@ export default class Controller {
 		}
 	}
 
+	private async queryRedeemTxs(
+		suiAddr: string,
+		setupId: number,
+	): Promise<QueryRedeemTxsResp | Response> {
+		const method = "nbtc:queryRedeemTxs";
+		try {
+			const redeemTxs = await this.redeemSolver.redeemsBySuiAddr(suiAddr, setupId);
+			return redeemTxs;
+		} catch (error) {
+			return serverError(method, error, "can't process redeem Txs data");
+		}
+	}
+
 	async handleJsonRPC(r: Request) {
 		let reqData: Req;
 		try {
@@ -149,6 +171,8 @@ export default class Controller {
 				return this.postNbtcTx(reqData.params[1]);
 			case "queryUTXOs":
 				return this.queryUTXOs(reqData.params[1]);
+			case "fetchRedeemTxs":
+				return this.queryRedeemTxs(reqData.params[1], reqData.params[2]);
 			default:
 				return notFound("Unknown method");
 		}
