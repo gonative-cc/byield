@@ -60,6 +60,10 @@ async function getKioskNFTs(
 	return kioskMap;
 }
 
+function moveCallTarget(pkgId: string): string {
+	return `${pkgId}::mint::upsert_nft_badges`;
+}
+
 export function useYourBeelievers() {
 	const { client, network } = useSuiClientContext();
 	const currentAccount = useCurrentAccount();
@@ -196,7 +200,7 @@ export function useClaimBadges({
 				kioskTx
 					.borrowTx({ itemId: nftId, itemType: actualType }, (item) => {
 						tx.moveCall({
-							target: `${pkgId}::mint::upsert_nft_badges`,
+							target: moveCallTarget(pkgId),
 							arguments: [tx.object(collectionId), item],
 						});
 					})
@@ -208,7 +212,7 @@ export function useClaimBadges({
 			}
 		} else {
 			tx.moveCall({
-				target: `${pkgId}::mint::upsert_nft_badges`,
+				target: moveCallTarget(pkgId),
 				arguments: [tx.object(collectionId), tx.object(nftId)],
 			});
 		}

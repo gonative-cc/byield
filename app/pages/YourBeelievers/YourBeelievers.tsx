@@ -12,23 +12,36 @@ import { NftBadgesModal } from "./NftBadgesModal";
 export function YourBeelievers() {
 	const { nfts, isLoading, userAddress, updateBadges } = useYourBeelievers();
 
-	return (
-		<div className="flex w-full flex-col items-center gap-6 sm:gap-8 lg:gap-10">
-			<h1 className={heroTitle + " text-primary-foreground"}>🐝 Your Beelievers</h1>
-
-			{!userAddress ? (
+	if (!userAddress) {
+		return (
+			<div className="flex w-full flex-col items-center gap-6 sm:gap-8 lg:gap-10">
+				<h1 className={heroTitle + " text-primary-foreground"}>🐝 Your Beelievers</h1>
 				<div className="flex w-full flex-col items-center gap-4">
 					<p className="text-base-content/75 text-lg">
 						Connect your wallet to view your Beelievers NFTs
 					</p>
 					<SuiConnectModal />
 				</div>
-			) : isLoading ? (
+			</div>
+		);
+	}
+
+	if (isLoading) {
+		return (
+			<div className="flex w-full flex-col items-center gap-6 sm:gap-8 lg:gap-10">
+				<h1 className={heroTitle + " text-primary-foreground"}>🐝 Your Beelievers</h1>
 				<div className="flex w-full flex-col items-center gap-4">
 					<p className="text-base-content/75 text-lg">Loading your NFTs...</p>
 					<LoadingSpinner isLoading={true} />
 				</div>
-			) : nfts.length === 0 ? (
+			</div>
+		);
+	}
+
+	if (nfts.length === 0) {
+		return (
+			<div className="flex w-full flex-col items-center gap-6 sm:gap-8 lg:gap-10">
+				<h1 className={heroTitle + " text-primary-foreground"}>🐝 Your Beelievers</h1>
 				<div className="flex w-full flex-col items-center gap-4">
 					<p className="text-base-content/75 text-lg">You don&apos;t own any Beelievers NFTs yet</p>
 					<a
@@ -40,33 +53,38 @@ export function YourBeelievers() {
 						Learn more about Beelievers
 					</a>
 				</div>
-			) : (
-				<div className="w-full">
-					<div className="mb-6 text-center">
-						<p className="text-primary text-2xl font-bold">
-							You own {nfts.length} Beeliever{nfts.length > 1 ? "s" : ""}
-						</p>
-					</div>
-					<div className="flex w-full justify-center">
-						<div
-							className={`${GRADIENTS.primaryNftBg} card card-border w-full border shadow-2xl md:w-3/4`}
-						>
-							<div className="card-body p-4 lg:p-8">
-								<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-									{nfts.map((nft) => (
-										<NFTCard
-											key={nft.id}
-											nft={nft}
-											userAddress={userAddress}
-											onClaimSuccess={(badges) => updateBadges(nft.id, badges)}
-										/>
-									))}
-								</div>
+			</div>
+		);
+	}
+
+	return (
+		<div className="flex w-full flex-col items-center gap-6 sm:gap-8 lg:gap-10">
+			<h1 className={heroTitle + " text-primary-foreground"}>🐝 Your Beelievers</h1>
+			<div className="w-full">
+				<div className="mb-6 text-center">
+					<p className="text-primary text-2xl font-bold">
+						You own {nfts.length} Beeliever{nfts.length > 1 ? "s" : ""}
+					</p>
+				</div>
+				<div className="flex w-full justify-center">
+					<div
+						className={`${GRADIENTS.primaryNftBg} card card-border w-full border shadow-2xl md:w-3/4`}
+					>
+						<div className="card-body p-4 lg:p-8">
+							<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+								{nfts.map((nft) => (
+									<NFTCard
+										key={nft.id}
+										nft={nft}
+										userAddress={userAddress}
+										onClaimSuccess={(badges) => updateBadges(nft.id, badges)}
+									/>
+								))}
 							</div>
 						</div>
 					</div>
 				</div>
-			)}
+			</div>
 		</div>
 	);
 }
