@@ -23,19 +23,16 @@ export interface NbtcCfg {
 	pkgId: string;
 	coinType: string;
 	contractId: string;
+	redeemPkgId: string;
+	redeemContractId: string;
+	module: string;
+	setupId: number;
 }
 
 export interface LockdropCfg {
 	pkgId: string;
 	lockdropId: string;
 	module: string;
-}
-
-export interface RedeemCfg {
-	pkgId: string;
-	contractId: string;
-	module: string;
-	setupId: number;
 }
 
 export interface Coin {
@@ -54,7 +51,6 @@ export interface ContractsCfg {
 	nbtc: NbtcCfg;
 	lockdrop: LockdropCfg;
 	usdc: Coin;
-	redeemBTC: RedeemCfg;
 }
 
 export const mainnetCfg: ContractsCfg = {
@@ -82,6 +78,11 @@ export const mainnetCfg: ContractsCfg = {
 		coinType: "::nbtc::NBTC",
 		pkgId: "",
 		contractId: "",
+		redeemPkgId: "",
+		redeemContractId: "",
+		module: "nbtc",
+		// TODO: update it when setup ID is available for redeem
+		setupId: 1,
 	},
 	lockdrop: {
 		pkgId: "",
@@ -91,13 +92,6 @@ export const mainnetCfg: ContractsCfg = {
 	usdc: {
 		name: "USDC",
 		type: "",
-	},
-	redeemBTC: {
-		pkgId: "",
-		contractId: "",
-		module: "nbtc",
-		// TODO: update it when setup ID is available for redeem
-		setupId: 1,
 	},
 };
 
@@ -126,6 +120,11 @@ export const testnetCfg: ContractsCfg = {
 		coinType: "::nbtc::NBTC",
 		pkgId: "0x50be08b805766cc1a2901b925d3fb80b6362fcb25f269cb78067429237e222ec",
 		contractId: "0x5905e0c452bb5f237fb106ec2ecff962fbc60cd180090fb07a79d14d9d628a96",
+		redeemPkgId: "0xbbee5a5d833847125ab6c029d5ffec29c5f979cfcdf1906e98918eb86eb84e46",
+		redeemContractId: "0x9a0d5f810a8880fa69db46ce0b09bcb101f27fb3865adf365c33e2051d48f38a",
+		module: "nbtc",
+		// TODO: update it when setup ID is available for redeem
+		setupId: 1,
 	},
 	lockdrop: {
 		pkgId: "0xd244750dc02f917b2d539c5b68e14afbfc4e58920f04a0587692f8c6920e94ea",
@@ -135,13 +134,6 @@ export const testnetCfg: ContractsCfg = {
 	usdc: {
 		name: "USDC",
 		type: "0xa1ec7fc00a6f40db9693ad1415d0c193ad3906494428cf252621037bd7117e29::usdc::USDC",
-	},
-	redeemBTC: {
-		pkgId: "0xbbee5a5d833847125ab6c029d5ffec29c5f979cfcdf1906e98918eb86eb84e46",
-		contractId: "0x9a0d5f810a8880fa69db46ce0b09bcb101f27fb3865adf365c33e2051d48f38a",
-		module: "nbtc",
-		// TODO: update it when setup ID is available for redeem
-		setupId: 1,
 	},
 };
 
@@ -175,6 +167,11 @@ export const localnetCfg: ContractsCfg = {
 		coinType: "::nbtc::NBTC",
 		pkgId: "",
 		contractId: "",
+		redeemPkgId: "",
+		redeemContractId: "",
+		module: "nbtc",
+		// TODO: update it when setup ID is available for redeem
+		setupId: 1,
 	},
 	lockdrop: {
 		pkgId: "",
@@ -184,12 +181,6 @@ export const localnetCfg: ContractsCfg = {
 	usdc: {
 		name: "USDC",
 		type: "", // for local net - you can deploy any coin and call it usdc
-	},
-	redeemBTC: {
-		pkgId: "",
-		contractId: "",
-		module: "nbtc",
-		setupId: 0,
 	},
 };
 

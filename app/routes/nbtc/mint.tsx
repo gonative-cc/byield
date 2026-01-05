@@ -158,7 +158,7 @@ export async function action({ request, context }: Route.ActionArgs) {
 
 export default function Mint() {
 	const { network, currentAddress, isXverseInstalled } = useXverseWallet();
-	const { redeemBTC } = useNetworkVariables();
+	const { nbtc } = useNetworkVariables();
 	const { isMobile, mobileOS } = useMobile();
 	const btcAddr = currentAddress?.address || null;
 	const currentAccount = useCurrentAccount();
@@ -196,10 +196,10 @@ export default function Mint() {
 		if (currentAccount) {
 			await makeReq<QueryRedeemTxsResp>(redeemTxsFetcher, {
 				method: "fetchRedeemTxs",
-				params: [network, currentAccount.address, redeemBTC.setupId],
+				params: [network, currentAccount.address, nbtc.setupId],
 			});
 		}
-	}, [currentAccount, redeemTxsFetcher, network, redeemBTC.setupId]);
+	}, [currentAccount, redeemTxsFetcher, network, nbtc.setupId]);
 
 	useEffect(() => {
 		if (redeemTxsFetcher.state === "idle" && !redeemTxs && currentAccount) {
