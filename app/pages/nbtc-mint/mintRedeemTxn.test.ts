@@ -32,8 +32,8 @@ describe("createRedeemBTCTxn", () => {
 		vi.clearAllMocks();
 	});
 
-	test("should throw error when contractId is missing", async () => {
-		const invalidCfg = { ...mockRedeemCfg, contractId: "" };
+	test("should throw error when contractId or pkg is missing", async () => {
+		let invalidCfg = { ...mockRedeemCfg, contractId: "" };
 
 		await expect(
 			createRedeemTxn(
@@ -46,10 +46,8 @@ describe("createRedeemBTCTxn", () => {
 				"0xnbtc",
 			),
 		).rejects.toThrow("Contract ID is not found");
-	});
 
-	test("should throw error when pkgId is missing", async () => {
-		const invalidCfg = { ...mockRedeemCfg, pkgId: "" };
+		invalidCfg = { ...mockRedeemCfg, pkgId: "" };
 
 		await expect(
 			createRedeemTxn(
@@ -159,7 +157,7 @@ describe("createRedeemBTCTxn", () => {
 		);
 	});
 
-	test("should handle mainnet bitcoin addresses", async () => {
+	test("should handle mainnet or testnet bitcoin addresses", async () => {
 		const mockScriptBuffer = new Uint8Array([0x76, 0xa9, 0x14]);
 		vi.mocked(bitcoinClient.scriptPubKeyFromAddress).mockResolvedValue(mockScriptBuffer);
 		vi.mocked(useNBTC.getCoinsForAmount).mockResolvedValue({
@@ -167,7 +165,7 @@ describe("createRedeemBTCTxn", () => {
 			isEnoughBalance: true,
 		});
 
-		const result = await createRedeemTxn(
+		let result = await createRedeemTxn(
 			"0xsender",
 			1000000000n,
 			"bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4",
@@ -182,17 +180,8 @@ describe("createRedeemBTCTxn", () => {
 			"bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4",
 			BitcoinNetworkType.Mainnet,
 		);
-	});
 
-	test("should handle testnet bitcoin addresses", async () => {
-		const mockScriptBuffer = new Uint8Array([0x76, 0xa9, 0x14]);
-		vi.mocked(bitcoinClient.scriptPubKeyFromAddress).mockResolvedValue(mockScriptBuffer);
-		vi.mocked(useNBTC.getCoinsForAmount).mockResolvedValue({
-			coins: [mockCoinData[0]],
-			isEnoughBalance: true,
-		});
-
-		const result = await createRedeemTxn(
+		result = await createRedeemTxn(
 			"0xsender",
 			500000000n,
 			"tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx",

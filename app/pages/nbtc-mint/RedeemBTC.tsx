@@ -116,17 +116,14 @@ export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
 							currentBalance: nbtcBalanceRes.balance,
 							updateCoinBalanceInCache: nbtcBalanceRes.updateCoinBalanceInCache,
 						},
-						// SUI
-						...(suiBalanceRes?.coinType
-							? [
-									{
-										coinType: suiBalanceRes.coinType!,
-										currentBalance: suiBalanceRes.balance,
-										updateCoinBalanceInCache: suiBalanceRes.updateCoinBalanceInCache,
-									},
-								]
-							: []),
 					];
+					// SUI
+					if (suiBalanceRes?.coinType)
+						cachedCoins.push({
+							coinType: suiBalanceRes.coinType,
+							currentBalance: suiBalanceRes.balance,
+							updateCoinBalanceInCache: suiBalanceRes.updateCoinBalanceInCache,
+						});
 					handleBalanceChanges(result.balanceChanges, cachedCoins);
 				}
 				toast({

@@ -31,7 +31,7 @@ export async function getCoinsForAmount(
 ): Promise<GetCoinForAmountI> {
 	const coins: GetCoinForAmountI["coins"] = [];
 	let hasNextPage = true;
-	let cursor: string | null | undefined = null;
+	let cursor: string | null = null;
 	let totalBalance = 0n;
 
 	while (hasNextPage && totalBalance < requiredAmount) {
@@ -55,7 +55,7 @@ export async function getCoinsForAmount(
 		}
 
 		hasNextPage = page.hasNextPage;
-		cursor = page.nextCursor;
+		cursor = page.nextCursor || null;
 	}
 	return { coins, isEnoughBalance: totalBalance >= requiredAmount };
 }
