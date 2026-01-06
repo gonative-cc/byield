@@ -1,5 +1,6 @@
 import type { Network, Stack } from "bitcoinjs-lib";
 import { BitcoinNetworkType } from "sats-connect";
+import { logger } from "./log";
 
 /**
  * Dynamic import for bitcoinjs-lib to avoid SSR issues.
@@ -56,12 +57,17 @@ export async function scriptPubKeyFromAddress(
 	address: string,
 	network: BitcoinNetworkType,
 ): Promise<Uint8Array | null> {
-	const [bitcoinjs, networkConfig] = await Promise.all([
-		getBitcoinLib(),
-		getBitcoinNetworkConfig(network),
-	]);
-	if (!networkConfig) return null;
-	return bitcoinjs.address.toOutputScript(address, networkConfig);
+	try {
+		const [bitcoinjs, networkConfig] = await Promise.all([
+			getBitcoinLib(),
+			getBitcoinNetworkConfig(network),
+		]);
+		if (!networkConfig) return null;
+		return bitcoinjs.address.toOutputScript(address, networkConfig);
+	} catch (err) {
+		logger.error({ msg: "Error in scriptPubKeyFromAddress", err });
+		return null;
+	}
 }
 
 export async function isValidBitcoinAddress(
@@ -70,7 +76,7 @@ export async function isValidBitcoinAddress(
 ): Promise<boolean> {
 	try {
 		const outputScript = await scriptPubKeyFromAddress(address, network);
-		return outputScript ? true : false;
+		return !!outputScript;
 	} catch {
 		return false;
 	}

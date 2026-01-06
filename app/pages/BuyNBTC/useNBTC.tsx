@@ -1,119 +1,12 @@
 import { useCallback } from "react";
 import { useCurrentAccount, useSignAndExecuteTransaction, useSuiClient } from "@mysten/dapp-kit";
-import type { SuiClient } from "@mysten/sui/client";
-import { coinWithBalance, Transaction } from "@mysten/sui/transactions";
-import type { TransactionResult } from "@mysten/sui/transactions";
 import { toast } from "~/hooks/use-toast";
 import { formatSUI } from "~/lib/denoms";
 import { GA_EVENT_NAME, GA_CATEGORY, useGoogleAnalytics } from "~/lib/googleAnalytics";
 import { useNetworkVariables } from "~/networkConfig";
 import type { UseCoinBalanceResult } from "~/components/Wallet/SuiWallet/useBalance";
-import { moveCallTarget, type NbtcOtcCfg } from "~/config/sui/contracts-config";
 import { logger } from "~/lib/log";
-
-const buyNBTCFunction = "buy_nbtc";
-const sellNBTCFunction = "sell_nbtc";
-
-interface GetCoinForAmountI {
-	coins: {
-		coinObjectId: string;
-		balance: string | number | bigint;
-	}[];
-	isEnoughBalance: boolean;
-}
-
-// Returns the enough  coin coin array that has balance >= required amount
-export async function getCoinsForAmount(
-	senderAddress: string,
-	client: SuiClient,
-	coinType: string,
-	requiredAmount: bigint,
-): Promise<GetCoinForAmountI> {
-	const coins: GetCoinForAmountI["coins"] = [];
-	let hasNextPage = true;
-	let cursor: string | null = null;
-	let totalBalance = 0n;
-
-	while (hasNextPage && totalBalance < requiredAmount) {
-		const page = await client.getCoins({
-			owner: senderAddress,
-			coinType,
-			cursor,
-		});
-		const pageCoins = page.data ?? [];
-
-		if (!pageCoins.length) {
-			break;
-		}
-
-		for (const coin of pageCoins) {
-			coins.push(coin);
-			totalBalance += BigInt(coin.balance);
-			if (totalBalance >= requiredAmount) {
-				break;
-			}
-		}
-
-		hasNextPage = page.hasNextPage;
-		cursor = page.nextCursor || null;
-	}
-	return { coins, isEnoughBalance: totalBalance >= requiredAmount };
-}
-
-async function createNBTCTxn(
-	senderAddress: string,
-	amount: bigint,
-	nbtcOtcCfg: NbtcOtcCfg,
-	shouldBuy: boolean,
-	client: SuiClient,
-	nbtcBalance: bigint,
-	nbtcCoin: string,
-): Promise<Transaction | null> {
-	const txn = new Transaction();
-	txn.setSender(senderAddress);
-
-	let resultCoin: TransactionResult;
-	if (shouldBuy) {
-		const [coins] = txn.splitCoins(txn.gas, [txn.pure.u64(amount)]);
-		resultCoin = txn.moveCall({
-			target: moveCallTarget(nbtcOtcCfg, buyNBTCFunction),
-			arguments: [txn.object(nbtcOtcCfg.vaultId), coins],
-		});
-		// merge nbtc coins with the result coin
-		const nbtcCoins = await client.getCoins({
-			owner: senderAddress,
-			coinType: nbtcCoin,
-		});
-		const remainingCoins = nbtcCoins.data.map(({ coinObjectId }) => txn.object(coinObjectId));
-		if (remainingCoins.length > 0) txn.mergeCoins(resultCoin, remainingCoins);
-		// Check user have nBTC here, if yes, then we try to merge,
-		// if no we will transfer
-		txn.transferObjects([resultCoin], senderAddress);
-	} else {
-		if (nbtcBalance < amount) {
-			logger.error({
-				msg: "Not enough nBTC balance available",
-				method: "useNBTC",
-				nbtcBalance,
-				amount,
-			});
-			toast({
-				title: "Sell nBTC",
-				description: "Not enough nBTC balance available.",
-				variant: "destructive",
-			});
-			return null;
-		}
-		const coin = coinWithBalance({ balance: amount, type: nbtcCoin });
-		resultCoin = txn.moveCall({
-			target: moveCallTarget(nbtcOtcCfg, sellNBTCFunction),
-			arguments: [txn.object(nbtcOtcCfg.vaultId), coin],
-		});
-		txn.mergeCoins(txn.gas, [txn.object(resultCoin)]);
-	}
-
-	return txn;
-}
+import { createNBTCTxn } from "./createBuyNbtcTx";
 
 interface UseNBTCReturn {
 	handleTransaction: (amount: bigint) => Promise<void>;

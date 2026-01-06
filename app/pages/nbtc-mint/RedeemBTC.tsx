@@ -14,7 +14,7 @@ import { SuiConnectModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import { isValidBitcoinAddress } from "~/lib/bitcoin.client";
 import { useNetworkVariables } from "~/networkConfig";
 import { signAndExecTx } from "~/lib/suienv";
-import { createRedeemTxn } from "./mintRedeemTxn";
+import { createRedeemTxn } from "./redeemTxn";
 import { logError, logger } from "~/lib/log";
 
 interface NBTCRightAdornmentProps {

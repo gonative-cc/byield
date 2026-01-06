@@ -23,9 +23,6 @@ export interface NbtcCfg {
 	pkgId: string;
 	coinType: string;
 	contractId: string;
-	redeemPkgId: string;
-	redeemContractId: string;
-	module: string;
 	setupId: number;
 }
 
@@ -78,9 +75,6 @@ export const mainnetCfg: ContractsCfg = {
 		coinType: "::nbtc::NBTC",
 		pkgId: "",
 		contractId: "",
-		redeemPkgId: "",
-		redeemContractId: "",
-		module: "nbtc",
 		// TODO: update it when setup ID is available for redeem
 		setupId: 1,
 	},
@@ -120,9 +114,6 @@ export const testnetCfg: ContractsCfg = {
 		coinType: "::nbtc::NBTC",
 		pkgId: "0x50be08b805766cc1a2901b925d3fb80b6362fcb25f269cb78067429237e222ec",
 		contractId: "0x5905e0c452bb5f237fb106ec2ecff962fbc60cd180090fb07a79d14d9d628a96",
-		redeemPkgId: "0xbbee5a5d833847125ab6c029d5ffec29c5f979cfcdf1906e98918eb86eb84e46",
-		redeemContractId: "0x9a0d5f810a8880fa69db46ce0b09bcb101f27fb3865adf365c33e2051d48f38a",
-		module: "nbtc",
 		// TODO: update it when setup ID is available for redeem
 		setupId: 1,
 	},
@@ -167,9 +158,6 @@ export const localnetCfg: ContractsCfg = {
 		coinType: "::nbtc::NBTC",
 		pkgId: "",
 		contractId: "",
-		redeemPkgId: "",
-		redeemContractId: "",
-		module: "nbtc",
 		// TODO: update it when setup ID is available for redeem
 		setupId: 1,
 	},
