@@ -174,7 +174,7 @@ export class HiveController {
 				message: "Success",
 			};
 		} catch (err) {
-			logError({ msg: "Error fetching total deposit", method: "queryTotalDeposit" }, err);
+			logError({ msg: "Error fetching total deposit", method: "queryUserDeposits" }, err);
 			return serverError("queryTotalDeposit", err, "Error fetching total deposit");
 		}
 	}
