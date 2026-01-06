@@ -1,9 +1,11 @@
 import type { SuiClient } from "@mysten/sui/client";
 import { Transaction } from "@mysten/sui/transactions";
 import type { BitcoinNetworkType } from "sats-connect";
-import { type NbtcCfg } from "~/config/sui/contracts-config";
+import { moveCallTarget, type NbtcCfg } from "~/config/sui/contracts-config";
 import { scriptPubKeyFromAddress } from "~/lib/bitcoin.client";
-import { getCoinsForAmount } from "../BuyNBTC/useNBTC";
+import { getCoinsForAmount } from "~/lib/getCoinsForAmount";
+
+const MODULE = "nbtc";
 
 // create a redeem BTC txn
 export async function createRedeemTxn(
@@ -15,10 +17,10 @@ export async function createRedeemTxn(
 	network: BitcoinNetworkType,
 	nbtcCoin: string,
 ): Promise<Transaction> {
-	if (!redeemCfg.redeemContractId) {
+	if (!redeemCfg.contractId) {
 		throw new Error("Contract ID is not found");
 	}
-	if (!redeemCfg.redeemPkgId) {
+	if (!redeemCfg.pkgId) {
 		throw new Error("Redeem BTC package ID is not found");
 	}
 	const txn = new Transaction();
@@ -28,18 +30,18 @@ export async function createRedeemTxn(
 		recipientAddr,
 		network,
 	);
-	if (!recipientScriptBuffer) throw Error("Invalid recipient address");
+	if (!recipientScriptBuffer) throw new Error("Invalid recipient address");
 
 	// Collect enough nBTC coins across pages to cover the requested amount.
 	// This avoids failures when the balance is fragmented across many small coins.
-	const { coins: nbtcCoins, isEnoughBalance } = await getCoinsForAmount(
+	const { coins: nbtcCoins, fulfilled } = await getCoinsForAmount(
 		senderAddress,
 		client,
 		nbtcCoin,
 		amount,
 	);
 
-	if (!nbtcCoins.length || !isEnoughBalance) throw Error("Not enough nBTC coins available");
+	if (!fulfilled) throw new Error("Not enough nBTC coins available");
 
 	const primaryCoin = txn.object(nbtcCoins[0].coinObjectId);
 	if (nbtcCoins.length > 1) {
@@ -52,12 +54,12 @@ export async function createRedeemTxn(
 	const [coins] = txn.splitCoins(primaryCoin, [txn.pure.u64(amount)]);
 
 	txn.moveCall({
-		target: `${redeemCfg.redeemPkgId}::${redeemCfg.module}::redeem`,
+		target: moveCallTarget({ ...redeemCfg, module: MODULE }, "redeem"),
 		arguments: [
-			txn.object(redeemCfg.redeemContractId),
+			txn.object(redeemCfg.contractId),
 			coins,
 			txn.pure.vector("u8", recipientScriptBuffer),
-			txn.object(txn.object.clock()),
+			txn.object.clock(),
 		],
 	});
 	return txn;
