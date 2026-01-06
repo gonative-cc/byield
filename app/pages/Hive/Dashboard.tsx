@@ -51,9 +51,12 @@ function ContributorCard({ redirectTab, lockdropClaimedSbt = [] }: ContributorCa
 	const { lockdrop, graphqlURL } = useNetworkVariables();
 	const [isDepositModalOpen, setIsDepositModalOpen] = useState<boolean>(false);
 	const [userTotalDeposit, setUserTotalDeposit] = useState<{
-		totalDeposit?: string | null;
-		isError?: boolean;
-	}>({ totalDeposit: null, isError: false });
+		totalDeposit: string | null;
+		isError: boolean;
+	}>({
+		totalDeposit: null,
+		isError: false,
+	});
 	const isUserDepositError = userTotalDeposit?.isError;
 
 	const claimedLockdropSbtsLength = lockdropClaimedSbt.length;
@@ -81,16 +84,23 @@ function ContributorCard({ redirectTab, lockdropClaimedSbt = [] }: ContributorCa
 
 	useEffect(() => {
 		function updateUserTotalDeposit() {
-			if (hiveUserDashboardData?.data && !isUserDepositError) {
-				const totalDeposit = hiveUserDashboardData.data;
+			if (hiveUserDashboardData?.isError) {
 				setUserTotalDeposit({
-					totalDeposit: formatUSDC(totalDeposit || "0"),
+					totalDeposit: null,
+					isError: true,
+				});
+				return;
+			}
+
+			if (hiveUserDashboardData?.data !== undefined && hiveUserDashboardData?.data !== null) {
+				setUserTotalDeposit({
+					totalDeposit: formatUSDC(hiveUserDashboardData.data),
 					isError: false,
 				});
 			}
 		}
 		updateUserTotalDeposit();
-	}, [hiveUserDashboardData, isUserDepositError]);
+	}, [hiveUserDashboardData]);
 
 	return (
 		<div className="card mb-4">
@@ -182,15 +192,9 @@ function ContributorCard({ redirectTab, lockdropClaimedSbt = [] }: ContributorCa
 					setUserTotalDeposit((prevTotalDeposit) => {
 						if (prevTotalDeposit.totalDeposit) {
 							const total = parseUSDC(prevTotalDeposit.totalDeposit) + newDeposit;
-							return {
-								totalDeposit: formatUSDC(total),
-								isError: false,
-							};
+							return { totalDeposit: formatUSDC(total), isError: false };
 						}
-						return {
-							totalDeposit: formatUSDC(newDeposit),
-							isError: false,
-						};
+						return { totalDeposit: formatUSDC(newDeposit), isError: false };
 					});
 				}}
 			/>

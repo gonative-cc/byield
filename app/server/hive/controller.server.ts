@@ -48,7 +48,7 @@ export class HiveController {
 		suiAddr: string,
 	): Promise<QueryUserTotalDepositDataResp | Response> {
 		try {
-			if (!this.suiGraphQLURl) throw badRequest();
+			if (!this.suiGraphQLURl || !contractId || !suiAddr) return badRequest();
 			const endpoint = this.suiGraphQLURl;
 			const query = `
 				query UserUSDCTotalDeposit($contractId: String!, $suiAddr: SuiAddress!) {
@@ -80,6 +80,9 @@ export class HiveController {
 
 			const res = await fetch(endpoint, {
 				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
 				body: JSON.stringify({
 					query: query,
 					variables: {
@@ -93,7 +96,6 @@ export class HiveController {
 			if (errors?.length) {
 				throw new Error(errors.map((e) => e.message).join(", "));
 			}
-			console.log(data.events.nodes);
 			return {
 				code: res.status,
 				data: data.events.nodes?.[0]?.contents?.json?.total_amount || "0",
