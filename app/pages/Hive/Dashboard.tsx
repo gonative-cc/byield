@@ -6,13 +6,61 @@ import { CopyButton } from "~/components/ui/CopyButton";
 import { DashboardSkeletonLoader } from "~/pages/Hive/SkeletonLoader";
 import { SuiConnectModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import { LockDropSbt, ReferralSbt, SocialSbt } from "./constant";
-import { makeReq, type QueryUserDataResp, type QueryUserTotalDepositDataResp } from "~/server/hive/jsonrpc";
-import type { UserSbtData } from "~/server/hive/types";
+import {
+	makeReq,
+	type QueryUserDataResp,
+	type QueryUserDepositsDataResp,
+	type QueryUserTotalDepositDataResp,
+} from "~/server/hive/jsonrpc";
+import type { DepositTransaction, UserSbtData } from "~/server/hive/types";
 import { DepositModal } from "./DepositModal";
 import { useNetworkVariables } from "~/networkConfig";
 import { formatUSDC, parseUSDC } from "~/lib/denoms";
 import type { TabType } from "./types";
 import { ReadMoreFAQ } from "./Home";
+import { Collapse } from "~/components/ui/collapse";
+import { Table } from "~/components/ui/table";
+import type { Column, CellProps } from "react-table";
+import { USDCIcon } from "~/components/icons";
+import { trimAddress } from "~/components/Wallet/walletHelper";
+
+const createColumns = (): Column<DepositTransaction>[] => [
+	{
+		Header: "Tx ID",
+		accessor: "txnId",
+		Cell: ({ row }: CellProps<DepositTransaction>) => (
+			<div className="flex cursor-pointer items-center gap-2 font-mono">
+				<span className="text-sm">{trimAddress(row.original.txnId)}</span>
+				<CopyButton text={row.original.txnId} />
+			</div>
+		),
+	},
+	{
+		Header: "Amount",
+		accessor: "amount",
+		Cell: ({ row }: CellProps<DepositTransaction>) => (
+			<div className="flex items-center space-x-2 font-semibold">
+				<USDCIcon prefix="" className="text-primary h-5 w-5" />
+				<span className="text-primary">{formatUSDC(row.original.amount)}</span>
+				<span className="text-base-content/75 text-sm">USDC</span>
+			</div>
+		),
+	},
+	{
+		Header: "Status",
+		accessor: "status",
+		Cell: ({ row }: CellProps<DepositTransaction>) => (
+			<span className="badge">{row.original.status}</span>
+		),
+	},
+	{
+		Header: "Timestamp",
+		accessor: "timestamp",
+		Cell: ({ row }: CellProps<DepositTransaction>) => (
+			<span>{new Date(row.original.timestamp).toLocaleString()}</span>
+		),
+	},
+];
 
 interface HiveScoreHeaderProps {
 	totalHiveScore?: number;
@@ -68,16 +116,32 @@ function ContributorCard({ redirectTab, lockdropClaimedSbt = [] }: ContributorCa
 	const isUserTotalDepositLoading = userTotalDepositFetcher.state !== "idle";
 	const hiveUserDashboardData: QueryUserTotalDepositDataResp = userTotalDepositFetcher.data ?? null;
 
+	const userDepositFetcher = useFetcher<QueryUserDepositsDataResp>();
+	const isUserDepositFetcherLoading = userDepositFetcher.state !== "idle";
+	const hiveUserDepositData: QueryUserDepositsDataResp = userDepositFetcher.data ?? null;
+	const depositTransactions: DepositTransaction[] = hiveUserDepositData?.data ?? [];
+
 	useEffect(() => {
 		if (userTotalDepositFetcher.state === "idle" && !hiveUserDashboardData && suiAccount) {
 			if (suiAccount) {
 				makeReq<QueryUserTotalDepositDataResp>(userTotalDepositFetcher, {
 					method: "queryTotalDeposit",
-					params: [graphqlURL, lockdrop.pkgId, suiAccount.address!],
+					params: [graphqlURL, lockdrop.pkgId, suiAccount.address],
+				});
+				makeReq<QueryUserDepositsDataResp>(userDepositFetcher, {
+					method: "queryUserDeposits",
+					params: [graphqlURL, lockdrop.lockdropId, suiAccount.address],
 				});
 			}
 		}
-	}, [hiveUserDashboardData, userTotalDepositFetcher, suiAccount, graphqlURL, lockdrop.pkgId]);
+	}, [
+		hiveUserDashboardData,
+		userTotalDepositFetcher,
+		suiAccount,
+		graphqlURL,
+		lockdrop,
+		userDepositFetcher,
+	]);
 
 	useEffect(() => {
 		function updateUserTotalDeposit() {
@@ -172,6 +236,14 @@ function ContributorCard({ redirectTab, lockdropClaimedSbt = [] }: ContributorCa
 						Deposits go to the Lockdrop Escrow.
 					</div>
 				</div>
+
+				<Collapse title="Deposit Transaction history">
+					<Table
+						columns={createColumns()}
+						data={depositTransactions}
+						isLoading={isUserDepositFetcherLoading}
+					/>
+				</Collapse>
 			</div>
 			<DepositModal
 				id="deposit-assets-modal"

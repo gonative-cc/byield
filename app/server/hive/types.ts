@@ -56,3 +56,42 @@ export interface UserUSDCTotalDeposit {
 		nodes: UserUSDCTotalDepositNode[];
 	};
 }
+
+export interface DepositTransaction {
+	txnId: string;
+	timestamp: string;
+	amount: string;
+	status: string;
+}
+
+interface TransactionEdge {
+	node: {
+		effects: TransactionEffects;
+	};
+}
+
+interface TransactionEffects {
+	status: string;
+	digest: string;
+	events: {
+		nodes: EventNode[];
+	};
+}
+
+interface EventNode {
+	contents: {
+		json: TransactionJsonContent;
+	};
+	timestamp: string;
+}
+
+interface TransactionJsonContent {
+	amount: string;
+	total_amount: string;
+}
+
+export interface TransactionResponse {
+	transactions: {
+		edges: TransactionEdge[];
+	};
+}
