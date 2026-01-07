@@ -113,13 +113,17 @@ export function RedeemBTC({ fetchRedeemTxs, handleRedeemBTCSuccess }: RedeemBTCP
 			if (success) {
 				if (result.events) {
 					const [event] = result.events;
-					if (!event)
+					if (event)
+						await handleRedeemBTCSuccess(
+							result.digest,
+							event.parsedJson as RedeemRequestEventRaw,
+						);
+					else
 						logger.info({
 							msg: "Redeem BTC event",
 							method: "handleRedeemTx",
 							errors: "No redeem BTC event found",
 						});
-					handleRedeemBTCSuccess(result.digest, event.parsedJson as RedeemRequestEventRaw);
 				}
 				if (result.balanceChanges) {
 					const cachedCoins = [

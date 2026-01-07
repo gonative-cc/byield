@@ -9,6 +9,7 @@ import {
 	handleNonSuccessResp as handleFailResp,
 	jsonHeader,
 	badRequest,
+	textOK,
 } from "../http-resp";
 import { protectedBitcoinRPC } from "./btc-proxy.server";
 import { BitcoinNetworkTypeMap, nbtcMintTxRespToMintTx } from "./convert";
@@ -148,12 +149,16 @@ export default class Controller {
 		}
 	}
 
-	async putRedeemTx(setupId: number, txId: string, e: RedeemRequestEventRaw): Promise<void> {
-		const method = "nbtc:postRedeemTx";
+	async putRedeemTx(setupId: number, txId: string, e: string): Promise<Response> {
+		const method = "nbtc:putRedeemTx";
+		if (!setupId || setupId < 0 || !txId || !e) return badRequest();
 		try {
-			await this.redeemSolver.putRedeemTx(setupId, txId, e);
+			const event = JSON.parse(e) as RedeemRequestEventRaw;
+			await this.redeemSolver.putRedeemTx(setupId, txId, event);
+			return textOK("Redeem event saved successfully");
 		} catch (error) {
 			logError({ msg: "Error putting redeem tx", method, error });
+			return serverError(method, error);
 		}
 	}
 
@@ -184,11 +189,7 @@ export default class Controller {
 			case "fetchRedeemTxs":
 				return this.queryRedeemTxs(reqData.params[1], reqData.params[2]);
 			case "putRedeemTx":
-				return this.putRedeemTx(
-					reqData.params[1],
-					reqData.params[2],
-					reqData.params[3] as unknown as RedeemRequestEventRaw,
-				);
+				return this.putRedeemTx(reqData.params[1], reqData.params[2], reqData.params[3]);
 			default:
 				return notFound("Unknown method");
 		}
