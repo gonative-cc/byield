@@ -16,6 +16,7 @@ import { useNetworkVariables } from "~/networkConfig";
 import { signAndExecTx } from "~/lib/suienv";
 import { createRedeemTxn } from "./redeemTxn";
 import { logError, logger } from "~/lib/log";
+import type { RedeemRequestEventRaw } from "@gonative-cc/sui-indexer/models";
 
 interface NBTCRightAdornmentProps {
 	maxNBTCAmount: string;
@@ -49,9 +50,10 @@ interface RedeemNBTCForm {
 
 interface RedeemBTCProps {
 	fetchRedeemTxs: () => void;
+	handleRedeemBTCSuccess: (txId: string, e: RedeemRequestEventRaw) => Promise<void>;
 }
 
-export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
+export function RedeemBTC({ fetchRedeemTxs, handleRedeemBTCSuccess }: RedeemBTCProps) {
 	const { mutateAsync: signTransaction } = useSignTransaction();
 	const [isProcessing, setIsProcessing] = useState(false);
 	const { currentAddress, network } = useXverseWallet();
@@ -104,10 +106,21 @@ export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
 			const result = await signAndExecTx(transaction, client, signTransaction, {
 				showEffects: true,
 				showBalanceChanges: true,
+				showEvents: true,
 			});
 			logger.info({ msg: "Redeem tx:", method: "handleRedeemTx", digest: result.digest });
 			const success = result.effects?.status?.status === "success";
 			if (success) {
+				if (result.events) {
+					const [event] = result.events;
+					if (!event)
+						logger.info({
+							msg: "Redeem BTC event",
+							method: "handleRedeemTx",
+							errors: "No redeem BTC event found",
+						});
+					handleRedeemBTCSuccess(result.digest, event.parsedJson as RedeemRequestEventRaw);
+				}
 				if (result.balanceChanges) {
 					const cachedCoins = [
 						// nBTC

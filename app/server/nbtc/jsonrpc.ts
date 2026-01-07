@@ -24,6 +24,11 @@ export type Req =
 			method: "fetchRedeemTxs";
 			// network, sui address, setup id
 			params: [BitcoinNetworkType, string, number];
+	  }
+	| {
+			method: "putRedeemTx";
+			// network, setup id, tx id, redeem request event raw
+			params: [BitcoinNetworkType, number, string, string];
 	  };
 
 export async function makeReq<T>(

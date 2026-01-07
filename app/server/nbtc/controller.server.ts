@@ -15,6 +15,7 @@ import { BitcoinNetworkTypeMap, nbtcMintTxRespToMintTx } from "./convert";
 import { logError, logger } from "~/lib/log";
 import type { NbtcTxResp } from "@gonative-cc/btcindexer/models";
 import type { RedeemSolverRPCI } from "./types";
+import type { RedeemRequestEventRaw } from "@gonative-cc/sui-indexer/models";
 
 export default class Controller {
 	btcRPCUrl: string;
@@ -147,6 +148,15 @@ export default class Controller {
 		}
 	}
 
+	async putRedeemTx(setupId: number, txId: string, e: RedeemRequestEventRaw): Promise<void> {
+		const method = "nbtc:postRedeemTx";
+		try {
+			await this.redeemSolver.putRedeemTx(setupId, txId, e);
+		} catch (error) {
+			logError({ msg: "Error putting redeem tx", method, error });
+		}
+	}
+
 	async handleJsonRPC(r: Request) {
 		let reqData: Req;
 		try {
@@ -173,6 +183,12 @@ export default class Controller {
 				return this.queryUTXOs(reqData.params[1]);
 			case "fetchRedeemTxs":
 				return this.queryRedeemTxs(reqData.params[1], reqData.params[2]);
+			case "putRedeemTx":
+				return this.putRedeemTx(
+					reqData.params[1],
+					reqData.params[2],
+					reqData.params[3] as unknown as RedeemRequestEventRaw,
+				);
 			default:
 				return notFound("Unknown method");
 		}

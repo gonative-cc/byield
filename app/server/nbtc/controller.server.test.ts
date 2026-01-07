@@ -33,6 +33,7 @@ const mockIndexer: BtcIndexerRpcI = {
 const mockSuiIndexer: RedeemSolverRPCI = {
 	proposeRedeemUtxos: vi.fn(),
 	redeemsBySuiAddr: vi.fn(),
+	putRedeemTx: vi.fn(),
 };
 
 const mockNbtcTxResp: NbtcTxResp = {
