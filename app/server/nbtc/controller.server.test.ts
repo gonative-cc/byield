@@ -33,11 +33,12 @@ const mockIndexer: BtcIndexerRpcI = {
 const mockSuiIndexer: RedeemSolverRPCI = {
 	proposeRedeemUtxos: vi.fn(),
 	redeemsBySuiAddr: vi.fn(),
+	putRedeemTx: vi.fn(),
 };
 
 const mockNbtcTxResp: NbtcTxResp = {
 	btcTxId: "abc123",
-	amount_sats: 100000,
+	amount: 100000,
 	status: MintTxStatus.Confirming,
 	sui_recipient: "0x123",
 	sui_tx_id: "sui123",

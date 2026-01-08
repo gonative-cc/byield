@@ -22,7 +22,7 @@ export function nbtcMintTxRespToMintTx(tx: NbtcTxResp): MintTransaction {
 
 	return {
 		bitcoinTxId: tx.btcTxId,
-		amountInSatoshi: tx.amount_sats,
+		amountInSatoshi: tx.amount,
 		status: tx.status,
 		suiAddress: tx.sui_recipient,
 		suiTxId: tx.sui_tx_id || undefined,

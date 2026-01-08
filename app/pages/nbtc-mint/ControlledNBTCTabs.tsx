@@ -1,3 +1,4 @@
+import type { RedeemRequestEventRaw } from "@gonative-cc/sui-indexer/models";
 import { MintBTC } from "./MintBTC";
 import { RedeemBTC } from "./RedeemBTC";
 
@@ -8,6 +9,7 @@ interface ControlledNBTCTabsProps {
 	fetchRedeemTxs: () => void;
 	activeTab: TabType;
 	onTabChange: (tab: TabType) => void;
+	handleRedeemBTCSuccess: (txId: string, e: RedeemRequestEventRaw) => Promise<void>;
 }
 
 export const ControlledNBTCTabs = ({
@@ -15,6 +17,7 @@ export const ControlledNBTCTabs = ({
 	fetchRedeemTxs,
 	activeTab,
 	onTabChange,
+	handleRedeemBTCSuccess,
 }: ControlledNBTCTabsProps) => {
 	const handleTabChange = (newTab: TabType) => {
 		onTabChange(newTab);
@@ -41,7 +44,9 @@ export const ControlledNBTCTabs = ({
 			</div>
 
 			{activeTab === "mint" && <MintBTC fetchMintTxs={fetchMintTxs} />}
-			{activeTab === "redeem" && <RedeemBTC fetchRedeemTxs={fetchRedeemTxs} />}
+			{activeTab === "redeem" && (
+				<RedeemBTC fetchRedeemTxs={fetchRedeemTxs} handleRedeemBTCSuccess={handleRedeemBTCSuccess} />
+			)}
 		</div>
 	);
 };

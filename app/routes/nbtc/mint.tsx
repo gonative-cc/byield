@@ -20,6 +20,7 @@ import { useMobile } from "~/hooks/useMobile";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import type { RedeemSolverRPCI } from "~/server/nbtc/types";
 import { useNetworkVariables } from "~/networkConfig";
+import type { RedeemRequestEventRaw } from "@gonative-cc/sui-indexer/models";
 
 const FAQS = [
 	{
@@ -157,6 +158,7 @@ export async function action({ request, context }: Route.ActionArgs) {
 }
 
 export default function Mint() {
+	const putRedeemTx = useFetcher();
 	const { network, currentAddress, isXverseInstalled } = useXverseWallet();
 	const { nbtc } = useNetworkVariables();
 	const { isMobile, mobileOS } = useMobile();
@@ -178,6 +180,13 @@ export default function Mint() {
 	const hasTxFetcherError =
 		mintTxFetcher.state === "idle" && mintTxFetcher.data === undefined && activeAddr;
 	const txFetcherError = hasTxFetcherError ? "Failed to load transactions" : null;
+
+	const handleRedeemBTCSuccess = async (txId: string, e: RedeemRequestEventRaw) => {
+		await makeReq(putRedeemTx, {
+			method: "putRedeemTx",
+			params: [network, nbtc.setupId, txId, JSON.stringify(e)],
+		});
+	};
 
 	// Function to fetch mint transactions
 	const fetchMintTxs = useCallback(async () => {
@@ -247,6 +256,7 @@ export default function Mint() {
 						fetchRedeemTxs={fetchRedeemTxs}
 						activeTab={activeTab}
 						onTabChange={setActiveTab}
+						handleRedeemBTCSuccess={handleRedeemBTCSuccess}
 					/>
 
 					{/* Transaction Table Section */}
