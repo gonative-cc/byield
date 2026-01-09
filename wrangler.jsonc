@@ -76,7 +76,7 @@
 		{
 			"binding": "RedeemSolver",
 			"service": "redeem_solver",
-			"entrypoint": "RPC",
+			"entrypoint": "RPCMock", // TODO: change to RPC once we have a working version.
 		},
 	],
 
@@ -114,7 +114,7 @@
 				{
 					"binding": "RedeemSolver",
 					"service": "redeem_solver",
-					"entrypoint": "RPC",
+					"entrypoint": "RPCMock",
 				},
 			],
 		},
