@@ -1,8 +1,6 @@
 import type { SuiClient } from "@mysten/sui/client";
 import { Transaction } from "@mysten/sui/transactions";
-import type { BitcoinNetworkType } from "sats-connect";
 import { moveCallTarget, type NbtcCfg } from "~/config/sui/contracts-config";
-import { scriptPubKeyFromAddress } from "~/lib/bitcoin.client";
 import { getCoinsForAmount } from "~/lib/getCoinsForAmount";
 
 const MODULE = "nbtc";
@@ -11,10 +9,9 @@ const MODULE = "nbtc";
 export async function createRedeemTxn(
 	senderAddress: string,
 	amount: bigint,
-	recipientAddr: string,
+	recipientScriptBuffer: Uint8Array<ArrayBufferLike>,
 	redeemCfg: NbtcCfg,
 	client: SuiClient,
-	network: BitcoinNetworkType,
 	nbtcCoin: string,
 ): Promise<Transaction> {
 	if (!redeemCfg.contractId) {
@@ -25,12 +22,6 @@ export async function createRedeemTxn(
 	}
 	const txn = new Transaction();
 	txn.setSender(senderAddress);
-
-	const recipientScriptBuffer: Uint8Array | null = await scriptPubKeyFromAddress(
-		recipientAddr,
-		network,
-	);
-	if (!recipientScriptBuffer) throw new Error("Invalid recipient address");
 
 	// Collect enough nBTC coins across pages to cover the requested amount.
 	// This avoids failures when the balance is fragmented across many small coins.

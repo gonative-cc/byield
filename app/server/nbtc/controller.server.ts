@@ -151,7 +151,7 @@ export default class Controller {
 
 	async putRedeemTx(setupId: number, txId: string, e: string): Promise<Response> {
 		const method = "nbtc:putRedeemTx";
-		if (!setupId || setupId < 0 || !txId || !e) return badRequest();
+		if (typeof setupId !== "number" || setupId < 0 || !txId || !e) return badRequest();
 		try {
 			const event = JSON.parse(e) as RedeemRequestEventRaw;
 			await this.redeemSolver.putRedeemTx(setupId, txId, event);

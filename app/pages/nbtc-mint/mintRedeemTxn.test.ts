@@ -40,10 +40,9 @@ describe("createRedeemBTCTxn", () => {
 			createRedeemTxn(
 				"0xsender",
 				1000000000n,
-				"bcrt1qseh0z29yzveh02snqn6ztg956puernf36rgh4z",
+				new Uint8Array([72, 101, 108, 108, 111]),
 				invalidCfg,
 				mockClient,
-				BitcoinNetworkType.Regtest,
 				"0xnbtc",
 			),
 		).rejects.toThrow("Contract ID is not found");
@@ -54,29 +53,12 @@ describe("createRedeemBTCTxn", () => {
 			createRedeemTxn(
 				"0xsender",
 				1000000000n,
-				"bcrt1qseh0z29yzveh02snqn6ztg956puernf36rgh4z",
+				new Uint8Array([72, 101, 108, 108, 111]),
 				invalidCfg,
 				mockClient,
-				BitcoinNetworkType.Regtest,
 				"0xnbtc",
 			),
 		).rejects.toThrow("Redeem BTC package ID is not found");
-	});
-
-	test("should throw error for invalid recipient address", async () => {
-		vi.mocked(bitcoinClient.scriptPubKeyFromAddress).mockResolvedValue(null);
-
-		await expect(
-			createRedeemTxn(
-				"0xsender",
-				1000000000n,
-				"invalid-address",
-				mockRedeemCfg,
-				mockClient,
-				BitcoinNetworkType.Regtest,
-				"0xnbtc",
-			),
-		).rejects.toThrow("Invalid recipient address");
 	});
 
 	test("should throw error when no nBTC coins available", async () => {
@@ -91,10 +73,9 @@ describe("createRedeemBTCTxn", () => {
 			createRedeemTxn(
 				"0xsender",
 				1000000000n,
-				"bcrt1qseh0z29yzveh02snqn6ztg956puernf36rgh4z",
+				new Uint8Array([72, 101, 108, 108, 111]),
 				mockRedeemCfg,
 				mockClient,
-				BitcoinNetworkType.Regtest,
 				"0xnbtc",
 			),
 		).rejects.toThrow("Not enough nBTC coins available");
@@ -111,18 +92,13 @@ describe("createRedeemBTCTxn", () => {
 		const result = await createRedeemTxn(
 			"0xsender",
 			1000000000n,
-			"bcrt1qseh0z29yzveh02snqn6ztg956puernf36rgh4z",
+			new Uint8Array([72, 101, 108, 108, 111]),
 			mockRedeemCfg,
 			mockClient,
-			BitcoinNetworkType.Regtest,
 			"0xnbtc",
 		);
 
 		expect(result).toBeInstanceOf(Transaction);
-		expect(bitcoinClient.scriptPubKeyFromAddress).toHaveBeenCalledWith(
-			"bcrt1qseh0z29yzveh02snqn6ztg956puernf36rgh4z",
-			BitcoinNetworkType.Regtest,
-		);
 		expect(getCoinsForAmount).toHaveBeenCalledWith(
 			"0xsender",
 			mockClient,
@@ -142,10 +118,9 @@ describe("createRedeemBTCTxn", () => {
 		const result = await createRedeemTxn(
 			"0xsender",
 			1000000000n,
-			"bcrt1qseh0z29yzveh02snqn6ztg956puernf36rgh4z",
+			new Uint8Array([72, 101, 108, 108, 111]),
 			mockRedeemCfg,
 			mockClient,
-			BitcoinNetworkType.Regtest,
 			"0xnbtc",
 		);
 
@@ -169,34 +144,23 @@ describe("createRedeemBTCTxn", () => {
 		let result = await createRedeemTxn(
 			"0xsender",
 			1000000000n,
-			"bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4",
+			new Uint8Array([72, 101, 108, 108, 111]),
 			mockRedeemCfg,
 			mockClient,
-			BitcoinNetworkType.Mainnet,
 			"0xnbtc",
 		);
 
 		expect(result).toBeInstanceOf(Transaction);
-		expect(bitcoinClient.scriptPubKeyFromAddress).toHaveBeenCalledWith(
-			"bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4",
-			BitcoinNetworkType.Mainnet,
-		);
-
 		result = await createRedeemTxn(
 			"0xsender",
 			500000000n,
-			"tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx",
+			new Uint8Array([72, 101, 108, 108, 111]),
 			mockRedeemCfg,
 			mockClient,
-			BitcoinNetworkType.Testnet,
 			"0xnbtc",
 		);
 
 		expect(result).toBeInstanceOf(Transaction);
-		expect(bitcoinClient.scriptPubKeyFromAddress).toHaveBeenCalledWith(
-			"tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx",
-			BitcoinNetworkType.Testnet,
-		);
 	});
 
 	test("should handle different redemption amounts", async () => {
@@ -211,10 +175,9 @@ describe("createRedeemBTCTxn", () => {
 		const result = await createRedeemTxn(
 			"0xsender",
 			smallAmount,
-			"bcrt1qseh0z29yzveh02snqn6ztg956puernf36rgh4z",
+			new Uint8Array([72, 101, 108, 108, 111]),
 			mockRedeemCfg,
 			mockClient,
-			BitcoinNetworkType.Regtest,
 			"0xnbtc",
 		);
 

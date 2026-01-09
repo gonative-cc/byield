@@ -53,8 +53,8 @@ export function ExpandableRedeemDetails({ transaction }: ExpandableRedeemDetails
 				</div>
 				<div className="divider my-2"></div>
 				<div className="text-base-content/70 text-sm">
-					<span className="font-semibold">Amount:</span>{" "}
-					{formatNBTC(BigInt(transaction.amount || 0))} nBTC
+					<span className="font-semibold">Amount:</span> {formatNBTC(BigInt(transaction.amount))}{" "}
+					nBTC
 				</div>
 				<div className="text-base-content/70 text-sm">
 					<span className="font-semibold">Recipient:</span>

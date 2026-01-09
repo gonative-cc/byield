@@ -16,6 +16,7 @@ import { useNetworkVariables } from "~/networkConfig";
 import { signAndExecTx } from "~/lib/suienv";
 import { createRedeemTxn } from "./redeemTxn";
 import { logError, logger } from "~/lib/log";
+import { scriptPubKeyFromAddress } from "~/lib/bitcoin.client";
 import type { RedeemRequestEventRaw } from "@gonative-cc/sui-indexer/models";
 
 interface NBTCRightAdornmentProps {
@@ -94,13 +95,19 @@ export function RedeemBTC({ fetchRedeemTxs, handleRedeemBTCSuccess }: RedeemBTCP
 				description: `Redeeming ${numberOfNBTC} nBTC to ${bitcoinAddress}`,
 				variant: "info",
 			});
+			// validate BTC address
+			const recipientScriptBuffer: Uint8Array | null = await scriptPubKeyFromAddress(
+				bitcoinAddress,
+				network,
+			);
+			if (!recipientScriptBuffer) throw new Error("Invalid recipient address");
+			// create redeem tx
 			const transaction = await createRedeemTxn(
 				currentAccount.address,
 				parseNBTC(numberOfNBTC),
-				bitcoinAddress,
+				recipientScriptBuffer,
 				nbtc,
 				client,
-				network,
 				nbtcBalanceRes.coinType,
 			);
 			const result = await signAndExecTx(transaction, client, signTransaction, {
