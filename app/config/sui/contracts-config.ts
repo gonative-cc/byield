@@ -23,6 +23,7 @@ export interface NbtcCfg {
 	pkgId: string;
 	coinType: string;
 	contractId: string;
+	setupId: number;
 }
 
 export interface LockdropCfg {
@@ -47,9 +48,6 @@ export interface ContractsCfg {
 	nbtc: NbtcCfg;
 	lockdrop: LockdropCfg;
 	usdc: Coin;
-	redeem: {
-		setupId: number;
-	};
 }
 
 export const mainnetCfg: ContractsCfg = {
@@ -77,6 +75,8 @@ export const mainnetCfg: ContractsCfg = {
 		coinType: "::nbtc::NBTC",
 		pkgId: "",
 		contractId: "",
+		// TODO: update it when setup ID is available for redeem
+		setupId: 1,
 	},
 	lockdrop: {
 		pkgId: "",
@@ -86,10 +86,6 @@ export const mainnetCfg: ContractsCfg = {
 	usdc: {
 		name: "USDC",
 		type: "",
-	},
-	redeem: {
-		// TODO: update it when setup ID is available for redeem
-		setupId: 1,
 	},
 };
 
@@ -118,6 +114,8 @@ export const testnetCfg: ContractsCfg = {
 		coinType: "::nbtc::NBTC",
 		pkgId: "0x50be08b805766cc1a2901b925d3fb80b6362fcb25f269cb78067429237e222ec",
 		contractId: "0x5905e0c452bb5f237fb106ec2ecff962fbc60cd180090fb07a79d14d9d628a96",
+		// TODO: update it when setup ID is available for redeem
+		setupId: 1,
 	},
 	lockdrop: {
 		pkgId: "0xd244750dc02f917b2d539c5b68e14afbfc4e58920f04a0587692f8c6920e94ea",
@@ -127,10 +125,6 @@ export const testnetCfg: ContractsCfg = {
 	usdc: {
 		name: "USDC",
 		type: "0xa1ec7fc00a6f40db9693ad1415d0c193ad3906494428cf252621037bd7117e29::usdc::USDC",
-	},
-	redeem: {
-		// TODO: update it when setup ID is available for redeem
-		setupId: 1,
 	},
 };
 
@@ -164,6 +158,8 @@ export const localnetCfg: ContractsCfg = {
 		coinType: "::nbtc::NBTC",
 		pkgId: "",
 		contractId: "",
+		// TODO: update it when setup ID is available for redeem
+		setupId: 1,
 	},
 	lockdrop: {
 		pkgId: "",
@@ -173,9 +169,6 @@ export const localnetCfg: ContractsCfg = {
 	usdc: {
 		name: "USDC",
 		type: "", // for local net - you can deploy any coin and call it usdc
-	},
-	redeem: {
-		setupId: 0,
 	},
 };
 

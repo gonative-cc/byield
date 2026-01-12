@@ -1,5 +1,5 @@
 import type { MintTxStatus } from "@gonative-cc/btcindexer/models";
-import type { RedeemRequestResp } from "@gonative-cc/sui-indexer/models";
+import type { RedeemRequestEventRaw, RedeemRequestResp } from "@gonative-cc/sui-indexer/models";
 
 // scriptPubKey hex of the locking script (NOT a public key)
 export type UTXO = {
@@ -30,4 +30,5 @@ export interface MintTransaction {
 export interface RedeemSolverRPCI {
 	proposeRedeemUtxos(): Promise<void>;
 	redeemsBySuiAddr(suiAddress: string, setupId: number): Promise<RedeemRequestResp[]>;
+	putRedeemTx(setupId: number, suiTxId: string, e: RedeemRequestEventRaw): Promise<void>;
 }
