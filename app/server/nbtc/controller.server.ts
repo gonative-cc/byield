@@ -18,6 +18,17 @@ import type { NbtcTxResp } from "@gonative-cc/btcindexer/models";
 import type { RedeemSolverRPCI } from "./types";
 import type { RedeemRequestEventRaw } from "@gonative-cc/sui-indexer/models";
 
+function validateRedeemRequestEventRaw(data: RedeemRequestEventRaw) {
+	return (
+		typeof data === "object" &&
+		data !== null &&
+		typeof data.redeem_id === "string" &&
+		typeof data.redeemer === "string" &&
+		typeof data.amount === "string" &&
+		typeof data.created_at === "string"
+	);
+}
+
 export default class Controller {
 	btcRPCUrl: string;
 	btcindexer: BtcIndexerRpcI;
@@ -154,6 +165,8 @@ export default class Controller {
 		if (typeof setupId !== "number" || setupId < 0 || !txId || !e) return badRequest();
 		try {
 			const event = JSON.parse(e) as RedeemRequestEventRaw;
+			if (!validateRedeemRequestEventRaw(event))
+				return badRequest("Invalid redeem event format");
 			await this.redeemSolver.putRedeemTx(setupId, txId, event);
 			return textOK("Redeem event saved successfully");
 		} catch (error) {

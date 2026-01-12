@@ -47,7 +47,7 @@ export async function getCoinsForAmount(
 		}
 		return { coins, fulfilled: totalBalance >= requiredAmount };
 	} catch (error) {
-		logError({ msg: "can't fulfull the request", method: "getCoinsForAmount" }, error);
+		logError({ msg: "can't fulfill the request", method: "getCoinsForAmount" }, error);
 		return { coins: [], fulfilled: false };
 	}
 }

@@ -47,7 +47,7 @@ const createColumns = (
 		accessor: "amount",
 		Cell: ({ row }: CellProps<RedeemRequestResp>) => (
 			<div className="flex items-center gap-2 font-semibold">
-				<span className="text-primary">{formatNBTC(BigInt(row.original.amount || 0))}</span>
+				<span className="text-primary">{formatNBTC(BigInt(row.original.amount))}</span>
 				<span className="text-base-content/60 text-sm">nBTC</span>
 			</div>
 		),

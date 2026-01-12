@@ -3,6 +3,7 @@ import type { CoinBalance } from "@mysten/sui/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNetworkVariables } from "~/networkConfig";
 import type { BalanceChange } from "@mysten/sui/client";
+import { logError } from "~/lib/log";
 
 export interface UseCoinBalanceResult {
 	balance: bigint;
@@ -79,17 +80,21 @@ export function handleBalanceChanges(
 		updateCoinBalanceInCache: (newBalance: string) => void;
 	}[],
 ) {
-	const diffs = new Map<string, bigint>();
-	for (const b of balanceChanges) {
-		const d = diffs.get(b.coinType) || 0n;
-		diffs.set(b.coinType, d + BigInt(b.amount));
-	}
-	for (const [coinType, diff] of diffs) {
-		if (diff !== 0n) {
-			const c = cached.find((c) => c.coinType === coinType);
-			if (c) {
-				c.updateCoinBalanceInCache(String(diff + c.currentBalance));
+	try {
+		const diffs = new Map<string, bigint>();
+		for (const b of balanceChanges) {
+			const d = diffs.get(b.coinType) || 0n;
+			diffs.set(b.coinType, d + BigInt(b.amount));
+		}
+		for (const [coinType, diff] of diffs) {
+			if (diff !== 0n) {
+				const c = cached.find((c) => c.coinType === coinType);
+				if (c) {
+					c.updateCoinBalanceInCache(String(diff + c.currentBalance));
+				}
 			}
 		}
+	} catch (error) {
+		logError({ msg: "Error updating balance in cache", method: "handleBalanceChanges" }, error);
 	}
 }
