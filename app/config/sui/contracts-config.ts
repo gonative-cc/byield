@@ -121,7 +121,7 @@ export const testnetCfg: ContractsCfg = {
 	},
 	lockdrop: {
 		pkgId: "0xd244750dc02f917b2d539c5b68e14afbfc4e58920f04a0587692f8c6920e94ea",
-		lockdropId: "0x0cf8b917473b21a215f99cddb7ace5619ac428885fc02247f29f766f26306bd3",
+		lockdropId: "0x6f49640eecbfe4a90d852151998495b6bc4f3393f7231d9696856f06ad7dc178",
 		module: "lockdrop",
 	},
 	usdc: {
