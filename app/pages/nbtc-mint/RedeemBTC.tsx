@@ -3,7 +3,7 @@ import { FormInput } from "../../components/form/FormInput";
 import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
 import { useState, useEffect } from "react";
 import { FormNumericInput } from "../../components/form/FormNumericInput";
-import { formatNBTC, parseNBTC } from "~/lib/denoms";
+import { BTC, formatNBTC, parseNBTC } from "~/lib/denoms";
 import { buttonEffectClasses, classNames } from "~/util/tailwind";
 import { toast } from "~/hooks/use-toast";
 import { useCurrentAccount, useSignTransaction, useSuiClient } from "@mysten/dapp-kit";
@@ -18,6 +18,8 @@ import { createRedeemTxn } from "./redeemTxn";
 import { logError, logger } from "~/lib/log";
 import { scriptPubKeyFromAddress } from "~/lib/bitcoin.client";
 import type { RedeemRequestEventRaw } from "@gonative-cc/sui-indexer/models";
+import { Info } from "lucide-react";
+import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 
 interface NBTCRightAdornmentProps {
 	maxNBTCAmount: string;
@@ -47,6 +49,7 @@ function NBTCRightAdornment({ maxNBTCAmount, onMaxClick }: NBTCRightAdornmentPro
 interface RedeemNBTCForm {
 	numberOfNBTC: string;
 	bitcoinAddress: string;
+	minerFeeInSats: number;
 }
 
 interface RedeemBTCProps {
@@ -56,6 +59,7 @@ interface RedeemBTCProps {
 
 export function RedeemBTC({ fetchRedeemTxs, handleRedeemBTCSuccess }: RedeemBTCProps) {
 	const { mutateAsync: signTransaction } = useSignTransaction();
+	const cfg = useBitcoinConfig();
 	const [isProcessing, setIsProcessing] = useState(false);
 	const { currentAddress, network } = useXverseWallet();
 	const { nbtc } = useNetworkVariables();
@@ -64,6 +68,7 @@ export function RedeemBTC({ fetchRedeemTxs, handleRedeemBTCSuccess }: RedeemBTCP
 	const nbtcBalanceRes = useCoinBalance("NBTC");
 	const suiBalanceRes = useCoinBalance("SUI");
 	const client = useSuiClient();
+
 	let nbtcBalance: bigint | null = null;
 	let nbtcBalanceStr = "";
 	if (nbtcBalanceRes) {
@@ -77,6 +82,7 @@ export function RedeemBTC({ fetchRedeemTxs, handleRedeemBTCSuccess }: RedeemBTCP
 		defaultValues: {
 			numberOfNBTC: "",
 			bitcoinAddress: currentAddress?.address || "",
+			minerFeeInSats: cfg.minerFeeInSats,
 		},
 	});
 
@@ -186,7 +192,7 @@ export function RedeemBTC({ fetchRedeemTxs, handleRedeemBTCSuccess }: RedeemBTCP
 							placeholder="Enter number of nBTC"
 							className="h-10 sm:h-14"
 							inputMode="decimal"
-							decimalScale={8}
+							decimalScale={BTC}
 							allowNegative={false}
 							rightAdornments={
 								<NBTCRightAdornment
@@ -240,6 +246,35 @@ export function RedeemBTC({ fetchRedeemTxs, handleRedeemBTCSuccess }: RedeemBTCP
 								},
 							}}
 						/>
+						<fieldset className="fieldset">
+							<p className="flex items-center">
+								<legend className="fieldset-legend">Miner fee</legend>
+								<span
+									className="tooltip ml-2 cursor-help"
+									data-tip="Network transaction fee paid to miners for verifying and securing your transfer."
+								>
+									<Info size={18} />
+								</span>
+							</p>
+							<FormNumericInput
+								required
+								name="minerFeeInSats"
+								placeholder="Enter miner fee..."
+								className="h-10 sm:h-14"
+								min={0}
+								decimalScale={BTC}
+								allowNegative={false}
+								rules={{
+									validate: {
+										validateMinerFee: async (value: string) => {
+											if (BigInt(value) > 0) return true;
+											return "Min 0 nSats required";
+										},
+									},
+								}}
+								rightAdornments={<>nSats</>}
+							/>
+						</fieldset>
 
 						{isSuiConnected ? (
 							<button

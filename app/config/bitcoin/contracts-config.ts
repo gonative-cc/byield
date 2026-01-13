@@ -15,6 +15,7 @@ export interface BitcoinConfig {
 	indexerUrl: string;
 	btcRPCUrl: string;
 	minMintInSats: number;
+	minerFeeInSats: number;
 }
 
 export const mainnetCfg: BitcoinConfig = {
@@ -30,6 +31,7 @@ export const mainnetCfg: BitcoinConfig = {
 	indexerUrl: "",
 	btcRPCUrl: "",
 	minMintInSats: 1000,
+	minerFeeInSats: 0,
 };
 
 export const devnetCfg: BitcoinConfig = {
@@ -45,6 +47,7 @@ export const devnetCfg: BitcoinConfig = {
 	indexerUrl: "https://btcindexer.gonative-cc.workers.dev:443",
 	btcRPCUrl: "https://bitcoin-devnet.gonative.cc",
 	minMintInSats: 1000,
+	minerFeeInSats: 150,
 };
 
 export const bitcoinConfigs: Record<BitcoinNetworkType, BitcoinConfig | undefined> = {
