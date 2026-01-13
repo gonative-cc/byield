@@ -31,7 +31,7 @@ export const mainnetCfg: BitcoinConfig = {
 	indexerUrl: "",
 	btcRPCUrl: "",
 	minMintInSats: 1000,
-	minerFeeInSats: 0,
+	minerFeeInSats: 150,
 };
 
 export const devnetCfg: BitcoinConfig = {

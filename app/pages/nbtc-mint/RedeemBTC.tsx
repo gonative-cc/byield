@@ -266,8 +266,8 @@ export function RedeemBTC({ fetchRedeemTxs, handleRedeemBTCSuccess }: RedeemBTCP
 								allowNegative={false}
 								rules={{
 									validate: {
-										validateMinerFee: async (value: string) => {
-											if (BigInt(value) > 0) return true;
+										validateMinerFee: async (value: number) => {
+											if (value > 0) return true;
 											return "Min 0 nSats required";
 										},
 									},
