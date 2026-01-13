@@ -38,13 +38,16 @@ const createColumns = (): Column<DepositTransaction>[] => [
 	{
 		Header: "Amount",
 		accessor: "amount",
-		Cell: ({ row }: CellProps<DepositTransaction>) => (
-			<div className="flex items-center space-x-2 font-semibold">
-				<USDCIcon prefix="" className="text-primary h-5 w-5" />
-				<span className="text-primary">{formatUSDC(row.original.amount)}</span>
-				<span className="text-base-content/75 text-sm">USDC</span>
-			</div>
-		),
+		Cell: ({ row }: CellProps<DepositTransaction>) =>
+			row.original.amount !== null ? (
+				<div className="flex items-center space-x-2 font-semibold">
+					<USDCIcon prefix="" className="text-primary h-5 w-5" />
+					<span className="text-primary">{formatUSDC(row.original.amount)}</span>
+					<span className="text-base-content/75 text-sm">USDC</span>
+				</div>
+			) : (
+				"-"
+			),
 	},
 	{
 		Header: "Status",
@@ -56,9 +59,8 @@ const createColumns = (): Column<DepositTransaction>[] => [
 	{
 		Header: "Timestamp",
 		accessor: "timestamp",
-		Cell: ({ row }: CellProps<DepositTransaction>) => (
-			<span>{new Date(row.original.timestamp).toLocaleString()}</span>
-		),
+		Cell: ({ row }: CellProps<DepositTransaction>) =>
+			row.original.timestamp ? <span>{new Date(row.original.timestamp).toLocaleString()}</span> : "-",
 	},
 ];
 
@@ -126,16 +128,14 @@ function ContributorCard({ redirectTab, lockdropClaimedSbt = [] }: ContributorCa
 
 	useEffect(() => {
 		if (userTotalDepositFetcher.state === "idle" && !hiveUserDashboardData && suiAccount) {
-			if (suiAccount) {
-				makeReq<QueryUserTotalDepositDataResp>(userTotalDepositFetcher, {
-					method: "queryTotalDeposit",
-					params: [graphqlURL, lockdrop.pkgId, suiAccount.address],
-				});
-				makeReq<QueryUserDepositsDataResp>(userDepositFetcher, {
-					method: "queryUserDeposits",
-					params: [graphqlURL, lockdrop.lockdropId, suiAccount.address],
-				});
-			}
+			makeReq<QueryUserTotalDepositDataResp>(userTotalDepositFetcher, {
+				method: "queryTotalDeposit",
+				params: [graphqlURL, lockdrop.pkgId, suiAccount.address],
+			});
+			makeReq<QueryUserDepositsDataResp>(userDepositFetcher, {
+				method: "queryUserDeposits",
+				params: [graphqlURL, lockdrop.lockdropId, suiAccount.address],
+			});
 		}
 	}, [
 		hiveUserDashboardData,

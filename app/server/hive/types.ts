@@ -59,8 +59,8 @@ export interface UserUSDCTotalDeposit {
 
 export interface DepositTransaction {
 	txnId: string;
-	timestamp: string;
-	amount: string;
+	timestamp: string | null;
+	amount: string | null;
 	status: string;
 }
 

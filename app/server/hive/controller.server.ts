@@ -101,9 +101,10 @@ export class HiveController {
 			if (errors?.length) {
 				throw new Error(errors.map((e) => e.message).join(", "));
 			}
+			if (!data.events.nodes[0]) throw new Error("Event's node data not found");
 			return {
 				code: res.status,
-				data: data.events.nodes?.[0]?.contents?.json?.total_amount || "0",
+				data: data.events.nodes[0].contents?.json?.total_amount,
 				isError: false,
 				message: "Success",
 			};
@@ -165,8 +166,8 @@ export class HiveController {
 					txnId: effects.digest,
 					status: effects.status,
 					// index 0 contains the timestamp and json content
-					timestamp: effects.events.nodes?.[0]?.timestamp,
-					amount: effects.events.nodes?.[0]?.contents?.json?.amount,
+					timestamp: effects.events.nodes?.[0]?.timestamp || null,
+					amount: effects.events.nodes?.[0]?.contents?.json?.amount || null,
 				};
 			});
 
@@ -178,7 +179,7 @@ export class HiveController {
 			};
 		} catch (err) {
 			logError({ msg: "Error fetching total deposit", method: "queryUserDeposits" }, err);
-			return serverError("queryTotalDeposit", err, "Error fetching total deposit");
+			return serverError("queryUserDeposits", err, "Error fetching total deposit");
 		}
 	}
 
