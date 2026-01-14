@@ -155,6 +155,8 @@ export async function action({ request, context }: Route.ActionArgs) {
 		network,
 		env.BtcIndexer as unknown as BtcIndexerRpc,
 		env.SuiIndexer as unknown as SuiIndexerRpc,
+		env.RedeemSolver as unknown as RedeemSolverRPCI,
+		env.BYieldD1,
 	);
 	return ctrl.handleJsonRPC(request);
 }

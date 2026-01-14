@@ -19,7 +19,8 @@ import { logError, logger } from "~/lib/log";
 import { scriptPubKeyFromAddress } from "~/lib/bitcoin.client";
 import type { RedeemRequestEventRaw } from "@gonative-cc/sui-indexer/models";
 import { Info } from "lucide-react";
-import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
+import { makeReq, type QueryNetworkFeesResp } from "~/server/nbtc/jsonrpc";
+import { useFetcher } from "react-router";
 
 interface NBTCRightAdornmentProps {
 	maxNBTCAmount: string;
@@ -49,7 +50,7 @@ function NBTCRightAdornment({ maxNBTCAmount, onMaxClick }: NBTCRightAdornmentPro
 interface RedeemNBTCForm {
 	numberOfNBTC: string;
 	bitcoinAddress: string;
-	minerFeeInSats: number;
+	minerFeeInSats: string;
 }
 
 interface RedeemBTCProps {
@@ -58,8 +59,9 @@ interface RedeemBTCProps {
 }
 
 export function RedeemBTC({ fetchRedeemTxs, handleRedeemBTCSuccess }: RedeemBTCProps) {
+	const feeFetcher = useFetcher<QueryNetworkFeesResp>();
+	const minerFeeInSats = feeFetcher?.data || "";
 	const { mutateAsync: signTransaction } = useSignTransaction();
-	const cfg = useBitcoinConfig();
 	const [isProcessing, setIsProcessing] = useState(false);
 	const { currentAddress, network } = useXverseWallet();
 	const { nbtc } = useNetworkVariables();
@@ -68,6 +70,15 @@ export function RedeemBTC({ fetchRedeemTxs, handleRedeemBTCSuccess }: RedeemBTCP
 	const nbtcBalanceRes = useCoinBalance("NBTC");
 	const suiBalanceRes = useCoinBalance("SUI");
 	const client = useSuiClient();
+
+	useEffect(() => {
+		if (feeFetcher.state === "idle" && !minerFeeInSats && currentAccount) {
+			makeReq(feeFetcher, {
+				method: "queryFee",
+				params: [network],
+			});
+		}
+	}, [currentAccount, feeFetcher, feeFetcher.state, minerFeeInSats, network]);
 
 	let nbtcBalance: bigint | null = null;
 	let nbtcBalanceStr = "";
@@ -82,7 +93,7 @@ export function RedeemBTC({ fetchRedeemTxs, handleRedeemBTCSuccess }: RedeemBTCP
 		defaultValues: {
 			numberOfNBTC: "",
 			bitcoinAddress: currentAddress?.address || "",
-			minerFeeInSats: cfg.minerFeeInSats,
+			minerFeeInSats,
 		},
 	});
 
@@ -91,6 +102,7 @@ export function RedeemBTC({ fetchRedeemTxs, handleRedeemBTCSuccess }: RedeemBTCP
 	const maxNBTCAmount = nbtcBalanceStr || "";
 
 	useEffect(() => setValue("bitcoinAddress", currentAddress?.address || ""), [setValue, currentAddress]);
+	useEffect(() => setValue("minerFeeInSats", minerFeeInSats), [setValue, minerFeeInSats]);
 
 	const handleRedeemTx = async ({ numberOfNBTC, bitcoinAddress }: RedeemNBTCForm) => {
 		if (!currentAccount || !nbtcBalanceRes || !nbtcBalanceRes.coinType) return;
@@ -261,14 +273,14 @@ export function RedeemBTC({ fetchRedeemTxs, handleRedeemBTCSuccess }: RedeemBTCP
 								name="minerFeeInSats"
 								placeholder="Enter miner fee..."
 								className="h-10 sm:h-14"
-								min={0}
-								decimalScale={BTC}
+								decimalScale={0}
 								allowNegative={false}
+								maxLength={BTC}
 								rules={{
 									validate: {
-										validateMinerFee: async (value: number) => {
-											if (value > 0) return true;
-											return "Min 0 nSats required";
+										validateMinerFee: async (value: string) => {
+											if (BigInt(value) > 0) return true;
+											return "Should be greater than 0";
 										},
 									},
 								}}
