@@ -6,6 +6,17 @@ import { BitcoinNetworkType } from "sats-connect";
 import { BtcNet } from "@gonative-cc/lib/nbtc";
 import type { RedeemSolverRPCI } from "./types";
 
+// 1. Create the D1 Mock
+const mockD1 = {
+	prepare: vi.fn().mockReturnThis(),
+	bind: vi.fn().mockReturnThis(),
+	first: vi.fn(),
+	all: vi.fn(),
+	run: vi.fn(),
+	batch: vi.fn(),
+	exec: vi.fn(),
+} as unknown as D1Database;
+
 // Mock the useBitcoinConfig module
 vi.mock("~/hooks/useBitcoinConfig", () => ({
 	mustGetBitcoinConfig: vi.fn(() => ({
@@ -59,7 +70,12 @@ describe("Controller getMintTxs", () => {
 
 	beforeEach(() => {
 		vi.clearAllMocks();
-		controller = new Controller(BitcoinNetworkType.Testnet, mockIndexer, mockSuiIndexer);
+		controller = new Controller(
+			BitcoinNetworkType.Testnet,
+			mockIndexer,
+			mockSuiIndexer,
+			mockD1,
+		);
 	});
 
 	it("should return badRequest when both addresses are null", async () => {
