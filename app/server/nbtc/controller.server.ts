@@ -30,6 +30,7 @@ function validateRedeemRequestEventRaw(data: RedeemRequestEventRaw) {
 }
 
 export default class Controller {
+	db: D1Database;
 	btcRPCUrl: string;
 	btcindexer: BtcIndexerRpcI;
 	redeemSolver: RedeemSolverRPCI;
@@ -39,12 +40,14 @@ export default class Controller {
 		network: BitcoinNetworkType,
 		indexerRpc: BtcIndexerRpcI,
 		redeemSolver: RedeemSolverRPCI,
+		db: D1Database,
 	) {
 		this.btcindexer = indexerRpc;
 		this.network = network;
 		const networkConfig = mustGetBitcoinConfig(network);
 		this.btcRPCUrl = networkConfig.btcRPCUrl;
 		this.redeemSolver = redeemSolver;
+		this.db = db;
 	}
 
 	private async getMintTxs(
@@ -81,7 +84,7 @@ export default class Controller {
 	private async queryUTXOs(address: string): Promise<Response> {
 		const method = "nbtc:queryUTXOs";
 		const path = `/address/${encodeURIComponent(address)}/utxo`;
-		logger.debug({ msg: "Querying nBTCUTXOs", method, address, btcRPCUrl: this.btcRPCUrl });
+		logger.debug({ msg: "Querying nBTC UTXOs", method, address, btcRPCUrl: this.btcRPCUrl });
 
 		// URL is dummy
 		const request = new Request("https://internal-proxy-auth", {
@@ -175,6 +178,33 @@ export default class Controller {
 		}
 	}
 
+	private async queryFee(): Promise<string | Response> {
+		const method = "nbtc:queryFee";
+		try {
+			if (!this.network) {
+				return badRequest("Please provide the network");
+			}
+			const row = await this.db
+				.prepare("SELECT total_fee_sats FROM btc_network_fee WHERE network = ?")
+				.bind(this.network)
+				.first<{ total_fee_sats: string }>();
+
+			if (!row) {
+				logger.debug({
+					msg: "No network fee found",
+					method,
+					network: this.network,
+				});
+				return textOK(`No network fee found for the given network: ${this.network}`);
+			}
+
+			return row.total_fee_sats;
+		} catch (error) {
+			logError({ msg: "Error getting network fee", method, error });
+			return serverError(method, error);
+		}
+	}
+
 	async handleJsonRPC(r: Request) {
 		let reqData: Req;
 		try {
@@ -203,6 +233,8 @@ export default class Controller {
 				return this.queryRedeemTxs(reqData.params[1], reqData.params[2]);
 			case "putRedeemTx":
 				return this.putRedeemTx(reqData.params[1], reqData.params[2], reqData.params[3]);
+			case "queryFee":
+				return this.queryFee();
 			default:
 				return notFound("Unknown method");
 		}

@@ -29,6 +29,11 @@ export type Req =
 			method: "putRedeemTx";
 			// network, setup id, tx id, redeem request event raw
 			params: [BitcoinNetworkType, number, string, string];
+	  }
+	| {
+			method: "queryFee";
+			// network
+			params: [BitcoinNetworkType];
 	  };
 
 export async function makeReq<T>(
@@ -41,3 +46,4 @@ export async function makeReq<T>(
 
 export type QueryMintTxResp = MintTransaction[] | null;
 export type QueryRedeemTxsResp = RedeemRequestResp[] | null;
+export type QueryNetworkFeesResp = string | null;

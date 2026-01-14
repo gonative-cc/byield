@@ -153,6 +153,7 @@ export async function action({ request, context }: Route.ActionArgs) {
 		network,
 		env.BTCINDEXER as unknown as BtcIndexerRpcI,
 		env.RedeemSolver as unknown as RedeemSolverRPCI,
+		env.BYieldD1,
 	);
 	return ctrl.handleJsonRPC(request);
 }
