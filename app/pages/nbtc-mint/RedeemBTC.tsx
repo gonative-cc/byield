@@ -50,7 +50,7 @@ function NBTCRightAdornment({ maxNBTCAmount, onMaxClick }: NBTCRightAdornmentPro
 interface RedeemNBTCForm {
 	numberOfNBTC: string;
 	bitcoinAddress: string;
-	minerFeeInSats: string;
+	feeSatoshi: string;
 }
 
 interface RedeemBTCProps {
@@ -60,7 +60,7 @@ interface RedeemBTCProps {
 
 export function RedeemBTC({ fetchRedeemTxs, handleRedeemBTCSuccess }: RedeemBTCProps) {
 	const feeFetcher = useFetcher<QueryNetworkFeesResp>();
-	const minerFeeInSats = feeFetcher?.data || "";
+	const feeSatoshi = feeFetcher?.data || "";
 	const { mutateAsync: signTransaction } = useSignTransaction();
 	const [isProcessing, setIsProcessing] = useState(false);
 	const { currentAddress, network } = useXverseWallet();
@@ -72,13 +72,13 @@ export function RedeemBTC({ fetchRedeemTxs, handleRedeemBTCSuccess }: RedeemBTCP
 	const client = useSuiClient();
 
 	useEffect(() => {
-		if (feeFetcher.state === "idle" && !minerFeeInSats && currentAccount) {
+		if (feeFetcher.state === "idle" && !feeSatoshi && currentAccount) {
 			makeReq(feeFetcher, {
 				method: "queryFee",
 				params: [network],
 			});
 		}
-	}, [currentAccount, feeFetcher, feeFetcher.state, minerFeeInSats, network]);
+	}, [currentAccount, feeFetcher, feeFetcher.state, feeSatoshi, network]);
 
 	let nbtcBalance: bigint | null = null;
 	let nbtcBalanceStr = "";
@@ -93,7 +93,7 @@ export function RedeemBTC({ fetchRedeemTxs, handleRedeemBTCSuccess }: RedeemBTCP
 		defaultValues: {
 			numberOfNBTC: "",
 			bitcoinAddress: currentAddress?.address || "",
-			minerFeeInSats,
+			feeSatoshi: feeSatoshi,
 		},
 	});
 
@@ -102,7 +102,7 @@ export function RedeemBTC({ fetchRedeemTxs, handleRedeemBTCSuccess }: RedeemBTCP
 	const maxNBTCAmount = nbtcBalanceStr || "";
 
 	useEffect(() => setValue("bitcoinAddress", currentAddress?.address || ""), [setValue, currentAddress]);
-	useEffect(() => setValue("minerFeeInSats", minerFeeInSats), [setValue, minerFeeInSats]);
+	useEffect(() => setValue("feeSatoshi", feeSatoshi), [setValue, feeSatoshi]);
 
 	const handleRedeemTx = async ({ numberOfNBTC, bitcoinAddress }: RedeemNBTCForm) => {
 		if (!currentAccount || !nbtcBalanceRes || !nbtcBalanceRes.coinType) return;
@@ -127,7 +127,7 @@ export function RedeemBTC({ fetchRedeemTxs, handleRedeemBTCSuccess }: RedeemBTCP
 				nbtc,
 				client,
 				nbtcBalanceRes.coinType,
-				minerFeeInSats,
+				feeSatoshi,
 			);
 			const result = await signAndExecTx(transaction, client, signTransaction, {
 				showEffects: true,
