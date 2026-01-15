@@ -1,5 +1,5 @@
 import type { FetcherWithComponents } from "react-router";
-import type { Response, Data, UserSbtData } from "./types";
+import type { DepositTransaction, Response, UserSbtData } from "./types";
 
 export type Req =
 	| {
@@ -8,8 +8,14 @@ export type Req =
 			params: [string];
 	  }
 	| {
-			method: "queryAllUserData";
-			params: [];
+			method: "queryTotalDeposit";
+			//suiGraphQLURl, contract address, sui address
+			params: [string, string, string];
+	  }
+	| {
+			method: "queryUserDeposits";
+			//suiGraphQLURl, contract address, sui address
+			params: [string, string, string];
 	  };
 
 export async function makeReq<T>(
@@ -20,5 +26,6 @@ export async function makeReq<T>(
 	return fetcher.data;
 }
 
-export type QueryAllUserDataResp = Response<Data> | null;
 export type QueryUserDataResp = Response<UserSbtData> | null;
+export type QueryUserTotalDepositDataResp = Response<string> | null;
+export type QueryUserDepositsDataResp = Response<DepositTransaction[]> | null;
