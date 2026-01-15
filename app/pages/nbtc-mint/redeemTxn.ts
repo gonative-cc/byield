@@ -13,7 +13,7 @@ export async function createRedeemTxn(
 	redeemCfg: NbtcCfg,
 	client: SuiClient,
 	nbtcCoin: string,
-	minerFeeInSats: string,
+	feeSatoshi: string,
 ): Promise<Transaction> {
 	if (!redeemCfg.contractId) {
 		throw new Error("Contract ID is not found");
@@ -51,7 +51,7 @@ export async function createRedeemTxn(
 			txn.object(redeemCfg.contractId),
 			coins,
 			txn.pure.vector("u8", recipientScriptBuffer),
-			txn.pure.u64(minerFeeInSats),
+			txn.pure.u64(feeSatoshi),
 			txn.object.clock(),
 		],
 	});
