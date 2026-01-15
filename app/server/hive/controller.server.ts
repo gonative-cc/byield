@@ -104,7 +104,7 @@ export class HiveController {
 			if (!data.events.nodes[0]) throw new Error("Event's node data not found");
 			return {
 				code: res.status,
-				data: data.events.nodes[0].contents?.json?.total_amount,
+				data: data.events.nodes[0].contents.json.total_amount,
 				isError: false,
 				message: "Success",
 			};
@@ -119,7 +119,7 @@ export class HiveController {
 		suiAddr: string,
 	): Promise<QueryUserDepositsDataResp | Response> {
 		try {
-			if (!this.suiGraphQLURl) throw badRequest();
+			if (!this.suiGraphQLURl) return badRequest();
 			const endpoint = this.suiGraphQLURl;
 			const query = `
 					query Transactions($filter: TransactionFilter) {

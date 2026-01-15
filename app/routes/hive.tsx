@@ -11,6 +11,11 @@ export async function action({ request, context }: Route.ActionArgs) {
 	const TBOOK_AUTH_TOKEN = context.cloudflare.env.TBOOK_AUTH_TOKEN;
 	const reqData = await request.clone().json();
 	const { params } = reqData as { params: [string, string] };
+
+	if (!Array.isArray(params) || params.length < 1) {
+		throw new Response("Missing or invalid 'params' array", { status: 400 });
+	}
+
 	const graphqlURl = params[0];
 
 	if (typeof graphqlURl !== "string") throw new Error("GraphQL URL doesn't have of type of string");

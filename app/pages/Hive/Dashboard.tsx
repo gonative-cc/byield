@@ -130,7 +130,7 @@ function ContributorCard({ redirectTab, lockdropClaimedSbt = [] }: ContributorCa
 		if (userTotalDepositFetcher.state === "idle" && !hiveUserDashboardData && suiAccount) {
 			makeReq<QueryUserTotalDepositDataResp>(userTotalDepositFetcher, {
 				method: "queryTotalDeposit",
-				params: [graphqlURL, lockdrop.pkgId, suiAccount.address],
+				params: [graphqlURL, lockdrop.lockdropId, suiAccount.address],
 			});
 			makeReq<QueryUserDepositsDataResp>(userDepositFetcher, {
 				method: "queryUserDeposits",
