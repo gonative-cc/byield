@@ -127,6 +127,7 @@ export function RedeemBTC({ fetchRedeemTxs, handleRedeemBTCSuccess }: RedeemBTCP
 				nbtc,
 				client,
 				nbtcBalanceRes.coinType,
+				minerFeeInSats,
 			);
 			const result = await signAndExecTx(transaction, client, signTransaction, {
 				showEffects: true,
