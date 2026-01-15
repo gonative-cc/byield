@@ -1,21 +1,11 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, beforeAll, afterAll } from "vitest";
 import Controller from "./controller.server";
 import type { BtcIndexerRpcI } from "@gonative-cc/btcindexer/rpc-interface";
 import { MintTxStatus, type NbtcTxResp } from "@gonative-cc/btcindexer/models";
 import { BitcoinNetworkType } from "sats-connect";
 import { BtcNet } from "@gonative-cc/lib/nbtc";
 import type { RedeemSolverRPCI } from "./types";
-
-// 1. Create the D1 Mock
-const mockD1 = {
-	prepare: vi.fn().mockReturnThis(),
-	bind: vi.fn().mockReturnThis(),
-	first: vi.fn(),
-	all: vi.fn(),
-	run: vi.fn(),
-	batch: vi.fn(),
-	exec: vi.fn(),
-} as unknown as D1Database;
+import { Miniflare } from "miniflare";
 
 // Mock the useBitcoinConfig module
 vi.mock("~/hooks/useBitcoinConfig", () => ({
@@ -66,16 +56,30 @@ const mockNbtcTxResp: NbtcTxResp = {
 };
 
 describe("Controller getMintTxs", () => {
+	let worker: Miniflare;
 	let controller: Controller;
 
-	beforeEach(() => {
+	beforeAll(async () => {
+		worker = new Miniflare({
+			modules: true,
+			script: "",
+			kvNamespaces: ["KV"],
+			d1Databases: ["DB"],
+			kvPersist: false,
+			d1Persist: false,
+			cachePersist: false,
+		});
+		await worker.ready;
+	});
+
+	afterAll(async () => {
+		worker.dispose();
+	});
+
+	beforeEach(async () => {
 		vi.clearAllMocks();
-		controller = new Controller(
-			BitcoinNetworkType.Testnet,
-			mockIndexer,
-			mockSuiIndexer,
-			mockD1,
-		);
+		const db = await worker.getD1Database("DB");
+		controller = new Controller(BitcoinNetworkType.Testnet, mockIndexer, mockSuiIndexer, db);
 	});
 
 	it("should return badRequest when both addresses are null", async () => {

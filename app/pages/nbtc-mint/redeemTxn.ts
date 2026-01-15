@@ -9,11 +9,11 @@ const MODULE = "nbtc";
 export async function createRedeemTxn(
 	senderAddress: string,
 	amount: bigint,
+	minerFee: string,
 	recipientScriptBuffer: Uint8Array<ArrayBufferLike>,
 	redeemCfg: NbtcCfg,
 	client: SuiClient,
 	nbtcCoin: string,
-	feeSatoshi: string,
 ): Promise<Transaction> {
 	if (!redeemCfg.contractId) {
 		throw new Error("Contract ID is not found");
@@ -51,7 +51,7 @@ export async function createRedeemTxn(
 			txn.object(redeemCfg.contractId),
 			coins,
 			txn.pure.vector("u8", recipientScriptBuffer),
-			txn.pure.u64(feeSatoshi),
+			txn.pure.u64(minerFee),
 			txn.object.clock(),
 		],
 	});

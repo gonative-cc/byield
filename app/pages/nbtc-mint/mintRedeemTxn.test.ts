@@ -39,11 +39,11 @@ describe("createRedeemBTCTxn", () => {
 			createRedeemTxn(
 				"0xsender",
 				1000000000n,
+				"1",
 				new Uint8Array([72, 101, 108, 108, 111]),
 				invalidCfg,
 				mockClient,
 				"0xnbtc",
-				"1",
 			),
 		).rejects.toThrow("Contract ID is not found");
 
@@ -53,11 +53,11 @@ describe("createRedeemBTCTxn", () => {
 			createRedeemTxn(
 				"0xsender",
 				1000000000n,
+				"1",
 				new Uint8Array([72, 101, 108, 108, 111]),
 				invalidCfg,
 				mockClient,
 				"0xnbtc",
-				"1",
 			),
 		).rejects.toThrow("Redeem BTC package ID is not found");
 	});
@@ -74,11 +74,11 @@ describe("createRedeemBTCTxn", () => {
 			createRedeemTxn(
 				"0xsender",
 				1000000000n,
+				"1",
 				new Uint8Array([72, 101, 108, 108, 111]),
 				mockRedeemCfg,
 				mockClient,
 				"0xnbtc",
-				"1",
 			),
 		).rejects.toThrow("Not enough nBTC coins available");
 	});
@@ -94,11 +94,11 @@ describe("createRedeemBTCTxn", () => {
 		const result = await createRedeemTxn(
 			"0xsender",
 			1000000000n,
+			"1",
 			new Uint8Array([72, 101, 108, 108, 111]),
 			mockRedeemCfg,
 			mockClient,
 			"0xnbtc",
-			"1",
 		);
 
 		expect(result).toBeInstanceOf(Transaction);
@@ -121,11 +121,11 @@ describe("createRedeemBTCTxn", () => {
 		const result = await createRedeemTxn(
 			"0xsender",
 			1000000000n,
+			"1",
 			new Uint8Array([72, 101, 108, 108, 111]),
 			mockRedeemCfg,
 			mockClient,
 			"0xnbtc",
-			"1",
 		);
 
 		expect(result).toBeInstanceOf(Transaction);
@@ -148,11 +148,11 @@ describe("createRedeemBTCTxn", () => {
 		let result = await createRedeemTxn(
 			"0xsender",
 			1000000000n,
+			"1",
 			new Uint8Array([72, 101, 108, 108, 111]),
 			mockRedeemCfg,
 			mockClient,
 			"0xnbtc",
-			"1",
 		);
 
 		expect(result).toBeInstanceOf(Transaction);
