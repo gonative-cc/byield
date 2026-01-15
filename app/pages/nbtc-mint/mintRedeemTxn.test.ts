@@ -1,6 +1,5 @@
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import { Transaction } from "@mysten/sui/transactions";
-import { BitcoinNetworkType } from "sats-connect";
 import { createRedeemTxn } from "./redeemTxn";
 import type { NbtcCfg } from "~/config/sui/contracts-config";
 import * as bitcoinClient from "~/lib/bitcoin.client";
@@ -44,6 +43,7 @@ describe("createRedeemBTCTxn", () => {
 				invalidCfg,
 				mockClient,
 				"0xnbtc",
+				"1",
 			),
 		).rejects.toThrow("Contract ID is not found");
 
@@ -57,6 +57,7 @@ describe("createRedeemBTCTxn", () => {
 				invalidCfg,
 				mockClient,
 				"0xnbtc",
+				"1",
 			),
 		).rejects.toThrow("Redeem BTC package ID is not found");
 	});
@@ -77,6 +78,7 @@ describe("createRedeemBTCTxn", () => {
 				mockRedeemCfg,
 				mockClient,
 				"0xnbtc",
+				"1",
 			),
 		).rejects.toThrow("Not enough nBTC coins available");
 	});
@@ -96,6 +98,7 @@ describe("createRedeemBTCTxn", () => {
 			mockRedeemCfg,
 			mockClient,
 			"0xnbtc",
+			"1",
 		);
 
 		expect(result).toBeInstanceOf(Transaction);
@@ -122,6 +125,7 @@ describe("createRedeemBTCTxn", () => {
 			mockRedeemCfg,
 			mockClient,
 			"0xnbtc",
+			"1",
 		);
 
 		expect(result).toBeInstanceOf(Transaction);
@@ -148,6 +152,7 @@ describe("createRedeemBTCTxn", () => {
 			mockRedeemCfg,
 			mockClient,
 			"0xnbtc",
+			"1",
 		);
 
 		expect(result).toBeInstanceOf(Transaction);
@@ -158,6 +163,7 @@ describe("createRedeemBTCTxn", () => {
 			mockRedeemCfg,
 			mockClient,
 			"0xnbtc",
+			"1",
 		);
 
 		expect(result).toBeInstanceOf(Transaction);
@@ -179,6 +185,7 @@ describe("createRedeemBTCTxn", () => {
 			mockRedeemCfg,
 			mockClient,
 			"0xnbtc",
+			"1",
 		);
 
 		expect(result).toBeInstanceOf(Transaction);
