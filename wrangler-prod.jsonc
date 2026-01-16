@@ -13,6 +13,9 @@
 	// 	"command": "bun run build"
 	// }
 
+	"triggers": {
+		"crons": ["*/59 * * * *"],
+	},
 	"observability": {
 		"enabled": true,
 	},
