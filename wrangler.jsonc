@@ -69,7 +69,7 @@
 	 */
 	"services": [
 		{
-			"binding": "BTCINDEXER",
+			"binding": "BtcIndexer",
 			"service": "btcindexer",
 			"entrypoint": "BtcIndexerRpc",
 		},

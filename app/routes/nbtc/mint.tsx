@@ -151,7 +151,7 @@ export async function action({ request, context }: Route.ActionArgs) {
 	const env = context.cloudflare.env;
 	const ctrl = new Controller(
 		network,
-		env.BTCINDEXER as unknown as BtcIndexerRpcI,
+		env.BtcIndexer as unknown as BtcIndexerRpcI,
 		env.RedeemSolver as unknown as RedeemSolverRPCI,
 	);
 	return ctrl.handleJsonRPC(request);
