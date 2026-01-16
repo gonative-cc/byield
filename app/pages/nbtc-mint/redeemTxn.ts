@@ -9,7 +9,7 @@ const MODULE = "nbtc";
 export async function createRedeemTxn(
 	senderAddress: string,
 	amount: bigint,
-	minerFee: string,
+	minerFee: bigint,
 	recipientScriptBuffer: Uint8Array<ArrayBufferLike>,
 	redeemCfg: NbtcCfg,
 	client: SuiClient,

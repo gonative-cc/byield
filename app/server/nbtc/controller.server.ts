@@ -19,6 +19,10 @@ import {
 import { protectedBitcoinRPC } from "./btc-proxy.server";
 import { BitcoinNetworkTypeMap, nbtcMintTxRespToMintTx } from "./convert";
 import { logError, logger } from "~/lib/log";
+import type { NbtcTxResp } from "@gonative-cc/btcindexer/models";
+import type { RedeemSolverRPCI } from "./types";
+import type { RedeemRequestEventRaw } from "@gonative-cc/sui-indexer/models";
+import { RECOMMENDED_FEE_KEY } from "workers/constants";
 
 function validateRedeemRequestEventRaw(data: RedeemRequestEventRaw) {
 	return (
@@ -28,6 +32,15 @@ function validateRedeemRequestEventRaw(data: RedeemRequestEventRaw) {
 		typeof data.redeemer === "string" &&
 		typeof data.amount === "string" &&
 		typeof data.created_at === "string"
+	);
+}
+
+function validateFee({ minimumFee }: { minimumFee: number }): boolean {
+	return (
+		typeof minimumFee === "number" &&
+		Number.isFinite(minimumFee) &&
+		minimumFee > 0 &&
+		Number.isInteger(minimumFee)
 	);
 }
 
@@ -185,27 +198,32 @@ export default class Controller {
 		}
 	}
 
-	private async queryFee(): Promise<string | Response> {
+	private async queryFee(setupId: number): Promise<string | Response> {
 		const method = "nbtc:queryFee";
 		try {
-			if (!this.network) {
-				return badRequest("Please provide the network");
+			if (!this.network) return badRequest("Please provide network");
+			// return miner fee directly in case user is on regtest network
+			if (this.network === BitcoinNetworkType.Regtest) return "1";
+			if (!setupId || setupId < 0) {
+				return badRequest("Please provide the setup id");
 			}
 			const row = await this.db
-				.prepare("SELECT total_fee_sats FROM btc_network_fee WHERE network = ?")
-				.bind(this.network)
-				.first<{ total_fee_sats: string }>();
+				.prepare("SELECT value FROM params WHERE setup_id = ? and name = ?")
+				.bind(setupId, RECOMMENDED_FEE_KEY)
+				.first<{ value: string }>();
 
-			if (!row) {
+			const value = row ? JSON.parse(row.value) : null;
+
+			if (!value) {
 				logger.debug({
 					msg: "No network fee found",
 					method,
-					network: this.network,
+					setupId,
 				});
-				return textOK(`No network fee found for the given network: ${this.network}`);
+				return textOK(`No network fee found for the given setupId: ${setupId}`);
 			}
-
-			return row.total_fee_sats;
+			if (!validateFee(value)) return textOK("Recommended fee not found");
+			return value.minimumFee;
 		} catch (error) {
 			logError({ msg: "Error getting network fee", method, error });
 			return serverError(method, error);
@@ -241,7 +259,7 @@ export default class Controller {
 			case "putRedeemTx":
 				return this.putRedeemTx(reqData.params[1], reqData.params[2], reqData.params[3]);
 			case "queryFee":
-				return this.queryFee();
+				return this.queryFee(reqData.params[1]);
 			default:
 				return notFound("Unknown method");
 		}

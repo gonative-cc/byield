@@ -24,11 +24,12 @@ const mainnetCfg: BitcoinConfig = {
 	mempoolApiUrl: "https://mempool.space/api/v1",
 	minerFeeSats: 1000,
 	nBTC: {
-		depositAddress: "",
+		// TODO: update nBTC deposit address when available
+		depositAddress: "update it when available",
 		mintingFee: 10,
 	},
-	indexerUrl: "",
-	btcRPCUrl: "",
+	indexerUrl: "https://mempool.space",
+	btcRPCUrl: "https://bitcoin-rpc.publicnode.com",
 	minMintInSats: 1000,
 };
 
@@ -54,11 +55,12 @@ const testnetCfg: BitcoinConfig = {
 	mempoolApiUrl: "https://mempool.space/testnet/api/v1",
 	minerFeeSats: 1000,
 	nBTC: {
-		depositAddress: "",
+		// TODO: update nBTC deposit address when available
+		depositAddress: "update it when available",
 		mintingFee: 10,
 	},
-	indexerUrl: "",
-	btcRPCUrl: "",
+	indexerUrl: "https://mempool.space/testnet",
+	btcRPCUrl: "https://bitcoin-testnet-rpc.publicnode.com",
 	minMintInSats: 1000,
 };
 

@@ -75,10 +75,10 @@ export function RedeemBTC({ fetchRedeemTxs, handleRedeemBTCSuccess }: RedeemBTCP
 		if (feeFetcher.state === "idle" && !recommendedMinerFee && currentAccount) {
 			makeReq(feeFetcher, {
 				method: "queryFee",
-				params: [network],
+				params: [network, nbtc.setupId],
 			});
 		}
-	}, [currentAccount, feeFetcher, feeFetcher.state, recommendedMinerFee, network]);
+	}, [currentAccount, feeFetcher, feeFetcher.state, recommendedMinerFee, network, nbtc.setupId]);
 
 	let nbtcBalance: bigint | null = null;
 	let nbtcBalanceStr = "";
@@ -104,7 +104,7 @@ export function RedeemBTC({ fetchRedeemTxs, handleRedeemBTCSuccess }: RedeemBTCP
 	useEffect(() => setValue("bitcoinAddress", currentAddress?.address || ""), [setValue, currentAddress]);
 	useEffect(() => setValue("feeSatoshi", recommendedMinerFee), [setValue, recommendedMinerFee]);
 
-	const handleRedeemTx = async ({ numberOfNBTC, bitcoinAddress }: RedeemNBTCForm) => {
+	const handleRedeemTx = async ({ numberOfNBTC, bitcoinAddress, feeSatoshi }: RedeemNBTCForm) => {
 		if (!currentAccount || !nbtcBalanceRes || !nbtcBalanceRes.coinType) return;
 		setIsProcessing(true);
 		try {
@@ -119,11 +119,12 @@ export function RedeemBTC({ fetchRedeemTxs, handleRedeemBTCSuccess }: RedeemBTCP
 				network,
 			);
 			if (!recipientScriptBuffer) throw new Error("Invalid recipient address");
+			if (!feeSatoshi) throw new Error("Invalid miner fee");
 			// create redeem tx
 			const transaction = await createRedeemTxn(
 				currentAccount.address,
 				parseNBTC(numberOfNBTC),
-				recommendedMinerFee,
+				BigInt(feeSatoshi),
 				recipientScriptBuffer,
 				nbtc,
 				client,
@@ -271,7 +272,7 @@ export function RedeemBTC({ fetchRedeemTxs, handleRedeemBTCSuccess }: RedeemBTCP
 							</p>
 							<FormNumericInput
 								required
-								name="minerFeeInSats"
+								name="feeSatoshi"
 								placeholder="Enter miner fee..."
 								className="h-10 sm:h-14"
 								decimalScale={0}
