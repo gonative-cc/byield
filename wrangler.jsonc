@@ -71,11 +71,11 @@
 		{
 			"binding": "BtcIndexer",
 			"service": "btcindexer",
-			"entrypoint": "BtcIndexerRpc",
+			"entrypoint": "RPC",
 		},
 		{
-			"binding": "RedeemSolver",
-			"service": "redeem_solver",
+			"binding": "SuiIndexer",
+			"service": "sui-indexer",
 			"entrypoint": "RPCMock", // TODO: change to RPC once we have a working version.
 		},
 	],
@@ -107,13 +107,13 @@
 			],
 			"services": [
 				{
-					"binding": "BTCINDEXER",
+					"binding": "BtcIndexer",
 					"service": "btcindexer",
-					"entrypoint": "BtcIndexerRpcMock",
+					"entrypoint": "RPCMock",
 				},
 				{
-					"binding": "RedeemSolver",
-					"service": "redeem_solver",
+					"binding": "SuiIndexer",
+					"service": "sui-indexer",
 					"entrypoint": "RPCMock",
 				},
 			],
@@ -146,13 +146,13 @@
 			],
 			"services": [
 				{
-					"binding": "BTCINDEXER",
+					"binding": "BtcIndexer",
 					"service": "btcindexer-prod",
-					"entrypoint": "BtcIndexerRpc",
+					"entrypoint": "RPC",
 				},
 				{
-					"binding": "RedeemSolver",
-					"service": "redeem_solver",
+					"binding": "SuiIndexer",
+					"service": "sui-indexer-prod",
 					"entrypoint": "RPC",
 				},
 			],

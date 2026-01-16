@@ -1,6 +1,11 @@
 import { isValidSuiAddress } from "@mysten/sui/utils";
 import { BitcoinNetworkType } from "sats-connect";
-import type { BtcIndexerRpcI } from "@gonative-cc/btcindexer/rpc-interface";
+
+import type { NbtcTxResp } from "@gonative-cc/btcindexer/models";
+import type { BtcIndexerRpc } from "@gonative-cc/btcindexer/rpc-interface";
+import type { SuiIndexerRpc } from "@gonative-cc/sui-indexer/rpc-interface";
+import type { RedeemRequestEventRaw } from "@gonative-cc/sui-indexer/models";
+
 import type { QueryMintTxResp, QueryRedeemTxsResp, Req } from "./jsonrpc";
 import { mustGetBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import {
@@ -14,9 +19,6 @@ import {
 import { protectedBitcoinRPC } from "./btc-proxy.server";
 import { BitcoinNetworkTypeMap, nbtcMintTxRespToMintTx } from "./convert";
 import { logError, logger } from "~/lib/log";
-import type { NbtcTxResp } from "@gonative-cc/btcindexer/models";
-import type { RedeemSolverRPCI } from "./types";
-import type { RedeemRequestEventRaw } from "@gonative-cc/sui-indexer/models";
 
 function validateRedeemRequestEventRaw(data: RedeemRequestEventRaw) {
 	return (
@@ -31,20 +33,16 @@ function validateRedeemRequestEventRaw(data: RedeemRequestEventRaw) {
 
 export default class Controller {
 	btcRPCUrl: string;
-	btcindexer: BtcIndexerRpcI;
-	redeemSolver: RedeemSolverRPCI;
+	btcindexer: BtcIndexerRpc;
+	suiIndexer: SuiIndexerRpc;
 	network: BitcoinNetworkType;
 
-	constructor(
-		network: BitcoinNetworkType,
-		indexerRpc: BtcIndexerRpcI,
-		redeemSolver: RedeemSolverRPCI,
-	) {
+	constructor(network: BitcoinNetworkType, indexerRpc: BtcIndexerRpc, suiIndexer: SuiIndexerRpc) {
 		this.btcindexer = indexerRpc;
 		this.network = network;
 		const networkConfig = mustGetBitcoinConfig(network);
 		this.btcRPCUrl = networkConfig.btcRPCUrl;
-		this.redeemSolver = redeemSolver;
+		this.suiIndexer = suiIndexer;
 	}
 
 	private async getMintTxs(
@@ -148,13 +146,15 @@ export default class Controller {
 	}
 
 	private async queryRedeemTxs(
-		suiAddr: string,
-		setupId: number,
+		_suiAddr: string,
+		_setupId: number,
 	): Promise<QueryRedeemTxsResp | Response> {
 		const method = "nbtc:queryRedeemTxs";
 		try {
-			const redeemTxs = await this.redeemSolver.redeemsBySuiAddr(suiAddr, setupId);
-			return redeemTxs;
+			// TODO: this is not implemented in the suiIndexer
+			// const redeemTxs = await this.suiIndexer.redeemsBySuiAddr(suiAddr, setupId);
+			// return redeemTxs;
+			return [];
 		} catch (error) {
 			return serverError(method, error, "can't process redeem Txs data");
 		}
@@ -167,7 +167,7 @@ export default class Controller {
 			const event = JSON.parse(e) as RedeemRequestEventRaw;
 			if (!validateRedeemRequestEventRaw(event))
 				return badRequest("Invalid redeem event format");
-			await this.redeemSolver.putRedeemTx(setupId, txId, event);
+			await this.suiIndexer.putRedeemTx(setupId, txId, event);
 			return textOK("Redeem event saved successfully");
 		} catch (error) {
 			logError({ msg: "Error putting redeem tx", method, error });
