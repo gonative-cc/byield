@@ -39,7 +39,7 @@ describe("createRedeemBTCTxn", () => {
 			createRedeemTxn(
 				"0xsender",
 				1000000000n,
-				"1",
+				1n,
 				new Uint8Array([72, 101, 108, 108, 111]),
 				invalidCfg,
 				mockClient,
@@ -53,7 +53,7 @@ describe("createRedeemBTCTxn", () => {
 			createRedeemTxn(
 				"0xsender",
 				1000000000n,
-				"1",
+				1n,
 				new Uint8Array([72, 101, 108, 108, 111]),
 				invalidCfg,
 				mockClient,
@@ -74,7 +74,7 @@ describe("createRedeemBTCTxn", () => {
 			createRedeemTxn(
 				"0xsender",
 				1000000000n,
-				"1",
+				1n,
 				new Uint8Array([72, 101, 108, 108, 111]),
 				mockRedeemCfg,
 				mockClient,
@@ -94,7 +94,7 @@ describe("createRedeemBTCTxn", () => {
 		const result = await createRedeemTxn(
 			"0xsender",
 			1000000000n,
-			"1",
+			1n,
 			new Uint8Array([72, 101, 108, 108, 111]),
 			mockRedeemCfg,
 			mockClient,
@@ -121,7 +121,7 @@ describe("createRedeemBTCTxn", () => {
 		const result = await createRedeemTxn(
 			"0xsender",
 			1000000000n,
-			"1",
+			1n,
 			new Uint8Array([72, 101, 108, 108, 111]),
 			mockRedeemCfg,
 			mockClient,
@@ -148,7 +148,7 @@ describe("createRedeemBTCTxn", () => {
 		let result = await createRedeemTxn(
 			"0xsender",
 			1000000000n,
-			"1",
+			1n,
 			new Uint8Array([72, 101, 108, 108, 111]),
 			mockRedeemCfg,
 			mockClient,
@@ -159,11 +159,11 @@ describe("createRedeemBTCTxn", () => {
 		result = await createRedeemTxn(
 			"0xsender",
 			500000000n,
+			1n,
 			new Uint8Array([72, 101, 108, 108, 111]),
 			mockRedeemCfg,
 			mockClient,
 			"0xnbtc",
-			"1",
 		);
 
 		expect(result).toBeInstanceOf(Transaction);
@@ -181,11 +181,11 @@ describe("createRedeemBTCTxn", () => {
 		const result = await createRedeemTxn(
 			"0xsender",
 			smallAmount,
+			1n,
 			new Uint8Array([72, 101, 108, 108, 111]),
 			mockRedeemCfg,
 			mockClient,
 			"0xnbtc",
-			"1",
 		);
 
 		expect(result).toBeInstanceOf(Transaction);
