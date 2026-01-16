@@ -7,6 +7,10 @@ import { BtcNet } from "@gonative-cc/lib/nbtc";
 import type { RedeemSolverRPCI } from "./types";
 import { Miniflare } from "miniflare";
 
+vi.mock("workers/constants", () => ({
+	RECOMMENDED_FEE_KEY: "recommendedFee",
+}));
+
 // Mock the useBitcoinConfig module
 vi.mock("~/hooks/useBitcoinConfig", () => ({
 	mustGetBitcoinConfig: vi.fn(() => ({
