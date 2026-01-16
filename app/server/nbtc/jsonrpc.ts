@@ -32,8 +32,8 @@ export type Req =
 	  }
 	| {
 			method: "queryFee";
-			// network
-			params: [BitcoinNetworkType];
+			// network, setup id
+			params: [BitcoinNetworkType, number];
 	  };
 
 export async function makeReq<T>(
