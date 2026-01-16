@@ -8,7 +8,7 @@
 	"compatibility_date": "2025-08-12",
 	"main": "./workers/app.ts",
 	"observability": {
-		"enabled": true
+		"enabled": true,
 	},
 	"compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
 	"upload_source_maps": true,
@@ -16,7 +16,7 @@
 	// Static Assets
 	// https://developers.cloudflare.com/workers/static-assets/binding/
 	"assets": {
-		"directory": "./public"
+		"directory": "./public",
 	},
 
 	/**
@@ -35,8 +35,8 @@
 	"kv_namespaces": [
 		{
 			"binding": "BeelieversNFT",
-			"id": "181c1046829d47d2a3791087dba7e0bf"
-		}
+			"id": "181c1046829d47d2a3791087dba7e0bf",
+		},
 	],
 	"d1_databases": [
 		{
@@ -44,15 +44,15 @@
 			"database_name": "beelievers-dev",
 			"database_id": "edd65a3a-e21a-41a3-a3b1-43adbd00a8c3",
 			"migrations_table": "migrations",
-			"migrations_dir": "./db/beelievers/"
+			"migrations_dir": "./db/beelievers/",
 		},
 		{
 			"binding": "BYieldD1",
 			"database_name": "byield-dev",
 			"database_id": "e0772a14-1734-4eab-b193-84675dd08a20",
 			"migrations_table": "migrations",
-			"migrations_dir": "./db/byield/"
-		}
+			"migrations_dir": "./db/byield/",
+		},
 	],
 
 	/**
@@ -71,13 +71,13 @@
 		{
 			"binding": "BtcIndexer",
 			"service": "btcindexer",
-			"entrypoint": "RPC"
+			"entrypoint": "RPC",
 		},
 		{
 			"binding": "SuiIndexer",
 			"service": "sui-indexer",
-			"entrypoint": "RPCMock" // TODO: change to RPC once we have a working version.
-		}
+			"entrypoint": "RPCMock", // TODO: change to RPC once we have a working version.
+		},
 	],
 
 	// NOTE: build is done by vite, not wrangler, so we need to use vite cloudflare plugin to manage
@@ -90,33 +90,33 @@
 			"kv_namespaces": [
 				{
 					"binding": "BeelieversNFT",
-					"id": "181c1046829d47d2a3791087dba7e0bf"
-				}
+					"id": "181c1046829d47d2a3791087dba7e0bf",
+				},
 			],
 			"d1_databases": [
 				{
 					"binding": "BeelieversD1",
 					"database_name": "beelievers-dev",
-					"database_id": "edd65a3a-e21a-41a3-a3b1-43adbd00a8c3"
+					"database_id": "edd65a3a-e21a-41a3-a3b1-43adbd00a8c3",
 				},
 				{
 					"binding": "BYieldD1",
 					"database_name": "byield-dev",
-					"database_id": "e0772a14-1734-4eab-b193-84675dd08a20"
-				}
+					"database_id": "e0772a14-1734-4eab-b193-84675dd08a20",
+				},
 			],
 			"services": [
 				{
 					"binding": "BtcIndexer",
 					"service": "btcindexer",
-					"entrypoint": "RPCMock"
+					"entrypoint": "RPCMock",
 				},
 				{
 					"binding": "SuiIndexer",
 					"service": "sui-indexer",
-					"entrypoint": "RPCMock"
-				}
-			]
+					"entrypoint": "RPCMock",
+				},
+			],
 		},
 		"prod": {
 			"route": "byield.gonative.cc",
@@ -125,8 +125,8 @@
 			"kv_namespaces": [
 				{
 					"binding": "BeelieversNFT",
-					"id": "fbf4b21d53784b3881d4b7e1503df23e"
-				}
+					"id": "fbf4b21d53784b3881d4b7e1503df23e",
+				},
 			],
 			"d1_databases": [
 				{
@@ -134,28 +134,28 @@
 					"database_name": "beelievers-prod",
 					"database_id": "f75ec68a-1df1-4a42-aeba-1d27875bf4e5",
 					"migrations_table": "migrations",
-					"migrations_dir": "./db/beelievers/"
+					"migrations_dir": "./db/beelievers/",
 				},
 				{
 					"binding": "BYieldD1",
 					"database_name": "byield-prod",
 					"database_id": "f39490b8-c66e-45cf-ac0a-05c64cdce67d",
 					"migrations_table": "migrations",
-					"migrations_dir": "./db/byield/"
-				}
+					"migrations_dir": "./db/byield/",
+				},
 			],
 			"services": [
 				{
 					"binding": "BtcIndexer",
 					"service": "btcindexer-prod",
-					"entrypoint": "RPC"
+					"entrypoint": "RPC",
 				},
 				{
 					"binding": "SuiIndexer",
 					"service": "sui-indexer-prod",
-					"entrypoint": "RPC"
-				}
-			]
-		}
-	}
+					"entrypoint": "RPC",
+				},
+			],
+		},
+	},
 }
