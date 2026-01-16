@@ -13,7 +13,7 @@ const steps = [
 	{ status: RedeemRequestStatus.Proposed, activeMsg: "Transaction proposed" },
 	{ status: RedeemRequestStatus.Solved, activeMsg: "Transaction solved" },
 	{ status: RedeemRequestStatus.Signed, activeMsg: "Transaction signed" },
-	{ status: RedeemRequestStatus.Broadcasted, activeMsg: "Bitcoin transaction broadcasted" },
+	{ status: RedeemRequestStatus.Broadcasting, activeMsg: "Bitcoin transaction broadcasted" },
 ];
 
 const renderStep = (step: (typeof steps)[0], index: number, currentStepIndex: number) => {

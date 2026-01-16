@@ -23,11 +23,12 @@ vi.mock("~/hooks/useBitcoinConfig", () => ({
 }));
 
 const mockIndexer: BtcIndexerRpcI = {
+	latestHeight: vi.fn(),
+	putNbtcTx: vi.fn(),
+	broadcastRedeemTx: vi.fn(),
+	nbtcMintTx: vi.fn(),
 	nbtcMintTxsBySuiAddr: vi.fn(),
 	depositsBySender: vi.fn(),
-	putNbtcTx: vi.fn(),
-	latestHeight: vi.fn(),
-	nbtcMintTx: vi.fn(),
 };
 
 const mockSuiIndexer: RedeemSolverRPCI = {
