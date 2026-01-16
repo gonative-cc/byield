@@ -97,10 +97,11 @@ export function RedeemBTC({ fetchRedeemTxs, handleRedeemBTCSuccess }: RedeemBTCP
 		},
 	});
 
-	const { handleSubmit, setValue } = redeemNBTCForm;
+	const { handleSubmit, setValue, watch } = redeemNBTCForm;
+	const feeSatoshi = watch("feeSatoshi");
+	const isFeeLessThanRecommendedFee = feeSatoshi && BigInt(feeSatoshi) < BigInt(recommendedMinerFee);
 
 	const maxNBTCAmount = nbtcBalanceStr || "";
-
 	useEffect(() => setValue("bitcoinAddress", currentAddress?.address || ""), [setValue, currentAddress]);
 	useEffect(() => setValue("feeSatoshi", recommendedMinerFee), [setValue, recommendedMinerFee]);
 
@@ -288,6 +289,15 @@ export function RedeemBTC({ fetchRedeemTxs, handleRedeemBTCSuccess }: RedeemBTCP
 								}}
 								rightAdornments={<>nSats</>}
 							/>
+							{isFeeLessThanRecommendedFee && (
+								<div className="alert alert-warning mt-2">
+									<p>
+										<strong>Low fee detected:</strong> This transaction may face
+										significant delays or fail to confirm. We recommend using the
+										suggested fee for faster processing.
+									</p>
+								</div>
+							)}
 						</fieldset>
 
 						{isSuiConnected ? (

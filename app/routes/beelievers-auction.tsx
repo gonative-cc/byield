@@ -11,7 +11,7 @@ import { GRADIENTS, cn } from "~/util/tailwind";
 
 // if we need to load something directly from the client (browser):
 // https://reactrouter.com/start/framework/data-loading#using-both-loaders
-export async function loader({ params, context, request }: Route.LoaderArgs): Promise<LoaderDataResp> {
+export async function loader({ context }: Route.LoaderArgs): Promise<LoaderDataResp> {
 	const env = context.cloudflare.env;
 	const ctrl = new Controller(
 		env.BeelieversNFT,
@@ -19,7 +19,6 @@ export async function loader({ params, context, request }: Route.LoaderArgs): Pr
 		env.TRADEPORT_API_USER,
 		env.TRADEPORT_API_KEY,
 	);
-	const url = new URL(request.url);
 	// We can try to set user address to the params
 	// Probably we can use https://reactrouter.com/start/framework/route-module#unstable_clientmiddleware
 	// const suiAddress = url.searchParams.get("suiAddress") ?? undefined;
