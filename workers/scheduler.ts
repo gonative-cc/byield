@@ -22,10 +22,16 @@ export async function handleSchedule(env: Env) {
 			fetch(`${testnetMempoolUrl}/fees/recommended`),
 		]);
 
+		if (!mainnetResponse.ok || !testnetResponse.ok) {
+			throw new Error(
+				`Failed to fetch fees. Mainnet status: ${mainnetResponse.status}, Testnet status: ${testnetResponse.status}`,
+			);
+		}
+
 		const mainnetFee = (await mainnetResponse.json<{ minimumFee: number }>()).minimumFee;
 		const testnetFee = (await testnetResponse.json<{ minimumFee: number }>()).minimumFee;
 
-		await paramsDB.insertRecommendedBitcoinFee([
+		await paramsDB.insertRecommendedBitcoinFees([
 			{
 				setupId: mainnetSetupId,
 				fee: mainnetFee,

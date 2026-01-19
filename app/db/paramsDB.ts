@@ -9,19 +9,16 @@ export class ParamsDB {
 		this.db = db;
 	}
 
-	async insertRecommendedBitcoinFee(fees: { setupId: number; fee: number }[]): Promise<void> {
+	async insertRecommendedBitcoinFees(fees: { setupId: number; fee: number }[]): Promise<void> {
 		try {
 			const stmt = this.db.prepare(`
 					INSERT INTO params (setup_id, name, value)
-					VALUES (?, ?, ?)
+					VALUES (?, ${RECOMMENDED_FEE_KEY}, ?)
 					ON CONFLICT(setup_id, name) DO UPDATE SET
 						value = excluded.value;
 				`);
 
-			const feesToInsert = fees.map(({ setupId, fee }) =>
-				stmt.bind(setupId, RECOMMENDED_FEE_KEY, fee),
-			);
-
+			const feesToInsert = fees.map(({ setupId, fee }) => stmt.bind(setupId, fee));
 			await this.db.batch(feesToInsert);
 		} catch (error) {
 			logError({
@@ -39,7 +36,7 @@ export class ParamsDB {
 				.bind(setupId, RECOMMENDED_FEE_KEY)
 				.first<{ value: number }>();
 
-			return row?.value || null;
+			return row?.value ?? null;
 		} catch (error) {
 			logError({
 				msg: "Failed to get the recommended fee",

@@ -285,8 +285,8 @@ export function RedeemBTC({ fetchRedeemTxs, handleRedeemBTCSuccess }: RedeemBTCP
 								maxLength={BTC}
 								rules={{
 									validate: {
-										validateMinerFee: async (value: string) => {
-											if (BigInt(value) > 0) return true;
+										validateMinerFee: async (value: number) => {
+											if (value > 0) return true;
 											return "Should be greater than 0";
 										},
 									},

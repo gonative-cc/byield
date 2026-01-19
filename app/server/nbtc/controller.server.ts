@@ -191,9 +191,8 @@ export default class Controller {
 			if (!this.network) return badRequest("Please provide network");
 			// return miner fee directly in case user is on regtest network
 			if (this.network === BitcoinNetworkType.Regtest) return 1;
-			if (!setupId || setupId < 0) {
+			if (typeof setupId !== "number" || setupId < 0)
 				return badRequest("Please provide the setup id");
-			}
 
 			const value = await this.paramsDB.getRecommendedBitcoinFee(setupId);
 
