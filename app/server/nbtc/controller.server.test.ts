@@ -1,14 +1,10 @@
 import { describe, it, expect, vi, beforeEach, beforeAll, afterAll } from "vitest";
 import Controller from "./controller.server";
-import type { BtcIndexerRpcI } from "@gonative-cc/btcindexer/rpc-interface";
 import { MintTxStatus, type NbtcTxResp } from "@gonative-cc/btcindexer/models";
 import { BitcoinNetworkType } from "sats-connect";
-
 import type { SuiIndexerRpc } from "@gonative-cc/sui-indexer/rpc-interface";
 import type { BtcIndexerRpc } from "@gonative-cc/btcindexer/rpc-interface";
-import { MintTxStatus, type NbtcTxResp } from "@gonative-cc/btcindexer/models";
 import { BtcNet } from "@gonative-cc/lib/nbtc";
-import type { RedeemSolverRPCI } from "./types";
 import { Miniflare } from "miniflare";
 
 vi.mock("workers/constants", () => ({

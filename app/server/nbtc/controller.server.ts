@@ -1,11 +1,9 @@
 import { isValidSuiAddress } from "@mysten/sui/utils";
 import { BitcoinNetworkType } from "sats-connect";
-
 import type { NbtcTxResp } from "@gonative-cc/btcindexer/models";
 import type { BtcIndexerRpc } from "@gonative-cc/btcindexer/rpc-interface";
 import type { SuiIndexerRpc } from "@gonative-cc/sui-indexer/rpc-interface";
 import type { RedeemRequestEventRaw } from "@gonative-cc/sui-indexer/models";
-
 import type { QueryMintTxResp, QueryRedeemTxsResp, Req } from "./jsonrpc";
 import { mustGetBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import {
@@ -19,9 +17,6 @@ import {
 import { protectedBitcoinRPC } from "./btc-proxy.server";
 import { BitcoinNetworkTypeMap, nbtcMintTxRespToMintTx } from "./convert";
 import { logError, logger } from "~/lib/log";
-import type { NbtcTxResp } from "@gonative-cc/btcindexer/models";
-import type { RedeemSolverRPCI } from "./types";
-import type { RedeemRequestEventRaw } from "@gonative-cc/sui-indexer/models";
 import { RECOMMENDED_FEE_KEY } from "workers/constants";
 
 function validateRedeemRequestEventRaw(data: RedeemRequestEventRaw) {
@@ -50,13 +45,11 @@ export default class Controller {
 	btcindexer: BtcIndexerRpc;
 	suiIndexer: SuiIndexerRpc;
 	network: BitcoinNetworkType;
-	redeemSolver: RedeemSolverRPCI;
 
 	constructor(
 		network: BitcoinNetworkType,
 		indexerRpc: BtcIndexerRpc,
 		suiIndexer: SuiIndexerRpc,
-		redeemSolver: RedeemSolverRPCI,
 		db: D1Database,
 	) {
 		this.btcindexer = indexerRpc;
@@ -64,7 +57,6 @@ export default class Controller {
 		const networkConfig = mustGetBitcoinConfig(network);
 		this.btcRPCUrl = networkConfig.btcRPCUrl;
 		this.suiIndexer = suiIndexer;
-		this.redeemSolver = redeemSolver;
 		this.db = db;
 	}
 
