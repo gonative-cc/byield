@@ -185,8 +185,8 @@ export default class Controller {
 		}
 	}
 
-	private async queryFee(setupId: number): Promise<number | Response> {
-		const method = "nbtc:queryFee";
+	private async queryBitcoinFee(setupId: number): Promise<number | Response> {
+		const method = "nbtc:queryBitcoinFee";
 		try {
 			if (!this.network) return badRequest("Please provide network");
 			// return miner fee directly in case user is on regtest network
@@ -195,7 +195,7 @@ export default class Controller {
 				return badRequest("Please provide the setup id");
 			}
 
-			const value = await this.paramsDB.getRecommendedFee(setupId);
+			const value = await this.paramsDB.getRecommendedBitcoinFee(setupId);
 
 			if (!value) {
 				logger.debug({
@@ -241,8 +241,8 @@ export default class Controller {
 				return this.queryRedeemTxs(reqData.params[1], reqData.params[2]);
 			case "putRedeemTx":
 				return this.putRedeemTx(reqData.params[1], reqData.params[2], reqData.params[3]);
-			case "queryFee":
-				return this.queryFee(reqData.params[1]);
+			case "queryBitcoinFee":
+				return this.queryBitcoinFee(reqData.params[1]);
 			default:
 				return notFound("Unknown method");
 		}

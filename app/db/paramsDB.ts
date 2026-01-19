@@ -9,7 +9,7 @@ export class ParamsDB {
 		this.db = db;
 	}
 
-	async insertRecommendedFees(fees: { setupId: number; fee: number }[]): Promise<void> {
+	async insertRecommendedBitcoinFee(fees: { setupId: number; fee: number }[]): Promise<void> {
 		try {
 			const stmt = this.db.prepare(`
 					INSERT INTO params (setup_id, name, value)
@@ -26,13 +26,13 @@ export class ParamsDB {
 		} catch (error) {
 			logError({
 				msg: "Failed to insert the recommended fees",
-				method: "insertRecommendedFees",
+				method: "insertRecommendedBitcoinFee",
 				error,
 			});
 		}
 	}
 
-	async getRecommendedFee(setupId: number): Promise<number | null> {
+	async getRecommendedBitcoinFee(setupId: number): Promise<number | null> {
 		try {
 			const row = await this.db
 				.prepare("SELECT value FROM params WHERE setup_id = ? and name = ?")
@@ -43,7 +43,7 @@ export class ParamsDB {
 		} catch (error) {
 			logError({
 				msg: "Failed to get the recommended fee",
-				method: "getRecommendedFee",
+				method: "getRecommendedBitcoinFee",
 				error,
 			});
 			return null;

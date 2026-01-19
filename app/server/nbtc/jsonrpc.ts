@@ -31,7 +31,7 @@ export type Req =
 			params: [BitcoinNetworkType, number, string, string];
 	  }
 	| {
-			method: "queryFee";
+			method: "queryBitcoinFee";
 			// network, setup id
 			params: [BitcoinNetworkType, number];
 	  };

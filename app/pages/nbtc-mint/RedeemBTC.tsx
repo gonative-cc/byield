@@ -74,7 +74,7 @@ export function RedeemBTC({ fetchRedeemTxs, handleRedeemBTCSuccess }: RedeemBTCP
 	useEffect(() => {
 		if (feeFetcher.state === "idle" && !recommendedMinerFee && currentAccount) {
 			makeReq(feeFetcher, {
-				method: "queryFee",
+				method: "queryBitcoinFee",
 				params: [network, nbtc.setupId],
 			});
 		}

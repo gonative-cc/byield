@@ -7,12 +7,8 @@ import { ParamsDB } from "~/db/paramsDB";
 export async function handleSchedule(env: Env) {
 	try {
 		const paramsDB = new ParamsDB(env.BYieldD1);
-		const {
-			nbtc: { setupId: mainnetSetupId },
-		} = mainnetCfg;
-		const {
-			nbtc: { setupId: testnetSetupId },
-		} = testnetCfg;
+		const mainnetSetupId = mainnetCfg.nbtc.setupId;
+		const testnetSetupId = testnetCfg.nbtc.setupId;
 
 		const { mempoolApiUrl: mainnetMempoolUrl } = mustGetBitcoinConfig(
 			BitcoinNetworkType.Mainnet,
@@ -29,7 +25,7 @@ export async function handleSchedule(env: Env) {
 		const mainnetFee = (await mainnetResponse.json<{ minimumFee: number }>()).minimumFee;
 		const testnetFee = (await testnetResponse.json<{ minimumFee: number }>()).minimumFee;
 
-		await paramsDB.insertRecommendedFees([
+		await paramsDB.insertRecommendedBitcoinFee([
 			{
 				setupId: mainnetSetupId,
 				fee: mainnetFee,
