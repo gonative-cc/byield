@@ -1,14 +1,23 @@
+import type { GraphQLResponse } from "../common/types";
 import { badRequest, notFound, serverError } from "../http-resp";
-import type { QueryAllUserDataResp, QueryUserDataResp, Req } from "./jsonrpc";
+import type {
+	QueryUserDataResp,
+	QueryUserDepositsDataResp,
+	QueryUserTotalDepositDataResp,
+	Req,
+} from "./jsonrpc";
 import { logError } from "~/lib/log";
+import type { UserUSDCTotalDeposit, TransactionResponse } from "./types";
 
 const URL = "https://rd-api-staging.tbook.com/sbt-data/gonative";
 
 export class HiveController {
 	tbookAuthToken: string = "";
+	suiGraphQLURl: string | null = null;
 
-	constructor(_tbookAuthToken: string) {
+	constructor(_tbookAuthToken: string, _graphqlURl: string) {
 		this.tbookAuthToken = _tbookAuthToken;
+		this.suiGraphQLURl = _graphqlURl || null;
 	}
 
 	private async fetchData<T>(url: string, options?: RequestInit): Promise<T | Response> {
@@ -39,9 +48,139 @@ export class HiveController {
 		return await this.fetchData<QueryUserDataResp>(url);
 	}
 
-	async queryAllUserData(): Promise<QueryAllUserDataResp | Response> {
-		const url = `${URL}/all-users`;
-		return await this.fetchData<QueryAllUserDataResp>(url);
+	async queryTotalDeposit(
+		contractId: string,
+		suiAddr: string,
+	): Promise<QueryUserTotalDepositDataResp | Response> {
+		try {
+			if (!this.suiGraphQLURl || !contractId || !suiAddr) return badRequest();
+			const endpoint = this.suiGraphQLURl;
+			const query = `
+				query UserUSDCTotalDeposit($contractId: String!, $suiAddr: SuiAddress!) {
+					events(
+						filter: {
+						module: $contractId
+						sender: $suiAddr
+						}
+						last: 1
+					) {
+						nodes {
+						timestamp
+						sender {
+							address
+						}
+						contents {
+							json
+						}
+						transaction {
+							digest
+							effects {
+							status
+							}
+						}
+						}
+					}
+				}
+			`;
+
+			const res = await fetch(endpoint, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					query: query,
+					variables: {
+						contractId,
+						suiAddr,
+					},
+				}),
+			});
+			if (!res.ok) throw new Error(res.statusText);
+			const { data, errors } = await res.json<GraphQLResponse<UserUSDCTotalDeposit>>();
+			if (errors?.length) {
+				throw new Error(errors.map((e) => e.message).join(", "));
+			}
+			if (!data.events.nodes[0]) throw new Error("Event's node data not found");
+			return {
+				code: res.status,
+				data: data.events.nodes[0].contents.json.total_amount,
+				isError: false,
+				message: "Success",
+			};
+		} catch (err) {
+			logError({ msg: "Error fetching total deposit", method: "queryTotalDeposit" }, err);
+			return serverError("queryTotalDeposit", err, "Error fetching total deposit");
+		}
+	}
+
+	async queryUserDeposits(
+		lockdropId: string,
+		suiAddr: string,
+	): Promise<QueryUserDepositsDataResp | Response> {
+		try {
+			if (!this.suiGraphQLURl) return badRequest();
+			const endpoint = this.suiGraphQLURl;
+			const query = `
+					query Transactions($filter: TransactionFilter) {
+						transactions(filter: $filter) {
+							edges {
+							node {
+								effects {
+								status
+								digest
+								events {
+									nodes {
+									contents {
+										json
+									}
+									timestamp
+									}
+								}
+								}
+							}
+							}
+						}
+					}
+				`;
+
+			const res = await fetch(endpoint, {
+				method: "POST",
+				body: JSON.stringify({
+					query: query,
+					variables: {
+						filter: {
+							affectedObject: lockdropId,
+							sentAddress: suiAddr,
+						},
+					},
+				}),
+			});
+			if (!res.ok) throw new Error(res.statusText);
+			const { data, errors } = await res.json<GraphQLResponse<TransactionResponse>>();
+			if (errors?.length) {
+				throw new Error(errors.map((e) => e.message).join(", "));
+			}
+			const result = data.transactions.edges.map(({ node: { effects } }) => {
+				return {
+					txnId: effects.digest,
+					status: effects.status,
+					// index 0 contains the timestamp and json content
+					timestamp: effects.events.nodes?.[0]?.timestamp || null,
+					amount: effects.events.nodes?.[0]?.contents?.json?.amount || null,
+				};
+			});
+
+			return {
+				code: res.status,
+				data: result.reverse(),
+				isError: false,
+				message: "Success",
+			};
+		} catch (err) {
+			logError({ msg: "Error fetching total deposit", method: "queryUserDeposits" }, err);
+			return serverError("queryUserDeposits", err, "Error fetching total deposit");
+		}
 	}
 
 	async handleJsonRPC(r: Request) {
@@ -61,8 +200,10 @@ export class HiveController {
 		switch (reqData.method) {
 			case "queryHiveUserData":
 				return this.queryUserData(reqData.params[0]);
-			case "queryAllUserData":
-				return this.queryAllUserData();
+			case "queryTotalDeposit":
+				return this.queryTotalDeposit(reqData.params[1], reqData.params[2]);
+			case "queryUserDeposits":
+				return this.queryUserDeposits(reqData.params[1], reqData.params[2]);
 			default:
 				return notFound("Unknown method");
 		}

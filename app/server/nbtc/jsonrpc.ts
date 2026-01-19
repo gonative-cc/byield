@@ -39,5 +39,5 @@ export async function makeReq<T>(
 	return fetcher.data;
 }
 
-export type QueryMintTxResp = MintTransaction[] | null;
-export type QueryRedeemTxsResp = RedeemRequestResp[] | null;
+export type QueryMintTxResp = MintTransaction[];
+export type QueryRedeemTxsResp = RedeemRequestResp[];

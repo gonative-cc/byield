@@ -2,7 +2,10 @@ import { BitcoinNetworkType } from "sats-connect";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { useEffect, useRef, useState } from "react";
 import { RefreshCw } from "lucide-react";
-import type { BtcIndexerRpcI } from "@gonative-cc/btcindexer/rpc-interface";
+
+import type { BtcIndexerRpc } from "@gonative-cc/btcindexer/rpc-interface";
+import type { SuiIndexerRpc } from "@gonative-cc/sui-indexer/rpc-interface";
+
 import type { Route } from "./+types/mint";
 import { RegtestInstructions } from "~/pages/nbtc-mint/RegtestInstructions";
 import { MintBTCTable } from "~/pages/nbtc-mint/MintBTCTable";
@@ -16,7 +19,6 @@ import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
 import { heroTitle } from "~/util/tailwind";
 import { useMobile } from "~/hooks/useMobile";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
-import type { RedeemSolverRPCI } from "~/server/nbtc/types";
 import { useNetworkVariables } from "~/networkConfig";
 import type { RedeemRequestEventRaw } from "@gonative-cc/sui-indexer/models";
 import { useNBTCActions } from "~/pages/nbtc-mint/useNBTCActions";
@@ -151,8 +153,8 @@ export async function action({ request, context }: Route.ActionArgs) {
 	const env = context.cloudflare.env;
 	const ctrl = new Controller(
 		network,
-		env.BTCINDEXER as unknown as BtcIndexerRpcI,
-		env.RedeemSolver as unknown as RedeemSolverRPCI,
+		env.BtcIndexer as unknown as BtcIndexerRpc,
+		env.SuiIndexer as unknown as SuiIndexerRpc,
 	);
 	return ctrl.handleJsonRPC(request);
 }

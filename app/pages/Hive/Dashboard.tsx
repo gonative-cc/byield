@@ -1,4 +1,4 @@
-import { useCurrentAccount, useSuiClient } from "@mysten/dapp-kit";
+import { useCurrentAccount } from "@mysten/dapp-kit";
 import { CircleCheck, CirclePlus, Wallet } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useFetcher } from "react-router";
@@ -6,14 +6,63 @@ import { CopyButton } from "~/components/ui/CopyButton";
 import { DashboardSkeletonLoader } from "~/pages/Hive/SkeletonLoader";
 import { SuiConnectModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import { LockDropSbt, ReferralSbt, SocialSbt } from "./constant";
-import { makeReq, type QueryUserDataResp } from "~/server/hive/jsonrpc";
-import type { UserSbtData } from "~/server/hive/types";
+import {
+	makeReq,
+	type QueryUserDataResp,
+	type QueryUserDepositsDataResp,
+	type QueryUserTotalDepositDataResp,
+} from "~/server/hive/jsonrpc";
+import type { DepositTransaction, UserSbtData } from "~/server/hive/types";
 import { DepositModal } from "./DepositModal";
-import { getUserDeposits } from "./lockdrop-transactions";
 import { useNetworkVariables } from "~/networkConfig";
 import { formatUSDC, parseUSDC } from "~/lib/denoms";
 import type { TabType } from "./types";
 import { ReadMoreFAQ } from "./Home";
+import { Collapse } from "~/components/ui/collapse";
+import { Table } from "~/components/ui/table";
+import type { Column, CellProps } from "react-table";
+import { USDCIcon } from "~/components/icons";
+import { trimAddress } from "~/components/Wallet/walletHelper";
+
+const createColumns = (): Column<DepositTransaction>[] => [
+	{
+		Header: "Tx ID",
+		accessor: "txnId",
+		Cell: ({ row }: CellProps<DepositTransaction>) => (
+			<div className="flex cursor-pointer items-center gap-2 font-mono">
+				<span className="text-sm">{trimAddress(row.original.txnId)}</span>
+				<CopyButton text={row.original.txnId} />
+			</div>
+		),
+	},
+	{
+		Header: "Amount",
+		accessor: "amount",
+		Cell: ({ row }: CellProps<DepositTransaction>) =>
+			row.original.amount !== null ? (
+				<div className="flex items-center space-x-2 font-semibold">
+					<USDCIcon prefix="" className="text-primary h-5 w-5" />
+					<span className="text-primary">{formatUSDC(row.original.amount)}</span>
+					<span className="text-base-content/75 text-sm">USDC</span>
+				</div>
+			) : (
+				"-"
+			),
+	},
+	{
+		Header: "Status",
+		accessor: "status",
+		Cell: ({ row }: CellProps<DepositTransaction>) => (
+			<span className="badge">{row.original.status}</span>
+		),
+	},
+	{
+		Header: "Timestamp",
+		accessor: "timestamp",
+		Cell: ({ row }: CellProps<DepositTransaction>) =>
+			row.original.timestamp ? <span>{new Date(row.original.timestamp).toLocaleString()}</span> : "-",
+	},
+];
 
 interface HiveScoreHeaderProps {
 	totalHiveScore?: number;
@@ -48,14 +97,16 @@ interface ContributorCardProps {
 }
 
 function ContributorCard({ redirectTab, lockdropClaimedSbt = [] }: ContributorCardProps) {
-	const account = useCurrentAccount();
-	const client = useSuiClient();
-	const { lockdrop } = useNetworkVariables();
+	const suiAccount = useCurrentAccount();
+	const { lockdrop, graphqlURL } = useNetworkVariables();
 	const [isDepositModalOpen, setIsDepositModalOpen] = useState<boolean>(false);
 	const [userTotalDeposit, setUserTotalDeposit] = useState<{
-		totalDeposit?: string | null;
-		isError?: boolean;
-	}>({ totalDeposit: null, isError: false });
+		totalDeposit: string | null;
+		isError: boolean;
+	}>({
+		totalDeposit: null,
+		isError: false,
+	});
 	const isUserDepositError = userTotalDeposit?.isError;
 
 	const claimedLockdropSbtsLength = lockdropClaimedSbt.length;
@@ -66,17 +117,54 @@ function ContributorCard({ redirectTab, lockdropClaimedSbt = [] }: ContributorCa
 	const currentTier = LockDropSbt.tiers[currentLevel - 1];
 	const nextTier = isNextLevelAvailable ? LockDropSbt.tiers[nextLevel - 1] : null;
 
+	const userTotalDepositFetcher = useFetcher<QueryUserTotalDepositDataResp>();
+	const isUserTotalDepositLoading = userTotalDepositFetcher.state !== "idle";
+	const hiveUserDashboardData: QueryUserTotalDepositDataResp = userTotalDepositFetcher.data ?? null;
+
+	const userDepositFetcher = useFetcher<QueryUserDepositsDataResp>();
+	const isUserDepositFetcherLoading = userDepositFetcher.state !== "idle";
+	const hiveUserDepositData: QueryUserDepositsDataResp = userDepositFetcher.data ?? null;
+	const depositTransactions: DepositTransaction[] = hiveUserDepositData?.data ?? [];
+
 	useEffect(() => {
-		async function fetchUserTotalDeposit() {
-			if (account?.address) {
-				const totalDeposit = await getUserDeposits(account.address, lockdrop, client);
-				if (totalDeposit !== null)
-					setUserTotalDeposit({ totalDeposit: formatUSDC(totalDeposit || "0"), isError: false });
-				else setUserTotalDeposit({ totalDeposit: null, isError: true });
+		if (userTotalDepositFetcher.state === "idle" && !hiveUserDashboardData && suiAccount) {
+			makeReq<QueryUserTotalDepositDataResp>(userTotalDepositFetcher, {
+				method: "queryTotalDeposit",
+				params: [graphqlURL, lockdrop.lockdropId, suiAccount.address],
+			});
+			makeReq<QueryUserDepositsDataResp>(userDepositFetcher, {
+				method: "queryUserDeposits",
+				params: [graphqlURL, lockdrop.lockdropId, suiAccount.address],
+			});
+		}
+	}, [
+		hiveUserDashboardData,
+		userTotalDepositFetcher,
+		suiAccount,
+		graphqlURL,
+		lockdrop,
+		userDepositFetcher,
+	]);
+
+	useEffect(() => {
+		function updateUserTotalDeposit() {
+			if (hiveUserDashboardData?.isError) {
+				setUserTotalDeposit({
+					totalDeposit: null,
+					isError: true,
+				});
+				return;
+			}
+
+			if (hiveUserDashboardData?.data !== undefined && hiveUserDashboardData?.data !== null) {
+				setUserTotalDeposit({
+					totalDeposit: formatUSDC(hiveUserDashboardData.data),
+					isError: false,
+				});
 			}
 		}
-		fetchUserTotalDeposit();
-	}, [account, client, lockdrop]);
+		updateUserTotalDeposit();
+	}, [hiveUserDashboardData]);
 
 	return (
 		<div className="card mb-4">
@@ -114,9 +202,11 @@ function ContributorCard({ redirectTab, lockdropClaimedSbt = [] }: ContributorCa
 						{userTotalDeposit?.totalDeposit !== null && (
 							<>
 								<div className="mt-4 mb-1 text-xl font-bold text-white sm:text-2xl">
-									{isUserDepositError
-										? "Error fetching user deposit"
-										: `$${userTotalDeposit?.totalDeposit}`}
+									{isUserTotalDepositLoading
+										? "Loading..."
+										: isUserDepositError
+											? "Error fetching user deposit"
+											: `$${userTotalDeposit?.totalDeposit}`}
 								</div>
 								<div className="text-muted-foreground text-sm">Locked Liquidity</div>
 							</>
@@ -156,6 +246,14 @@ function ContributorCard({ redirectTab, lockdropClaimedSbt = [] }: ContributorCa
 						Deposits go to the Lockdrop Escrow.
 					</div>
 				</div>
+
+				<Collapse title="Deposit Transaction history">
+					<Table
+						columns={createColumns()}
+						data={depositTransactions}
+						isLoading={isUserDepositFetcherLoading}
+					/>
+				</Collapse>
 			</div>
 			<DepositModal
 				id="deposit-assets-modal"
@@ -163,9 +261,9 @@ function ContributorCard({ redirectTab, lockdropClaimedSbt = [] }: ContributorCa
 				onClose={() => setIsDepositModalOpen(false)}
 				redirectTab={redirectTab}
 				updateDeposit={(newDeposit: bigint) => {
-					setUserTotalDeposit((prev) => {
-						if (prev?.totalDeposit) {
-							const total = parseUSDC(prev.totalDeposit) + newDeposit;
+					setUserTotalDeposit((prevTotalDeposit) => {
+						if (prevTotalDeposit.totalDeposit) {
+							const total = parseUSDC(prevTotalDeposit.totalDeposit) + newDeposit;
 							return { totalDeposit: formatUSDC(total), isError: false };
 						}
 						return { totalDeposit: formatUSDC(newDeposit), isError: false };

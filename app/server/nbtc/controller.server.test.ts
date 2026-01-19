@@ -1,10 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import Controller from "./controller.server";
-import type { BtcIndexerRpcI } from "@gonative-cc/btcindexer/rpc-interface";
-import { MintTxStatus, type NbtcTxResp } from "@gonative-cc/btcindexer/models";
 import { BitcoinNetworkType } from "sats-connect";
+
+import type { SuiIndexerRpc } from "@gonative-cc/sui-indexer/rpc-interface";
+import type { BtcIndexerRpc } from "@gonative-cc/btcindexer/rpc-interface";
+import { MintTxStatus, type NbtcTxResp } from "@gonative-cc/btcindexer/models";
 import { BtcNet } from "@gonative-cc/lib/nbtc";
-import type { RedeemSolverRPCI } from "./types";
+
+import Controller from "./controller.server";
 
 // Mock the useBitcoinConfig module
 vi.mock("~/hooks/useBitcoinConfig", () => ({
@@ -22,18 +24,20 @@ vi.mock("~/hooks/useBitcoinConfig", () => ({
 	})),
 }));
 
-const mockIndexer: BtcIndexerRpcI = {
+const mockIndexer: BtcIndexerRpc = {
+	latestHeight: vi.fn(),
+	putNbtcTx: vi.fn(),
+	broadcastRedeemTx: vi.fn(),
+	nbtcMintTx: vi.fn(),
 	nbtcMintTxsBySuiAddr: vi.fn(),
 	depositsBySender: vi.fn(),
-	putNbtcTx: vi.fn(),
-	latestHeight: vi.fn(),
-	nbtcMintTx: vi.fn(),
 };
 
-const mockSuiIndexer: RedeemSolverRPCI = {
-	proposeRedeemUtxos: vi.fn(),
-	redeemsBySuiAddr: vi.fn(),
+const mockSuiIndexer: SuiIndexerRpc = {
+	finalizeRedeem: vi.fn(),
 	putRedeemTx: vi.fn(),
+	getBroadcastedRedeemTxIds: vi.fn(),
+	confirmRedeem: vi.fn(),
 };
 
 const mockNbtcTxResp: NbtcTxResp = {
