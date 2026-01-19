@@ -178,7 +178,7 @@ export default function Mint() {
 	const isLoading = nbtcActions.mintTxs.isLoading;
 	const txFetcherError = nbtcActions.mintTxs.isError && activeAddr ? "Failed to load transactions" : null;
 
-	const handleRedeemBTCSuccess = async (txId: string, e: RedeemRequestEventRaw) => {
+	const handleRedeemBTCSuccess = (txId: string, e: RedeemRequestEventRaw) => {
 		nbtcActions.putRedeemTx(network, nbtc.setupId, txId, JSON.stringify(e));
 	};
 
@@ -188,14 +188,8 @@ export default function Mint() {
 		if (nbtcActions.redeemTxs.isIdle && !redeemTxs?.length && currentAccount) {
 			nbtcActions.fetchRedeemTxs(network, currentAccount.address, nbtc.setupId);
 		}
-	}, [
-		redeemTxs?.length,
-		nbtcActions.redeemTxs.isIdle,
-		nbtcActions.fetchRedeemTxs,
-		currentAccount,
-		network,
-		nbtc.setupId,
-	]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps -- nbtcActions.fetchRedeemTxs is intentionally omitted (recreated each render)
+	}, [redeemTxs?.length, nbtcActions.redeemTxs.isIdle, currentAccount?.address, network, nbtc.setupId]);
 
 	useEffect(() => {
 		const fetchMintTxs = () => {
@@ -234,16 +228,14 @@ export default function Mint() {
 				clearInterval(intervalRef.current);
 			}
 		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps -- nbtcActions methods intentionally omitted (recreated each render)
 	}, [
 		activeAddr,
-		nbtcActions.queryMintTx,
-		nbtcActions.fetchRedeemTxs,
 		nbtcActions.mintTxs.isIdle,
 		network,
 		suiAddr,
 		btcAddr,
-		refetch,
-		currentAccount,
+		currentAccount?.address,
 		nbtc.setupId,
 		mintTxs.length,
 	]);
