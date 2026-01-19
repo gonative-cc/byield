@@ -46,4 +46,4 @@ export async function makeReq<T>(
 
 export type QueryMintTxResp = MintTransaction[];
 export type QueryRedeemTxsResp = RedeemRequestResp[];
-export type QueryNetworkFeesResp = string;
+export type QueryNetworkFeesResp = number;

@@ -50,7 +50,7 @@ function NBTCRightAdornment({ maxNBTCAmount, onMaxClick }: NBTCRightAdornmentPro
 interface RedeemNBTCForm {
 	numberOfNBTC: string;
 	bitcoinAddress: string;
-	feeSatoshi: string;
+	feeSatoshi: number;
 }
 
 interface RedeemBTCProps {
@@ -60,7 +60,7 @@ interface RedeemBTCProps {
 
 export function RedeemBTC({ fetchRedeemTxs, handleRedeemBTCSuccess }: RedeemBTCProps) {
 	const feeFetcher = useFetcher<QueryNetworkFeesResp>();
-	const recommendedMinerFee = feeFetcher?.data || "";
+	const recommendedMinerFee = feeFetcher?.data;
 	const { mutateAsync: signTransaction } = useSignTransaction();
 	const [isProcessing, setIsProcessing] = useState(false);
 	const { currentAddress, network } = useXverseWallet();
@@ -99,11 +99,15 @@ export function RedeemBTC({ fetchRedeemTxs, handleRedeemBTCSuccess }: RedeemBTCP
 
 	const { handleSubmit, setValue, watch } = redeemNBTCForm;
 	const feeSatoshi = watch("feeSatoshi");
-	const isFeeLessThanRecommendedFee = feeSatoshi && BigInt(feeSatoshi) < BigInt(recommendedMinerFee);
+	const isFeeLessThanRecommendedFee =
+		recommendedMinerFee !== undefined && feeSatoshi > 0 && feeSatoshi < recommendedMinerFee;
 
 	const maxNBTCAmount = nbtcBalanceStr || "";
 	useEffect(() => setValue("bitcoinAddress", currentAddress?.address || ""), [setValue, currentAddress]);
-	useEffect(() => setValue("feeSatoshi", recommendedMinerFee), [setValue, recommendedMinerFee]);
+	useEffect(
+		() => (recommendedMinerFee ? setValue("feeSatoshi", recommendedMinerFee) : undefined),
+		[setValue, recommendedMinerFee],
+	);
 
 	const handleRedeemTx = async ({ numberOfNBTC, bitcoinAddress, feeSatoshi }: RedeemNBTCForm) => {
 		if (!currentAccount || !nbtcBalanceRes || !nbtcBalanceRes.coinType) return;

@@ -17,7 +17,7 @@ import {
 import { protectedBitcoinRPC } from "./btc-proxy.server";
 import { BitcoinNetworkTypeMap, nbtcMintTxRespToMintTx } from "./convert";
 import { logError, logger } from "~/lib/log";
-import { RECOMMENDED_FEE_KEY } from "workers/constants";
+import { ParamsDB } from "~/db/paramsDB";
 
 function validateRedeemRequestEventRaw(data: RedeemRequestEventRaw) {
 	return (
@@ -30,21 +30,16 @@ function validateRedeemRequestEventRaw(data: RedeemRequestEventRaw) {
 	);
 }
 
-function validateFee({ minimumFee }: { minimumFee: number }): boolean {
-	return (
-		typeof minimumFee === "number" &&
-		Number.isFinite(minimumFee) &&
-		minimumFee > 0 &&
-		Number.isInteger(minimumFee)
-	);
+function validateFee(minimumFee: number): boolean {
+	return Number.isFinite(minimumFee) && minimumFee > 0;
 }
 
 export default class Controller {
-	db: D1Database;
 	btcRPCUrl: string;
 	btcindexer: BtcIndexerRpc;
 	suiIndexer: SuiIndexerRpc;
 	network: BitcoinNetworkType;
+	paramsDB: ParamsDB;
 
 	constructor(
 		network: BitcoinNetworkType,
@@ -57,7 +52,7 @@ export default class Controller {
 		const networkConfig = mustGetBitcoinConfig(network);
 		this.btcRPCUrl = networkConfig.btcRPCUrl;
 		this.suiIndexer = suiIndexer;
-		this.db = db;
+		this.paramsDB = new ParamsDB(db);
 	}
 
 	private async getMintTxs(
@@ -190,21 +185,17 @@ export default class Controller {
 		}
 	}
 
-	private async queryFee(setupId: number): Promise<string | Response> {
+	private async queryFee(setupId: number): Promise<number | Response> {
 		const method = "nbtc:queryFee";
 		try {
 			if (!this.network) return badRequest("Please provide network");
 			// return miner fee directly in case user is on regtest network
-			if (this.network === BitcoinNetworkType.Regtest) return "1";
+			if (this.network === BitcoinNetworkType.Regtest) return 1;
 			if (!setupId || setupId < 0) {
 				return badRequest("Please provide the setup id");
 			}
-			const row = await this.db
-				.prepare("SELECT value FROM params WHERE setup_id = ? and name = ?")
-				.bind(setupId, RECOMMENDED_FEE_KEY)
-				.first<{ value: string }>();
 
-			const value = row ? JSON.parse(row.value) : null;
+			const value = await this.paramsDB.getRecommendedFee(setupId);
 
 			if (!value) {
 				logger.debug({
@@ -215,7 +206,7 @@ export default class Controller {
 				return textOK(`No network fee found for the given setupId: ${setupId}`);
 			}
 			if (!validateFee(value)) return textOK("Recommended fee not found");
-			return value.minimumFee;
+			return value;
 		} catch (error) {
 			logError({ msg: "Error getting network fee", method, error });
 			return serverError(method, error);

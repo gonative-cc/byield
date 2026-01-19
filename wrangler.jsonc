@@ -13,7 +13,7 @@
 	"compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
 	"upload_source_maps": true,
 	"triggers": {
-		"crons": ["*/59 * * * *"],
+		"crons": ["0 * * * *"],
 	},
 
 	// Static Assets
