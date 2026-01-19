@@ -2,10 +2,8 @@ import { BitcoinNetworkType } from "sats-connect";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { useEffect, useRef, useState } from "react";
 import { RefreshCw } from "lucide-react";
-
 import type { BtcIndexerRpc } from "@gonative-cc/btcindexer/rpc-interface";
 import type { SuiIndexerRpc } from "@gonative-cc/sui-indexer/rpc-interface";
-
 import type { Route } from "./+types/mint";
 import { RegtestInstructions } from "~/pages/nbtc-mint/RegtestInstructions";
 import { MintBTCTable } from "~/pages/nbtc-mint/MintBTCTable";
@@ -155,6 +153,7 @@ export async function action({ request, context }: Route.ActionArgs) {
 		network,
 		env.BtcIndexer as unknown as BtcIndexerRpc,
 		env.SuiIndexer as unknown as SuiIndexerRpc,
+		env.BYieldD1,
 	);
 	return ctrl.handleJsonRPC(request);
 }

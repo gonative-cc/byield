@@ -1,6 +1,5 @@
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import { Transaction } from "@mysten/sui/transactions";
-import { BitcoinNetworkType } from "sats-connect";
 import { createRedeemTxn } from "./redeemTxn";
 import type { NbtcCfg } from "~/config/sui/contracts-config";
 import * as bitcoinClient from "~/lib/bitcoin.client";
@@ -40,6 +39,7 @@ describe("createRedeemBTCTxn", () => {
 			createRedeemTxn(
 				"0xsender",
 				1000000000n,
+				1n,
 				new Uint8Array([72, 101, 108, 108, 111]),
 				invalidCfg,
 				mockClient,
@@ -53,6 +53,7 @@ describe("createRedeemBTCTxn", () => {
 			createRedeemTxn(
 				"0xsender",
 				1000000000n,
+				1n,
 				new Uint8Array([72, 101, 108, 108, 111]),
 				invalidCfg,
 				mockClient,
@@ -73,6 +74,7 @@ describe("createRedeemBTCTxn", () => {
 			createRedeemTxn(
 				"0xsender",
 				1000000000n,
+				1n,
 				new Uint8Array([72, 101, 108, 108, 111]),
 				mockRedeemCfg,
 				mockClient,
@@ -92,6 +94,7 @@ describe("createRedeemBTCTxn", () => {
 		const result = await createRedeemTxn(
 			"0xsender",
 			1000000000n,
+			1n,
 			new Uint8Array([72, 101, 108, 108, 111]),
 			mockRedeemCfg,
 			mockClient,
@@ -118,6 +121,7 @@ describe("createRedeemBTCTxn", () => {
 		const result = await createRedeemTxn(
 			"0xsender",
 			1000000000n,
+			1n,
 			new Uint8Array([72, 101, 108, 108, 111]),
 			mockRedeemCfg,
 			mockClient,
@@ -144,6 +148,7 @@ describe("createRedeemBTCTxn", () => {
 		let result = await createRedeemTxn(
 			"0xsender",
 			1000000000n,
+			1n,
 			new Uint8Array([72, 101, 108, 108, 111]),
 			mockRedeemCfg,
 			mockClient,
@@ -154,6 +159,7 @@ describe("createRedeemBTCTxn", () => {
 		result = await createRedeemTxn(
 			"0xsender",
 			500000000n,
+			1n,
 			new Uint8Array([72, 101, 108, 108, 111]),
 			mockRedeemCfg,
 			mockClient,
@@ -175,6 +181,7 @@ describe("createRedeemBTCTxn", () => {
 		const result = await createRedeemTxn(
 			"0xsender",
 			smallAmount,
+			1n,
 			new Uint8Array([72, 101, 108, 108, 111]),
 			mockRedeemCfg,
 			mockClient,

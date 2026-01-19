@@ -112,8 +112,8 @@ export const testnetCfg: ContractsCfg = {
 	},
 	nbtc: {
 		coinType: "::nbtc::NBTC",
-		pkgId: "0x50be08b805766cc1a2901b925d3fb80b6362fcb25f269cb78067429237e222ec",
-		contractId: "0x5905e0c452bb5f237fb106ec2ecff962fbc60cd180090fb07a79d14d9d628a96",
+		pkgId: "0x23b3ac95976e6ee755dcc9d2bbd0009dd526beb1778b146c499c872077662202",
+		contractId: "0x8801c614fcf95339dfca4edf521b150ed1f63ec42b35816be11cb445bc9c057e",
 		// TODO: update it when setup ID is available for redeem
 		setupId: 1,
 	},

@@ -17,22 +17,23 @@ export interface BitcoinConfig {
 	minMintInSats: number;
 }
 
-export const mainnetCfg: BitcoinConfig = {
+const mainnetCfg: BitcoinConfig = {
 	bitcoinBroadcastLink: "https://mempool.space/tx/",
 	confirmationDepth: 6,
 	blockTimeSec: 600,
-	mempoolApiUrl: "",
+	mempoolApiUrl: "https://mempool.space/api/v1",
 	minerFeeSats: 1000,
 	nBTC: {
-		depositAddress: "",
+		// TODO: update nBTC deposit address when available
+		depositAddress: "update it when available",
 		mintingFee: 10,
 	},
-	indexerUrl: "",
-	btcRPCUrl: "",
+	indexerUrl: "https://mempool.space",
+	btcRPCUrl: "https://bitcoin-rpc.publicnode.com",
 	minMintInSats: 1000,
 };
 
-export const devnetCfg: BitcoinConfig = {
+const devnetCfg: BitcoinConfig = {
 	bitcoinBroadcastLink: "https://bitcoin-devnet.gonative.cc/tx/",
 	confirmationDepth: 4,
 	blockTimeSec: 120,
@@ -47,9 +48,25 @@ export const devnetCfg: BitcoinConfig = {
 	minMintInSats: 1000,
 };
 
+const testnetCfg: BitcoinConfig = {
+	bitcoinBroadcastLink: "https://mempool.space/testnet/tx/",
+	confirmationDepth: 6,
+	blockTimeSec: 600,
+	mempoolApiUrl: "https://mempool.space/testnet/api/v1",
+	minerFeeSats: 1000,
+	nBTC: {
+		// TODO: update nBTC deposit address when available
+		depositAddress: "update it when available",
+		mintingFee: 10,
+	},
+	indexerUrl: "https://mempool.space/testnet",
+	btcRPCUrl: "https://bitcoin-testnet-rpc.publicnode.com",
+	minMintInSats: 1000,
+};
+
 export const bitcoinConfigs: Record<BitcoinNetworkType, BitcoinConfig | undefined> = {
 	Mainnet: mainnetCfg,
-	Testnet: undefined,
+	Testnet: testnetCfg,
 	Testnet4: undefined,
 	Signet: undefined,
 	Regtest: devnetCfg,
