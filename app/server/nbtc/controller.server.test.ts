@@ -41,6 +41,7 @@ const mockSuiIndexer: SuiIndexerRpc = {
 	putRedeemTx: vi.fn(),
 	getBroadcastedRedeemTxIds: vi.fn(),
 	confirmRedeem: vi.fn(),
+	redeemsBySuiAddr: vi.fn(),
 };
 
 const mockNbtcTxResp: NbtcTxResp = {
