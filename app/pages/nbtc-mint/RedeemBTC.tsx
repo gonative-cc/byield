@@ -6,12 +6,18 @@ import { FormNumericInput } from "../../components/form/FormNumericInput";
 import { formatNBTC, parseNBTC } from "~/lib/denoms";
 import { buttonEffectClasses, classNames } from "~/util/tailwind";
 import { toast } from "~/hooks/use-toast";
-import { useCurrentAccount } from "@mysten/dapp-kit";
-import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
+import { useCurrentAccount, useSignTransaction, useSuiClient } from "@mysten/dapp-kit";
+import { handleBalanceChanges, useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { NBTCIcon } from "~/components/icons";
 import { Percentage } from "../../components/Percentage";
 import { SuiConnectModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import { isValidBitcoinAddress } from "~/lib/bitcoin.client";
+import { useNetworkVariables } from "~/networkConfig";
+import { signAndExecTx } from "~/lib/suienv";
+import { createRedeemTxn } from "./redeemTxn";
+import { logError, logger } from "~/lib/log";
+import { scriptPubKeyFromAddress } from "~/lib/bitcoin.client";
+import type { RedeemRequestEventRaw } from "@gonative-cc/sui-indexer/models";
 
 interface NBTCRightAdornmentProps {
 	maxNBTCAmount: string;
@@ -45,14 +51,19 @@ interface RedeemNBTCForm {
 
 interface RedeemBTCProps {
 	fetchRedeemTxs: () => void;
+	handleRedeemBTCSuccess: (txId: string, e: RedeemRequestEventRaw) => Promise<void>;
 }
 
-export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
+export function RedeemBTC({ fetchRedeemTxs, handleRedeemBTCSuccess }: RedeemBTCProps) {
+	const { mutateAsync: signTransaction } = useSignTransaction();
 	const [isProcessing, setIsProcessing] = useState(false);
 	const { currentAddress, network } = useXverseWallet();
+	const { nbtc } = useNetworkVariables();
 	const currentAccount = useCurrentAccount();
 	const isSuiConnected = !!currentAccount;
 	const nbtcBalanceRes = useCoinBalance("NBTC");
+	const suiBalanceRes = useCoinBalance("SUI");
+	const client = useSuiClient();
 	let nbtcBalance: bigint | null = null;
 	let nbtcBalanceStr = "";
 	if (nbtcBalanceRes) {
@@ -76,18 +87,82 @@ export function RedeemBTC({ fetchRedeemTxs }: RedeemBTCProps) {
 	useEffect(() => setValue("bitcoinAddress", currentAddress?.address || ""), [setValue, currentAddress]);
 
 	const handleRedeemTx = async ({ numberOfNBTC, bitcoinAddress }: RedeemNBTCForm) => {
-		if (!currentAccount || !nbtcBalanceRes) return;
-
+		if (!currentAccount || !nbtcBalanceRes || !nbtcBalanceRes.coinType) return;
 		setIsProcessing(true);
-
 		try {
-			// TODO: Implement redeem transaction logic
 			toast({
 				title: "Redeem Initiated",
 				description: `Redeeming ${numberOfNBTC} nBTC to ${bitcoinAddress}`,
+				variant: "info",
 			});
-
-			fetchRedeemTxs();
+			// validate BTC address
+			const recipientScriptBuffer: Uint8Array | null = await scriptPubKeyFromAddress(
+				bitcoinAddress,
+				network,
+			);
+			if (!recipientScriptBuffer) throw new Error("Invalid recipient address");
+			// create redeem tx
+			const transaction = await createRedeemTxn(
+				currentAccount.address,
+				parseNBTC(numberOfNBTC),
+				recipientScriptBuffer,
+				nbtc,
+				client,
+				nbtcBalanceRes.coinType,
+			);
+			const result = await signAndExecTx(transaction, client, signTransaction, {
+				showEffects: true,
+				showBalanceChanges: true,
+				showEvents: true,
+			});
+			logger.info({ msg: "Redeem tx:", method: "handleRedeemTx", digest: result.digest });
+			const success = result.effects?.status?.status === "success";
+			if (success) {
+				if (result.events) {
+					const [event] = result.events;
+					if (event)
+						await handleRedeemBTCSuccess(
+							result.digest,
+							event.parsedJson as RedeemRequestEventRaw,
+						);
+					else
+						logger.info({
+							msg: "Redeem BTC event",
+							method: "handleRedeemTx",
+							errors: "No redeem BTC event found",
+						});
+				}
+				if (result.balanceChanges) {
+					const cachedCoins = [
+						// nBTC
+						{
+							coinType: nbtcBalanceRes.coinType,
+							currentBalance: nbtcBalanceRes.balance,
+							updateCoinBalanceInCache: nbtcBalanceRes.updateCoinBalanceInCache,
+						},
+					];
+					// SUI
+					if (suiBalanceRes?.coinType)
+						cachedCoins.push({
+							coinType: suiBalanceRes.coinType,
+							currentBalance: suiBalanceRes.balance,
+							updateCoinBalanceInCache: suiBalanceRes.updateCoinBalanceInCache,
+						});
+					handleBalanceChanges(result.balanceChanges, cachedCoins);
+				}
+				toast({
+					title: "Redeem nBTC success",
+					description: `Redeem ${numberOfNBTC} nBTC to ${bitcoinAddress} successful`,
+				});
+				fetchRedeemTxs();
+			} else {
+				logError({ msg: "Redeem nBTC FAILED", method: "handleRedeemTx", errors: result.errors });
+				toast({
+					title: "Redeem nBTC failed",
+					description: `Redeeming ${numberOfNBTC} nBTC to ${bitcoinAddress} failed`,
+					variant: "destructive",
+				});
+			}
 		} catch (error) {
 			toast({
 				title: "Transaction Failed",

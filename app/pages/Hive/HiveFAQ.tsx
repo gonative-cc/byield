@@ -14,11 +14,37 @@ const GENERAL_FAQS = [
 	},
 	{
 		id: "faq-3",
+		question: "Why is there a fee to mint my SBT and how much is it?",
+		answer: (
+			<div className="space-y-4">
+				<p>
+					The fee is primarily a security measure to prevent bot farms from creating thousands of
+					fake wallets, which would dilute the Hive Score earned by real users like you. We have
+					agreed to keep it extremely low to remain accessible:
+				</p>
+				<ul className="list-inside list-disc">
+					<li>
+						<strong>Tiers 1–5 (Entry Levels): </strong>0.1 SUI per SBT.
+					</li>
+					<li>
+						<strong>Tiers 6–10 (Elite Levels): </strong>0.2 SUI per SBT.
+					</li>
+				</ul>
+				<p>
+					Native does not take a cut of these minting fees. 100% of the fee goes directly to our
+					verification partner, <strong>TBook</strong>, to cover the infrastructure costs required
+					to run the secure verification platform.
+				</p>
+			</div>
+		),
+	},
+	{
+		id: "faq-4",
 		question: "What is my Hive Score and why does it matter?",
 		answer: `Your Hive Score is the cumulative point total from every SBT you have minted. It serves as your "Reputation Primitive" within the ecosystem. A higher score signifies a deeper commitment to the protocol.`,
 	},
 	{
-		id: "faq-4",
+		id: "faq-5",
 		question: "What are Multipliers?",
 		answer: (
 			<>

@@ -3,7 +3,10 @@ import { useCurrentAccount } from "@mysten/dapp-kit";
 import { useEffect, useRef, useCallback, useMemo, useState } from "react";
 import { useFetcher } from "react-router";
 import { RefreshCw } from "lucide-react";
-import type { BtcIndexerRpcI } from "@gonative-cc/btcindexer/rpc-interface";
+
+import type { BtcIndexerRpc } from "@gonative-cc/btcindexer/rpc-interface";
+import type { SuiIndexerRpc } from "@gonative-cc/sui-indexer/rpc-interface";
+
 import type { Route } from "./+types/mint";
 import { RegtestInstructions } from "~/pages/nbtc-mint/RegtestInstructions";
 import { MintBTCTable } from "~/pages/nbtc-mint/MintBTCTable";
@@ -18,8 +21,8 @@ import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
 import { heroTitle } from "~/util/tailwind";
 import { useMobile } from "~/hooks/useMobile";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
-import type { RedeemSolverRPCI } from "~/server/nbtc/types";
 import { useNetworkVariables } from "~/networkConfig";
+import type { RedeemRequestEventRaw } from "@gonative-cc/sui-indexer/models";
 
 const FAQS = [
 	{
@@ -150,15 +153,16 @@ export async function action({ request, context }: Route.ActionArgs) {
 	const env = context.cloudflare.env;
 	const ctrl = new Controller(
 		network,
-		env.BTCINDEXER as unknown as BtcIndexerRpcI,
-		env.RedeemSolver as unknown as RedeemSolverRPCI,
+		env.BtcIndexer as unknown as BtcIndexerRpc,
+		env.SuiIndexer as unknown as SuiIndexerRpc,
 	);
 	return ctrl.handleJsonRPC(request);
 }
 
 export default function Mint() {
+	const putRedeemTx = useFetcher();
 	const { network, currentAddress, isXverseInstalled } = useXverseWallet();
-	const { redeem } = useNetworkVariables();
+	const { nbtc } = useNetworkVariables();
 	const { isMobile, mobileOS } = useMobile();
 	const btcAddr = currentAddress?.address || null;
 	const currentAccount = useCurrentAccount();
@@ -179,6 +183,13 @@ export default function Mint() {
 		mintTxFetcher.state === "idle" && mintTxFetcher.data === undefined && activeAddr;
 	const txFetcherError = hasTxFetcherError ? "Failed to load transactions" : null;
 
+	const handleRedeemBTCSuccess = async (txId: string, e: RedeemRequestEventRaw) => {
+		await makeReq(putRedeemTx, {
+			method: "putRedeemTx",
+			params: [network, nbtc.setupId, txId, JSON.stringify(e)],
+		});
+	};
+
 	// Function to fetch mint transactions
 	const fetchMintTxs = useCallback(async () => {
 		if (activeAddr) {
@@ -196,10 +207,10 @@ export default function Mint() {
 		if (currentAccount) {
 			await makeReq<QueryRedeemTxsResp>(redeemTxsFetcher, {
 				method: "fetchRedeemTxs",
-				params: [network, currentAccount.address, redeem.setupId],
+				params: [network, currentAccount.address, nbtc.setupId],
 			});
 		}
-	}, [currentAccount, redeemTxsFetcher, network, redeem.setupId]);
+	}, [currentAccount, redeemTxsFetcher, network, nbtc.setupId]);
 
 	useEffect(() => {
 		if (redeemTxsFetcher.state === "idle" && !redeemTxs && currentAccount) {
@@ -247,6 +258,7 @@ export default function Mint() {
 						fetchRedeemTxs={fetchRedeemTxs}
 						activeTab={activeTab}
 						onTabChange={setActiveTab}
+						handleRedeemBTCSuccess={handleRedeemBTCSuccess}
 					/>
 
 					{/* Transaction Table Section */}

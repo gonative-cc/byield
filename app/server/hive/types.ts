@@ -32,20 +32,66 @@ export interface UserSbtData {
 	invitees: Invitee[];
 }
 
-interface Pagination {
-	currentPage: number;
-	pageSize: number;
-	totalUsers: number;
-	totalPages: number;
-}
-
 export interface Response<T> {
 	code: number;
 	message: string;
 	data: T;
+	isError: boolean;
 }
 
-export interface Data {
-	users: UserSbtData[];
-	pagination: Pagination;
+interface UserUSDCTotalDepositNode {
+	contents: {
+		json: {
+			total_amount: string;
+			user: string;
+			coin_type: {
+				name: string;
+			};
+		};
+	};
+}
+
+export interface UserUSDCTotalDeposit {
+	events: {
+		nodes: UserUSDCTotalDepositNode[];
+	};
+}
+
+export interface DepositTransaction {
+	txnId: string;
+	timestamp: string | null;
+	amount: string | null;
+	status: string;
+}
+
+interface TransactionEdge {
+	node: {
+		effects: TransactionEffects;
+	};
+}
+
+interface TransactionEffects {
+	status: string;
+	digest: string;
+	events: {
+		nodes: EventNode[];
+	};
+}
+
+interface EventNode {
+	contents: {
+		json: TransactionJsonContent;
+	};
+	timestamp: string;
+}
+
+interface TransactionJsonContent {
+	amount: string;
+	total_amount: string;
+}
+
+export interface TransactionResponse {
+	transactions: {
+		edges: TransactionEdge[];
+	};
 }

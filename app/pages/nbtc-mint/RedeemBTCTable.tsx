@@ -12,7 +12,7 @@ import { RedeemRequestStatus, type RedeemRequestResp } from "@gonative-cc/sui-in
 import { ExpandableRedeemDetails } from "./ExpandableRedeemDetails";
 
 const getStatusDisplay = (status: RedeemRequestResp["status"]) => {
-	const isActive = status !== RedeemRequestStatus.Broadcasted;
+	const isActive = status !== RedeemRequestStatus.Broadcasting;
 	return (
 		<div className="flex items-center gap-2">
 			{isActive && <AnimatedHourglass size="md" />}
@@ -27,20 +27,27 @@ const createColumns = (
 ): Column<RedeemRequestResp>[] => [
 	{
 		Header: () => (
-			<TableTooltip label="Sui TX" tooltip="The Redeem ID that initiated the redeem process" />
+			<TableTooltip label="Sui TX" tooltip="The SUI Transaction ID that initiated the redeem process" />
 		),
-		accessor: "redeem_id",
+		accessor: "sui_tx",
 		Cell: ({ row }: CellProps<RedeemRequestResp>) => {
-			const redeemId = row.original.redeem_id;
-			return <span className="text-base-content/40">{redeemId}</span>;
+			const suiTxId = row.original.sui_tx;
+			return (
+				<Tooltip tooltip={suiTxId}>
+					<div className="flex items-center gap-2 font-mono">
+						<span className="text-sm">{trimAddress(suiTxId)}</span>
+						<CopyButton text={suiTxId} />
+					</div>
+				</Tooltip>
+			);
 		},
 	},
 	{
 		Header: () => <TableTooltip label="Amount" tooltip="The amount of nBTC being redeemed" />,
-		accessor: "amount_sats",
+		accessor: "amount",
 		Cell: ({ row }: CellProps<RedeemRequestResp>) => (
 			<div className="flex items-center gap-2 font-semibold">
-				<span className="text-primary">{formatNBTC(BigInt(row.original.amount_sats || 0))}</span>
+				<span className="text-primary">{formatNBTC(BigInt(row.original.amount))}</span>
 				<span className="text-base-content/60 text-sm">nBTC</span>
 			</div>
 		),
@@ -62,29 +69,28 @@ const createColumns = (
 		accessor: "status",
 		Cell: ({ row }: CellProps<RedeemRequestResp>) => getStatusDisplay(row.original.status),
 	},
-	// TODO: API is not sending bitcoin tx id at the moment
-	// {
-	// 	Header: () => (
-	// 		<TableTooltip label="Bitcoin TX" tooltip="The Bitcoin transaction ID for the redeemed BTC" />
-	// 	),
-	// 	accessor: "bitcoinTxId",
-	// 	Cell: ({ row }: CellProps<RedeemRequestResp>) => {
-	// 		const bitcoinTxId = row.original.bitcoinTxId;
+	{
+		Header: () => (
+			<TableTooltip label="Bitcoin TX" tooltip="The Bitcoin transaction ID for the redeemed BTC" />
+		),
+		accessor: "btc_tx",
+		Cell: ({ row }: CellProps<RedeemRequestResp>) => {
+			const bitcoinTxId = row.original.btc_tx;
 
-	// 		if (!bitcoinTxId) {
-	// 			return <span className="text-base-content/40">-</span>;
-	// 		}
+			if (!bitcoinTxId) {
+				return <span className="text-base-content/40">-</span>;
+			}
 
-	// 		return (
-	// 			<Tooltip tooltip={bitcoinTxId}>
-	// 				<div className="flex items-center gap-2 font-mono">
-	// 					<span className="text-sm">{trimAddress(bitcoinTxId)}</span>
-	// 					<CopyButton text={bitcoinTxId} />
-	// 				</div>
-	// 			</Tooltip>
-	// 		);
-	// 	},
-	// },
+			return (
+				<Tooltip tooltip={bitcoinTxId}>
+					<div className="flex items-center gap-2 font-mono">
+						<span className="text-sm">{trimAddress(bitcoinTxId)}</span>
+						<CopyButton text={bitcoinTxId} />
+					</div>
+				</Tooltip>
+			);
+		},
+	},
 	{
 		Header: "Details",
 		id: "details",
