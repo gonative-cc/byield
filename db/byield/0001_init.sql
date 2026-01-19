@@ -6,3 +6,5 @@ CREATE TABLE IF NOT EXISTS params (
   name      TEXT NOT NULL,
   value     BLOB NOT NULL
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_params_unique ON params (setup_id, name);

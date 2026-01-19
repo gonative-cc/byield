@@ -1,6 +1,6 @@
-import type { AppLoadContext } from "react-router";
 import { createRequestHandler } from "react-router";
 import { checkBotProtection } from "~/server/bot-protection.server";
+import { handleSchedule } from "./scheduler";
 
 declare module "react-router" {
 	export interface AppLoadContext {
@@ -30,5 +30,10 @@ export default {
 		return requestHandler(request, {
 			cloudflare: { env, ctx },
 		});
+	},
+	async scheduled(event, env, ctx) {
+		// We use ctx.waitUntil so the worker stays alive
+		// until the DB operation is fully committed.
+		ctx.waitUntil(handleSchedule(env));
 	},
 } satisfies ExportedHandler<Env>;
