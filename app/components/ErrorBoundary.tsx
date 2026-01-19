@@ -1,6 +1,6 @@
 import { isRouteErrorResponse, useRouteError, Link, type ErrorResponse } from "react-router";
 import { AlertTriangle, Home, RefreshCw } from "lucide-react";
-import { cn, GRADIENTS } from "~/util/tailwind";
+import { cn, GRADIENTS } from "~/tailwind";
 
 export function ErrorBoundary() {
 	const error = useRouteError();

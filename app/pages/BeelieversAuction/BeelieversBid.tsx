@@ -24,7 +24,7 @@ import {
 	cn,
 	infoBoxClasses,
 	GRADIENTS,
-} from "~/util/tailwind";
+} from "~/tailwind";
 
 const MINIMUM_FIRST_BID_MIST = 1e9;
 interface NewTotalBidAmountProps {

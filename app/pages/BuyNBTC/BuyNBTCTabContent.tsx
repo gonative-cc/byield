@@ -7,7 +7,7 @@ import { FormNumericInput } from "~/components/form/FormNumericInput";
 import { Modal } from "~/components/ui/dialog";
 import { TransactionStatus } from "./TransactionStatus";
 import { YouReceive } from "./YouReceive";
-import { classNames } from "~/util/tailwind";
+import { classNames } from "~/tailwind";
 import { SUIIcon } from "~/components/icons";
 import { useBuySellNBTC } from "./useNBTC";
 import { LoadingSpinner } from "~/components/LoadingSpinner";

@@ -5,7 +5,7 @@ import { Tooltip } from "~/components/ui/tooltip";
 import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import { NumericFormat } from "react-number-format";
 import { formatBTC } from "~/lib/denoms";
-import { infoBoxClasses } from "~/util/tailwind";
+import { infoBoxClasses } from "~/tailwind";
 import { BTCIndexerLib } from "~/lib/btcindexer.client";
 
 interface FailedTransactionAlertProps {

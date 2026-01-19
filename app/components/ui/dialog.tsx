@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
 import * as React from "react";
 import { useEffect } from "react";
-import { cn } from "~/util/tailwind";
+import { cn } from "~/tailwind";
 
 interface ModalProps {
 	id: string;

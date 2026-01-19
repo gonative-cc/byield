@@ -7,7 +7,7 @@ import { SellNBTCTabContent } from "./SellNBTCTabContent";
 import { ArrowUpRight } from "lucide-react";
 import { useCurrentAccount, useDisconnectWallet, useSuiClientContext } from "@mysten/dapp-kit";
 import type { UseCoinBalanceResult } from "~/components/Wallet/SuiWallet/useBalance";
-import { heroTitle } from "~/util/tailwind";
+import { heroTitle } from "~/tailwind";
 
 export function BuyNBTC() {
 	const { network } = useSuiClientContext();

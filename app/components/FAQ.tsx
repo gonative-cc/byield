@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { FAQClassContainer, orangeInfoCardClasses } from "~/util/tailwind";
+import { FAQClassContainer, orangeInfoCardClasses } from "~/tailwind";
 
 interface FAQ {
 	id: string;

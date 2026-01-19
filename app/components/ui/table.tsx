@@ -2,7 +2,7 @@ import React from "react";
 import { useTable } from "react-table";
 import type { Column, HeaderGroup, Row } from "react-table";
 import { twMerge } from "tailwind-merge";
-import { primaryHeadingClasses, avatarGradientClasses, GRADIENTS } from "~/util/tailwind";
+import { primaryHeadingClasses, avatarGradientClasses, GRADIENTS } from "~/tailwind";
 
 const TableHead = <T extends object>({ headerGroups }: { headerGroups: HeaderGroup<T>[] }) => (
 	<thead className="sticky top-0">

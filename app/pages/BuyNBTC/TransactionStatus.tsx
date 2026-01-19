@@ -1,5 +1,5 @@
 import { Check, CircleX } from "lucide-react";
-import { classNames } from "~/util/tailwind";
+import { classNames } from "~/tailwind";
 import { Link } from "react-router";
 
 interface TransactionStatusProps {
