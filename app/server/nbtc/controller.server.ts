@@ -161,10 +161,8 @@ export default class Controller {
 	): Promise<QueryRedeemTxsResp | Response> {
 		const method = "nbtc:queryRedeemTxs";
 		try {
-			// TODO: this is not implemented in the suiIndexer
-			// const redeemTxs = await this.suiIndexer.redeemsBySuiAddr(suiAddr, setupId);
-			// return redeemTxs;
-			return [];
+			const redeemTxs = await this.suiIndexer.redeemsBySuiAddr(_setupId, _suiAddr);
+			return redeemTxs;
 		} catch (error) {
 			return serverError(method, error, "can't process redeem Txs data");
 		}
