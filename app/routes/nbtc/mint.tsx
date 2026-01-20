@@ -1,6 +1,6 @@
 import { BitcoinNetworkType } from "sats-connect";
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { RefreshCw } from "lucide-react";
 import type { BtcIndexerRpc } from "@gonative-cc/btcindexer/rpc-interface";
 import type { SuiIndexerRpc } from "@gonative-cc/sui-indexer/rpc-interface";
@@ -172,6 +172,11 @@ export default function Mint() {
 	const prevAddrRef = useRef<string | undefined>(undefined);
 	const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
+	const nbtcActionsRef = useRef(nbtcActions);
+	useLayoutEffect(() => {
+		nbtcActionsRef.current = nbtcActions;
+	});
+
 	const [activeTab, setActiveTab] = useState<TabType>("mint");
 	const mintTxs = nbtcActions.mintTxs.data;
 	const redeemTxs = nbtcActions.redeemTxs.data;
@@ -179,29 +184,28 @@ export default function Mint() {
 	const txFetcherError = nbtcActions.mintTxs.isError && activeAddr ? "Failed to load transactions" : null;
 
 	const handleRedeemBTCSuccess = (txId: string, e: RedeemRequestEventRaw) => {
-		nbtcActions.putRedeemTx(network, nbtc.setupId, txId, JSON.stringify(e));
+		nbtcActionsRef.current.putRedeemTx(network, nbtc.setupId, txId, JSON.stringify(e));
 	};
 
 	const isRedeemTxsLoading = nbtcActions.redeemTxs.isLoading;
 
 	useEffect(() => {
-		if (nbtcActions.redeemTxs.isIdle && !redeemTxs?.length && currentAccount) {
-			nbtcActions.fetchRedeemTxs(network, currentAccount.address, nbtc.setupId);
+		if (nbtcActionsRef.current.redeemTxs.isIdle && !redeemTxs?.length && currentAccount) {
+			nbtcActionsRef.current.fetchRedeemTxs(network, currentAccount.address, nbtc.setupId);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps -- nbtcActions.fetchRedeemTxs is intentionally omitted (recreated each render)
-	}, [redeemTxs?.length, nbtcActions.redeemTxs.isIdle, currentAccount?.address, network, nbtc.setupId]);
+	}, [redeemTxs?.length, currentAccount, network, nbtc.setupId]);
 
 	useEffect(() => {
 		const fetchMintTxs = () => {
 			if (activeAddr) {
-				nbtcActions.queryMintTx(network, suiAddr, btcAddr);
+				nbtcActionsRef.current.queryMintTx(network, suiAddr, btcAddr);
 				refetch();
 			}
 		};
 
 		const fetchRedeemTxs = () => {
 			if (currentAccount) {
-				nbtcActions.fetchRedeemTxs(network, currentAccount.address, nbtc.setupId);
+				nbtcActionsRef.current.fetchRedeemTxs(network, currentAccount.address, nbtc.setupId);
 			}
 		};
 
@@ -209,7 +213,10 @@ export default function Mint() {
 			clearInterval(intervalRef.current);
 		}
 
-		if (prevAddrRef.current !== activeAddr || (nbtcActions.mintTxs.isIdle && !mintTxs.length)) {
+		if (
+			prevAddrRef.current !== activeAddr ||
+			(nbtcActionsRef.current.mintTxs.isIdle && !mintTxs.length)
+		) {
 			prevAddrRef.current = activeAddr;
 			fetchMintTxs();
 		}
@@ -228,17 +235,7 @@ export default function Mint() {
 				clearInterval(intervalRef.current);
 			}
 		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps -- nbtcActions methods intentionally omitted (recreated each render)
-	}, [
-		activeAddr,
-		nbtcActions.mintTxs.isIdle,
-		network,
-		suiAddr,
-		btcAddr,
-		currentAccount?.address,
-		nbtc.setupId,
-		mintTxs.length,
-	]);
+	}, [activeAddr, network, suiAddr, btcAddr, currentAccount, nbtc.setupId, mintTxs.length, refetch]);
 
 	return (
 		<div className="mx-auto max-w-7xl space-y-6 px-4 py-4">
