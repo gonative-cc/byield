@@ -1,6 +1,6 @@
 import React from "react";
 import { Countdown } from "~/components/ui/countdown";
-import { primaryBadgeClasses, GRADIENTS } from "~/util/tailwind";
+import { primaryBadgeClasses, GRADIENTS } from "~/tailwind";
 import { BadgesModal } from "~/components/BadgesModal";
 import { AuctionAccountType } from "~/server/BeelieversAuction/types";
 import { TwitterShareButton } from "~/components/TwitterShareButton";

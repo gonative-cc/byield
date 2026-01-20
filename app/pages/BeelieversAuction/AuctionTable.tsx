@@ -6,7 +6,7 @@ import { toBadgeRecord, type BadgeRecord } from "~/lib/badgeSystem";
 import type { Bidder, User } from "~/server/BeelieversAuction/types";
 import { BadgesModal } from "~/components/BadgesModal";
 import { formatSUI } from "~/lib/denoms";
-import { avatarGradientClasses, primaryHeadingClasses, selectedRowGradientClasses } from "~/util/tailwind";
+import { avatarGradientClasses, primaryHeadingClasses, selectedRowGradientClasses } from "~/tailwind";
 
 const MAX_LEADERBOARD_ROWS = 21;
 

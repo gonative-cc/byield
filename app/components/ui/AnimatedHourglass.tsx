@@ -1,4 +1,4 @@
-import { cn } from "~/util/tailwind";
+import { cn } from "~/tailwind";
 
 interface AnimatedHourglassProps {
 	className?: string;

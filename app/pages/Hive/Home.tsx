@@ -1,5 +1,5 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { heroTitle } from "~/util/tailwind";
+import { heroTitle } from "~/tailwind";
 import type { TabType } from "./types";
 import { Info } from "lucide-react";
 import { Table } from "~/components/ui/table";

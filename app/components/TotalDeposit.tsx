@@ -8,7 +8,7 @@ import { formatNBTC } from "~/lib/denoms";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { TrimmedNumber } from "./TrimmedNumber";
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { heroTitle } from "~/util/tailwind";
+import { heroTitle } from "~/tailwind";
 
 enum MarketIntegration {
 	TURBOS = "TURBOS",

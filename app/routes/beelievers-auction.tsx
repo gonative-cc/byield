@@ -7,7 +7,7 @@ import type { LoaderDataResp } from "~/server/BeelieversAuction/types";
 import type { Route } from "./+types/beelievers-auction";
 import { isProductionMode } from "~/lib/appenv";
 import { toast } from "~/hooks/use-toast";
-import { GRADIENTS, cn } from "~/util/tailwind";
+import { GRADIENTS, cn } from "~/tailwind";
 
 // if we need to load something directly from the client (browser):
 // https://reactrouter.com/start/framework/data-loading#using-both-loaders

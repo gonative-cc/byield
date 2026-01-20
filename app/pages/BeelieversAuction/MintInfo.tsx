@@ -12,7 +12,7 @@ import {
 import { SUI_CLOCK_OBJECT_ID } from "@mysten/sui/utils";
 
 import { Countdown } from "~/components/ui/countdown";
-import { classNames, primaryHeadingClasses, GRADIENTS } from "~/util/tailwind";
+import { classNames, primaryHeadingClasses, GRADIENTS } from "~/tailwind";
 import { toast } from "~/hooks/use-toast";
 import { useNetworkVariables } from "~/networkConfig";
 import { AuctionAccountType, type AuctionInfo, type User } from "~/server/BeelieversAuction/types";
@@ -27,7 +27,7 @@ import { NftDisplay, findExistingNft, findNftInTxResult, queryNftFromKiosk } fro
 import type { KioskInfo } from "./kiosk";
 import { initializeKioskInfo, createKiosk } from "./kiosk";
 import { LoadingSpinner } from "~/components/LoadingSpinner";
-import { cardShowcaseClasses, cn, primaryBadgeClasses } from "~/util/tailwind";
+import { cardShowcaseClasses, cn, primaryBadgeClasses } from "~/tailwind";
 import { logError, logger } from "~/lib/log";
 
 interface MintInfoItemProps {

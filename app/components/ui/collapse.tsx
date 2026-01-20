@@ -1,6 +1,6 @@
 import { ChevronsDown, ChevronsUp } from "lucide-react";
 import { useState, type ReactNode } from "react";
-import { cn, collapseGradientClasses } from "~/util/tailwind";
+import { cn, collapseGradientClasses } from "~/tailwind";
 
 interface CollapseProps {
 	title: string | ReactNode;

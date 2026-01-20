@@ -3,7 +3,7 @@ import { useSuiClientContext } from "@mysten/dapp-kit";
 import type { SuiClient, SuiTransactionBlockResponse } from "@mysten/sui/client";
 import { ExternalLink } from "lucide-react";
 import { trimAddress } from "~/components/Wallet/walletHelper";
-import { GRADIENTS } from "~/util/tailwind";
+import { GRADIENTS } from "~/tailwind";
 import { mkSuiVisionUrl, mkWalrusImageUrl } from "~/lib/suienv";
 import { useNetworkVariables } from "~/networkConfig";
 import { logError, logger } from "~/lib/log";

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { cn } from "~/util/tailwind";
+import { cn } from "~/tailwind";
 import { NumericFormat } from "react-number-format";
 import type { NumericFormatProps } from "react-number-format";
 

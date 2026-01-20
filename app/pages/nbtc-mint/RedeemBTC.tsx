@@ -4,7 +4,7 @@ import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
 import { useState, useEffect } from "react";
 import { FormNumericInput } from "../../components/form/FormNumericInput";
 import { BTC, formatNBTC, parseNBTC } from "~/lib/denoms";
-import { buttonEffectClasses, classNames } from "~/util/tailwind";
+import { buttonEffectClasses, classNames } from "~/tailwind";
 import { toast } from "~/hooks/use-toast";
 import { useCurrentAccount, useSignTransaction, useSuiClient } from "@mysten/dapp-kit";
 import { handleBalanceChanges, useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";

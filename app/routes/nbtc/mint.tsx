@@ -14,7 +14,7 @@ import Controller from "~/server/nbtc/controller.server";
 import { BitcoinBlockInfoCard } from "~/components/ui/BlockInfoCard";
 import { FAQ } from "~/components/FAQ";
 import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
-import { heroTitle } from "~/util/tailwind";
+import { heroTitle } from "~/tailwind";
 import { useMobile } from "~/hooks/useMobile";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { useNetworkVariables } from "~/networkConfig";

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { primaryHeadingClasses, GRADIENTS } from "~/util/tailwind";
+import { primaryHeadingClasses, GRADIENTS } from "~/tailwind";
 
 interface StatsCardProps {
 	title: string | ReactNode;

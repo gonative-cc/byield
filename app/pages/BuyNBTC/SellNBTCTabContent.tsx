@@ -8,7 +8,7 @@ import { useBuySellNBTC } from "./useNBTC";
 import { formatNBTC, NBTC, parseNBTC } from "~/lib/denoms";
 import { FormProvider, useForm } from "react-hook-form";
 import { FormNumericInput } from "~/components/form/FormNumericInput";
-import { classNames } from "~/util/tailwind";
+import { classNames } from "~/tailwind";
 import { PRICE_PER_NBTC_IN_SUI } from "~/lib/nbtc";
 import { LoadingSpinner } from "~/components/LoadingSpinner";
 import type { UseCoinBalanceResult } from "~/components/Wallet/SuiWallet/useBalance";

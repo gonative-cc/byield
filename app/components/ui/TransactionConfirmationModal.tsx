@@ -1,7 +1,7 @@
 import { CheckCircle, Clock, Info } from "lucide-react";
 import { Modal } from "./dialog";
 import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
-import { alertPrimaryClasses, gradientCardClasses } from "~/util/tailwind";
+import { alertPrimaryClasses, gradientCardClasses } from "~/tailwind";
 
 interface TxConfirmationModal {
 	isOpen: boolean;

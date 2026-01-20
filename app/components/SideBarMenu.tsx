@@ -1,7 +1,7 @@
 import { useContext, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router";
 import { SideBarContext } from "~/providers/SiderBarProvider";
-import { classNames } from "~/util/tailwind";
+import { classNames } from "~/tailwind";
 import { isProductionMode } from "~/lib/appenv";
 
 interface MenuItem {
