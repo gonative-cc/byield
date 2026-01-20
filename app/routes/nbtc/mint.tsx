@@ -1,7 +1,6 @@
 import { BitcoinNetworkType } from "sats-connect";
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { useEffect, useRef, useCallback, useMemo, useState } from "react";
-import { useFetcher } from "react-router";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { RefreshCw } from "lucide-react";
 import type { BtcIndexerRpc } from "@gonative-cc/btcindexer/rpc-interface";
 import type { SuiIndexerRpc } from "@gonative-cc/sui-indexer/rpc-interface";
@@ -12,7 +11,6 @@ import { RedeemBTCTable } from "~/pages/nbtc-mint/RedeemBTCTable";
 import { ControlledNBTCTabs, type TabType } from "~/pages/nbtc-mint/ControlledNBTCTabs";
 import { Collapse } from "~/components/ui/collapse";
 import Controller from "~/server/nbtc/controller.server";
-import { makeReq, type QueryMintTxResp, type QueryRedeemTxsResp } from "~/server/nbtc/jsonrpc";
 import { BitcoinBlockInfoCard } from "~/components/ui/BlockInfoCard";
 import { FAQ } from "~/components/FAQ";
 import { useXverseWallet } from "~/components/Wallet/XverseWallet/useWallet";
@@ -21,6 +19,8 @@ import { useMobile } from "~/hooks/useMobile";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { useNetworkVariables } from "~/networkConfig";
 import type { RedeemRequestEventRaw } from "@gonative-cc/sui-indexer/models";
+import { useNBTCActions } from "~/pages/nbtc-mint/useNBTCActions";
+import { logError } from "~/lib/log";
 
 const FAQS = [
 	{
@@ -159,79 +159,75 @@ export async function action({ request, context }: Route.ActionArgs) {
 }
 
 export default function Mint() {
-	const putRedeemTx = useFetcher();
+	const nbtcActions = useNBTCActions();
 	const { network, currentAddress, isXverseInstalled } = useXverseWallet();
 	const { nbtc } = useNetworkVariables();
 	const { isMobile, mobileOS } = useMobile();
-	const btcAddr = currentAddress?.address || null;
+	const btcAddr = currentAddress?.address;
 	const currentAccount = useCurrentAccount();
-	const suiAddr = currentAccount?.address || null;
+	const suiAddr = currentAccount?.address;
 	const { refetch } = useCoinBalance("NBTC");
 
 	const activeAddr = suiAddr || btcAddr;
-	const mintTxFetcher = useFetcher<QueryMintTxResp>({ key: activeAddr || undefined });
-	const redeemTxsFetcher = useFetcher<QueryRedeemTxsResp>();
-	const prevAddrRef = useRef<string | null>(null);
+	const prevAddrRef = useRef<string | undefined>(undefined);
 	const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-	const [activeTab, setActiveTab] = useState<TabType>("mint");
-	const mintTxs = useMemo(() => mintTxFetcher.data || [], [mintTxFetcher.data]);
-	const redeemTxs = useMemo(() => redeemTxsFetcher.data, [redeemTxsFetcher.data]);
-	const isLoading = mintTxFetcher.state !== "idle";
-	const hasTxFetcherError =
-		mintTxFetcher.state === "idle" && mintTxFetcher.data === undefined && activeAddr;
-	const txFetcherError = hasTxFetcherError ? "Failed to load transactions" : null;
+	const nbtcActionsRef = useRef(nbtcActions);
+	useLayoutEffect(() => {
+		nbtcActionsRef.current = nbtcActions;
+	});
 
-	const handleRedeemBTCSuccess = async (txId: string, e: RedeemRequestEventRaw) => {
-		await makeReq(putRedeemTx, {
-			method: "putRedeemTx",
-			params: [network, nbtc.setupId, txId, JSON.stringify(e)],
-		});
+	const [activeTab, setActiveTab] = useState<TabType>("mint");
+	const mintTxs = nbtcActions.mintTxs.data;
+	const redeemTxs = nbtcActions.redeemTxs.data;
+	const isLoading = nbtcActions.mintTxs.isLoading;
+	const txFetcherError = nbtcActions.mintTxs.isError && activeAddr ? "Failed to load transactions" : null;
+
+	const handleRedeemBTCSuccess = (txId: string, e: RedeemRequestEventRaw) => {
+		nbtcActionsRef.current.putRedeemTx(network, nbtc.setupId, txId, JSON.stringify(e));
 	};
 
-	// Function to fetch mint transactions
-	const fetchMintTxs = useCallback(async () => {
-		if (activeAddr) {
-			await makeReq<QueryMintTxResp>(mintTxFetcher, {
-				method: "queryMintTx",
-				params: [network, suiAddr, btcAddr],
-			});
-			refetch();
-		}
-	}, [activeAddr, btcAddr, mintTxFetcher, network, refetch, suiAddr]);
-
-	const isRedeemTxsLoading = redeemTxsFetcher.state !== "idle";
-
-	const fetchRedeemTxs = useCallback(async () => {
-		if (currentAccount) {
-			await makeReq<QueryRedeemTxsResp>(redeemTxsFetcher, {
-				method: "fetchRedeemTxs",
-				params: [network, currentAccount.address, nbtc.setupId],
-			});
-		}
-	}, [currentAccount, redeemTxsFetcher, network, nbtc.setupId]);
+	const isRedeemTxsLoading = nbtcActions.redeemTxs.isLoading;
 
 	useEffect(() => {
-		if (redeemTxsFetcher.state === "idle" && !redeemTxs && currentAccount) {
-			fetchRedeemTxs();
+		if (nbtcActionsRef.current.redeemTxs.isIdle && !redeemTxs?.length && currentAccount) {
+			nbtcActionsRef.current.fetchRedeemTxs(network, currentAccount.address, nbtc.setupId);
 		}
-	}, [redeemTxs, redeemTxsFetcher, currentAccount, fetchRedeemTxs]);
+	}, [redeemTxs?.length, currentAccount, network, nbtc.setupId]);
 
-	// Handle address changes, interval setup, and initial fetch
 	useEffect(() => {
+		const fetchMintTxs = () => {
+			if (activeAddr) {
+				nbtcActionsRef.current.queryMintTx(network, suiAddr, btcAddr);
+				refetch();
+			}
+		};
+
+		const fetchRedeemTxs = () => {
+			if (currentAccount) {
+				nbtcActionsRef.current.fetchRedeemTxs(network, currentAccount.address, nbtc.setupId);
+			}
+		};
+
 		if (intervalRef.current) {
 			clearInterval(intervalRef.current);
 		}
 
-		// Handle address change or initial fetch
-		if (prevAddrRef.current !== activeAddr || (mintTxFetcher.state === "idle" && !mintTxs)) {
+		if (
+			prevAddrRef.current !== activeAddr ||
+			(nbtcActionsRef.current.mintTxs.isIdle && !mintTxs.length)
+		) {
 			prevAddrRef.current = activeAddr;
 			fetchMintTxs();
 		}
 
-		// Set up interval for automatic refetching
 		intervalRef.current = setInterval(() => {
-			Promise.all([fetchMintTxs(), fetchRedeemTxs()]);
+			try {
+				fetchMintTxs();
+				fetchRedeemTxs();
+			} catch (err) {
+				logError({ msg: "Background fetch failed", method: "mint:interval" }, err);
+			}
 		}, 120000);
 
 		return () => {
@@ -239,7 +235,7 @@ export default function Mint() {
 				clearInterval(intervalRef.current);
 			}
 		};
-	}, [activeAddr, fetchMintTxs, mintTxFetcher.state, mintTxs, mintTxFetcher, fetchRedeemTxs]);
+	}, [activeAddr, network, suiAddr, btcAddr, currentAccount, nbtc.setupId, mintTxs.length, refetch]);
 
 	return (
 		<div className="mx-auto max-w-7xl space-y-6 px-4 py-4">
@@ -253,8 +249,17 @@ export default function Mint() {
 				{/* Left Column */}
 				<div className="space-y-6">
 					<ControlledNBTCTabs
-						fetchMintTxs={fetchMintTxs}
-						fetchRedeemTxs={fetchRedeemTxs}
+						fetchMintTxs={() => {
+							if (activeAddr) {
+								nbtcActions.queryMintTx(network, suiAddr, btcAddr);
+								refetch();
+							}
+						}}
+						fetchRedeemTxs={() => {
+							if (currentAccount) {
+								nbtcActions.fetchRedeemTxs(network, currentAccount.address, nbtc.setupId);
+							}
+						}}
 						activeTab={activeTab}
 						onTabChange={setActiveTab}
 						handleRedeemBTCSuccess={handleRedeemBTCSuccess}
@@ -268,7 +273,15 @@ export default function Mint() {
 									<div>
 										<div className="font-medium">Failed to load transactions</div>
 										<div className="text-sm opacity-80">{txFetcherError}</div>
-										<button onClick={fetchMintTxs} className="btn btn-sm mt-2">
+										<button
+											onClick={() => {
+												if (activeAddr) {
+													nbtcActions.queryMintTx(network, suiAddr, btcAddr);
+													refetch();
+												}
+											}}
+											className="btn btn-sm mt-2"
+										>
 											Retry
 										</button>
 									</div>
@@ -276,7 +289,12 @@ export default function Mint() {
 							)}
 							{!txFetcherError && (
 								<button
-									onClick={fetchMintTxs}
+									onClick={() => {
+										if (activeAddr) {
+											nbtcActions.queryMintTx(network, suiAddr, btcAddr);
+											refetch();
+										}
+									}}
 									disabled={isLoading}
 									className="btn btn-sm btn-ghost"
 									title="Refresh transactions"

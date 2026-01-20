@@ -55,7 +55,7 @@ interface RedeemNBTCForm {
 
 interface RedeemBTCProps {
 	fetchRedeemTxs: () => void;
-	handleRedeemBTCSuccess: (txId: string, e: RedeemRequestEventRaw) => Promise<void>;
+	handleRedeemBTCSuccess: (txId: string, e: RedeemRequestEventRaw) => void;
 }
 
 export function RedeemBTC({ fetchRedeemTxs, handleRedeemBTCSuccess }: RedeemBTCProps) {
@@ -146,10 +146,7 @@ export function RedeemBTC({ fetchRedeemTxs, handleRedeemBTCSuccess }: RedeemBTCP
 				if (result.events) {
 					const [event] = result.events;
 					if (event)
-						await handleRedeemBTCSuccess(
-							result.digest,
-							event.parsedJson as RedeemRequestEventRaw,
-						);
+						handleRedeemBTCSuccess(result.digest, event.parsedJson as RedeemRequestEventRaw);
 					else
 						logger.info({
 							msg: "Redeem BTC event",
