@@ -156,15 +156,16 @@ export default class Controller {
 	}
 
 	private async queryRedeemTxs(
-		_suiAddr: string,
-		_setupId: number,
+		suiAddr: string,
+		setupId: number,
 	): Promise<QueryRedeemTxsResp | Response> {
 		const method = "nbtc:queryRedeemTxs";
 		try {
-			// TODO: this is not implemented in the suiIndexer
-			// const redeemTxs = await this.suiIndexer.redeemsBySuiAddr(suiAddr, setupId);
-			// return redeemTxs;
-			return [];
+			if (!suiAddr) return badRequest("Please provide sui address");
+			if (typeof setupId !== "number" || setupId < 0)
+				return badRequest("Please provide the setup id");
+			const redeemTxs = await this.suiIndexer.redeemsBySuiAddr(setupId, suiAddr);
+			return redeemTxs;
 		} catch (error) {
 			return serverError(method, error, "can't process redeem Txs data");
 		}
