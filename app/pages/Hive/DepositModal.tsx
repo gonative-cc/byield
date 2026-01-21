@@ -51,9 +51,17 @@ interface DepositModalProps {
 	onClose: () => void;
 	redirectTab: (redirectTab: TabType) => void;
 	updateDeposit: (newDeposit: bigint) => void;
+	addTransaction: (txnId: string, amount: bigint) => void;
 }
 
-export function DepositModal({ id, open, onClose, redirectTab, updateDeposit }: DepositModalProps) {
+export function DepositModal({
+	id,
+	open,
+	onClose,
+	redirectTab,
+	updateDeposit,
+	addTransaction,
+}: DepositModalProps) {
 	const { mutateAsync: signTransaction } = useSignTransaction();
 	const account = useCurrentAccount();
 	const client = useSuiClient();
@@ -92,6 +100,7 @@ export function DepositModal({ id, open, onClose, redirectTab, updateDeposit }: 
 				setTxStatus({ success, digest: result.digest });
 				if (success) {
 					updateDeposit(amount);
+					addTransaction(result.digest, amount);
 					if (result.balanceChanges) {
 						handleBalanceChanges(result.balanceChanges, [
 							// USDC
@@ -129,6 +138,7 @@ export function DepositModal({ id, open, onClose, redirectTab, updateDeposit }: 
 			client,
 			signTransaction,
 			updateDeposit,
+			addTransaction,
 			usdcBalanceRes.balance,
 			usdcBalanceRes.updateCoinBalanceInCache,
 			suiBalanceRes.coinType,
