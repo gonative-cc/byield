@@ -253,7 +253,12 @@ export function DepositModal({
 							<Info />
 							Your USDC will be locked in the lockdrop escrow until the lockdrop period ends.
 						</button>
-						<button className="btn btn-primary" type="submit" disabled={isDepositing}>
+						<button
+							className="btn btn-primary"
+							type="submit"
+							disabled={isDepositing}
+							data-testid="submit-usdc-btn"
+						>
 							<LoadingSpinner isLoading={isDepositing} />
 							Deposit USDC
 						</button>
