@@ -4,18 +4,18 @@ import type { DepositTransaction, Response, UserSbtData } from "./types";
 export type Req =
 	| {
 			method: "queryHiveUserData";
-			//sui address
-			params: [string];
+			//suiGraphQLURl, tbookurl, sui address
+			params: [string, string, string];
 	  }
 	| {
 			method: "queryTotalDeposit";
-			//suiGraphQLURl, contract address, sui address
-			params: [string, string, string];
+			//suiGraphQLURl, tbookurl, contract address, sui address
+			params: [string, string, string, string];
 	  }
 	| {
 			method: "queryUserDeposits";
-			//suiGraphQLURl, contract address, sui address
-			params: [string, string, string];
+			//suiGraphQLURl, tbookurl, contract address, sui address
+			params: [string, string, string, string];
 	  };
 
 export async function makeReq<T>(

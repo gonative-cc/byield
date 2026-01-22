@@ -36,11 +36,11 @@ export const useDashboardActions = () => {
 		if (userTotalDepositFetcher.state === "idle" && !hiveUserDashboardData && suiAccount) {
 			makeReq<QueryUserTotalDepositDataResp>(userTotalDepositFetcher, {
 				method: "queryTotalDeposit",
-				params: [graphqlURL, lockdrop.pkgId, suiAccount.address],
+				params: [graphqlURL, lockdrop.tbookUrl, lockdrop.pkgId, suiAccount.address],
 			});
 			makeReq<QueryUserDepositsDataResp>(userDepositFetcher, {
 				method: "queryUserDeposits",
-				params: [graphqlURL, lockdrop.lockdropId, suiAccount.address],
+				params: [graphqlURL, lockdrop.tbookUrl, lockdrop.lockdropId, suiAccount.address],
 			});
 		}
 	}, [
