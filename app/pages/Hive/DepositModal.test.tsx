@@ -1,6 +1,9 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import userEvent from "@testing-library/user-event";
 import { DepositModal } from "./DepositModal";
+import type { SuiTransactionBlockResponse } from "@mysten/sui/client";
+import { signAndExecTx } from "~/lib/suienv";
 
 const mockDialogElement = {
 	showModal: vi.fn(),
@@ -44,6 +47,7 @@ describe("DepositModal", () => {
 	const mockRefetchDeposit = vi.fn();
 	const mockRedirectTab = vi.fn();
 	const mockUpdateDeposit = vi.fn();
+	const mockAddTransaction = vi.fn();
 
 	const mockDepositModalProps = {
 		id: "deposit-assets-modal",
@@ -52,6 +56,7 @@ describe("DepositModal", () => {
 		refetchDeposit: mockRefetchDeposit,
 		redirectTab: mockRedirectTab,
 		updateDeposit: mockUpdateDeposit,
+		addTransaction: mockAddTransaction,
 	};
 
 	beforeEach(() => {
@@ -93,5 +98,23 @@ describe("DepositModal", () => {
 	it("should show lockdrop info text", () => {
 		render(<DepositModal {...mockDepositModalProps} />);
 		expect(screen.getByText(/Your USDC will be locked in the lockdrop escrow/)).toBeInTheDocument();
+	});
+
+	it("should call addTransaction when deposit is successful", async () => {
+		vi.mocked(signAndExecTx).mockResolvedValue({
+			digest: "0xabc123",
+			effects: { status: { status: "success" } },
+			balanceChanges: [],
+		} as unknown as SuiTransactionBlockResponse);
+
+		render(<DepositModal {...mockDepositModalProps} />);
+
+		const amountInput = screen.getByPlaceholderText("Enter USDC amount");
+		const depositButton = screen.getByTestId("submit-usdc-btn");
+
+		await userEvent.type(amountInput, "100");
+		await userEvent.click(depositButton);
+
+		expect(mockAddTransaction).toHaveBeenCalledWith("0xabc123", 100000000n);
 	});
 });
