@@ -1,6 +1,6 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { CircleCheck, CirclePlus, Wallet } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useFetcher } from "react-router";
 import { CopyButton } from "~/components/ui/CopyButton";
 import { DashboardSkeletonLoader } from "~/pages/Hive/SkeletonLoader";
@@ -112,6 +112,11 @@ function ContributorCard({ redirectTab, lockdropClaimedSbt = [] }: ContributorCa
 		setUserTotalDeposit,
 	} = useDashboardActions();
 
+	const depositTsx = useMemo(
+		() => [...localDepositTransactions, ...depositTransactions],
+		[depositTransactions, localDepositTransactions],
+	);
+
 	return (
 		<div className="card mb-4">
 			<div className="card-body">
@@ -196,7 +201,7 @@ function ContributorCard({ redirectTab, lockdropClaimedSbt = [] }: ContributorCa
 				<Collapse title="Deposit Transaction history">
 					<Table
 						columns={createColumns()}
-						data={[...localDepositTransactions, ...depositTransactions]}
+						data={depositTsx}
 						isLoading={isUserDepositFetcherLoading}
 					/>
 				</Collapse>
