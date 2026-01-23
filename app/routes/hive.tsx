@@ -12,7 +12,7 @@ export async function action({ request, context }: Route.ActionArgs) {
 	const reqData = await request.clone().json();
 	const { params } = reqData as { params: [string, string, string] };
 
-	if (!Array.isArray(params) || params.length < 1) {
+	if (!Array.isArray(params) || params.length < 2) {
 		throw new Response("Missing or invalid 'params' array", { status: 400 });
 	}
 
