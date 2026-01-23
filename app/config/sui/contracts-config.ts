@@ -30,6 +30,7 @@ export interface LockdropCfg {
 	pkgId: string;
 	lockdropId: string;
 	module: string;
+	tbookUrl: string;
 }
 
 export interface Coin {
@@ -82,6 +83,7 @@ export const mainnetCfg: ContractsCfg = {
 		pkgId: "",
 		lockdropId: "",
 		module: "lockdrop",
+		tbookUrl: "https://rd-api.tbook.com/sbt-data/gonative",
 	},
 	usdc: {
 		name: "USDC",
@@ -121,6 +123,7 @@ export const testnetCfg: ContractsCfg = {
 		pkgId: "0xd244750dc02f917b2d539c5b68e14afbfc4e58920f04a0587692f8c6920e94ea",
 		lockdropId: "0x7d345f88f971c5fc76dd64a26108896d59aaebbbb055fe28aa5160fcf83de282",
 		module: "lockdrop",
+		tbookUrl: "https://rd-api-staging.tbook.com/sbt-data/gonative",
 	},
 	usdc: {
 		name: "USDC",
@@ -165,6 +168,7 @@ export const localnetCfg: ContractsCfg = {
 		pkgId: "",
 		lockdropId: "",
 		module: "lockdrop",
+		tbookUrl: "",
 	},
 	usdc: {
 		name: "USDC",

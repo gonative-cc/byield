@@ -10,17 +10,19 @@ import { useSuiNetwork } from "~/hooks/useSuiNetwork";
 export async function action({ request, context }: Route.ActionArgs) {
 	const TBOOK_AUTH_TOKEN = context.cloudflare.env.TBOOK_AUTH_TOKEN;
 	const reqData = await request.clone().json();
-	const { params } = reqData as { params: [string, string] };
+	const { params } = reqData as { params: [string, string, string] };
 
-	if (!Array.isArray(params) || params.length < 1) {
+	if (!Array.isArray(params) || params.length < 2) {
 		throw new Response("Missing or invalid 'params' array", { status: 400 });
 	}
 
 	const graphqlURl = params[0];
+	const tbookURL = params[1];
 
 	if (typeof graphqlURl !== "string") throw new Error("GraphQL URL doesn't have of type of string");
+	if (typeof tbookURL !== "string") throw new Error("tbookURL doesn't have of type of string");
 
-	const ctrl = new HiveController(TBOOK_AUTH_TOKEN, graphqlURl);
+	const ctrl = new HiveController(TBOOK_AUTH_TOKEN, graphqlURl, tbookURL);
 	return ctrl.handleJsonRPC(request);
 }
 

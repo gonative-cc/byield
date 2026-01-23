@@ -18,6 +18,7 @@ import type { Column, CellProps } from "react-table";
 import { USDCIcon } from "~/components/icons";
 import { trimAddress } from "~/components/Wallet/walletHelper";
 import { useDashboardActions } from "./useDashboardActions";
+import { useNetworkVariables } from "~/networkConfig";
 
 const createColumns = (): Column<DepositTransaction>[] => [
 	{
@@ -377,6 +378,10 @@ interface DashboardProps {
 
 export function Dashboard({ redirectTab }: DashboardProps) {
 	const suiAccount = useCurrentAccount();
+	const {
+		lockdrop: { tbookUrl },
+		graphqlURL,
+	} = useNetworkVariables();
 	const isSuiConnected = !!suiAccount;
 	const userHiveDashboardFetcher = useFetcher<QueryUserDataResp>();
 	const hiveUserDashboardData: QueryUserDataResp = userHiveDashboardFetcher.data ?? null;
@@ -388,10 +393,10 @@ export function Dashboard({ redirectTab }: DashboardProps) {
 		if (suiAccount) {
 			makeReq<QueryUserDataResp>(userHiveDashboardFetcher, {
 				method: "queryHiveUserData",
-				params: [suiAccount.address!],
+				params: [graphqlURL, tbookUrl, suiAccount.address!],
 			});
 		}
-	}, [suiAccount, userHiveDashboardFetcher]);
+	}, [graphqlURL, suiAccount, tbookUrl, userHiveDashboardFetcher]);
 
 	useEffect(() => {
 		if (userHiveDashboardFetcher.state === "idle" && !hiveUserDashboardData && suiAccount) {
