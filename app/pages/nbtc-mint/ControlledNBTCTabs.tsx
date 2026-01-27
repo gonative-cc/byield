@@ -9,7 +9,7 @@ interface ControlledNBTCTabsProps {
 	fetchRedeemTxs: () => void;
 	activeTab: TabType;
 	onTabChange: (tab: TabType) => void;
-	handleRedeemBTCSuccess: (txId: string, e: RedeemRequestEventRaw) => Promise<void>;
+	handleRedeemBTCSuccess: (txId: string, e: RedeemRequestEventRaw) => void;
 }
 
 export const ControlledNBTCTabs = ({

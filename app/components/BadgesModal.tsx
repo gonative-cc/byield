@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Modal, ModalTriggerButton } from "./ui/dialog";
-import { primaryHeadingClasses } from "~/util/tailwind";
+import { primaryHeadingClasses } from "~/tailwind";
 
 interface BadgeInfo {
 	name: string;

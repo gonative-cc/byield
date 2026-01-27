@@ -1,4 +1,4 @@
-import { GRADIENTS } from "~/util/tailwind";
+import { GRADIENTS } from "~/tailwind";
 
 const FAQS = [
 	{

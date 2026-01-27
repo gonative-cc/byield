@@ -1,20 +1,14 @@
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import { CircleCheck, CirclePlus, Wallet } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useFetcher } from "react-router";
 import { CopyButton } from "~/components/ui/CopyButton";
 import { DashboardSkeletonLoader } from "~/pages/Hive/SkeletonLoader";
 import { SuiConnectModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import { LockDropSbt, ReferralSbt, SocialSbt } from "./constant";
-import {
-	makeReq,
-	type QueryUserDataResp,
-	type QueryUserDepositsDataResp,
-	type QueryUserTotalDepositDataResp,
-} from "~/server/hive/jsonrpc";
+import { makeReq, type QueryUserDataResp } from "~/server/hive/jsonrpc";
 import type { DepositTransaction, UserSbtData } from "~/server/hive/types";
 import { DepositModal } from "./DepositModal";
-import { useNetworkVariables } from "~/networkConfig";
 import { formatUSDC, parseUSDC } from "~/lib/denoms";
 import type { TabType } from "./types";
 import { ReadMoreFAQ } from "./Home";
@@ -23,6 +17,8 @@ import { Table } from "~/components/ui/table";
 import type { Column, CellProps } from "react-table";
 import { USDCIcon } from "~/components/icons";
 import { trimAddress } from "~/components/Wallet/walletHelper";
+import { useDashboardActions } from "./useDashboardActions";
+import { useNetworkVariables } from "~/networkConfig";
 
 const createColumns = (): Column<DepositTransaction>[] => [
 	{
@@ -97,17 +93,8 @@ interface ContributorCardProps {
 }
 
 function ContributorCard({ redirectTab, lockdropClaimedSbt = [] }: ContributorCardProps) {
-	const suiAccount = useCurrentAccount();
-	const { lockdrop, graphqlURL } = useNetworkVariables();
 	const [isDepositModalOpen, setIsDepositModalOpen] = useState<boolean>(false);
-	const [userTotalDeposit, setUserTotalDeposit] = useState<{
-		totalDeposit: string | null;
-		isError: boolean;
-	}>({
-		totalDeposit: null,
-		isError: false,
-	});
-	const isUserDepositError = userTotalDeposit?.isError;
+	const [localDepositTransactions, setLocalDepositTransactions] = useState<DepositTransaction[]>([]);
 
 	const claimedLockdropSbtsLength = lockdropClaimedSbt.length;
 	const isLockdropSbtClaimed = claimedLockdropSbtsLength >= 1;
@@ -117,54 +104,19 @@ function ContributorCard({ redirectTab, lockdropClaimedSbt = [] }: ContributorCa
 	const currentTier = LockDropSbt.tiers[currentLevel - 1];
 	const nextTier = isNextLevelAvailable ? LockDropSbt.tiers[nextLevel - 1] : null;
 
-	const userTotalDepositFetcher = useFetcher<QueryUserTotalDepositDataResp>();
-	const isUserTotalDepositLoading = userTotalDepositFetcher.state !== "idle";
-	const hiveUserDashboardData: QueryUserTotalDepositDataResp = userTotalDepositFetcher.data ?? null;
+	const {
+		isUserTotalDepositLoading,
+		depositTransactions,
+		isUserDepositFetcherLoading,
+		isUserDepositError,
+		userTotalDeposit,
+		setUserTotalDeposit,
+	} = useDashboardActions();
 
-	const userDepositFetcher = useFetcher<QueryUserDepositsDataResp>();
-	const isUserDepositFetcherLoading = userDepositFetcher.state !== "idle";
-	const hiveUserDepositData: QueryUserDepositsDataResp = userDepositFetcher.data ?? null;
-	const depositTransactions: DepositTransaction[] = hiveUserDepositData?.data ?? [];
-
-	useEffect(() => {
-		if (userTotalDepositFetcher.state === "idle" && !hiveUserDashboardData && suiAccount) {
-			makeReq<QueryUserTotalDepositDataResp>(userTotalDepositFetcher, {
-				method: "queryTotalDeposit",
-				params: [graphqlURL, lockdrop.lockdropId, suiAccount.address],
-			});
-			makeReq<QueryUserDepositsDataResp>(userDepositFetcher, {
-				method: "queryUserDeposits",
-				params: [graphqlURL, lockdrop.lockdropId, suiAccount.address],
-			});
-		}
-	}, [
-		hiveUserDashboardData,
-		userTotalDepositFetcher,
-		suiAccount,
-		graphqlURL,
-		lockdrop,
-		userDepositFetcher,
-	]);
-
-	useEffect(() => {
-		function updateUserTotalDeposit() {
-			if (hiveUserDashboardData?.isError) {
-				setUserTotalDeposit({
-					totalDeposit: null,
-					isError: true,
-				});
-				return;
-			}
-
-			if (hiveUserDashboardData?.data !== undefined && hiveUserDashboardData?.data !== null) {
-				setUserTotalDeposit({
-					totalDeposit: formatUSDC(hiveUserDashboardData.data),
-					isError: false,
-				});
-			}
-		}
-		updateUserTotalDeposit();
-	}, [hiveUserDashboardData]);
+	const depositTsx = useMemo(
+		() => [...localDepositTransactions, ...depositTransactions],
+		[depositTransactions, localDepositTransactions],
+	);
 
 	return (
 		<div className="card mb-4">
@@ -250,7 +202,7 @@ function ContributorCard({ redirectTab, lockdropClaimedSbt = [] }: ContributorCa
 				<Collapse title="Deposit Transaction history">
 					<Table
 						columns={createColumns()}
-						data={depositTransactions}
+						data={depositTsx}
 						isLoading={isUserDepositFetcherLoading}
 					/>
 				</Collapse>
@@ -268,6 +220,15 @@ function ContributorCard({ redirectTab, lockdropClaimedSbt = [] }: ContributorCa
 						}
 						return { totalDeposit: formatUSDC(newDeposit), isError: false };
 					});
+				}}
+				addTransaction={(txnId: string, amount: bigint) => {
+					const newTransaction: DepositTransaction = {
+						txnId,
+						amount: String(amount),
+						status: "SUCCESS",
+						timestamp: new Date().toISOString(),
+					};
+					setLocalDepositTransactions((prev) => [newTransaction, ...prev]);
 				}}
 			/>
 		</div>
@@ -417,6 +378,10 @@ interface DashboardProps {
 
 export function Dashboard({ redirectTab }: DashboardProps) {
 	const suiAccount = useCurrentAccount();
+	const {
+		lockdrop: { tbookUrl },
+		graphqlURL,
+	} = useNetworkVariables();
 	const isSuiConnected = !!suiAccount;
 	const userHiveDashboardFetcher = useFetcher<QueryUserDataResp>();
 	const hiveUserDashboardData: QueryUserDataResp = userHiveDashboardFetcher.data ?? null;
@@ -428,10 +393,10 @@ export function Dashboard({ redirectTab }: DashboardProps) {
 		if (suiAccount) {
 			makeReq<QueryUserDataResp>(userHiveDashboardFetcher, {
 				method: "queryHiveUserData",
-				params: [suiAccount.address!],
+				params: [graphqlURL, tbookUrl, suiAccount.address!],
 			});
 		}
-	}, [suiAccount, userHiveDashboardFetcher]);
+	}, [graphqlURL, suiAccount, tbookUrl, userHiveDashboardFetcher]);
 
 	useEffect(() => {
 		if (userHiveDashboardFetcher.state === "idle" && !hiveUserDashboardData && suiAccount) {

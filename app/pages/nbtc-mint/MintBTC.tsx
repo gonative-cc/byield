@@ -6,7 +6,7 @@ import { FormNumericInput } from "../../components/form/FormNumericInput";
 import { BTC, formatBTC, parseBTC } from "~/lib/denoms";
 import { nBTCMintTx } from "~/lib/nbtc";
 import { BitcoinIcon, Info } from "lucide-react";
-import { buttonEffectClasses, classNames } from "~/util/tailwind";
+import { buttonEffectClasses, classNames } from "~/tailwind";
 import { isValidSuiAddress } from "@mysten/sui/utils";
 import { useBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import { toast } from "~/hooks/use-toast";

@@ -14,7 +14,7 @@ import { NBTCRaw } from "~/components/icons";
 import { formatSUI } from "~/lib/denoms";
 import { FAQ } from "~/components/FAQ";
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import { heroTitle } from "~/util/tailwind";
+import { heroTitle } from "~/tailwind";
 
 const FAQS = [
 	{

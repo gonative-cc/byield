@@ -9,15 +9,15 @@ import type {
 import { logError } from "~/lib/log";
 import type { UserUSDCTotalDeposit, TransactionResponse } from "./types";
 
-const URL = "https://rd-api-staging.tbook.com/sbt-data/gonative";
-
 export class HiveController {
 	tbookAuthToken: string = "";
 	suiGraphQLURl: string | null = null;
+	tbookUrl: string | null = null;
 
-	constructor(_tbookAuthToken: string, _graphqlURl: string) {
+	constructor(_tbookAuthToken: string, _graphqlURl: string, _tbookUrl: string) {
 		this.tbookAuthToken = _tbookAuthToken;
 		this.suiGraphQLURl = _graphqlURl || null;
+		this.tbookUrl = _tbookUrl;
 	}
 
 	private async fetchData<T>(url: string, options?: RequestInit): Promise<T | Response> {
@@ -43,8 +43,9 @@ export class HiveController {
 
 	async queryUserData(suiAddr: string): Promise<QueryUserDataResp | Response> {
 		if (!suiAddr) return badRequest("SUI address not provided");
+		if (!this.tbookUrl) return badRequest("Tbook base url not provided");
 
-		const url = `${URL}/user?address=${suiAddr}`;
+		const url = `${this.tbookUrl}/user?address=${suiAddr}`;
 		return await this.fetchData<QueryUserDataResp>(url);
 	}
 
@@ -199,11 +200,11 @@ export class HiveController {
 
 		switch (reqData.method) {
 			case "queryHiveUserData":
-				return this.queryUserData(reqData.params[0]);
+				return this.queryUserData(reqData.params[2]);
 			case "queryTotalDeposit":
-				return this.queryTotalDeposit(reqData.params[1], reqData.params[2]);
+				return this.queryTotalDeposit(reqData.params[2], reqData.params[3]);
 			case "queryUserDeposits":
-				return this.queryUserDeposits(reqData.params[1], reqData.params[2]);
+				return this.queryUserDeposits(reqData.params[2], reqData.params[3]);
 			default:
 				return notFound("Unknown method");
 		}

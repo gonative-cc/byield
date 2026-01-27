@@ -1,11 +1,9 @@
 import { isValidSuiAddress } from "@mysten/sui/utils";
 import { BitcoinNetworkType } from "sats-connect";
-
 import type { NbtcTxResp } from "@gonative-cc/btcindexer/models";
 import type { BtcIndexerRpc } from "@gonative-cc/btcindexer/rpc-interface";
 import type { SuiIndexerRpc } from "@gonative-cc/sui-indexer/rpc-interface";
 import type { RedeemRequestEventRaw } from "@gonative-cc/sui-indexer/models";
-
 import type { QueryMintTxResp, QueryRedeemTxsResp, Req } from "./jsonrpc";
 import { mustGetBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import {
@@ -19,6 +17,7 @@ import {
 import { protectedBitcoinRPC } from "./btc-proxy.server";
 import { BitcoinNetworkTypeMap, nbtcMintTxRespToMintTx } from "./convert";
 import { logError, logger } from "~/lib/log";
+import { ParamsDB } from "~/db/paramsDB";
 
 function validateRedeemRequestEventRaw(data: RedeemRequestEventRaw) {
 	return (
@@ -31,18 +30,29 @@ function validateRedeemRequestEventRaw(data: RedeemRequestEventRaw) {
 	);
 }
 
+function validateFee(minimumFee: number): boolean {
+	return Number.isFinite(minimumFee) && minimumFee > 0;
+}
+
 export default class Controller {
 	btcRPCUrl: string;
 	btcindexer: BtcIndexerRpc;
 	suiIndexer: SuiIndexerRpc;
 	network: BitcoinNetworkType;
+	paramsDB: ParamsDB;
 
-	constructor(network: BitcoinNetworkType, indexerRpc: BtcIndexerRpc, suiIndexer: SuiIndexerRpc) {
+	constructor(
+		network: BitcoinNetworkType,
+		indexerRpc: BtcIndexerRpc,
+		suiIndexer: SuiIndexerRpc,
+		db: D1Database,
+	) {
 		this.btcindexer = indexerRpc;
 		this.network = network;
 		const networkConfig = mustGetBitcoinConfig(network);
 		this.btcRPCUrl = networkConfig.btcRPCUrl;
 		this.suiIndexer = suiIndexer;
+		this.paramsDB = new ParamsDB(db);
 	}
 
 	private async getMintTxs(
@@ -79,7 +89,7 @@ export default class Controller {
 	private async queryUTXOs(address: string): Promise<Response> {
 		const method = "nbtc:queryUTXOs";
 		const path = `/address/${encodeURIComponent(address)}/utxo`;
-		logger.debug({ msg: "Querying nBTCUTXOs", method, address, btcRPCUrl: this.btcRPCUrl });
+		logger.debug({ msg: "Querying nBTC UTXOs", method, address, btcRPCUrl: this.btcRPCUrl });
 
 		// URL is dummy
 		const request = new Request("https://internal-proxy-auth", {
@@ -146,15 +156,16 @@ export default class Controller {
 	}
 
 	private async queryRedeemTxs(
-		_suiAddr: string,
-		_setupId: number,
+		suiAddr: string,
+		setupId: number,
 	): Promise<QueryRedeemTxsResp | Response> {
 		const method = "nbtc:queryRedeemTxs";
 		try {
-			// TODO: this is not implemented in the suiIndexer
-			// const redeemTxs = await this.suiIndexer.redeemsBySuiAddr(suiAddr, setupId);
-			// return redeemTxs;
-			return [];
+			if (!suiAddr) return badRequest("Please provide sui address");
+			if (typeof setupId !== "number" || setupId < 0)
+				return badRequest("Please provide the setup id");
+			const redeemTxs = await this.suiIndexer.redeemsBySuiAddr(setupId, suiAddr);
+			return redeemTxs;
 		} catch (error) {
 			return serverError(method, error, "can't process redeem Txs data");
 		}
@@ -171,6 +182,33 @@ export default class Controller {
 			return textOK("Redeem event saved successfully");
 		} catch (error) {
 			logError({ msg: "Error putting redeem tx", method, error });
+			return serverError(method, error);
+		}
+	}
+
+	private async queryBitcoinFee(setupId: number): Promise<number | Response> {
+		const method = "nbtc:queryBitcoinFee";
+		try {
+			if (!this.network) return badRequest("Please provide network");
+			// return miner fee directly in case user is on regtest network
+			if (this.network === BitcoinNetworkType.Regtest) return 1;
+			if (typeof setupId !== "number" || setupId < 0)
+				return badRequest("Please provide the setup id");
+
+			const value = await this.paramsDB.getRecommendedBitcoinFee(setupId);
+
+			if (!value) {
+				logger.debug({
+					msg: "No network fee found",
+					method,
+					setupId,
+				});
+				return textOK(`No network fee found for the given setupId: ${setupId}`);
+			}
+			if (!validateFee(value)) return textOK("Recommended fee not found");
+			return value;
+		} catch (error) {
+			logError({ msg: "Error getting network fee", method, error });
 			return serverError(method, error);
 		}
 	}
@@ -203,6 +241,8 @@ export default class Controller {
 				return this.queryRedeemTxs(reqData.params[1], reqData.params[2]);
 			case "putRedeemTx":
 				return this.putRedeemTx(reqData.params[1], reqData.params[2], reqData.params[3]);
+			case "queryBitcoinFee":
+				return this.queryBitcoinFee(reqData.params[1]);
 			default:
 				return notFound("Unknown method");
 		}

@@ -30,6 +30,7 @@ export interface LockdropCfg {
 	pkgId: string;
 	lockdropId: string;
 	module: string;
+	tbookUrl: string;
 }
 
 export interface Coin {
@@ -82,6 +83,7 @@ export const mainnetCfg: ContractsCfg = {
 		pkgId: "",
 		lockdropId: "",
 		module: "lockdrop",
+		tbookUrl: "https://rd-api.tbook.com/sbt-data/gonative",
 	},
 	usdc: {
 		name: "USDC",
@@ -112,15 +114,16 @@ export const testnetCfg: ContractsCfg = {
 	},
 	nbtc: {
 		coinType: "::nbtc::NBTC",
-		pkgId: "0x50be08b805766cc1a2901b925d3fb80b6362fcb25f269cb78067429237e222ec",
-		contractId: "0x5905e0c452bb5f237fb106ec2ecff962fbc60cd180090fb07a79d14d9d628a96",
+		pkgId: "0x23b3ac95976e6ee755dcc9d2bbd0009dd526beb1778b146c499c872077662202",
+		contractId: "0x8801c614fcf95339dfca4edf521b150ed1f63ec42b35816be11cb445bc9c057e",
 		// TODO: update it when setup ID is available for redeem
 		setupId: 1,
 	},
 	lockdrop: {
 		pkgId: "0xd244750dc02f917b2d539c5b68e14afbfc4e58920f04a0587692f8c6920e94ea",
-		lockdropId: "0x6f49640eecbfe4a90d852151998495b6bc4f3393f7231d9696856f06ad7dc178",
+		lockdropId: "0x7d345f88f971c5fc76dd64a26108896d59aaebbbb055fe28aa5160fcf83de282",
 		module: "lockdrop",
+		tbookUrl: "https://rd-api-staging.tbook.com/sbt-data/gonative",
 	},
 	usdc: {
 		name: "USDC",
@@ -165,6 +168,7 @@ export const localnetCfg: ContractsCfg = {
 		pkgId: "",
 		lockdropId: "",
 		module: "lockdrop",
+		tbookUrl: "",
 	},
 	usdc: {
 		name: "USDC",
