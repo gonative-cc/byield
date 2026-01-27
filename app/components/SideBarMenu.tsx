@@ -57,9 +57,24 @@ function navMenuItems(): MenuItem[] {
 			{
 				icon: "/assets/navigation/bee-with-bitcoin.svg",
 				id: "navigation-2",
-				title: "Beelievers Auction (mainnet)",
-				link: "/beelievers-auction",
-				subNavItems: [],
+				title: "Beelievers",
+				link: "",
+				subNavItems: [
+					{
+						id: "navigation-2-1",
+						link: "/beelievers-auction",
+						icon: "",
+						subNavItems: [],
+						title: "Beelievers Auction",
+					},
+					{
+						id: "navigation-2-2",
+						link: "/your-beelievers",
+						icon: "",
+						subNavItems: [],
+						title: "Your Beelievers",
+					},
+				],
 			},
 			// hiding the end point for now. Will be enabled when the hive program is live.
 			// {
@@ -112,9 +127,24 @@ function navMenuItems(): MenuItem[] {
 		{
 			icon: "/assets/navigation/bee-with-bitcoin.svg",
 			id: "navigation-4",
-			title: "Beelievers Auction (mainnet)",
-			link: "/beelievers-auction",
-			subNavItems: [],
+			title: "Beelievers",
+			link: "",
+			subNavItems: [
+				{
+					id: "navigation-4-1",
+					link: "/beelievers-auction",
+					icon: "",
+					subNavItems: [],
+					title: "Beelievers Auction",
+				},
+				{
+					id: "navigation-4-2",
+					link: "/your-beelievers",
+					icon: "",
+					subNavItems: [],
+					title: "Your Beelievers",
+				},
+			],
 		},
 		{
 			icon: "/assets/navigation/hive.svg",

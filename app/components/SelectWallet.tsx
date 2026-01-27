@@ -289,7 +289,8 @@ function SuiNetworkOptions() {
 
 	const isDevMode = !isProductionMode();
 	const isAuctionPathname = pathname === "/beelievers-auction" && !isDevMode;
-	const isMainnetOnlyRoute = isAuctionPathname;
+	const isYourBeelieversPathname = pathname === "/your-beelievers";
+	const isMainnetOnlyRoute = isAuctionPathname || isYourBeelieversPathname;
 
 	const networks = useMemo(() => {
 		const mainnetNetwork = [{ label: "Mainnet", value: "mainnet" }];
