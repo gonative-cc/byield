@@ -3,8 +3,8 @@ import { toast } from "~/hooks/use-toast";
 import { useEffect } from "react";
 import type { Route } from "./+types/hive";
 import { HiveController } from "~/server/hive/controller.server";
-import { ControlledHiveTabs } from "~/pages/Hive/ControlledHiveTabs";
 import { useSuiNetwork } from "~/hooks/useSuiNetwork";
+import { Dashboard } from "~/pages/Hive/Dashboard";
 
 // This is a server hive to post data to server (data mutations)
 export async function action({ request, context }: Route.ActionArgs) {
@@ -41,8 +41,18 @@ export default function Hive() {
 	}, [network]);
 
 	return (
-		<div className="flex justify-center px-4 py-4 md:px-15">
-			<ControlledHiveTabs />
-		</div>
+		<main className="flex w-full flex-col justify-center gap-4 px-4 py-4 md:px-15">
+			<a
+				href="https://www.gonative.cc/hive-faq"
+				target="_blank"
+				className="link link-primary text-center"
+				rel="noopener noreferrer"
+			>
+				➡️ Read the FAQ to learn more
+			</a>
+			<section className="w-full max-w-7xl">
+				<Dashboard />
+			</section>
+		</main>
 	);
 }

@@ -14,7 +14,6 @@ import { createLockdropDepositTxn } from "./lockdrop-transactions";
 import { Check, CircleX, Info } from "lucide-react";
 import { Link } from "react-router";
 import { toast } from "~/hooks/use-toast";
-import type { TabType } from "./types";
 
 interface CoinRightAdornmentProps {
 	maxAmount: string;
@@ -49,19 +48,11 @@ interface DepositModalProps {
 	id: string;
 	open: boolean;
 	onClose: () => void;
-	redirectTab: (redirectTab: TabType) => void;
 	updateDeposit: (newDeposit: bigint) => void;
 	addTransaction: (txnId: string, amount: bigint) => void;
 }
 
-export function DepositModal({
-	id,
-	open,
-	onClose,
-	redirectTab,
-	updateDeposit,
-	addTransaction,
-}: DepositModalProps) {
+export function DepositModal({ id, open, onClose, updateDeposit, addTransaction }: DepositModalProps) {
 	const { mutateAsync: signTransaction } = useSignTransaction();
 	const account = useCurrentAccount();
 	const client = useSuiClient();
@@ -249,10 +240,15 @@ export function DepositModal({
 							}
 							rules={amountInputRules}
 						/>
-						<button className="btn btn-info py-6 underline" onClick={() => redirectTab("faq")}>
+						<a
+							target="_blank"
+							className="btn btn-info py-6 underline"
+							href="https://www.gonative.cc/hive-faq"
+							rel="noopener noreferrer"
+						>
 							<Info />
 							Your USDC will be locked in the lockdrop escrow until the lockdrop period ends.
-						</button>
+						</a>
 						<button
 							className="btn btn-primary"
 							type="submit"
