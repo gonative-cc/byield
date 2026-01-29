@@ -93,8 +93,7 @@ export function useYourBeelievers() {
 				const kioskClient = new KioskClient({ client, network: network as Network });
 				const kioskMap = await getKioskNFTs(addr, kioskClient, nftType);
 
-				// TODO: Remove .slice(0, 10) limit before deployment - for testing only
-				const nftIds = Array.from(kioskMap.keys()).slice(0, 10);
+				const nftIds = Array.from(kioskMap.keys());
 				const data: NftWithKiosk[] = [];
 				const BATCH_SIZE = 10;
 
