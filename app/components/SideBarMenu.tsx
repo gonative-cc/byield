@@ -119,7 +119,7 @@ function navMenuItems(): MenuItem[] {
 		{
 			icon: "/assets/navigation/hive.svg",
 			id: "navigation-5",
-			title: "Hive",
+			title: "Hive Dashboard",
 			link: "/hive",
 			subNavItems: [],
 		},

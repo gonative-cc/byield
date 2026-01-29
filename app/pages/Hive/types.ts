@@ -1,5 +1,3 @@
-export type TabType = "home" | "dashboard" | "faq";
-
 interface Tier {
 	tier: string;
 	name: string;

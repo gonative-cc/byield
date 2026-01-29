@@ -10,8 +10,6 @@ import { makeReq, type QueryUserDataResp } from "~/server/hive/jsonrpc";
 import type { DepositTransaction, UserSbtData } from "~/server/hive/types";
 import { DepositModal } from "./DepositModal";
 import { formatUSDC, parseUSDC } from "~/lib/denoms";
-import type { TabType } from "./types";
-import { ReadMoreFAQ } from "./Home";
 import { Collapse } from "~/components/ui/collapse";
 import { Table } from "~/components/ui/table";
 import type { Column, CellProps } from "react-table";
@@ -88,11 +86,10 @@ function HiveScoreHeader({ totalHiveScore }: HiveScoreHeaderProps) {
 }
 
 interface ContributorCardProps {
-	redirectTab: (redirectTab: TabType) => void;
 	lockdropClaimedSbt?: UserSbtData["claimedLockdropSbts"];
 }
 
-function ContributorCard({ redirectTab, lockdropClaimedSbt = [] }: ContributorCardProps) {
+function ContributorCard({ lockdropClaimedSbt = [] }: ContributorCardProps) {
 	const [isDepositModalOpen, setIsDepositModalOpen] = useState<boolean>(false);
 	const [localDepositTransactions, setLocalDepositTransactions] = useState<DepositTransaction[]>([]);
 
@@ -130,9 +127,7 @@ function ContributorCard({ redirectTab, lockdropClaimedSbt = [] }: ContributorCa
 						/>
 						<div>
 							<h3 className="font-bold">Hive Contributor SBTs</h3>
-							<span>
-								Commit USDC to the Genesis Lockdrop. <ReadMoreFAQ />
-							</span>
+							<span>Commit USDC to the Genesis Lockdrop.</span>
 						</div>
 					</div>
 				</div>
@@ -211,7 +206,6 @@ function ContributorCard({ redirectTab, lockdropClaimedSbt = [] }: ContributorCa
 				id="deposit-assets-modal"
 				open={isDepositModalOpen}
 				onClose={() => setIsDepositModalOpen(false)}
-				redirectTab={redirectTab}
 				updateDeposit={(newDeposit: bigint) => {
 					setUserTotalDeposit((prevTotalDeposit) => {
 						if (prevTotalDeposit.totalDeposit) {
@@ -259,9 +253,7 @@ function MemberCard({ claimedSocialSbts = [] }: MemberCardProps) {
 					/>
 					<div>
 						<h3 className="font-bold">Hive Member SBTs</h3>
-						<span>
-							Link your identities and verify your social presence. <ReadMoreFAQ />
-						</span>
+						<span>Link your identities and verify your social presence.</span>
 					</div>
 				</div>
 
@@ -320,9 +312,7 @@ function SpreaderCard({ claimedReferralSbts = [], inviteeCount = 0, referralLink
 						/>
 						<div>
 							<h3 className="font-bold">Hive Spreader SBTs</h3>
-							<span>
-								Refer high-quality, verified users who also contribute. <ReadMoreFAQ />
-							</span>
+							<span>Refer high-quality, verified users who also contribute.</span>
 						</div>
 					</div>
 				</div>
@@ -372,11 +362,7 @@ function SpreaderCard({ claimedReferralSbts = [], inviteeCount = 0, referralLink
 	);
 }
 
-interface DashboardProps {
-	redirectTab: (redirectTab: TabType) => void;
-}
-
-export function Dashboard({ redirectTab }: DashboardProps) {
+export function Dashboard() {
 	const suiAccount = useCurrentAccount();
 	const {
 		lockdrop: { tbookUrl },
@@ -454,7 +440,7 @@ export function Dashboard({ redirectTab }: DashboardProps) {
 			<HiveScoreHeader totalHiveScore={totalRawPoints} />
 			<div>
 				<h2 className="mb-4 text-xl font-bold">Category Breakdown</h2>
-				<ContributorCard redirectTab={redirectTab} lockdropClaimedSbt={claimedLockdropSbts} />
+				<ContributorCard lockdropClaimedSbt={claimedLockdropSbts} />
 				<div className="grid grid-cols-1 gap-4">
 					<MemberCard claimedSocialSbts={claimedSocialSbts} />
 					<SpreaderCard
