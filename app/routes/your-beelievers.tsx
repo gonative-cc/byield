@@ -4,7 +4,7 @@ import { useDisconnectWallet, useSuiClientContext } from "@mysten/dapp-kit";
 import { YourBeelievers } from "~/pages/YourBeelievers/YourBeelievers";
 import { isProductionMode } from "~/lib/appenv";
 import { toast } from "~/hooks/use-toast";
-import { GRADIENTS, cn } from "~/util/tailwind";
+import { GRADIENTS, cn } from "~/tailwind";
 
 export default function YourBeelieversPage() {
 	const { network } = useSuiClientContext();

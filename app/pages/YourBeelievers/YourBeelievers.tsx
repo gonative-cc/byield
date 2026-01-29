@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { heroTitle, GRADIENTS } from "~/util/tailwind";
+import { heroTitle, GRADIENTS } from "~/tailwind";
 import { SuiConnectModal } from "~/components/Wallet/SuiWallet/SuiModal";
 import { useNetworkVariables } from "~/networkConfig";
 import { mkWalrusImageUrl } from "~/lib/suienv";
