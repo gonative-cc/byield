@@ -22,7 +22,7 @@ export default async function handleRequest(
 	const isSanctioned = isCountrySanctioned || isRegionSanctioned;
 
 	if (isSanctioned) {
-		return new Response("Access denied: country restricted", {
+		return new Response("Access denied: location restricted", {
 			status: 403,
 			headers: responseHeaders,
 		});
