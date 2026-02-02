@@ -3,33 +3,7 @@ import { ServerRouter } from "react-router";
 import { isbot } from "isbot";
 import { renderToReadableStream } from "react-dom/server";
 import { logError } from "~/lib/log";
-
-const SANCTIONED_COUNTRY_REGION = {
-	country: [
-		"CU",
-		"IR",
-		"KP",
-		"RU",
-		"AF",
-		"BY",
-		"MM",
-		"CF",
-		"CD",
-		"ET",
-		"HK",
-		"IQ",
-		"LB",
-		"LY",
-		"ML",
-		"NI",
-		"SO",
-		"SS",
-		"SD",
-		"VE",
-		"YE",
-	],
-	regions: ["Crimea", "Donetsk", "Luhansk"],
-};
+import { SANCTIONED_COUNTRY_REGION } from "~/config/sanctions";
 
 export default async function handleRequest(
 	request: Request,
