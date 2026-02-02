@@ -4,6 +4,33 @@ import { isbot } from "isbot";
 import { renderToReadableStream } from "react-dom/server";
 import { logError } from "~/lib/log";
 
+const SANCTIONED_COUNTRY_REGION = {
+	country: [
+		"CU",
+		"IR",
+		"KP",
+		"RU",
+		"AF",
+		"BY",
+		"MM",
+		"CF",
+		"CD",
+		"ET",
+		"HK",
+		"IQ",
+		"LB",
+		"LY",
+		"ML",
+		"NI",
+		"SO",
+		"SS",
+		"SD",
+		"VE",
+		"YE",
+	],
+	regions: ["Crimea", "Donetsk", "Luhansk"],
+};
+
 export default async function handleRequest(
 	request: Request,
 	responseStatusCode: number,
@@ -13,6 +40,19 @@ export default async function handleRequest(
 ) {
 	let shellRendered = false;
 	const userAgent = request.headers.get("user-agent");
+
+	const ipCountryCode = request.headers.get("cf-ipcountry");
+	const ipRegion = request.headers.get("cf-region");
+	const isCountrySanctioned = ipCountryCode && SANCTIONED_COUNTRY_REGION.country.includes(ipCountryCode);
+	const isRegionSanctioned = ipRegion && SANCTIONED_COUNTRY_REGION.regions.includes(ipRegion);
+	const isSanctioned = isCountrySanctioned || isRegionSanctioned;
+
+	if (isSanctioned) {
+		return new Response("Access denied: country restricted", {
+			status: 403,
+			headers: responseHeaders,
+		});
+	}
 
 	const body = await renderToReadableStream(<ServerRouter context={routerContext} url={request.url} />, {
 		onError(error: unknown) {
