@@ -32,7 +32,7 @@
 		"@gonative-cc/lib": "workspace:*",
 		"@gonative-cc/sui-indexer": "workspace:*",
 		"@mysten/dapp-kit": "^0.20.0",
-		"@mysten/kiosk": "^0.14.6",
+		"@mysten/kiosk": "^1.1.0",
 		"@mysten/sui": "^1.45.2",
 		"@react-router/cloudflare": "^7.13.0",
 		"@react-router/remix-routes-option-adapter": "^7.13.0",
