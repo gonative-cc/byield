@@ -19,9 +19,8 @@ export default async function handleRequest(
 	const ipRegion = request.headers.get("cf-region");
 	const isCountrySanctioned = ipCountryCode && SANCTIONED_COUNTRY_REGION.country.includes(ipCountryCode);
 	const isRegionSanctioned = ipRegion && SANCTIONED_COUNTRY_REGION.regions.includes(ipRegion);
-	const isSanctioned = isCountrySanctioned || isRegionSanctioned;
 
-	if (isSanctioned) {
+	if (isCountrySanctioned || isRegionSanctioned) {
 		return new Response("Access denied: location restricted", {
 			status: 403,
 			headers: responseHeaders,
