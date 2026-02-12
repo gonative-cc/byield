@@ -10,6 +10,7 @@ import { fetchNftMetadata } from "~/pages/BeelieversAuction/nft";
 import { logError } from "~/lib/log";
 import { toast } from "~/hooks/use-toast";
 import { useNetworkVariables } from "~/networkConfig";
+import { moveCallTarget } from "~/config/sui/contracts-config";
 
 type NftMetadata = NonNullable<Awaited<ReturnType<typeof fetchNftMetadata>>>;
 
@@ -60,9 +61,7 @@ async function getKioskNFTs(
 	return kioskMap;
 }
 
-function moveCallTarget(pkgId: string): string {
-	return `${pkgId}::mint::upsert_nft_badges`;
-}
+const BATCH_SIZE = 10;
 
 export function useYourBeelievers() {
 	const { client, network } = useSuiClientContext();
@@ -95,7 +94,6 @@ export function useYourBeelievers() {
 
 				const nftIds = Array.from(kioskMap.keys());
 				const data: NftWithKiosk[] = [];
-				const BATCH_SIZE = 10;
 
 				for (let i = 0; i < nftIds.length; i += BATCH_SIZE) {
 					const batch = nftIds.slice(i, i + BATCH_SIZE);
@@ -132,7 +130,7 @@ export function useYourBeelievers() {
 				logError({ msg: "NFT fetch failed", method: "useYourBeelievers" }, error);
 				setNfts([]);
 			} finally {
-				if (!silent) setIsLoading(false);
+				setIsLoading(false);
 			}
 		},
 		[addr, client, beelieversMint.pkgId, network],
@@ -199,7 +197,7 @@ export function useClaimBadges({
 				kioskTx
 					.borrowTx({ itemId: nftId, itemType: actualType }, (item) => {
 						tx.moveCall({
-							target: moveCallTarget(pkgId),
+							target: moveCallTarget({ pkgId, module: "mint" }, "upsert_nft_badges"),
 							arguments: [tx.object(collectionId), item],
 						});
 					})
@@ -211,7 +209,7 @@ export function useClaimBadges({
 			}
 		} else {
 			tx.moveCall({
-				target: moveCallTarget(pkgId),
+				target: moveCallTarget({ pkgId, module: "mint" }, "upsert_nft_badges"),
 				arguments: [tx.object(collectionId), tx.object(nftId)],
 			});
 		}
