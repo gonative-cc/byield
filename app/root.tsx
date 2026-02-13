@@ -87,18 +87,21 @@ function NativeApp({ children }: { children: React.ReactNode }) {
 	useEffect(() => {
 		function getSuiNetwork() {
 			const isAuctionPathname = pathname === "/beelievers-auction";
+			const isYourBeelieversPathname = pathname === "/your-beelievers";
+			const isMainnetOnlyRoute = isAuctionPathname || isYourBeelieversPathname;
+
 			// current user selected Sui network
 			const currentNetwork = storage.getSuiNetwork();
 			if (currentNetwork) {
 				// force user to be on mainnet on auction page
-				if (isProductionMode() && isAuctionPathname) {
+				if (isProductionMode() && isMainnetOnlyRoute) {
 					setSuiNetwork("mainnet");
 					return;
 				}
 				setSuiNetwork(currentNetwork);
 			} else {
 				// defaults to testnet
-				const defaultNet = isProductionMode() && isAuctionPathname ? "mainnet" : "testnet";
+				const defaultNet = isProductionMode() && isMainnetOnlyRoute ? "mainnet" : "testnet";
 				setSuiNetwork(defaultNet);
 			}
 		}
