@@ -37,11 +37,14 @@ const mockIndexer: BtcIndexerRpc = {
 };
 
 const mockSuiIndexer: SuiIndexerRpc = {
-	finalizeRedeem: vi.fn(),
+	finalizeRedeems: vi.fn(),
 	putRedeemTx: vi.fn(),
 	getBroadcastedRedeemTxIds: vi.fn(),
 	confirmRedeem: vi.fn(),
 	redeemsBySuiAddr: vi.fn(),
+	getConfirmingRedeems: vi.fn(),
+	updateRedeemStatus: vi.fn(),
+	updateRedeemStatuses: vi.fn(),
 };
 
 const mockNbtcTxResp: NbtcTxResp = {

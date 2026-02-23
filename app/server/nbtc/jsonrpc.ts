@@ -1,7 +1,7 @@
 import type { FetcherWithComponents } from "react-router";
 import type { MintTransaction } from "./types";
 import type { BitcoinNetworkType } from "sats-connect";
-import type { RedeemRequestResp } from "@gonative-cc/sui-indexer/models";
+import type { RedeemRequestResp } from "@gonative-cc/lib/rpc-types";
 
 export type Req =
 	| {
