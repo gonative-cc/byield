@@ -18,7 +18,7 @@ import { heroTitle } from "~/tailwind";
 import { useMobile } from "~/hooks/useMobile";
 import { useCoinBalance } from "~/components/Wallet/SuiWallet/useBalance";
 import { useNetworkVariables } from "~/networkConfig";
-import type { RedeemRequestEventRaw } from "@gonative-cc/sui-indexer/models";
+import type { RedeemRequestEventRaw } from "@gonative-cc/lib/rpc-types";
 import { useNBTCActions } from "~/pages/nbtc-mint/useNBTCActions";
 import { logError } from "~/lib/log";
 
