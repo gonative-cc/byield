@@ -1,7 +1,7 @@
 # Ignore artifacts:
 build
 .github
-pnpm-lock.yaml
+bun.lock
 node_modules
 package.json
 external
