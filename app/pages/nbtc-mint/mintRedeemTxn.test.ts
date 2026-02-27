@@ -4,7 +4,7 @@ import { createRedeemTxn } from "./redeemTxn";
 import type { NbtcCfg } from "~/config/sui/contracts-config";
 import * as bitcoinClient from "~/lib/bitcoin.client";
 import type { SuiClient } from "@mysten/sui/client";
-import { getCoinsForAmount } from "~/lib/getCoinsForAmount";
+import { getCoinsForAmount } from "~/lib/suiCoins";
 
 // Mock dependencies
 vi.mock("~/lib/bitcoin.client");

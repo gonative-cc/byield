@@ -1,7 +1,7 @@
 import type { SuiClient } from "@mysten/sui/client";
 import { Transaction } from "@mysten/sui/transactions";
 import { moveCallTarget, type NbtcCfg } from "~/config/sui/contracts-config";
-import { getCoinsForAmount } from "~/lib/getCoinsForAmount";
+import { getCoinsForAmount } from "~/lib/suiCoins";
 
 const MODULE = "nbtc";
 

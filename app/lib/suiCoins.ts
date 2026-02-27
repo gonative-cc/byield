@@ -6,10 +6,13 @@ interface GetCoinForAmountI {
 		coinObjectId: string;
 		balance: string;
 	}[];
+	// true if the response coins meet the request.
 	fulfilled: boolean;
 }
 
-// Returns enough coins that total to at least the required amount
+// Returns enough coins that total to at least the required amount.
+// The returned `fulfilled` attribute is set to true if we found enough coins for the requested
+// amount.
 export async function getCoinsForAmount(
 	senderAddress: string,
 	client: SuiClient,
@@ -29,7 +32,6 @@ export async function getCoinsForAmount(
 				cursor,
 			});
 			const pageCoins = page.data ?? [];
-
 			if (!pageCoins.length) {
 				break;
 			}
