@@ -10,10 +10,10 @@
         "@gonative-cc/lib": "workspace:*",
         "@gonative-cc/sui-indexer": "workspace:*",
         "@mysten/dapp-kit": "^0.20.0",
-        "@mysten/kiosk": "^0.14.6",
+        "@mysten/kiosk": "^1.1.2",
         "@mysten/sui": "^1.45.2",
-        "@react-router/cloudflare": "^7.13.0",
-        "@react-router/remix-routes-option-adapter": "^7.13.0",
+        "@react-router/cloudflare": "^7.13.1",
+        "@react-router/remix-routes-option-adapter": "^7.13.1",
         "@tanstack/react-query": "^5.90.21",
         "@types/react-table": "^7.7.20",
         "bip32": "5.0.0",
@@ -27,32 +27,32 @@
         "react": "^19.2.4",
         "react-daisyui": "^5.0.5",
         "react-dom": "^19.2.4",
-        "react-hook-form": "^7.71.1",
+        "react-hook-form": "^7.71.2",
         "react-number-format": "^5.4.4",
-        "react-router": "^7.13.0",
+        "react-router": "^7.13.1",
         "react-table": "^7.8.0",
         "sats-connect": "^4.2.1",
         "tailwind-merge": "^3.5.0",
         "tailwindcss-animate": "^1.0.7",
       },
       "devDependencies": {
-        "@cloudflare/vite-plugin": "^1.25.2",
-        "@cloudflare/vitest-pool-workers": "^0.12.14",
+        "@cloudflare/vite-plugin": "^1.25.5",
+        "@cloudflare/vitest-pool-workers": "^0.12.17",
         "@eslint/compat": "^2.0.2",
-        "@eslint/js": "^9.39.2",
+        "@eslint/js": "^9.39.3",
         "@mysten/utils": "^0.2.0",
-        "@react-router/dev": "^7.13.0",
-        "@tailwindcss/postcss": "^4.2.0",
-        "@tailwindcss/vite": "^4.2.0",
+        "@react-router/dev": "^7.13.1",
+        "@tailwindcss/postcss": "^4.2.1",
+        "@tailwindcss/vite": "^4.2.1",
         "@testing-library/jest-dom": "^6.9.1",
         "@testing-library/react": "^16.3.2",
         "@testing-library/user-event": "^14.6.1",
-        "@types/node": "^25.3.0",
+        "@types/node": "^25.3.1",
         "@types/react": "^19.2.14",
         "@types/react-dom": "^19.2.3",
         "@types/react-router": "^5.1.20",
-        "daisyui": "^5.5.18",
-        "eslint": "^9.39.2",
+        "daisyui": "^5.5.19",
+        "eslint": "^9.39.3",
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-jsx-a11y": "^6.10.2",
         "eslint-plugin-react": "^7.37.5",
@@ -63,16 +63,16 @@
         "jiti": "^2.6.1",
         "jsdom": "^27.4.0",
         "lint-staged": "^16.2.7",
-        "miniflare": "^4.20260219.0",
+        "miniflare": "^4.20260302.0",
         "postcss": "^8.5.6",
         "prettier-plugin-tailwindcss": "^0.7.2",
-        "tailwindcss": "^4.2.0",
+        "tailwindcss": "^4.2.1",
         "typescript": "^5.9.3",
-        "typescript-eslint": "^8.56.0",
+        "typescript-eslint": "^8.56.1",
         "vite": "^7.3.1",
         "vite-tsconfig-paths": "^5.1.4",
         "vitest": "^4.0.18",
-        "wrangler": "^4.67.0",
+        "wrangler": "^4.68.1",
       },
     },
     "external/workers/packages/block-ingestor": {
@@ -453,7 +453,7 @@
 
     "@mysten/dapp-kit": ["@mysten/dapp-kit@0.20.0", "", { "dependencies": { "@mysten/slush-wallet": "0.3.0", "@mysten/sui": "1.45.2", "@mysten/utils": "0.2.0", "@mysten/wallet-standard": "0.19.9", "@radix-ui/react-dialog": "^1.1.15", "@radix-ui/react-dropdown-menu": "^2.1.16", "@radix-ui/react-slot": "^1.2.4", "@vanilla-extract/css": "^1.17.5", "@vanilla-extract/dynamic": "^2.1.5", "@vanilla-extract/recipes": "^0.5.7", "clsx": "^2.1.1", "zustand": "^4.5.4" }, "peerDependencies": { "@tanstack/react-query": "^5.0.0", "react": "*" } }, "sha512-Pho3fda4UvLQJA1Bqbm9iE6zYq4FCUshuacdd4kNO87aFAC7E+n07iRG9RxVSHGAwWeuILKIxRbrwASxPKTA6w=="],
 
-    "@mysten/kiosk": ["@mysten/kiosk@0.14.6", "", { "dependencies": { "@mysten/sui": "1.45.2", "@mysten/utils": "0.2.0" } }, "sha512-FGv693x7p07Qyjm0Ikk2ws1eWtn7/QD/OLa2wzkM8u84U6RpAibOPZekNbuunZ/+bmwBbez6ZWy5juBbQrq16Q=="],
+    "@mysten/kiosk": ["@mysten/kiosk@1.1.2", "", { "dependencies": { "@mysten/bcs": "^2.0.2", "@mysten/utils": "^0.3.1" }, "peerDependencies": { "@mysten/sui": "^2.3.2" } }, "sha512-SYNW48Daw4q8JzFqfNeQjUHPuzWQbB58ULrt/qYUltAX5EsopT+CBaYCmFCWPXarVTZAWD/0J4+A+5vvIPVkkA=="],
 
     "@mysten/slush-wallet": ["@mysten/slush-wallet@0.3.0", "", { "dependencies": { "@mysten/sui": "1.45.2", "@mysten/utils": "0.2.0", "@mysten/wallet-standard": "0.19.9", "@mysten/window-wallet-core": "0.1.1", "mitt": "^3.0.1", "valibot": "^1.2.0" } }, "sha512-XxEFDpJrrlgEt6cayOtFEEqsbI/2lqMl+QATvsT4TYQJ7B3FkBHPeKsyG+GVuvhVDhqXaVlGXwWrk66ri0uzhQ=="],
 
@@ -1711,6 +1711,10 @@
 
     "@ika.xyz/sdk/@noble/curves": ["@noble/curves@2.0.1", "", { "dependencies": { "@noble/hashes": "2.0.1" } }, "sha512-vs1Az2OOTBiP4q0pwjW5aF0xp9n4MxVrmkFBxc6EKZc6ddYx5gaZiAsZoq0uRRXWbi3AT/sBqn05eRPtn1JCPw=="],
 
+    "@mysten/kiosk/@mysten/bcs": ["@mysten/bcs@2.0.2", "", { "dependencies": { "@mysten/utils": "^0.3.1", "@scure/base": "^2.0.0" } }, "sha512-c/nVRPJEV1fRZdKXhysVsy/yCPdiFt7jn6A4/7W2LH1ZPSVPzRkxtLY362D0zaLuBnyT5Y9d9nFLm3ixI8Goug=="],
+
+    "@mysten/kiosk/@mysten/utils": ["@mysten/utils@0.3.1", "", { "dependencies": { "@scure/base": "^2.0.0" } }, "sha512-36KhxG284uhDdSnlkyNaS6fzKTX9FpP2WQWOwUKIRsqQFFIm2ooCf2TP1IuqrtMpkairwpiWkAS0eg7cpemVzg=="],
+
     "@mysten/sui/graphql": ["graphql@16.11.0", "", {}, "sha512-mS1lbMsxgQj6hge1XZ6p7GPhbrtFwUFYi3wRzXAC/FmYnyXMTvvI3td3rjmQ2u8ewXueaSvRPWaEcgVVOT9Jnw=="],
 
     "@poppinss/dumper/supports-color": ["supports-color@10.2.2", "", {}, "sha512-SS+jx45GF1QjgEXQx4NJZV9ImqmO2NPz5FNsIHrsDjh2YsHnawpan7SNQ1o8NuhrbHZy9AZhIoCUiCeaW/C80g=="],
@@ -1862,6 +1866,10 @@
     "@gonative-cc/sui-indexer/miniflare/zod": ["zod@3.22.3", "", {}, "sha512-EjIevzuJRiRPbVH4mGc8nApb/lVLKVpmUhAaR5R5doKGfAnGJ6Gr3CViAVjP+4FWSxCsybeWQdcgCtbX+7oZug=="],
 
     "@ika.xyz/sdk/@noble/curves/@noble/hashes": ["@noble/hashes@2.0.1", "", {}, "sha512-XlOlEbQcE9fmuXxrVTXCTlG2nlRXa9Rj3rr5Ue/+tX+nmkgbX720YHh0VR3hBF9xDvwnb8D2shVGOwNx+ulArw=="],
+
+    "@mysten/kiosk/@mysten/bcs/@scure/base": ["@scure/base@2.0.0", "", {}, "sha512-3E1kpuZginKkek01ovG8krQ0Z44E3DHPjc5S2rjJw9lZn3KSQOs8S7wqikF/AH7iRanHypj85uGyxk0XAyC37w=="],
+
+    "@mysten/kiosk/@mysten/utils/@scure/base": ["@scure/base@2.0.0", "", {}, "sha512-3E1kpuZginKkek01ovG8krQ0Z44E3DHPjc5S2rjJw9lZn3KSQOs8S7wqikF/AH7iRanHypj85uGyxk0XAyC37w=="],
 
     "@tailwindcss/node/lightningcss/lightningcss-android-arm64": ["lightningcss-android-arm64@1.31.1", "", { "os": "android", "cpu": "arm64" }, "sha512-HXJF3x8w9nQ4jbXRiNppBCqeZPIAfUo8zE/kOEGbW5NZvGc/K7nMxbhIr+YlFlHW5mpbg/YFPdbnCh1wAXCKFg=="],
 
