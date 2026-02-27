@@ -19,6 +19,7 @@ export enum GA_CATEGORY {
 export function useGoogleAnalytics() {
 	const currentAccount = useCurrentAccount();
 	const suiAddr = currentAccount?.address || null;
+	// TODO: useGoogleAnalytics is likely called multiple times, consider moving these variable definitions outside the function or memoizing them.
 	const network = isProductionMode() ? "mainnet" : "testnet";
 
 	function trackEvent(eventName: GA_EVENT_NAME, params: eventParam) {
