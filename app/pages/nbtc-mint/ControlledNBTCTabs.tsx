@@ -1,4 +1,4 @@
-import type { RedeemRequestEventRaw } from "@gonative-cc/sui-indexer/models";
+import { type RedeemRequestEventRaw } from "@gonative-cc/lib/rpc-types";
 import { MintBTC } from "./MintBTC";
 import { RedeemBTC } from "./RedeemBTC";
 

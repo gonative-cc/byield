@@ -17,7 +17,7 @@ import { signAndExecTx } from "~/lib/suienv";
 import { createRedeemTxn } from "./redeemTxn";
 import { logError, logger } from "~/lib/log";
 import { scriptPubKeyFromAddress } from "~/lib/bitcoin.client";
-import type { RedeemRequestEventRaw } from "@gonative-cc/sui-indexer/models";
+import type { RedeemRequestEventRaw } from "@gonative-cc/lib/rpc-types";
 import { Info } from "lucide-react";
 import { makeReq, type QueryNetworkFeesResp } from "~/server/nbtc/jsonrpc";
 import { useFetcher } from "react-router";

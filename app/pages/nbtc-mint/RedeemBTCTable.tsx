@@ -8,7 +8,7 @@ import { CopyButton } from "~/components/ui/CopyButton";
 import { AnimatedHourglass } from "~/components/ui/AnimatedHourglass";
 import { useState, useMemo, useCallback } from "react";
 import { TableTooltip } from "./TableTooltip";
-import { RedeemRequestStatus, type RedeemRequestResp } from "@gonative-cc/sui-indexer/models";
+import { RedeemRequestStatus, type RedeemRequestResp } from "@gonative-cc/lib/rpc-types";
 import { ExpandableRedeemDetails } from "./ExpandableRedeemDetails";
 
 const getStatusDisplay = (status: RedeemRequestResp["status"]) => {

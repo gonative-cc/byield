@@ -3,7 +3,7 @@ import { BitcoinNetworkType } from "sats-connect";
 import type { NbtcTxResp } from "@gonative-cc/btcindexer/models";
 import type { BtcIndexerRpc } from "@gonative-cc/btcindexer/rpc-interface";
 import type { SuiIndexerRpc } from "@gonative-cc/sui-indexer/rpc-interface";
-import type { RedeemRequestEventRaw } from "@gonative-cc/sui-indexer/models";
+import type { RedeemRequestEventRaw } from "@gonative-cc/lib/rpc-types";
 import type { QueryMintTxResp, QueryRedeemTxsResp, Req } from "./jsonrpc";
 import { mustGetBitcoinConfig } from "~/hooks/useBitcoinConfig";
 import {
@@ -40,6 +40,8 @@ export default class Controller {
 	suiIndexer: SuiIndexerRpc;
 	network: BitcoinNetworkType;
 	paramsDB: ParamsDB;
+	// TODO: update setup id
+	setupId: number = 1;
 
 	constructor(
 		network: BitcoinNetworkType,
@@ -70,9 +72,7 @@ export default class Controller {
 			fetchPromises.push(this.btcindexer.nbtcMintTxsBySuiAddr(suiAddr));
 		}
 		if (btcAddr) {
-			fetchPromises.push(
-				this.btcindexer.depositsBySender(btcAddr, BitcoinNetworkTypeMap[this.network]),
-			);
+			fetchPromises.push(this.btcindexer.depositsBySender(btcAddr, this.setupId));
 		}
 
 		if (fetchPromises.length === 0) return badRequest();
