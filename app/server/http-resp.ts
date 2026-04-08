@@ -24,7 +24,7 @@ export function textOK(o: string | null): Response {
 }
 
 // logs and handles server error
-// * method: server method ID, should be in the following format: <server_name>:<method_name>
+// * method: service method ID, should be in the following format: <service_name>:<method_name>
 export function serverError(
 	method: string,
 	error: unknown,
@@ -35,7 +35,7 @@ export function serverError(
 }
 
 // creates response, with content-type header set to text/plain
-// * method: server method ID, should be in the following format: <server_name>:<method_name>
+// * method: service method ID, should be in the following format: <service_name>:<method_name>
 export async function handleNonSuccessResp(
 	method: string,
 	msg: string,
@@ -43,5 +43,5 @@ export async function handleNonSuccessResp(
 ): Promise<Response> {
 	const ctx = { method, msg };
 	const body = await logHttpError(ctx, r);
-	return new Response(msg + ".\n" + body, { status: r.status });
+	return new Response(msg + "\n" + body, { status: r.status });
 }

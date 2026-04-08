@@ -36,7 +36,7 @@ bun start
 To apply migrations to the local Cloudflare env:
 
 ```sh
-bun run db:migrate:local
+bun run db:migrate
 ```
 
 ### Local env variables
