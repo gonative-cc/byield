@@ -3,6 +3,7 @@ import { ServerRouter } from "react-router";
 import { isbot } from "isbot";
 import { renderToReadableStream } from "react-dom/server";
 import { logError } from "~/lib/log";
+import { SANCTIONED_COUNTRY_REGION } from "~/config/sanctions";
 
 export default async function handleRequest(
 	request: Request,
@@ -13,6 +14,18 @@ export default async function handleRequest(
 ) {
 	let shellRendered = false;
 	const userAgent = request.headers.get("user-agent");
+
+	const ipCountryCode = request.headers.get("cf-ipcountry");
+	const ipRegion = request.headers.get("cf-region");
+	const isCountrySanctioned = ipCountryCode && SANCTIONED_COUNTRY_REGION.country.includes(ipCountryCode);
+	const isRegionSanctioned = ipRegion && SANCTIONED_COUNTRY_REGION.regions.includes(ipRegion);
+
+	if (isCountrySanctioned || isRegionSanctioned) {
+		return new Response("Access denied: location restricted", {
+			status: 403,
+			headers: responseHeaders,
+		});
+	}
 
 	const body = await renderToReadableStream(<ServerRouter context={routerContext} url={request.url} />, {
 		onError(error: unknown) {
