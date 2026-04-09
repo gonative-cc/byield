@@ -37,11 +37,14 @@ const mockIndexer: BtcIndexerRpc = {
 };
 
 const mockSuiIndexer: SuiIndexerRpc = {
-	finalizeRedeem: vi.fn(),
+	finalizeRedeems: vi.fn(),
 	putRedeemTx: vi.fn(),
 	getBroadcastedRedeemTxIds: vi.fn(),
 	confirmRedeem: vi.fn(),
 	redeemsBySuiAddr: vi.fn(),
+	getConfirmingRedeems: vi.fn(),
+	updateRedeemStatus: vi.fn(),
+	updateRedeemStatuses: vi.fn(),
 };
 
 const mockNbtcTxResp: NbtcTxResp = {
@@ -112,7 +115,7 @@ describe("Controller getMintTxs", () => {
 
 		const result = await controller["getMintTxs"](btcAddr, null);
 
-		expect(mockIndexer.depositsBySender).toHaveBeenCalledWith(btcAddr, "testnet");
+		expect(mockIndexer.depositsBySender).toHaveBeenCalledWith(btcAddr, 1);
 		expect(Array.isArray(result)).toBe(true);
 	});
 
@@ -125,7 +128,7 @@ describe("Controller getMintTxs", () => {
 
 		const result = await controller["getMintTxs"](btcAddr, suiAddr);
 
-		expect(mockIndexer.depositsBySender).toHaveBeenCalledWith(btcAddr, "testnet");
+		expect(mockIndexer.depositsBySender).toHaveBeenCalledWith(btcAddr, 1);
 		expect(mockIndexer.nbtcMintTxsBySuiAddr).toHaveBeenCalledWith(suiAddr);
 		expect(Array.isArray(result)).toBe(true);
 	});
@@ -149,6 +152,6 @@ describe("Controller getMintTxs", () => {
 		await controller["getMintTxs"](btcAddr, invalidSuiAddr);
 
 		expect(mockIndexer.nbtcMintTxsBySuiAddr).not.toHaveBeenCalled();
-		expect(mockIndexer.depositsBySender).toHaveBeenCalledWith(btcAddr, "testnet");
+		expect(mockIndexer.depositsBySender).toHaveBeenCalledWith(btcAddr, 1);
 	});
 });

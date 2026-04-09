@@ -1,5 +1,5 @@
 import { Info, CheckCircle } from "lucide-react";
-import { type RedeemRequestResp, RedeemRequestStatus } from "@gonative-cc/sui-indexer/models";
+import { type RedeemRequestResp, RedeemRequestStatus } from "@gonative-cc/lib/rpc-types";
 import { AnimatedHourglass } from "~/components/ui/AnimatedHourglass";
 import { Tooltip } from "~/components/ui/tooltip";
 import { formatNBTC } from "~/lib/denoms";
@@ -11,7 +11,7 @@ interface ExpandableRedeemDetailsProps {
 const steps = [
 	{ status: RedeemRequestStatus.Pending, activeMsg: "Redeem request pending" },
 	{ status: RedeemRequestStatus.Proposed, activeMsg: "Transaction proposed" },
-	{ status: RedeemRequestStatus.Solved, activeMsg: "Transaction solved" },
+	{ status: RedeemRequestStatus.Signing, activeMsg: "Transaction signing" },
 	{ status: RedeemRequestStatus.Signed, activeMsg: "Transaction signed" },
 	{ status: RedeemRequestStatus.Broadcasting, activeMsg: "Bitcoin transaction broadcasted" },
 ];
