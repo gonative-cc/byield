@@ -62,7 +62,7 @@
 		"@testing-library/user-event": "^14.6.1",
 		"@cloudflare/vitest-pool-workers": "^0.12.17",
 		"@eslint/compat": "^2.0.2",
-		"@eslint/js": "^9.39.3",
+		"@eslint/js": "^10.0.1",
 		"@mysten/utils": "^0.2.0",
 		"@react-router/dev": "^7.13.1",
 		"@tailwindcss/postcss": "^4.2.1",
